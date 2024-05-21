@@ -41,3 +41,6 @@ class AI():
 
 
 # do the algorithm
+
+
+# reste au sol les ressources
