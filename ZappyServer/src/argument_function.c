@@ -90,6 +90,9 @@ static int check_args(args_config_t *args)
         args->clientsNb == 0 || args->freq == 0.0f) {
         return KO;
     }
+    if (args->width > 30 || args->height > 30) {
+        return KO;
+    }
     return OK;
 }
 
