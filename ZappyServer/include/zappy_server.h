@@ -8,7 +8,7 @@
 #ifndef ZAPPY_SERVER_H_
     #define ZAPPY_SERVER_H_
 
-    #include "../../include/myteams.h"
+    #include <zappy.h>
     #include <arpa/inet.h>
     #include <dirent.h>
     #include <limits.h>
@@ -31,7 +31,9 @@
     #define THREADS_CHAR 'h'
     #define REPLY_CHAR 'r'
     #define SUBSCRIBE_CHAR 's'
-
+    #define OK 0
+    #define KO 84
+    #define ERROR -1
     #define FOOD_DENSITY 0.5
     #define LINEMATE_DENSITY 0.3
     #define DERAUMERE_DENSITY 0.15

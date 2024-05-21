@@ -42,35 +42,35 @@ void free_map_tile(map_tile_t **map_tile)
 }
 
 static void add_resource_to_tile(map_tile_t **map_tile, char_tab_t **tmp,
-    int *index, int x, int **possible_coordinate)
+    int *index_x, int **possible_coordinate)
 {
     char_tab_t *tmp2 = NULL;
 
     if (tmp == NULL)
         return;
-    for (int j = 0; j < x && (*tmp) != NULL; j += 1) {
+    for (int j = 0; j < index_x[1] && (*tmp) != NULL; j += 1) {
         tmp2 = calloc(sizeof(char_tab_t), 1);
         tmp2->str = strdup((*tmp)->str);
         (*tmp) = TAILQ_NEXT((*tmp), next);
-        TAILQ_INSERT_TAIL(&(map_tile[possible_coordinate[(*index)][1]]
-                [possible_coordinate[(*index)][0]]).resources, tmp2, next);
-        *index += 1;
+        TAILQ_INSERT_TAIL(&(map_tile[possible_coordinate[(index_x[0])][1]]
+                [possible_coordinate[(index_x[0])][0]]).resources, tmp2, next);
+        index_x[0] += 1;
     }
 }
 
 void put_resource_on_map_tile(map_tile_t **map_tile,
     struct char_tab_head *head, int x, int y)
 {
-    int index = 0;
-    char_tab_t *tmp = TAILQ_FIRST(head);
+    int index_x[2] = {0, x};
     int **possible_coordinate = NULL;
+    char_tab_t *tmp = TAILQ_FIRST(head);
 
     while (tmp != NULL) {
-        index = 0;
+        index_x[0] = 0;
         possible_coordinate = generate_int_array(x, y);
         shuffle_int_array(possible_coordinate, x * y);
         for (int i = 0; i < y && tmp != NULL; i += 1) {
-            add_resource_to_tile(map_tile, &tmp, &index, x, possible_coordinate);
+            add_resource_to_tile(map_tile, &tmp, index_x, possible_coordinate);
         }
         free_int_array(possible_coordinate);
     }
