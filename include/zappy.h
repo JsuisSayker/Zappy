@@ -7,6 +7,9 @@
 
 #ifndef ZAPPY_H_
     #define ZAPPY_H_
+    #define OK 0
+    #define KO 84
+    #define ERROR -1
     #define MAX_NAME_LENGTH 32
     #define MAX_UUID_LENGTH 37
     #define MAX_DESCRIPTION_LENGTH 255

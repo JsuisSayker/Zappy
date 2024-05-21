@@ -15,9 +15,6 @@
     #define THREADS_CHAR 'h'
     #define REPLY_CHAR 'r'
     #define SUBSCRIBE_CHAR 's'
-    #define OK 0
-    #define KO 84
-    #define ERROR -1
     #define FOOD_DENSITY 0.5
     #define LINEMATE_DENSITY 0.3
     #define DERAUMERE_DENSITY 0.15

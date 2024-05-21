@@ -5,10 +5,7 @@
 ** accept_new_connection
 */
 
-#include <sys/socket.h>
-#include <unistd.h>
-
-#include "macro_server.h"
+#include <zappy_server.h>
 
 int accept_new_connection(int my_socket)
 {
