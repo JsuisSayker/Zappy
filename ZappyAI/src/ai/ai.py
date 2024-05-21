@@ -1,4 +1,4 @@
-from infos import LEVELS
+from ZappyAI.src.ai.infos import LEVELS
 
 
 class AI():
@@ -13,6 +13,8 @@ class AI():
         self.searchingRessource: str = ""
         self.look: str = ""
         self.commandList: list[str] = []
+        self.run = False
+        self.dataToSend: str = ""
 
     def isIncantationPossible(self) -> bool:
         requiredRessources = LEVELS[self.level]
