@@ -82,9 +82,9 @@ map_tile_t **setup_map_tile(int x, int y)
     struct char_tab_head *resourse_list = generate_ressourse_list(x, y);
     map_tile_t **map_tile = generate_map_tile(x, y);
 
-    printf("====================================\n");
+    // printf("====================================\n");
     put_resource_on_map_tile(map_tile, resourse_list, x, y);
-    display_map_tile(map_tile);
+    // display_map_tile(map_tile);
     free_char_tab_list(resourse_list);
     free(resourse_list);
     return map_tile;

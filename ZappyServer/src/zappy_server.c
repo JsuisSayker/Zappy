@@ -40,6 +40,26 @@ static int fd_is_set(zappy_server_t *zappy_server)
     return OK;
 }
 
+static int display_info_server(zappy_server_t *zappy_server)
+{
+    if (zappy_server == NULL)
+        return ERROR;
+    printf("=============Zappy Server=============\n");
+    printf("port = %d\n", zappy_server->args->port);
+    printf("width = %d\n", zappy_server->args->width);
+    printf("height = %d\n", zappy_server->args->height);
+    printf("clients_nb = %d\n", zappy_server->args->clientsNb);
+    printf("freq = %f\n", zappy_server->args->freq);
+    printf("Teams [%s]:\n", "Not setup yet");
+    printf("display eggs = [%s]\n", "Not setup yet");
+    printf("name : [%s]\n", "Not setup yet");
+    printf("nb_drones = [%s]\n", "Not setup yet");
+    printf("nb_eggs = [%s]\n", "Not setup yet");
+    printf("verbose = [%s]\n", "Not setup yet");
+    printf("=====================================\n");
+    return OK;
+}
+
 int send_logout_to_all_clients(zappy_server_t *zappy_server)
 {
     for (zappy_server->actual_sockfd = 0;
@@ -72,6 +92,8 @@ int zappy_server(args_config_t *args)
     signal(SIGINT, signal_handler);
     if (init_server(zappy_server, args) == KO)
         return ERROR;
+    if (display_info_server(zappy_server) == KO)
+        return ERROR;
     // read_info_from_save_file(zappy_server);
     while (loopRunning) {
         zappy_server->fd.input = zappy_server->fd.save_input;
@@ -83,6 +105,6 @@ int zappy_server(args_config_t *args)
             return ERROR;
     }
     close_server(zappy_server);
-    
+
     return OK;
 }

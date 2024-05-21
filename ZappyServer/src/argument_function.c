@@ -21,16 +21,16 @@ args_config_t *init_args_config(void)
     return args;
 }
 
-void display_args_config(args_config_t *args)
-{
-    printf("Port: %d\n", args->port);
-    printf("Width: %d\n", args->width);
-    printf("Height: %d\n", args->height);
-    printf("Team Names:\n");
-    display_char_tab_list(&(args->names));
-    printf("Clients Number: %d\n", args->clientsNb);
-    printf("Frequency: %.2f\n", args->freq);
-}
+// void display_args_config(args_config_t *args)
+// {
+//     printf("Port: %d\n", args->port);
+//     printf("Width: %d\n", args->width);
+//     printf("Height: %d\n", args->height);
+//     printf("Team Names:\n");
+//     display_char_tab_list(&(args->names));
+//     printf("Clients Number: %d\n", args->clientsNb);
+//     printf("Frequency: %.2f\n", args->freq);
+// }
 
 void free_args_config(args_config_t *args)
 {
