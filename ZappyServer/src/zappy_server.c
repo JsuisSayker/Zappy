@@ -14,9 +14,8 @@ static bool loopRunning = true;
 
 void signal_handler(int signal)
 {
-    if (signal == SIGINT) {
+    if (signal == SIGINT)
         loopRunning = false;
-    }
 }
 
 static int check_connected_client(zappy_server_t *zappy_server)
@@ -24,7 +23,11 @@ static int check_connected_client(zappy_server_t *zappy_server)
     if (zappy_server->actual_sockfd == zappy_server->my_socket) {
         return OK;
     } else {
-        // logout_command(zappy_server, "");
+        zappy_server->clients[zappy_server->actual_sockfd].user->nb_clients -=
+            1;
+        zappy_server->clients[zappy_server->actual_sockfd].user = NULL;
+        close(zappy_server->actual_sockfd);
+        FD_CLR(zappy_server->actual_sockfd, &zappy_server->fd.save_input);
         printf("client disconnected\n");
     }
     return OK;
@@ -53,7 +56,6 @@ int send_logout_to_all_clients(zappy_server_t *zappy_server)
 
 int close_server(zappy_server_t *zappy_server)
 {
-    // save_info_to_file(zappy_server);
     send_logout_to_all_clients(zappy_server);
     close(zappy_server->my_socket);
     free_users(&(zappy_server->all_user));
@@ -72,7 +74,6 @@ int zappy_server(args_config_t *args)
     signal(SIGINT, signal_handler);
     if (init_server(zappy_server, args) == KO)
         return ERROR;
-    // read_info_from_save_file(zappy_server);
     while (loopRunning) {
         zappy_server->fd.input = zappy_server->fd.save_input;
         if (select(FD_SETSIZE, &(zappy_server->fd.input),

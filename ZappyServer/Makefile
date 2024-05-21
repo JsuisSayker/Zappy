@@ -25,7 +25,8 @@ SRC			=	zappy_server.c						\
 				int_array_function.c				\
 				${DIR_TOOLS}						\
 				${DIR_COMMAND_IA}					\
-				${DIR_COMMAND_GUI}
+				${DIR_COMMAND_GUI}					\
+				${DIR_COMMAND_SERVER}
 
 TOOLS		=	splitter.c						\
 				free_array.c					\
@@ -37,11 +38,15 @@ COMMAND_IA		=	\
 
 COMMAND_GUI		=	\
 
+COMMAND_GUI		=	help.c\
+
 DIR_SRC		=	$(addprefix src/, $(SRC))
 
-DIR_COMMAND_IA	=	$(addprefix commands_IA/, $(COMMAND_IA))
+DIR_COMMAND_IA	=	$(addprefix CommandsIa/, $(COMMAND_IA))
 
-DIR_COMMAND_GUI	=	$(addprefix commands_GUI/, $(COMMAND_GUI))
+DIR_COMMAND_GUI	=	$(addprefix CommandsGui/, $(COMMAND_GUI))
+
+DIR_COMMAND_SERVER	=	$(addprefix CommandsServer/, $(COMMAND_SERVER))
 
 DIR_TOOLS	=	$(addprefix tools/, $(TOOLS))
 
