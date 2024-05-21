@@ -7,25 +7,25 @@
 
 #include "zappy_server.h"
 
-static const struct command_s COMMAND_FUNCS[] = {{"/help", &help_command},
-    {"/login", &login_command}, {"/logout", &logout_command},
-    {"/users", &users_command}, {"/user", &user_command},
-    {"/send", &send_command}, {"/messages", &messages_command},
-    {"/subscribed", &subscribed_command}, {"/subscribe", &subscribe_command},
-    {"/unsubscribe", &unsubscribe_command}, {"/use", &use_command},
-    {"/create", &create_command}, {"/list", &list_command},
-    {"/info", &info_command}, {"NULL", NULL}};
+// static const struct command_s COMMAND_FUNCS[] = {{"/help", &help_command},
+//     {"/login", &login_command}, {"/logout", &logout_command},
+//     {"/users", &users_command}, {"/user", &user_command},
+//     {"/send", &send_command}, {"/messages", &messages_command},
+//     {"/subscribed", &subscribed_command}, {"/subscribe", &subscribe_command},
+//     {"/unsubscribe", &unsubscribe_command}, {"/use", &use_command},
+//     {"/create", &create_command}, {"/list", &list_command},
+//     {"/info", &info_command}, {"NULL", NULL}};
 
 void handle_command(zappy_server_t *zappy_server, char *command)
 {
-    for (int i = 0; COMMAND_FUNCS[i].func != NULL; i += 1) {
-        if (strncmp(command, COMMAND_FUNCS[i].command,
-                strlen(COMMAND_FUNCS[i].command)) == 0) {
-            COMMAND_FUNCS[i].func(
-                zappy_server, &command[strlen(COMMAND_FUNCS[i].command)]);
-            return;
-        }
-    }
+    // for (int i = 0; COMMAND_FUNCS[i].func != NULL; i += 1) {
+    //     if (strncmp(command, COMMAND_FUNCS[i].command,
+    //             strlen(COMMAND_FUNCS[i].command)) == 0) {
+    //         COMMAND_FUNCS[i].func(
+    //             zappy_server, &command[strlen(COMMAND_FUNCS[i].command)]);
+    //         return;
+    //     }
+    // }
 }
 
 static void last_split(

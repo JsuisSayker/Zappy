@@ -45,10 +45,6 @@
 
 
 
-
-
-
-
 typedef struct char_tab_s {
     char *str;
     TAILQ_ENTRY(char_tab_s) next;
@@ -64,7 +60,6 @@ void free_char_tab_list(struct char_tab_head *head);
 void display_char_tab_list(struct char_tab_head *head);
 int count_char_tab_list(struct char_tab_head *head);
 void random_char_tab_list(struct char_tab_head *head);
-
 
 typedef struct args_config_s {
     int port;
@@ -103,9 +98,9 @@ void display_map_tile(map_tile_t **map_tile);
 int **generate_int_array(int x, int y);
 void free_int_array(int **possible_coordinate);
 void shuffle_int_array(int **array, int n);
+
+
 ////////////////////////////////////////
-
-
 
 typedef struct subscribed_s {
     char team_uuid[MAX_UUID_LENGTH];
@@ -131,20 +126,6 @@ typedef struct user_s {
 struct userhead {
     struct user_s *tqh_first;
     struct user_s **tqh_last;
-};
-
-typedef struct message_s {
-    char text[MAX_BODY_LENGTH];
-    char sender_uuid[MAX_UUID_LENGTH];
-    char receiver_uuid[MAX_UUID_LENGTH];
-    char message_uuid[MAX_UUID_LENGTH];
-    time_t timestamp;
-    TAILQ_ENTRY(message_s) next;
-} message_t;
-
-struct messagehead {
-    struct message_s *tqh_first;
-    struct message_s **tqh_last;
 };
 
 typedef struct reply_s {
@@ -177,25 +158,9 @@ struct threadhead {
     struct thread_s **tqh_last;
 };
 
-typedef struct channel_s {
-    char name[MAX_NAME_LENGTH];
-    char desc[MAX_DESCRIPTION_LENGTH];
-    char channel_uuid[MAX_UUID_LENGTH];
-    char team_uuid[MAX_UUID_LENGTH];
-    struct threadhead threads_head;
-    TAILQ_ENTRY(channel_s) next;
-} channel_t;
-
-struct channelhead {
-    struct channel_s *tqh_first;
-    struct channel_s **tqh_last;
-};
-
 typedef struct team_s {
     char name[MAX_NAME_LENGTH];
-    char desc[MAX_DESCRIPTION_LENGTH];
     char team_uuid[MAX_UUID_LENGTH];
-    struct channelhead channels_head;
     TAILQ_ENTRY(team_s) next;
 } team_t;
 
@@ -227,9 +192,9 @@ typedef struct zappy_server_s {
     fd_t fd;
     struct sockaddr_in server_addr;
     struct userhead all_user;
-    struct messagehead private_messages;
     struct subscribedhead subscribed_teams_users;
     struct teamhead all_teams;
+    struct threadhead all_threads;
     struct client_s clients[FD_SETSIZE];
     map_tile_t **map_tile;
     args_config_t *args;
@@ -237,10 +202,8 @@ typedef struct zappy_server_s {
 
 // Linked list functions
 void free_subscribed(struct subscribedhead *head);
-void free_messages(struct messagehead *head);
 void free_users(struct userhead *head);
 void free_threads(struct threadhead *head);
-void free_channels(struct channelhead *head);
 void free_teams(struct teamhead *head);
 
 // Tools functions
@@ -260,26 +223,15 @@ int setup_server(int port, int max_clients);
 int save_info_to_file(zappy_server_t *zappy_server);
 int read_info_from_save_file(zappy_server_t *zappy_server);
 thread_t *search_in_threads(struct threadhead *thread_head, char *uuid);
-channel_t *search_in_channels(struct channelhead *channel_head, char *uuid);
 team_t *search_in_teams(struct teamhead *team_head, char *uuid);
 int get_len_char_tab(char **command);
-int find_all_context(zappy_server_t *zappy_server, team_t **team,
-    channel_t **channel, thread_t **thread);
 time_t get_actual_time(void);
 int count_str_char(char *str, char c);
 // get UUID
 user_t *get_user_by_uuid(struct userhead *user_head, char *uuid);
 team_t *get_team_by_uuid(struct teamhead *teams_head, char *uuid);
-channel_t *get_channel_by_uuid(struct channelhead *channel_head, char *uuid);
-channel_t *get_all_channel_by_uuid(struct teamhead *team_head, char *uuid);
 thread_t *get_thread_by_uuid(struct threadhead *thread_head, char *uuid);
 thread_t *get_all_thread_by_uuid(struct teamhead *team_head, char *uuid);
-
-typedef struct all_context_s {
-    team_t *team;
-    channel_t *channel;
-    thread_t *thread;
-} all_context_t;
 
 // COMMANDS
 typedef struct command_s {
@@ -301,21 +253,5 @@ void use_command(zappy_server_t *zappy_server, char *command);
 void create_command(zappy_server_t *zappy_server, char *command);
 void list_command(zappy_server_t *zappy_server, char *command);
 void info_command(zappy_server_t *zappy_server, char *command);
-
-int add_team(zappy_server_t *zappy_server, char **command_line, int nb_args,
-    all_context_t *all_context);
-int add_channel(zappy_server_t *zappy_server, char **command_line, int nb_args,
-    all_context_t *all_context);
-int add_thread(zappy_server_t *zappy_server, char **command_line, int nb_args,
-    all_context_t *all_context);
-
-
-
-
-
-
-
-
-
 
 #endif /* !ZAPPY_SERVER_H_ */

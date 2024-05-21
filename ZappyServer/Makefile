@@ -12,22 +12,20 @@ SRC			=	zappy_server.c						\
 				generate_random_uuid.c				\
 				accept_new_connection.c				\
 				setup_server.c						\
-				save_info_to_file.c					\
-				read_info_from_save_file.c			\
 				search_in_object.c					\
 				find_all_context.c					\
 				get_user_by_uuid.c					\
 				get_team_by_uuid.c					\
-				get_channel_by_uuid.c				\
 				get_thread_by_uuid.c				\
 				linked_list/free_list.c				\
 				linked_list/free_users.c			\
 				argument_function.c					\
 				generate_ressourse_list.c			\
 				map_tile_function.c					\
-				int_array_function.c					\
+				int_array_function.c				\
 				${DIR_TOOLS}						\
-				${DIR_COMMAND}
+				${DIR_COMMAND_IA}					\
+				${DIR_COMMAND_GUI}
 
 TOOLS		=	splitter.c						\
 				free_array.c					\
@@ -35,27 +33,15 @@ TOOLS		=	splitter.c						\
 				char_tab_list_function.c
 
 
-COMMAND		=	help_command.c						\
-				login_command.c						\
-				logout_command.c					\
-				users_command.c						\
-				user_command.c						\
-				send_command.c						\
-				messages_command.c					\
-				subscribe_command.c					\
-				subscribed_command.c				\
-				unsubscribe_command.c				\
-				use_command.c						\
-				create_command.c					\
-				create_team_command.c				\
-				create_channel_command.c			\
-				create_thread_command.c				\
-				list_command.c						\
-				info_command.c
+COMMAND_IA		=	\
+
+COMMAND_GUI		=	\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 
-DIR_COMMAND	=	$(addprefix commands/, $(COMMAND))
+DIR_COMMAND_IA	=	$(addprefix commands_IA/, $(COMMAND_IA))
+
+DIR_COMMAND_GUI	=	$(addprefix commands_GUI/, $(COMMAND_GUI))
 
 DIR_TOOLS	=	$(addprefix tools/, $(TOOLS))
 

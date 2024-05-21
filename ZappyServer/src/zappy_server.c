@@ -5,7 +5,7 @@
 ** my_project
 */
 
-#include "zappy_server.h"
+#include <zappy_server.h>
 #include <errno.h>
 #include <signal.h>
 #include <stdio.h>
@@ -24,7 +24,7 @@ static int check_connected_client(zappy_server_t *zappy_server)
     if (zappy_server->actual_sockfd == zappy_server->my_socket) {
         return OK;
     } else {
-        logout_command(zappy_server, "");
+        // logout_command(zappy_server, "");
         printf("client disconnected\n");
     }
     return OK;
@@ -53,11 +53,10 @@ int send_logout_to_all_clients(zappy_server_t *zappy_server)
 
 int close_server(zappy_server_t *zappy_server)
 {
-    save_info_to_file(zappy_server);
+    // save_info_to_file(zappy_server);
     send_logout_to_all_clients(zappy_server);
     close(zappy_server->my_socket);
     free_users(&(zappy_server->all_user));
-    free_messages(&(zappy_server->private_messages));
     free_subscribed(&(zappy_server->subscribed_teams_users));
     free_teams(&zappy_server->all_teams);
     free_map_tile(zappy_server->map_tile);
@@ -73,7 +72,7 @@ int zappy_server(args_config_t *args)
     signal(SIGINT, signal_handler);
     if (init_server(zappy_server, args) == KO)
         return ERROR;
-    read_info_from_save_file(zappy_server);
+    // read_info_from_save_file(zappy_server);
     while (loopRunning) {
         zappy_server->fd.input = zappy_server->fd.save_input;
         if (select(FD_SETSIZE, &(zappy_server->fd.input),

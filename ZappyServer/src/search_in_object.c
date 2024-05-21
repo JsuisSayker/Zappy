@@ -20,19 +20,6 @@ thread_t *search_in_threads(struct threadhead *thread_head, char *uuid)
     return NULL;
 }
 
-channel_t *search_in_channels(struct channelhead *channel_head, char *uuid)
-{
-    channel_t *channel = NULL;
-
-    TAILQ_FOREACH(channel, channel_head, next)
-    {
-        if (strcmp(channel->channel_uuid, uuid) == 0) {
-            return channel;
-        }
-    }
-    return NULL;
-}
-
 team_t *search_in_teams(struct teamhead *team_head, char *uuid)
 {
     team_t *team = NULL;

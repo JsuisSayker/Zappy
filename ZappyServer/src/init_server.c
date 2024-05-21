@@ -19,8 +19,6 @@ void init_list(zappy_server_t *zappy_server)
 {
     TAILQ_INIT(&(zappy_server->all_user));
     zappy_server->all_user.tqh_first = NULL;
-    TAILQ_INIT(&(zappy_server->private_messages));
-    zappy_server->private_messages.tqh_first = NULL;
     TAILQ_INIT(&(zappy_server->all_teams));
     zappy_server->all_teams.tqh_first = NULL;
     TAILQ_INIT(&(zappy_server->subscribed_teams_users));
