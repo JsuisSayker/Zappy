@@ -13,9 +13,8 @@ int setup_server(int port, int max_clients)
     struct sockaddr_in my_socket_addr;
 
     my_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (my_socket == KO) {
+    if (my_socket == KO)
         return KO;
-    }
     my_socket_addr.sin_family = AF_INET;
     my_socket_addr.sin_addr.s_addr = INADDR_ANY;
     my_socket_addr.sin_port = htons(port);
@@ -23,8 +22,7 @@ int setup_server(int port, int max_clients)
             sizeof(my_socket_addr)) == KO) {
         return KO;
     }
-    if (listen(my_socket, max_clients) == KO) {
+    if (listen(my_socket, max_clients) == KO)
         return KO;
-    }
     return my_socket;
 }

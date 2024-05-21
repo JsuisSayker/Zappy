@@ -113,7 +113,7 @@ static void save_team(struct teamhead *teams_head, int file, char *str)
     }
 }
 
-int save_info_to_file(teams_server_t *teams_server)
+int save_info_to_file(zappy_server_t *zappy_server)
 {
     int file = open(SAVE_FILE, O_CREAT | O_TRUNC | O_WRONLY, 00777);
     char str[BUFSIZ];
@@ -122,10 +122,10 @@ int save_info_to_file(teams_server_t *teams_server)
     if (file == -1) {
         return ERROR;
     }
-    save_users(&teams_server->all_user, file, str);
-    save_privates_messages(&teams_server->private_messages, file, str);
-    save_subscribed(&teams_server->subscribed_teams_users, file, str);
-    save_team(&teams_server->all_teams, file, str);
+    save_users(&zappy_server->all_user, file, str);
+    save_privates_messages(&zappy_server->private_messages, file, str);
+    save_subscribed(&zappy_server->subscribed_teams_users, file, str);
+    save_team(&zappy_server->all_teams, file, str);
     close(file);
     return OK;
 }

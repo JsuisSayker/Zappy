@@ -81,7 +81,7 @@ OBJ_MAIN	=	$(DIR_MAIN:.c=.o)
 OBJ			=	$(OBJ_SRC) \
 				$(OBJ_MAIN)
 
-NAME		=	myteams_server
+NAME		=	myzappy_server
 
 LDLIB		=	-L../lib/ -L../libs/myteams/
 

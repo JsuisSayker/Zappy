@@ -28,7 +28,7 @@ static int find_team(struct teamhead *all_teams, char *name)
     return KO;
 }
 
-static int create_team(teams_server_t *teams_server, char **command_line)
+static int create_team(zappy_server_t *zappy_server, char **command_line)
 {
     team_t *new_team = NULL;
 
@@ -37,26 +37,26 @@ static int create_team(teams_server_t *teams_server, char **command_line)
     strcpy(new_team->name, command_line[1]);
     strcpy(new_team->desc, command_line[3]);
     generate_random_uuid(new_team->team_uuid);
-    TAILQ_INSERT_TAIL(&(teams_server->all_teams), new_team, next);
-    write_new_team(teams_server->actual_sockfd, new_team);
+    TAILQ_INSERT_TAIL(&(zappy_server->all_teams), new_team, next);
+    write_new_team(zappy_server->actual_sockfd, new_team);
     return OK;
 }
 
-int add_team(teams_server_t *teams_server, char **command_line, int nb_args,
+int add_team(zappy_server_t *zappy_server, char **command_line, int nb_args,
     all_context_t *all_context)
 {
     if (all_context->team == NULL) {
         if (4 != nb_args) {
-            dprintf(teams_server->actual_sockfd, "500|Server Error%s%s",
+            dprintf(zappy_server->actual_sockfd, "500|Server Error%s%s",
                 END_LINE, END_STR);
             return KO;
         }
-        if (find_team(&(teams_server->all_teams), command_line[1]) == OK) {
-            dprintf(teams_server->actual_sockfd, "503|/create%s%s", END_LINE,
+        if (find_team(&(zappy_server->all_teams), command_line[1]) == OK) {
+            dprintf(zappy_server->actual_sockfd, "503|/create%s%s", END_LINE,
                 END_STR);
             return KO;
         }
-        create_team(teams_server, command_line);
+        create_team(zappy_server, command_line);
         return KO;
     }
     return OK;

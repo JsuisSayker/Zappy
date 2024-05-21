@@ -5,7 +5,7 @@
 ** init_fd_struct
 */
 
-#include "zappy_server.h"
+#include <zappy_server.h>
 
 static void init_fd_struct(fd_t *fd, int my_socket)
 {
@@ -15,30 +15,32 @@ static void init_fd_struct(fd_t *fd, int my_socket)
     FD_SET(my_socket, &fd->ouput);
 }
 
-void init_list(teams_server_t *teams_server)
+void init_list(zappy_server_t *zappy_server)
 {
-    TAILQ_INIT(&(teams_server->all_user));
-    teams_server->all_user.tqh_first = NULL;
-    TAILQ_INIT(&(teams_server->private_messages));
-    teams_server->private_messages.tqh_first = NULL;
-    TAILQ_INIT(&(teams_server->all_teams));
-    teams_server->all_teams.tqh_first = NULL;
-    TAILQ_INIT(&(teams_server->subscribed_teams_users));
-    teams_server->subscribed_teams_users.tqh_first = NULL;
+    TAILQ_INIT(&(zappy_server->all_user));
+    zappy_server->all_user.tqh_first = NULL;
+    TAILQ_INIT(&(zappy_server->private_messages));
+    zappy_server->private_messages.tqh_first = NULL;
+    TAILQ_INIT(&(zappy_server->all_teams));
+    zappy_server->all_teams.tqh_first = NULL;
+    TAILQ_INIT(&(zappy_server->subscribed_teams_users));
+    zappy_server->subscribed_teams_users.tqh_first = NULL;
 }
 
-int init_server(teams_server_t *teams_server, int port)
+int init_server(zappy_server_t *zappy_server, args_config_t *args)
 {
-    if (teams_server == NULL) {
+    if (zappy_server == NULL) {
         return ERROR;
     }
-    teams_server->my_socket = setup_server(port, 42);
-    if (teams_server->my_socket == -1) {
+    zappy_server->my_socket = setup_server(args->port, 42);
+    if (zappy_server->my_socket == -1) {
         printf("can't open server port\n");
-        free(teams_server);
+        free(zappy_server);
         return KO;
     }
-    init_fd_struct(&teams_server->fd, teams_server->my_socket);
-    init_list(teams_server);
+    init_fd_struct(&zappy_server->fd, zappy_server->my_socket);
+    init_list(zappy_server);
+    zappy_server->map_tile = setup_map_tile(args->width, args->height);
+    zappy_server->args = args;
     return 0;
 }

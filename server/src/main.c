@@ -14,7 +14,7 @@ int main(int ac, char *const *const av)
     if (!av)
         return KO;
     if (ac != 2) {
-        write(1, "bad usage of ./myteams_server\n", 31);
+        write(1, "bad usage of ./myzappy_server\n", 31);
         display_help();
         return KO;
     }

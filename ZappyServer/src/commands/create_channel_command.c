@@ -28,7 +28,7 @@ static int find_channel(struct channelhead *all_channel, char *name)
     return KO;
 }
 
-static int create_channel(teams_server_t *teams_server, char **command_line,
+static int create_channel(zappy_server_t *zappy_server, char **command_line,
     all_context_t *all_context)
 {
     channel_t *new_channel = NULL;
@@ -41,26 +41,26 @@ static int create_channel(teams_server_t *teams_server, char **command_line,
     strcpy(new_channel->team_uuid, all_context->team->team_uuid);
     generate_random_uuid(new_channel->channel_uuid);
     TAILQ_INSERT_TAIL(&all_context->team->channels_head, new_channel, next);
-    write_new_channel(teams_server->actual_sockfd, new_channel);
+    write_new_channel(zappy_server->actual_sockfd, new_channel);
     return OK;
 }
 
-int add_channel(teams_server_t *teams_server, char **command_line, int nb_args,
+int add_channel(zappy_server_t *zappy_server, char **command_line, int nb_args,
     all_context_t *all_context)
 {
     if (all_context->channel == NULL) {
         if (4 != nb_args) {
-            dprintf(teams_server->actual_sockfd, "500|channel%s%s", END_LINE,
+            dprintf(zappy_server->actual_sockfd, "500|channel%s%s", END_LINE,
                 END_STR);
             return KO;
         }
         if (find_channel(
                 &(all_context->team->channels_head), command_line[1]) == OK) {
-            dprintf(teams_server->actual_sockfd, "503|/create%s%s", END_LINE,
+            dprintf(zappy_server->actual_sockfd, "503|/create%s%s", END_LINE,
                 END_STR);
             return KO;
         }
-        create_channel(teams_server, command_line, all_context);
+        create_channel(zappy_server, command_line, all_context);
         return KO;
     }
     return OK;

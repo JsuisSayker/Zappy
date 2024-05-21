@@ -43,6 +43,70 @@
     #define THYSTAME_DENSITY 0.05
     #define MAX_CLIENTS 10
 
+
+
+
+
+
+
+typedef struct char_tab_s {
+    char *str;
+    TAILQ_ENTRY(char_tab_s) next;
+} char_tab_t;
+
+struct char_tab_head {
+    struct char_tab_s *tqh_first;
+    struct char_tab_s **tqh_last;
+};
+
+// char_tab functions
+void free_char_tab_list(struct char_tab_head *head);
+void display_char_tab_list(struct char_tab_head *head);
+int count_char_tab_list(struct char_tab_head *head);
+void random_char_tab_list(struct char_tab_head *head);
+
+
+typedef struct args_config_s {
+    int port;
+    int width;
+    int height;
+    int clientsNb;
+    float freq;
+    struct char_tab_head names;
+} args_config_t;
+
+typedef struct map_tile_s {
+    int x;
+    int y;
+    struct char_tab_head resources;
+} map_tile_t;
+
+// args_config functions
+args_config_t *init_args_config(void);
+void display_args_config(args_config_t *args);
+void free_args_config(args_config_t *args);
+int fill_args_conf(args_config_t *args, int argc, char **argv);
+
+// zappy_server functions
+int zappy_server(args_config_t *args);
+struct char_tab_head *generate_ressourse_list(int x, int y);
+
+// map_tile functions
+map_tile_t **generate_map_tile(int x, int y);
+void free_map_tile(map_tile_t **map_tile);
+void put_resource_on_map_tile(map_tile_t **map_tile,
+    struct char_tab_head *head, int x, int y);
+map_tile_t **setup_map_tile(int x, int y);
+void display_map_tile(map_tile_t **map_tile);
+
+// int array functions
+int **generate_int_array(int x, int y);
+void free_int_array(int **possible_coordinate);
+void shuffle_int_array(int **array, int n);
+////////////////////////////////////////
+
+
+
 typedef struct subscribed_s {
     char team_uuid[MAX_UUID_LENGTH];
     char user_uuid[MAX_UUID_LENGTH];
@@ -157,7 +221,7 @@ typedef struct client_s {
     struct sockaddr_in other_socket_addr;
 } client_t;
 
-typedef struct teams_server_s {
+typedef struct zappy_server_s {
     int my_socket;
     int actual_sockfd;
     fd_t fd;
@@ -167,7 +231,9 @@ typedef struct teams_server_s {
     struct subscribedhead subscribed_teams_users;
     struct teamhead all_teams;
     struct client_s clients[FD_SETSIZE];
-} teams_server_t;
+    map_tile_t **map_tile;
+    args_config_t *args;
+} zappy_server_t;
 
 // Linked list functions
 void free_subscribed(struct subscribedhead *head);
@@ -181,23 +247,23 @@ void free_teams(struct teamhead *head);
 void free_array(char **array);
 
 // Server functions
-int init_server(teams_server_t *teams_server, int port);
+int init_server(zappy_server_t *zappy_server, args_config_t *args);
 void init_buffer_struct(buffer_t *buffer, int *my_socket);
-int scan_fd(teams_server_t *teams_server);
-void handle_client(teams_server_t *teams_server);
+int scan_fd(zappy_server_t *zappy_server);
+void handle_client(zappy_server_t *zappy_server);
 int setup_server(int port, int max_clients);
-void handle_client(teams_server_t *teams_server);
+void handle_client(zappy_server_t *zappy_server);
 char **splitter(char const *const str, char *separator);
 void generate_random_uuid(char *buffer);
 int accept_new_connection(int my_socket);
 int setup_server(int port, int max_clients);
-int save_info_to_file(teams_server_t *teams_server);
-int read_info_from_save_file(teams_server_t *teams_server);
+int save_info_to_file(zappy_server_t *zappy_server);
+int read_info_from_save_file(zappy_server_t *zappy_server);
 thread_t *search_in_threads(struct threadhead *thread_head, char *uuid);
 channel_t *search_in_channels(struct channelhead *channel_head, char *uuid);
 team_t *search_in_teams(struct teamhead *team_head, char *uuid);
 int get_len_char_tab(char **command);
-int find_all_context(teams_server_t *teams_server, team_t **team,
+int find_all_context(zappy_server_t *zappy_server, team_t **team,
     channel_t **channel, thread_t **thread);
 time_t get_actual_time(void);
 int count_str_char(char *str, char c);
@@ -218,29 +284,29 @@ typedef struct all_context_s {
 // COMMANDS
 typedef struct command_s {
     char *command;
-    void (*func)(teams_server_t *teams_server, char *command);
+    void (*func)(zappy_server_t *zappy_server, char *command);
 } command_t;
 
-void help_command(teams_server_t *teams_server, char *command);
-void login_command(teams_server_t *teams_server, char *command);
-void logout_command(teams_server_t *teams_server, char *command);
-void users_command(teams_server_t *teams_server, char *command);
-void user_command(teams_server_t *teams_server, char *command);
-void send_command(teams_server_t *teams_server, char *command);
-void messages_command(teams_server_t *teams_server, char *command);
-void subscribe_command(teams_server_t *teams_server, char *command);
-void subscribed_command(teams_server_t *teams_server, char *command);
-void unsubscribe_command(teams_server_t *teams_server, char *command);
-void use_command(teams_server_t *teams_server, char *command);
-void create_command(teams_server_t *teams_server, char *command);
-void list_command(teams_server_t *teams_server, char *command);
-void info_command(teams_server_t *teams_server, char *command);
+void help_command(zappy_server_t *zappy_server, char *command);
+void login_command(zappy_server_t *zappy_server, char *command);
+void logout_command(zappy_server_t *zappy_server, char *command);
+void users_command(zappy_server_t *zappy_server, char *command);
+void user_command(zappy_server_t *zappy_server, char *command);
+void send_command(zappy_server_t *zappy_server, char *command);
+void messages_command(zappy_server_t *zappy_server, char *command);
+void subscribe_command(zappy_server_t *zappy_server, char *command);
+void subscribed_command(zappy_server_t *zappy_server, char *command);
+void unsubscribe_command(zappy_server_t *zappy_server, char *command);
+void use_command(zappy_server_t *zappy_server, char *command);
+void create_command(zappy_server_t *zappy_server, char *command);
+void list_command(zappy_server_t *zappy_server, char *command);
+void info_command(zappy_server_t *zappy_server, char *command);
 
-int add_team(teams_server_t *teams_server, char **command_line, int nb_args,
+int add_team(zappy_server_t *zappy_server, char **command_line, int nb_args,
     all_context_t *all_context);
-int add_channel(teams_server_t *teams_server, char **command_line, int nb_args,
+int add_channel(zappy_server_t *zappy_server, char **command_line, int nb_args,
     all_context_t *all_context);
-int add_thread(teams_server_t *teams_server, char **command_line, int nb_args,
+int add_thread(zappy_server_t *zappy_server, char **command_line, int nb_args,
     all_context_t *all_context);
 
 
@@ -251,60 +317,5 @@ int add_thread(teams_server_t *teams_server, char **command_line, int nb_args,
 
 
 
-typedef struct char_tab_s {
-    char *str;
-    TAILQ_ENTRY(char_tab_s) next;
-} char_tab_t;
-
-struct char_tab_head {
-    struct char_tab_s *tqh_first;
-    struct char_tab_s **tqh_last;
-};
-
-// char_tab functions
-void free_char_tab_list(struct char_tab_head *head);
-void display_char_tab_list(struct char_tab_head *head);
-int count_char_tab_list(struct char_tab_head *head);
-void random_char_tab_list(struct char_tab_head *head);
-
-////////////////////////////////////////
-
-typedef struct args_config_s {
-    int port;
-    int width;
-    int height;
-    int clientsNb;
-    float freq;
-    struct char_tab_head names;
-} args_config_t;
-
-typedef struct map_tile_s {
-    int x;
-    int y;
-    struct char_tab_head resources;
-} map_tile_t;
-
-// args_config functions
-args_config_t *init_args_config(void);
-void display_args_config(args_config_t *args);
-void free_args_config(args_config_t *args);
-int fill_args_conf(args_config_t *args, int argc, char **argv);
-
-// zappy_server functions
-int zappy_server(args_config_t *args);
-struct char_tab_head *generate_ressourse_list(int x, int y);
-
-// map_tile functions
-map_tile_t **generate_map_tile(int x, int y);
-void free_map_tile(map_tile_t **map_tile);
-void put_resource_on_map_tile(map_tile_t **map_tile,
-    struct char_tab_head *head, int x, int y);
-map_tile_t **setup_map_tile(int x, int y);
-void display_map_tile(map_tile_t **map_tile);
-
-// int array functions
-int **generate_int_array(int x, int y);
-void free_int_array(int **possible_coordinate);
-void shuffle_int_array(int **array, int n);
 
 #endif /* !ZAPPY_SERVER_H_ */

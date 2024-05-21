@@ -10,7 +10,7 @@
 
 int display_help(void)
 {
-    if (write(1, "USAGE: ./myteams_server port\n\n\
+    if (write(1, "USAGE: ./myzappy_server port\n\n\
     port is the port number on which the server socket listens.\n", 95) == -1)
         return KO;
     return OK;

@@ -19,73 +19,71 @@ void signal_handler(int signal)
     }
 }
 
-static int check_connected_client(teams_server_t *teams_server)
+static int check_connected_client(zappy_server_t *zappy_server)
 {
-    if (teams_server->actual_sockfd == teams_server->my_socket) {
+    if (zappy_server->actual_sockfd == zappy_server->my_socket) {
         return OK;
     } else {
-        logout_command(teams_server, "");
+        logout_command(zappy_server, "");
         printf("client disconnected\n");
     }
     return OK;
 }
 
-static int fd_is_set(teams_server_t *teams_server)
+static int fd_is_set(zappy_server_t *zappy_server)
 {
-    if (FD_ISSET(teams_server->actual_sockfd, &teams_server->fd.input)) {
-        if (check_connected_client(teams_server) == ERROR) {
+    if (FD_ISSET(zappy_server->actual_sockfd, &zappy_server->fd.input)) {
+        if (check_connected_client(zappy_server) == ERROR)
             return ERROR;
-        }
         return OK;
     }
     return OK;
 }
 
-int send_logout_to_all_clients(teams_server_t *teams_server)
+int send_logout_to_all_clients(zappy_server_t *zappy_server)
 {
-    for (teams_server->actual_sockfd = 0;
-        teams_server->actual_sockfd < __FD_SETSIZE;
-        teams_server->actual_sockfd += 1) {
-        if (fd_is_set(teams_server) == ERROR) {
+    for (zappy_server->actual_sockfd = 0;
+        zappy_server->actual_sockfd < __FD_SETSIZE;
+        zappy_server->actual_sockfd += 1) {
+        if (fd_is_set(zappy_server) == ERROR)
             return ERROR;
-        }
     }
     return OK;
 }
 
-int close_server(teams_server_t *teams_server)
+int close_server(zappy_server_t *zappy_server)
 {
-    save_info_to_file(teams_server);
-    send_logout_to_all_clients(teams_server);
-    close(teams_server->my_socket);
-    free_users(&(teams_server->all_user));
-    free_messages(&(teams_server->private_messages));
-    free_subscribed(&(teams_server->subscribed_teams_users));
-    free_teams(&teams_server->all_teams);
-    free(teams_server);
+    save_info_to_file(zappy_server);
+    send_logout_to_all_clients(zappy_server);
+    close(zappy_server->my_socket);
+    free_users(&(zappy_server->all_user));
+    free_messages(&(zappy_server->private_messages));
+    free_subscribed(&(zappy_server->subscribed_teams_users));
+    free_teams(&zappy_server->all_teams);
+    free_map_tile(zappy_server->map_tile);
+    free_args_config(zappy_server->args);
+    free(zappy_server);
     return OK;
 }
 
 int zappy_server(args_config_t *args)
 {
-    teams_server_t *teams_server = calloc(sizeof(teams_server_t), 1);
+    zappy_server_t *zappy_server = calloc(sizeof(zappy_server_t), 1);
 
     signal(SIGINT, signal_handler);
-    if (init_server(teams_server, args->port) == KO) {
+    if (init_server(zappy_server, args) == KO)
         return ERROR;
-    }
-    read_info_from_save_file(teams_server);
+    read_info_from_save_file(zappy_server);
     while (loopRunning) {
-        teams_server->fd.input = teams_server->fd.save_input;
-        if (select(FD_SETSIZE, &(teams_server->fd.input),
-                &(teams_server->fd.ouput), NULL, NULL) == KO &&
-            loopRunning) {
+        zappy_server->fd.input = zappy_server->fd.save_input;
+        if (select(FD_SETSIZE, &(zappy_server->fd.input),
+                &(zappy_server->fd.ouput), NULL, NULL) == KO &&
+            loopRunning)
             return ERROR;
-        }
-        if (loopRunning && scan_fd(teams_server) == ERROR) {
+        if (loopRunning && scan_fd(zappy_server) == ERROR)
             return ERROR;
-        }
     }
-    close_server(teams_server);
+    close_server(zappy_server);
+    
     return OK;
 }

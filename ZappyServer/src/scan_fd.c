@@ -7,28 +7,28 @@
 
 #include "zappy_server.h"
 
-static int check_connection(teams_server_t *teams_server)
+static int check_connection(zappy_server_t *zappy_server)
 {
     int client_fd = 0;
 
-    if (teams_server->actual_sockfd == teams_server->my_socket) {
-        client_fd = accept_new_connection(teams_server->my_socket);
+    if (zappy_server->actual_sockfd == zappy_server->my_socket) {
+        client_fd = accept_new_connection(zappy_server->my_socket);
         if (client_fd == ERROR) {
             return ERROR;
         }
         dprintf(client_fd, "220 Service ready for new user.\n");
         dprintf(client_fd, END_STR);
-        FD_SET(client_fd, &teams_server->fd.save_input);
+        FD_SET(client_fd, &zappy_server->fd.save_input);
     } else {
-        handle_client(teams_server);
+        handle_client(zappy_server);
     }
     return OK;
 }
 
-static int fd_is_set(teams_server_t *teams_server)
+static int fd_is_set(zappy_server_t *zappy_server)
 {
-    if (FD_ISSET(teams_server->actual_sockfd, &teams_server->fd.input)) {
-        if (check_connection(teams_server) == ERROR) {
+    if (FD_ISSET(zappy_server->actual_sockfd, &zappy_server->fd.input)) {
+        if (check_connection(zappy_server) == ERROR) {
             return ERROR;
         }
         return OK;
@@ -36,12 +36,12 @@ static int fd_is_set(teams_server_t *teams_server)
     return OK;
 }
 
-int scan_fd(teams_server_t *teams_server)
+int scan_fd(zappy_server_t *zappy_server)
 {
-    for (teams_server->actual_sockfd = 0;
-        teams_server->actual_sockfd < __FD_SETSIZE;
-        teams_server->actual_sockfd += 1) {
-        if (fd_is_set(teams_server) == ERROR) {
+    for (zappy_server->actual_sockfd = 0;
+        zappy_server->actual_sockfd < __FD_SETSIZE;
+        zappy_server->actual_sockfd += 1) {
+        if (fd_is_set(zappy_server) == ERROR) {
             return ERROR;
         }
     }

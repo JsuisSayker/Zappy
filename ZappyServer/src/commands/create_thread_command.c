@@ -33,7 +33,7 @@ static int find_thread(struct threadhead *all_thread, char *title)
     return KO;
 }
 
-static int create_thead(teams_server_t *teams_server, char **command_line,
+static int create_thead(zappy_server_t *zappy_server, char **command_line,
     all_context_t *all_context)
 {
     thread_t *new_thread = NULL;
@@ -45,30 +45,30 @@ static int create_thead(teams_server_t *teams_server, char **command_line,
     strcpy(new_thread->channel_uuid, all_context->channel->channel_uuid);
     new_thread->timestamp = time(NULL);
     strcpy(new_thread->sender_uuid,
-        teams_server->clients[teams_server->actual_sockfd].user->uuid);
+        zappy_server->clients[zappy_server->actual_sockfd].user->uuid);
     generate_random_uuid(new_thread->thread_uuid);
     TAILQ_INSERT_TAIL(&(all_context->channel->threads_head), new_thread, next);
-    write_new_thread(teams_server->actual_sockfd, new_thread,
-        teams_server->clients[teams_server->actual_sockfd].user->uuid);
+    write_new_thread(zappy_server->actual_sockfd, new_thread,
+        zappy_server->clients[zappy_server->actual_sockfd].user->uuid);
     return OK;
 }
 
-int add_thread(teams_server_t *teams_server, char **command_line, int nb_args,
+int add_thread(zappy_server_t *zappy_server, char **command_line, int nb_args,
     all_context_t *all_context)
 {
     if (all_context->thread == NULL) {
         if (4 != nb_args) {
-            dprintf(teams_server->actual_sockfd, "500|no thread%s%s", END_LINE,
+            dprintf(zappy_server->actual_sockfd, "500|no thread%s%s", END_LINE,
                 END_STR);
             return KO;
         }
         if (find_thread(&(all_context->channel->threads_head),
                 command_line[1]) == OK) {
-            dprintf(teams_server->actual_sockfd, "503|/create%s%s", END_LINE,
+            dprintf(zappy_server->actual_sockfd, "503|/create%s%s", END_LINE,
                 END_STR);
             return KO;
         }
-        create_thead(teams_server, command_line, all_context);
+        create_thead(zappy_server, command_line, all_context);
         return KO;
     }
     return OK;
