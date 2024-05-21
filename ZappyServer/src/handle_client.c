@@ -5,7 +5,6 @@
 ** server_functions
 */
 
-#include "../../include/my_macro.h"
 #include "zappy_server.h"
 
 static const struct command_s COMMAND_FUNCS[] = {{"/help", &help_command},

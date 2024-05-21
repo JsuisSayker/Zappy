@@ -73,7 +73,8 @@ OBJ_MAIN	=	$(DIR_MAIN:.c=.o)
 
 OBJ			=	$(OBJ_DIR_SRC) $(OBJ_MAIN)
 
-CPPFLAGS	=	-I include/
+CPPFLAGS	=	-I include/ \
+				-I ../include/
 
 LDLIBS		=	-luuid
 
