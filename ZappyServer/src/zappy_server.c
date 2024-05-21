@@ -99,13 +99,11 @@ int zappy_server(args_config_t *args)
     while (loopRunning) {
         zappy_server->fd.input = zappy_server->fd.save_input;
         if (select(FD_SETSIZE, &(zappy_server->fd.input),
-                &(zappy_server->fd.ouput), NULL, NULL) == KO &&
-            loopRunning)
+            &(zappy_server->fd.ouput), NULL, NULL) == KO && loopRunning)
             return ERROR;
         if (loopRunning && scan_fd(zappy_server) == ERROR)
             return ERROR;
     }
     close_server(zappy_server);
-
     return OK;
 }

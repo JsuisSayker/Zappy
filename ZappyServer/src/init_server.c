@@ -11,6 +11,7 @@ static void init_fd_struct(fd_t *fd, int my_socket)
 {
     FD_ZERO(&fd->save_input);
     FD_SET(my_socket, &fd->save_input);
+    FD_SET(1, &fd->save_input);
     FD_ZERO(&fd->ouput);
     FD_SET(my_socket, &fd->ouput);
 }

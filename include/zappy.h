@@ -15,5 +15,6 @@
     #define END_STR "\v"
     #define END_LINE "\n"
     #define SPLIT_LINE "\a"
+    #define UNUSED __attribute__((unused))
 
 #endif /* !ZAPPY_H_ */

@@ -38,7 +38,8 @@ COMMAND_IA		=	\
 
 COMMAND_GUI		=	\
 
-COMMAND_GUI		=	help.c\
+COMMAND_SERVER		=	handle_server_command.c		\
+					help.c						\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 

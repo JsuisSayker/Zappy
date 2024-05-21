@@ -7,7 +7,7 @@
 
 #include <zappy_server.h>
 
-int help(zappy_server_t *zappy, client_t *client, char *cmd)
+void server_command_help(UNUSED zappy_server_t *zappy, UNUSED char *command)
 {
     printf("Implemented commands :\n");
     printf("/clients\n");
@@ -32,5 +32,4 @@ int help(zappy_server_t *zappy, client_t *client, char *cmd)
     printf("/noRefill true | false\n");
     printf("/fork team x y\n");
     printf("/incantate level x y\n");
-    return OK;
 }

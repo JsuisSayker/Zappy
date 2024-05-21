@@ -239,19 +239,13 @@ typedef struct command_s {
     void (*func)(zappy_server_t *zappy_server, char *command);
 } command_t;
 
-void help_command(zappy_server_t *zappy_server, char *command);
-void login_command(zappy_server_t *zappy_server, char *command);
-void logout_command(zappy_server_t *zappy_server, char *command);
-void users_command(zappy_server_t *zappy_server, char *command);
-void user_command(zappy_server_t *zappy_server, char *command);
-void send_command(zappy_server_t *zappy_server, char *command);
-void messages_command(zappy_server_t *zappy_server, char *command);
-void subscribe_command(zappy_server_t *zappy_server, char *command);
-void subscribed_command(zappy_server_t *zappy_server, char *command);
-void unsubscribe_command(zappy_server_t *zappy_server, char *command);
-void use_command(zappy_server_t *zappy_server, char *command);
-void create_command(zappy_server_t *zappy_server, char *command);
-void list_command(zappy_server_t *zappy_server, char *command);
-void info_command(zappy_server_t *zappy_server, char *command);
+// SERVER COMMANDS FUNCTIONS
+int handle_server_command(zappy_server_t *zappy_server, char *command);
+void server_command_help(zappy_server_t *zappy, char *command);
+
+// AI COMMANDS FUNCTIONS
+
+// GUI COMMANDS FUNCTIONS
+
 
 #endif /* !ZAPPY_SERVER_H_ */
