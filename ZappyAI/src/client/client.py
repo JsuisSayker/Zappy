@@ -96,7 +96,7 @@ class Client():
                 if mask & selectors.EVENT_WRITE:
                     if self.logged and self.ai.run is True:
                         # self.ia.algorithm()
-                        print("Algorithm of the AI is needed here")
+                        print()
                     if self.ai.dataToSend and self.ai.run is not False:
                         if self.ai.dataToSend == (
                                 self.teamName + '\n') and self.logged is False:

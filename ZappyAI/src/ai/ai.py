@@ -42,8 +42,8 @@ class AI():
                 return
         self.commandList.append("Incantation\n")
 
-
-# do the algorithm
+    def algorithm(self) -> None:
+        return
 
 
 # reste au sol les ressources
