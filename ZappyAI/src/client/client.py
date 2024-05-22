@@ -14,6 +14,9 @@ class Client():
         self.selector = selectors.DefaultSelector()
         self.ai = AI(teamName)
         self.logged = False
+        self.widthValue = 0
+        self.heightValue = 0
+        self.actualStep = 0
 
     def connectWithServer(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -43,6 +46,25 @@ class Client():
         possibleEvents = selectors.EVENT_READ | selectors.EVENT_WRITE
         self.selector.register(self.socket, possibleEvents)
 
+    def saveStartingInformation(self, data, nb):
+        if nb == 1:
+            print(f"int value of data : {int(data)}")
+            self.ai.dataToSend = ""
+            self.actualStep = 2
+        else:
+            tmpList = []
+            for i in range(len(data)):
+                data[i] = data[i].split(" ")
+                for j in range(len(data[i])):
+                    tmpList.append(data[i][j])
+            self.ai.clientNumber = int(tmpList[0])
+            self.widthValue = int(tmpList[1])
+            self.heightValue = int(tmpList[2])
+            self.ai.dataToSend = ""
+            self.actualStep = 3
+            self.logged = True
+            self.ai.run = True
+
     def launch_client(self):
         # message = ""
         while True:
@@ -51,6 +73,25 @@ class Client():
                 if mask & selectors.EVENT_READ:
                     data = self.socket.recv(1024).decode("utf-8")
                     print(f"data: {data}")
+                    if data:
+                        print("adding the teamName to the dataToSend")
+                    else:
+                        print("closing the connection")
+                        self.closeConnection()
+                    tmpReceivedData = data.split("\n")
+                    print(f"tmpReceivedData: {tmpReceivedData}")
+                    print(f"tmpReceivedData: {tmpReceivedData[:-1]}")
+                    for element in tmpReceivedData[:-1]:
+                        print(f"element: {element}")
+                        if "WELCOME" in element and self.logged is False:
+                            print("Welcomed and not logged")
+                            self.ai.dataToSend = self.teamName + "\n"
+                        elif self.actualStep < 3:
+                            self.saveStartingInformation(tmpReceivedData[:-1],
+                                                         self.actualStep)
+                        elif "dead" in element:
+                            print("I'm dead")
+                            exit(0)
 
                 if mask & selectors.EVENT_WRITE:
                     if self.logged and self.ai.run is True:
@@ -60,7 +101,7 @@ class Client():
                         if self.ai.dataToSend == (
                                 self.teamName + '\n') and self.logged is False:
                             # self.just_log = 1
-                            print("something needed there")
+                            print("sending the teamName")
                         self.socket.send(self.ai.dataToSend.encode())
                         self.ai.run = False
 

@@ -13,8 +13,9 @@ class AI():
         self.searchingRessource: str = ""
         self.look: str = ""
         self.commandList: list[str] = []
-        self.run = False
+        self.run = True
         self.dataToSend: str = ""
+        self.clientNumber: int = 0
 
     def isIncantationPossible(self) -> bool:
         requiredRessources = LEVELS[self.level]
