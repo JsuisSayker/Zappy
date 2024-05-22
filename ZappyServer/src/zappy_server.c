@@ -10,7 +10,7 @@
 #include <signal.h>
 #include <stdio.h>
 
-void signal_handler(int signal)
+void signal_handler(UNUSED int signal)
 {
 }
 
@@ -46,7 +46,8 @@ int zappy_server(args_config_t *args)
     while (zappy_server->server_running) {
         zappy_server->fd.input = zappy_server->fd.save_input;
         if (select(FD_SETSIZE, &(zappy_server->fd.input),
-            &(zappy_server->fd.ouput), NULL, NULL) == KO && errno != EINTR && zappy_server->server_running && zappy_server->server_running)
+            &(zappy_server->fd.ouput), NULL, NULL) == ERROR && errno != EINTR &&
+            zappy_server->server_running)
             return ERROR;
         if (errno == EINTR)
             zappy_server->server_running = false;
