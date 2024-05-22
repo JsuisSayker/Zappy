@@ -1,22 +1,26 @@
 import socket
 import selectors
+import subprocess
 from ZappyAI.src.ai.ai import AI
 import select
 import errno
 
 
 class Client():
-    def __init__(self, port: int, teamName: str, host: str):
+    def __init__(self, port: int, teamName: str, host: str, clientId: str):
         self.port: int = int(port)
         self.teamName: str = teamName
         self.host = host
         self.socket = None
         self.selector = selectors.DefaultSelector()
-        self.ai = AI(teamName)
         self.logged = False
         self.widthValue = 0
         self.heightValue = 0
         self.actualStep = 0
+        self.clientId = clientId
+        self.ai = AI(teamName)
+        self.ai.clientId = clientId
+        self.ai.clientIdList.append(clientId)
 
     def connectWithServer(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -46,36 +50,33 @@ class Client():
         possibleEvents = selectors.EVENT_READ | selectors.EVENT_WRITE
         self.selector.register(self.socket, possibleEvents)
 
-    def saveStartingInformation(self, data, nb):
-        if nb == 1:
-            print(f"int value of data : {int(data)}")
-            self.ai.dataToSend = ""
-            self.actualStep = 2
+    def saveStartingInformation(self, data):
+        tmpList = []
+        for i in range(len(data)):
+            data[i] = data[i].split(" ")
+            for j in range(len(data[i])):
+                tmpList.append(data[i][j])
+        print(f"tmpList: {tmpList}")
+        if tmpList[0] == "ko":
+            exit(0)
         else:
-            tmpList = []
-            for i in range(len(data)):
-                data[i] = data[i].split(" ")
-                for j in range(len(data[i])):
-                    tmpList.append(data[i][j])
-            self.ai.clientNumber = int(tmpList[0])
-            self.widthValue = int(tmpList[1])
-            self.heightValue = int(tmpList[2])
-            self.ai.dataToSend = ""
-            self.actualStep = 3
-            self.logged = True
-            self.ai.run = True
+            self.ai.availableSlots = int(tmpList[0])
+        print(f"availableSlots: {self.ai.availableSlots}")
+        self.widthValue = int(tmpList[1])
+        self.heightValue = int(tmpList[2])
+        self.ai.dataToSend = ""
+        self.actualStep = 3
+        self.logged = True
+        self.ai.run = True
 
     def launch_client(self):
-        # message = ""
         while True:
             event = self.selector.select(timeout=None)
             for _, mask in event:
                 if mask & selectors.EVENT_READ:
                     data = self.socket.recv(1024).decode("utf-8")
                     print(f"data: {data}")
-                    if data:
-                        print("adding the teamName to the dataToSend")
-                    else:
+                    if not data:
                         print("closing the connection")
                         self.closeConnection()
                     tmpReceivedData = data.split("\n")
@@ -84,24 +85,30 @@ class Client():
                     for element in tmpReceivedData[:-1]:
                         print(f"element: {element}")
                         if "WELCOME" in element and self.logged is False:
-                            print("Welcomed and not logged")
                             self.ai.dataToSend = self.teamName + "\n"
                         elif self.actualStep < 3:
-                            self.saveStartingInformation(tmpReceivedData[:-1],
-                                                         self.actualStep)
+                            self.saveStartingInformation(tmpReceivedData[:-1]
+                                                         )
                         elif "dead" in element:
                             print("I'm dead")
                             exit(0)
+                        elif self.ai.dataToSend == "Fork\n":
+                            subprocess.Popen(["python3", "zappy_ai", "-p",
+                                              str(self.port), "-n",
+                                              self.teamName, "-h", self.host])
+                            print("forking")
+                            self.ai.canFork = False
+                        self.ai.run = True
 
                 if mask & selectors.EVENT_WRITE:
                     if self.logged and self.ai.run is True:
-                        # self.ia.algorithm()
-                        print()
+                        self.ai.algorithm()
                     if self.ai.dataToSend and self.ai.run is not False:
-                        if self.ai.dataToSend == (
-                                self.teamName + '\n') and self.logged is False:
-                            # self.just_log = 1
-                            print("sending the teamName")
+                        # if self.ai.dataToSend == (
+                        #         self.teamName + '\n'
+                        #         ) and self.logged is False:
+                        #     self.just_log = 1
+                        #     print("sending the teamName")
                         self.socket.send(self.ai.dataToSend.encode())
                         self.ai.run = False
 

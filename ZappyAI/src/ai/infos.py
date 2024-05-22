@@ -1,3 +1,15 @@
+from enum import Enum
+
+
+class Activity(Enum):
+    STARTING = 0
+    SEARCHING = 1
+    GATHERING = 2
+    CREATINGEGG = 3
+    LOOKING = 4
+    POPULATING = 5
+
+
 LEVELS: dict[int, dict[str, int]] = {
     1: {"linemate": 1},
     2: {"linemate": 1, "deraumere": 1, "sibur": 1},
