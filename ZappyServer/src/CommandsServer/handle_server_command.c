@@ -12,6 +12,7 @@ static const struct command_s COMMAND_FUNCS[] = {
     {"/quit", &server_command_quit},
     {"/map", &server_command_map},
     {"/clients", &server_command_clients},
+    {"/clear", &server_command_clear},
     {"NULL", NULL}
 };
 

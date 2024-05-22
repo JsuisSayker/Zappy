@@ -216,6 +216,7 @@ void server_command_help(zappy_server_t *zappy, char *command);
 void server_command_quit(zappy_server_t *zappy, char *command);
 void server_command_map(zappy_server_t *zappy, char *command);
 void server_command_clients(zappy_server_t *zappy, char *command);
+void server_command_clear(zappy_server_t *zappy, char *command);
 // AI COMMANDS FUNCTIONS
 
 // GUI COMMANDS FUNCTIONS
