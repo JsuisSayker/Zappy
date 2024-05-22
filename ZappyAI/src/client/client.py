@@ -28,7 +28,8 @@ class Client():
             _, write_ready, _ = select.select([], [self.socket], [], 5)
             if write_ready:
                 try:
-                    # This should raise an error indicating that the connection is in progress
+                    # This should raise an error indicating that the connection
+                    # is in progress
                     self.socket.connect((self.host, self.port))
                 except BlockingIOError:
                     continue
