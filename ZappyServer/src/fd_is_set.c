@@ -12,7 +12,8 @@ static int check_connection(zappy_server_t *zappy_server)
     int client_fd = 0;
 
     if (zappy_server->actual_sockfd == zappy_server->my_socket) {
-        client_fd = accept_new_connection(zappy_server->my_socket);
+        client_fd = accept_new_connection(zappy_server->my_socket,
+            &zappy_server->clients[zappy_server->actual_sockfd].other_socket_addr);
         if (client_fd == ERROR)
             return ERROR;
         dprintf(client_fd, "WELCOME\n");

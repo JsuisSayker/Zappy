@@ -188,7 +188,8 @@ int setup_server(int port, int max_clients);
 void handle_client(zappy_server_t *zappy_server);
 char **splitter(char const *const str, char *separator);
 void generate_random_uuid(char *buffer);
-int accept_new_connection(int my_socket);
+int accept_new_connection(int my_socket,
+    struct sockaddr_in *client_socket_addr);
 int setup_server(int port, int max_clients);
 int save_info_to_file(zappy_server_t *zappy_server);
 int read_info_from_save_file(zappy_server_t *zappy_server);
