@@ -10,12 +10,8 @@
 #include <signal.h>
 #include <stdio.h>
 
-static bool loopRunning = true;
-
 void signal_handler(int signal)
 {
-    if (signal == SIGINT)
-        loopRunning = false;
 }
 
 static int display_info_server(zappy_server_t *zappy_server)
@@ -47,12 +43,14 @@ int zappy_server(args_config_t *args)
         return ERROR;
     if (display_info_server(zappy_server) == KO)
         return ERROR;
-    while (loopRunning && zappy_server->server_running) {
+    while (zappy_server->server_running) {
         zappy_server->fd.input = zappy_server->fd.save_input;
         if (select(FD_SETSIZE, &(zappy_server->fd.input),
-            &(zappy_server->fd.ouput), NULL, NULL) == KO && loopRunning)
+            &(zappy_server->fd.ouput), NULL, NULL) == KO && errno != EINTR && zappy_server->server_running && zappy_server->server_running)
             return ERROR;
-        if (loopRunning && scan_fd(zappy_server) == ERROR)
+        if (errno == EINTR)
+            zappy_server->server_running = false;
+        if (zappy_server->server_running &&  scan_fd(zappy_server) == ERROR)
             return ERROR;
     }
     close_server(zappy_server);

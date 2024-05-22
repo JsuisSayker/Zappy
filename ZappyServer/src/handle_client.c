@@ -7,11 +7,12 @@
 
 #include "zappy_server.h"
 
-static void handle_command(zappy_server_t *zappy_server, char *command)
+static int handle_command(zappy_server_t *zappy_server, char *command)
 {
-    if (zappy_server->actual_sockfd == 1) {
+    if (zappy_server->actual_sockfd == STDIN_FILENO) {
         return handle_server_command(zappy_server, command);
     }
+    return ERROR;
 }
 
 static void last_split(
