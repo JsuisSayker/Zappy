@@ -25,7 +25,11 @@
     #include <unistd.h>
     #include "macro_server.h"
 
-
+typedef enum client_type_s {
+    IA,
+    GRAPHIC,
+    UNKNOWN,
+}client_type_t;
 
 typedef struct char_tab_s {
     char *str;
@@ -95,21 +99,6 @@ struct subscribedhead {
     struct subscribed_s **tqh_last;
 };
 
-typedef struct user_s {
-    char username[MAX_NAME_LENGTH];
-    char uuid[MAX_UUID_LENGTH];
-    char team_context[MAX_UUID_LENGTH];
-    char channel_context[MAX_UUID_LENGTH];
-    char thread_context[MAX_UUID_LENGTH];
-    int nb_clients;
-    TAILQ_ENTRY(user_s) next;
-} user_t;
-
-struct userhead {
-    struct user_s *tqh_first;
-    struct user_s **tqh_last;
-};
-
 typedef struct reply_s {
     char text[MAX_BODY_LENGTH];
     char reply_uuid[MAX_UUID_LENGTH];
@@ -143,6 +132,7 @@ struct threadhead {
 typedef struct team_s {
     char name[MAX_NAME_LENGTH];
     char team_uuid[MAX_UUID_LENGTH];
+    int nb_clients;
     TAILQ_ENTRY(team_s) next;
 } team_t;
 
@@ -164,7 +154,7 @@ typedef struct fd_s {
 
 typedef struct client_s {
     buffer_t buffer;
-    user_t *user;
+    client_type_t type;
     struct sockaddr_in other_socket_addr;
 } client_t;
 
@@ -174,7 +164,6 @@ typedef struct zappy_server_s {
     int actual_sockfd;
     bool server_running;
     struct sockaddr_in server_addr;
-    struct userhead all_user;
     struct subscribedhead subscribed_teams_users;
     struct teamhead all_teams;
     struct threadhead all_threads;
@@ -185,7 +174,6 @@ typedef struct zappy_server_s {
 
 // Linked list functions
 void free_subscribed(struct subscribedhead *head);
-void free_users(struct userhead *head);
 void free_threads(struct threadhead *head);
 void free_teams(struct teamhead *head);
 
@@ -213,7 +201,6 @@ int get_len_char_tab(char **command);
 time_t get_actual_time(void);
 int count_str_char(char *str, char c);
 // get UUID
-user_t *get_user_by_uuid(struct userhead *user_head, char *uuid);
 team_t *get_team_by_uuid(struct teamhead *teams_head, char *uuid);
 thread_t *get_thread_by_uuid(struct threadhead *thread_head, char *uuid);
 thread_t *get_all_thread_by_uuid(struct teamhead *team_head, char *uuid);

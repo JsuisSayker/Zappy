@@ -12,15 +12,12 @@ static void init_fd_struct(fd_t *fd, int my_socket)
     FD_ZERO(&fd->save_input);
     FD_SET(my_socket, &fd->save_input);
     FD_SET(STDIN_FILENO, &fd->save_input);
-    // FD_SET(STDOUT_FILENO, &fd->save_input);
     FD_ZERO(&fd->ouput);
     FD_SET(my_socket, &fd->ouput);
 }
 
 void init_list(zappy_server_t *zappy_server)
 {
-    TAILQ_INIT(&(zappy_server->all_user));
-    zappy_server->all_user.tqh_first = NULL;
     TAILQ_INIT(&(zappy_server->all_teams));
     zappy_server->all_teams.tqh_first = NULL;
     TAILQ_INIT(&(zappy_server->subscribed_teams_users));
@@ -43,5 +40,8 @@ int init_server(zappy_server_t *zappy_server, args_config_t *args)
     zappy_server->map_tile = setup_map_tile(args->width, args->height);
     zappy_server->args = args;
     zappy_server->server_running = true;
+    for (int i = 0; i < FD_SETSIZE; i += 1) {
+        zappy_server->clients[i].type = UNKNOWN;
+    }
     return 0;
 }

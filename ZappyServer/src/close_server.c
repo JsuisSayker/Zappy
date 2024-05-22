@@ -21,7 +21,6 @@ int close_server(zappy_server_t *zappy_server)
 {
     send_logout_to_all_clients(zappy_server);
     close(zappy_server->my_socket);
-    free_users(&(zappy_server->all_user));
     free_subscribed(&(zappy_server->subscribed_teams_users));
     free_teams(&zappy_server->all_teams);
     free_map_tile(zappy_server->map_tile);
