@@ -23,6 +23,8 @@ SRC			=	zappy_server.c						\
 				generate_ressourse_list.c			\
 				map_tile_function.c					\
 				int_array_function.c				\
+				close_server.c						\
+				fd_is_set.c						\
 				${DIR_TOOLS}						\
 				${DIR_COMMAND_IA}					\
 				${DIR_COMMAND_GUI}					\
@@ -38,8 +40,9 @@ COMMAND_IA		=	\
 
 COMMAND_GUI		=	\
 
-COMMAND_SERVER		=	handle_server_command.c		\
-					help.c						\
+COMMAND_SERVER	=	handle_server_command.c		\
+					server_command_help.c		\
+					server_command_quit.c		\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 

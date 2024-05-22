@@ -16,10 +16,10 @@ static int find_team(zappy_server_t *zappy_server, team_t **team)
                 .user->team_context);
         if (*team == NULL) {
             dprintf(zappy_server->actual_sockfd, "504| Unknow team%s%s%s%s",
-                END_STR,
+                END_LINE,
                 zappy_server->clients[zappy_server->actual_sockfd]
                     .user->team_context,
-                END_LINE, END_STR);
+                END_LINE, END_LINE);
             return KO;
         }
     }

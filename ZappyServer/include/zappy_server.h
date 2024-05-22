@@ -169,9 +169,10 @@ typedef struct client_s {
 } client_t;
 
 typedef struct zappy_server_s {
+    fd_t fd;
     int my_socket;
     int actual_sockfd;
-    fd_t fd;
+    bool server_running;
     struct sockaddr_in server_addr;
     struct userhead all_user;
     struct subscribedhead subscribed_teams_users;
@@ -193,6 +194,8 @@ void free_array(char **array);
 
 // Server functions
 int init_server(zappy_server_t *zappy_server, args_config_t *args);
+int close_server(zappy_server_t *zappy_server);
+int fd_is_set(zappy_server_t *zappy_server);
 void init_buffer_struct(buffer_t *buffer, int *my_socket);
 int scan_fd(zappy_server_t *zappy_server);
 void handle_client(zappy_server_t *zappy_server);
@@ -224,6 +227,7 @@ typedef struct command_s {
 // SERVER COMMANDS FUNCTIONS
 int handle_server_command(zappy_server_t *zappy_server, char *command);
 void server_command_help(zappy_server_t *zappy, char *command);
+void server_command_quit(zappy_server_t *zappy, char *command);
 
 // AI COMMANDS FUNCTIONS
 

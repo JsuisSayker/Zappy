@@ -41,5 +41,6 @@ int init_server(zappy_server_t *zappy_server, args_config_t *args)
     init_list(zappy_server);
     zappy_server->map_tile = setup_map_tile(args->width, args->height);
     zappy_server->args = args;
+    zappy_server->server_running = true;
     return 0;
 }
