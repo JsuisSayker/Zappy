@@ -12,8 +12,10 @@ unit*
 vgcore*
 tmp
 
-zappy_server
-zappy_cli
+ai_test_folder
+font.ttf
+**/__pycache__/
+
 
 # Prerequisites
 *.d

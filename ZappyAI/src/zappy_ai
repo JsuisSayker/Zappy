@@ -16,7 +16,6 @@ def entrypoint() -> int:
     port = args.order[0][1][0]
     name = args.order[1][1][0]
     machine = args.order[2][1][0]
-    print(f"Port: {port}, Name: {name}, Machine: {machine}")
     client = Client(port, name, machine)
     client.connectWithServer()
     client.launch_client()
