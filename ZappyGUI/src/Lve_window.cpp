@@ -81,3 +81,16 @@ void lve::LveWindow::createWindowSurface(
         throw std::runtime_error("Failed to create window surface!");
     }
 }
+
+/**
+ * @brief Gets the extent of the window.
+ *
+ * This function returns the extent of the window.
+ *
+ * @return The extent of the window.
+ */
+VkExtent2D lve::LveWindow::getExtent()
+{
+    return {static_cast<uint32_t>(this->width),
+        static_cast<uint32_t>(this->height)};
+}

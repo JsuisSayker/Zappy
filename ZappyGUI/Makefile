@@ -9,6 +9,7 @@ SRC			=	Zappy.cpp			\
 				Lve_window.cpp		\
 				Lve_pipeline.cpp	\
 				Lve_device.cpp		\
+				Lve_swap_chain.cpp	\
 
 MAIN 		=	main.cpp
 

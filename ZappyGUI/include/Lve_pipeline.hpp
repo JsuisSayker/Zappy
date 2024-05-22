@@ -17,7 +17,7 @@ namespace lve
     struct PipelineConfigInfo {
         VkViewport viewport; // The viewport for the pipeline
         VkRect2D scissor;   // The scissor for the pipeline
-        VkPipelineViewportStateCreateInfo viewportInfo; // The viewport information for the pipeline
+        
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo; // The input assembly information for the pipeline
         VkPipelineRasterizationStateCreateInfo rasterizationInfo; // The rasterization information for the pipeline
         VkPipelineMultisampleStateCreateInfo multisampleInfo; // The multisample information for the pipeline

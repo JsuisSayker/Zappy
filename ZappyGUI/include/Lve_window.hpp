@@ -24,6 +24,7 @@ class LveWindow {
     // Methods
     void initWindow(int width, int height, std::string windowName);
     bool shouldClose();
+    VkExtent2D getExtent();
     void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
 
   private:

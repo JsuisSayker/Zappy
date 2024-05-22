@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2024
+** Zappy
+** File description:
+** Lve_device
+*/
+
 #include "Lve_device.hpp"
 
 // std headers

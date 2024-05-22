@@ -69,3 +69,4 @@ dkms.conf
 
 #Zappy_gui skips
 zappy_gui
+*.spv
