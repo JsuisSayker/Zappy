@@ -5,8 +5,10 @@
 ## Makefile
 ##
 
-SRC			=	Zappy.cpp	\
-				Lve_window.cpp	\
+SRC			=	Zappy.cpp			\
+				Lve_window.cpp		\
+				Lve_pipeline.cpp	\
+				Lve_device.cpp		\
 
 MAIN 		=	main.cpp
 
@@ -16,7 +18,7 @@ CFLAGS		=	-std=c++17 -O2
 
 LDFLAGS		=	-lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 
-NAME		=	zappy_gui
+NAME		=	../zappy_gui
 
 OBJ_DIR_SRC	=	$(DIR_SRC:.cpp=.o)
 
