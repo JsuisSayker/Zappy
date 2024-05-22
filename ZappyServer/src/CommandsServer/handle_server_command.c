@@ -10,6 +10,7 @@
 static const struct command_s COMMAND_FUNCS[] = {
     {"/help", &server_command_help},
     {"/quit", &server_command_quit},
+    {"/map", &server_command_map},
     {"NULL", NULL}
 };
 

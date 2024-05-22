@@ -59,7 +59,13 @@ typedef struct args_config_s {
 typedef struct map_tile_s {
     int x;
     int y;
-    struct char_tab_head resources;
+    int food;
+    int linemate;
+    int deraumere;
+    int sibur;
+    int mendiane;
+    int phiras;
+    int thystame;
 } map_tile_t;
 
 // args_config functions
@@ -215,6 +221,7 @@ typedef struct command_s {
 int handle_server_command(zappy_server_t *zappy_server, char *command);
 void server_command_help(zappy_server_t *zappy, char *command);
 void server_command_quit(zappy_server_t *zappy, char *command);
+void server_command_map(zappy_server_t *zappy, char *command);
 
 // AI COMMANDS FUNCTIONS
 

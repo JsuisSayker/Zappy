@@ -41,6 +41,7 @@ COMMAND_GUI		=	\
 COMMAND_SERVER	=	handle_server_command.c		\
 					server_command_help.c		\
 					server_command_quit.c		\
+					server_command_map.c		\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 
