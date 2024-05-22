@@ -26,5 +26,6 @@ int close_server(zappy_server_t *zappy_server)
     free_map_tile(zappy_server->map_tile);
     free_args_config(zappy_server->args);
     free(zappy_server);
+    printf("Server shutting down.\n");
     return OK;
 }

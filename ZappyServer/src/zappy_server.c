@@ -17,9 +17,9 @@ void signal_handler(UNUSED int signal)
 int get_nb_teams(struct teamhead *head)
 {
     int i = 0;
-
     team_t *tmp;
-    TAILQ_FOREACH(tmp, head, next){
+
+    TAILQ_FOREACH(tmp, head, next) {
         i += 1;
     }
     return i;
@@ -38,7 +38,6 @@ static int display_info_server(zappy_server_t *zappy_server)
     printf("clients_nb = %d\n", zappy_server->args->clientsNb);
     printf("freq = %f\n", zappy_server->args->freq);
     printf("Teams [%d]:\n", get_nb_teams(&zappy_server->all_teams));
-    // for each team
     TAILQ_FOREACH(tmp, &zappy_server->all_teams, next){
         printf("name : [%s]\n", tmp->name);
         printf("nb_drones = [%d]\n", tmp->nb_drones);
@@ -60,15 +59,14 @@ int zappy_server(args_config_t *args)
     while (zappy_server->server_running) {
         zappy_server->fd.input = zappy_server->fd.save_input;
         if (select(FD_SETSIZE, &(zappy_server->fd.input),
-            &(zappy_server->fd.ouput), NULL, NULL) == ERROR && errno != EINTR &&
-            zappy_server->server_running)
+            &(zappy_server->fd.ouput), NULL, NULL) == ERROR && errno != EINTR
+            && zappy_server->server_running)
             return ERROR;
         if (errno == EINTR)
             zappy_server->server_running = false;
-        if (zappy_server->server_running &&  scan_fd(zappy_server) == ERROR)
+        if (zappy_server->server_running && scan_fd(zappy_server) == ERROR)
             return ERROR;
     }
     close_server(zappy_server);
-    printf("Server shutting down.\n");
     return OK;
 }

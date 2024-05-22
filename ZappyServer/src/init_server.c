@@ -44,7 +44,6 @@ void create_teams(zappy_server_t *zappy_server)
         TAILQ_INSERT_TAIL(&(zappy_server->all_teams), new_team, next);
         team_name = TAILQ_NEXT(team_name, next);
     }
-
 }
 
 int init_server(zappy_server_t *zappy_server, args_config_t *args)
