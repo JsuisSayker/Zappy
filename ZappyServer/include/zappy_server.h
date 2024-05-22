@@ -136,9 +136,10 @@ struct threadhead {
 };
 
 typedef struct team_s {
-    char name[MAX_NAME_LENGTH];
+    char *name;
     char team_uuid[MAX_UUID_LENGTH];
-    int nb_clients;
+    int nb_drones;
+    int nb_matures_eggs;
     TAILQ_ENTRY(team_s) next;
 } team_t;
 

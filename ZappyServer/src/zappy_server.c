@@ -14,8 +14,21 @@ void signal_handler(UNUSED int signal)
 {
 }
 
+int get_nb_teams(struct teamhead *head)
+{
+    int i = 0;
+
+    team_t *tmp;
+    TAILQ_FOREACH(tmp, head, next){
+        i += 1;
+    }
+    return i;
+};
+
 static int display_info_server(zappy_server_t *zappy_server)
 {
+    team_t *tmp;
+
     if (zappy_server == NULL)
         return ERROR;
     printf("=============Zappy Server=============\n");
@@ -24,12 +37,13 @@ static int display_info_server(zappy_server_t *zappy_server)
     printf("height = %d\n", zappy_server->args->height);
     printf("clients_nb = %d\n", zappy_server->args->clientsNb);
     printf("freq = %f\n", zappy_server->args->freq);
-    printf("Teams [%s]:\n", "Not setup yet");
-    printf("display eggs = [%s]\n", "Not setup yet");
-    printf("name : [%s]\n", "Not setup yet");
-    printf("nb_drones = [%s]\n", "Not setup yet");
-    printf("nb_eggs = [%s]\n", "Not setup yet");
-    printf("verbose = [%s]\n", "Not setup yet");
+    printf("Teams [%d]:\n", get_nb_teams(&zappy_server->all_teams));
+    // for each team
+    TAILQ_FOREACH(tmp, &zappy_server->all_teams, next){
+        printf("name : [%s]\n", tmp->name);
+        printf("nb_drones = [%d]\n", tmp->nb_drones);
+        printf("nb_matures_eggs = [%d]\n", tmp->nb_matures_eggs);
+    }
     printf("=====================================\n");
     return OK;
 }
@@ -55,5 +69,6 @@ int zappy_server(args_config_t *args)
             return ERROR;
     }
     close_server(zappy_server);
+    printf("Server shutting down.\n");
     return OK;
 }

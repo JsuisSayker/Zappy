@@ -125,4 +125,5 @@ void display_map_tile(map_tile_t **map_tile)
                 map_tile[i][j].phiras, map_tile[i][j].thystame);
         }
     }
+    printf("<==============>\n");
 }
