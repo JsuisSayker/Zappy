@@ -42,5 +42,6 @@ int init_server(zappy_server_t *zappy_server, args_config_t *args)
     zappy_server->map_tile = setup_map_tile(args->width, args->height);
     zappy_server->args = args;
     zappy_server->server_running = true;
+    zappy_server->actula_time = clock();
     return 0;
 }

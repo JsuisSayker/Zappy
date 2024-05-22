@@ -7,8 +7,13 @@
 
 #include <zappy_server.h>
 
-int help(zappy_server_t *zappy, client_t *client, char *cmd)
+int ia_command_help(zappy_server_t *zappy, client_t *client, char *cmd)
 {
+    (void) cmd;
+    if (cast_action(zappy, client, 7) == ERROR)
+        return ERROR;
+    if (check_action(zappy, client) == false)
+        return OK;
     printf("Implemented commands :\n");
     printf("/clients\n");
     printf("/quit\n");

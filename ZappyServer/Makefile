@@ -36,7 +36,9 @@ TOOLS		=	splitter.c						\
 				char_tab_list_function.c
 
 
-COMMAND_IA		=	\
+COMMAND_IA		=	cast_action.c			\
+					handle_ia_command.c		\
+					ia_command_help.c		\
 
 COMMAND_GUI		=	\
 

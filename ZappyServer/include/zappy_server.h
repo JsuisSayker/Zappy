@@ -166,6 +166,9 @@ typedef struct client_s {
     buffer_t buffer;
     user_t *user;
     struct sockaddr_in other_socket_addr;
+    int freq;
+    clock_t start_timer;
+    bool is_contracted;
 } client_t;
 
 typedef struct zappy_server_s {
@@ -179,6 +182,7 @@ typedef struct zappy_server_s {
     struct teamhead all_teams;
     struct threadhead all_threads;
     struct client_s clients[FD_SETSIZE];
+    clock_t actula_time;
     map_tile_t **map_tile;
     args_config_t *args;
 } zappy_server_t;
@@ -224,12 +228,22 @@ typedef struct command_s {
     void (*func)(zappy_server_t *zappy_server, char *command);
 } command_t;
 
+// COMMANDS IA
+typedef struct command_ia_s {
+    char *command;
+    void (*func)(zappy_server_t *zappy_server, client_t *client, char *command);
+} command_ia_t;
+
 // SERVER COMMANDS FUNCTIONS
 int handle_server_command(zappy_server_t *zappy_server, char *command);
 void server_command_help(zappy_server_t *zappy, char *command);
 void server_command_quit(zappy_server_t *zappy, char *command);
 
 // AI COMMANDS FUNCTIONS
+int cast_action(zappy_server_t *zappy, client_t *client, int freq);
+bool check_action(zappy_server_t *zappy, client_t *client);
+
+int ia_command_help(zappy_server_t *zappy, client_t *client, char *cmd);
 
 // GUI COMMANDS FUNCTIONS
 
