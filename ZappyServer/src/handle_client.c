@@ -7,10 +7,20 @@
 
 #include "zappy_server.h"
 
+
+
 static int handle_command(zappy_server_t *zappy_server, char *command)
 {
     if (zappy_server->actual_sockfd == STDIN_FILENO)
         return handle_server_command(zappy_server, command);
+    switch (zappy_server->clients[zappy_server->actual_sockfd].type) {
+    case UNKNOWN:
+        return handle_unknown_command(zappy_server, command);
+    case IA:
+        break;
+    case GUI:
+        break;
+    } 
     return ERROR;
 }
 
@@ -28,12 +38,12 @@ static void last_split(
 int clean_string(char *buffer)
 {
     for (int i = strlen(buffer); i > 0; i -= 1) {
-        if (buffer[i] != *END_LINE) {
+        if (buffer[i] != *END_LINE)
             buffer[i] = '\0';
-        } else
-            return;
+        else
+            return OK;
     }
-    return;
+    return ERROR;
 }
 
 void handle_client(zappy_server_t *zappy_server)

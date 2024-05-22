@@ -15,8 +15,7 @@ static int check_connection(zappy_server_t *zappy_server)
         client_fd = accept_new_connection(zappy_server->my_socket);
         if (client_fd == ERROR)
             return ERROR;
-        dprintf(client_fd, "220 Service ready for new user.\n");
-        dprintf(client_fd, END_LINE);
+        dprintf(client_fd, "WELCOME\n");
         FD_SET(client_fd, &zappy_server->fd.save_input);
     } else {
         handle_client(zappy_server);

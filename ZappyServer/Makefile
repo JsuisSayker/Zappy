@@ -16,13 +16,13 @@ SRC			=	zappy_server.c						\
 				get_team_by_uuid.c					\
 				get_thread_by_uuid.c				\
 				linked_list/free_list.c				\
-				linked_list/free_users.c			\
 				argument_function.c					\
 				generate_ressourse_list.c			\
 				map_tile_function.c					\
 				int_array_function.c				\
 				close_server.c						\
-				fd_is_set.c						\
+				fd_is_set.c							\
+				handle_unknown_command.c			\
 				${DIR_TOOLS}						\
 				${DIR_COMMAND_IA}					\
 				${DIR_COMMAND_GUI}					\
@@ -42,6 +42,7 @@ COMMAND_SERVER	=	handle_server_command.c		\
 					server_command_help.c		\
 					server_command_quit.c		\
 					server_command_map.c		\
+					server_command_clients.c		\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 

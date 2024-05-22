@@ -20,8 +20,6 @@ void init_list(zappy_server_t *zappy_server)
 {
     TAILQ_INIT(&(zappy_server->all_teams));
     zappy_server->all_teams.tqh_first = NULL;
-    TAILQ_INIT(&(zappy_server->subscribed_teams_users));
-    zappy_server->subscribed_teams_users.tqh_first = NULL;
 }
 
 void create_teams(zappy_server_t *zappy_server)

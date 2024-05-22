@@ -18,5 +18,4 @@ void server_command_help(UNUSED zappy_server_t *zappy, UNUSED char *command)
     "/setLevel id level\n/setInventory id ressource quantity\n"
     "/setClientsNb nb\n/setFreq freq\n/noRefill true | false\n"
     "/fork team x y\n/incantate level x y\n");
-    return OK;
 }

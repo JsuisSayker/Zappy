@@ -27,7 +27,7 @@
 
 typedef enum client_type_s {
     IA,
-    GRAPHIC,
+    GUI,
     UNKNOWN,
 }client_type_t;
 
@@ -94,17 +94,6 @@ void shuffle_int_array(int **array, int n);
 
 ////////////////////////////////////////
 
-typedef struct subscribed_s {
-    char team_uuid[MAX_UUID_LENGTH];
-    char user_uuid[MAX_UUID_LENGTH];
-    TAILQ_ENTRY(subscribed_s) next;
-} subscribed_t;
-
-struct subscribedhead {
-    struct subscribed_s *tqh_first;
-    struct subscribed_s **tqh_last;
-};
-
 typedef struct reply_s {
     char text[MAX_BODY_LENGTH];
     char reply_uuid[MAX_UUID_LENGTH];
@@ -135,19 +124,6 @@ struct threadhead {
     struct thread_s **tqh_last;
 };
 
-typedef struct team_s {
-    char *name;
-    char team_uuid[MAX_UUID_LENGTH];
-    int nb_drones;
-    int nb_matures_eggs;
-    TAILQ_ENTRY(team_s) next;
-} team_t;
-
-struct teamhead {
-    struct team_s *tqh_first;
-    struct team_s **tqh_last;
-};
-
 typedef struct buffer_s {
     char input_buffer[MAX_COMMAND_LENGTH];
     char output_buffer[MAX_COMMAND_LENGTH];
@@ -165,13 +141,28 @@ typedef struct client_s {
     struct sockaddr_in other_socket_addr;
 } client_t;
 
+
+typedef struct team_s {
+    char *name;
+    char team_uuid[MAX_UUID_LENGTH];
+    int nb_drones;
+    int nb_matures_eggs;
+    client_t *client;
+    TAILQ_ENTRY(team_s) next;
+} team_t;
+
+struct teamhead {
+    struct team_s *tqh_first;
+    struct team_s **tqh_last;
+};
+
+
 typedef struct zappy_server_s {
     fd_t fd;
     int my_socket;
     int actual_sockfd;
     bool server_running;
     struct sockaddr_in server_addr;
-    struct subscribedhead subscribed_teams_users;
     struct teamhead all_teams;
     struct threadhead all_threads;
     struct client_s clients[FD_SETSIZE];
@@ -180,7 +171,6 @@ typedef struct zappy_server_s {
 } zappy_server_t;
 
 // Linked list functions
-void free_subscribed(struct subscribedhead *head);
 void free_threads(struct threadhead *head);
 void free_teams(struct teamhead *head);
 
@@ -218,12 +208,14 @@ typedef struct command_s {
     void (*func)(zappy_server_t *zappy_server, char *command);
 } command_t;
 
+int handle_unknown_command(zappy_server_t *zappy_server, char *command);
+
 // SERVER COMMANDS FUNCTIONS
 int handle_server_command(zappy_server_t *zappy_server, char *command);
 void server_command_help(zappy_server_t *zappy, char *command);
 void server_command_quit(zappy_server_t *zappy, char *command);
 void server_command_map(zappy_server_t *zappy, char *command);
-
+void server_command_clients(zappy_server_t *zappy, char *command);
 // AI COMMANDS FUNCTIONS
 
 // GUI COMMANDS FUNCTIONS
