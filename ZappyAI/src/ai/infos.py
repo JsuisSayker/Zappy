@@ -8,6 +8,7 @@ class Activity(Enum):
     CREATINGEGG = 3
     LOOKING = 4
     POPULATING = 5
+    INVENTORY = 6
 
 
 LEVELS: dict[int, dict[str, int]] = {

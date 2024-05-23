@@ -65,11 +65,15 @@ class AI():
         self.dataToSend = "Look\n"
         # self.actualActivity = Activity.SEARCHING
 
+    def inventoryActivity(self):
+        self.dataToSend = "Inventory\n"
+
     def switchCase(self, activity: Activity):
         return {
             Activity.STARTING: self.startingActivity(),
             Activity.POPULATING: self.populatingActivity(),
             Activity.LOOKING: self.lookingActivity(),
+            Activity.INVENTORY: self.inventoryActivity()
         }[activity]
 
     def algorithm(self) -> None:
