@@ -1,6 +1,6 @@
 include .env
 
-CFLAGS = -std=c++17 -I. -I$(VULKAN_SDK_PATH)/include
+CFLAGS = -std=c++17 -I. -I$(VULKAN_SDK_PATH)/include -I$(TINYOBJ_PATH)
 LDFLAGS = -L$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lvulkan
 
 # create list of all spv files and set as dependency
@@ -26,4 +26,3 @@ test: a.out
 clean:
 	rm -f a.out
 	rm -f *.spv
-	rm -f shaders/*.spv

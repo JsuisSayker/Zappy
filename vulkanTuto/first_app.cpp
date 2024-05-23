@@ -1,5 +1,7 @@
 #include "first_app.hpp"
 
+#include "keyboard_movement_controller.hpp"
+#include "lve_buffer.hpp"
 #include "lve_camera.hpp"
 #include "simple_render_system.hpp"
 
@@ -12,107 +14,91 @@
 // std
 #include <array>
 #include <cassert>
+#include <chrono>
 #include <stdexcept>
+#include <numeric>
 
 namespace lve {
+
+struct GlobalUbo {
+  glm::mat4 projectionView{1.f};
+  glm::vec3 lightDirection = glm::normalize(glm::vec3{1.f, -3.f, -1.f});
+};
 
 FirstApp::FirstApp() { loadGameObjects(); }
 
 FirstApp::~FirstApp() {}
 
-void FirstApp::run()
-{
-    SimpleRenderSystem simpleRenderSystem{
-        lveDevice, lveRenderer.getSwapChainRenderPass()};
-    LveCamera camera{};
-    // camera.setViewDirection(glm::vec3(0.f), glm::vec3(0.5f, 0.f, 1.f));
-    camera.setViewTarget(glm::vec3(-1.f, -20.f, -2.f), glm::vec3(0.f, 0.f, 2.5f));
+void FirstApp::run() {
+  
+  std::vector<std::unique_ptr<LveBuffer>> uboBuffers(LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+  for (int i = 0; i < uboBuffers.size(); i++) {
+    uboBuffers[i] = std::make_unique<LveBuffer>(
+        lveDevice,
+        sizeof(GlobalUbo),
+        1,
+        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+    uboBuffers[i]->map();
+  }
 
-    while (!lveWindow.shouldClose()) {
-        glfwPollEvents();
-        float aspect = lveRenderer.getAspectRatio();
-        // camera.setOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
-        camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
+  SimpleRenderSystem simpleRenderSystem{lveDevice, lveRenderer.getSwapChainRenderPass()};
+  LveCamera camera{};
 
-        if (auto commandBuffer = lveRenderer.beginFrame()) {
-            lveRenderer.beginSwapChainRenderPass(commandBuffer);
-            simpleRenderSystem.renderGameObjects(commandBuffer, gameObjects, camera);
-            lveRenderer.endSwapChainRenderPass(commandBuffer);
-            lveRenderer.endFrame();
-        }
+  auto viewerObject = LveGameObject::createGameObject();
+  KeyboardMovementController cameraController{};
+
+  auto currentTime = std::chrono::high_resolution_clock::now();
+  while (!lveWindow.shouldClose()) {
+    glfwPollEvents();
+
+    auto newTime = std::chrono::high_resolution_clock::now();
+    float frameTime =
+        std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+    currentTime = newTime;
+
+    cameraController.moveInPlaneXZ(lveWindow.getGLFWwindow(), frameTime, viewerObject);
+    camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
+
+    float aspect = lveRenderer.getAspectRatio();
+    camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
+
+    if (auto commandBuffer = lveRenderer.beginFrame()) {
+      int frameIndex = lveRenderer.getFrameIndex();
+      FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera};
+
+      // update
+      GlobalUbo ubo{};
+      ubo.projectionView = camera.getProjection() * camera.getView();
+      uboBuffers[frameIndex]->writeToBuffer(&ubo);
+      uboBuffers[frameIndex]->flush();
+
+      // render
+      lveRenderer.beginSwapChainRenderPass(commandBuffer);
+      simpleRenderSystem.renderGameObjects(frameInfo, gameObjects);
+      lveRenderer.endSwapChainRenderPass(commandBuffer);
+      lveRenderer.endFrame();
     }
+  }
 
-    vkDeviceWaitIdle(lveDevice.device());
+  vkDeviceWaitIdle(lveDevice.device());
 }
 
-std::unique_ptr<LveModel> createCubeModel(LveDevice &device, glm::vec3 offset)
-{
-    std::vector<LveModel::Vertex> vertices{
+void FirstApp::loadGameObjects() {
+  std::shared_ptr<LveModel> lveModel =
+      LveModel::createModelFromFile(lveDevice, "models/flat_vase.obj");
+  auto flatVase = LveGameObject::createGameObject();
+  flatVase.model = lveModel;
+  flatVase.transform.translation = {-.5f, .5f, 2.5f};
+  flatVase.transform.scale = {3.f, 1.5f, 3.f};
+  gameObjects.push_back(std::move(flatVase));
 
-        // left face (white)
-        {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
-        {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
-        {{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
-        {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
-        {{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
-        {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
-
-        // right face (yellow)
-        {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
-        {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
-        {{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
-        {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
-        {{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
-        {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
-
-        // top face (orange, remember y axis points down)
-        {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-        {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
-        {{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
-        {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-        {{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-        {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
-
-        // bottom face (red)
-        {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-        {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
-        {{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
-        {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-        {{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-        {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
-
-        // nose face (blue)
-        {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-        {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
-        {{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
-        {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-        {{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-        {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
-
-        // tail face (green)
-        {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-        {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-        {{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-        {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-        {{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-        {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-
-    };
-    for (auto &v : vertices) {
-        v.position += offset;
-    }
-    return std::make_unique<LveModel>(device, vertices);
+  lveModel = LveModel::createModelFromFile(lveDevice, "models/smooth_vase.obj");
+  auto smoothVase = LveGameObject::createGameObject();
+  smoothVase.model = lveModel;
+  smoothVase.transform.translation = {.5f, .5f, 2.5f};
+  smoothVase.transform.scale = {3.f, 1.5f, 3.f};
+  gameObjects.push_back(std::move(smoothVase));
 }
 
-void FirstApp::loadGameObjects()
-{
-    std::shared_ptr<LveModel> LveModel = createCubeModel(lveDevice, {0.f, 0.f, 0.f});
-
-    auto cube = LveGameObject::createGameObject();
-    cube.model = LveModel;
-    cube.transform.translation = {0.f, 0.f, 2.5f};
-    cube.transform.scale = {.5f, .5f, .5f};
-    gameObjects.push_back(std::move(cube));
-}
-
-} // namespace lve
+}  // namespace lve
