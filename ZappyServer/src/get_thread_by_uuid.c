@@ -19,22 +19,3 @@ thread_t *get_thread_by_uuid(struct threadhead *thread_head, char *uuid)
     }
     return NULL;
 }
-
-thread_t *get_all_thread_by_uuid(struct teamhead *team_head, char *uuid)
-{
-    team_t *team = NULL;
-    channel_t *channel = NULL;
-    thread_t *thread = NULL;
-
-    TAILQ_FOREACH(team, team_head, next)
-    {
-        TAILQ_FOREACH(channel, &team->channels_head, next)
-        {
-            thread = get_thread_by_uuid(&channel->threads_head, uuid);
-            if (thread != NULL) {
-                return thread;
-            }
-        }
-    }
-    return NULL;
-}

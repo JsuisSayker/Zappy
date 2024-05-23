@@ -21,17 +21,6 @@ args_config_t *init_args_config(void)
     return args;
 }
 
-void display_args_config(args_config_t *args)
-{
-    printf("Port: %d\n", args->port);
-    printf("Width: %d\n", args->width);
-    printf("Height: %d\n", args->height);
-    printf("Team Names:\n");
-    display_char_tab_list(&(args->names));
-    printf("Clients Number: %d\n", args->clientsNb);
-    printf("Frequency: %.2f\n", args->freq);
-}
-
 void free_args_config(args_config_t *args)
 {
     free_char_tab_list(&(args->names));
@@ -88,6 +77,9 @@ static int check_args(args_config_t *args)
 {
     if (args->port <= 0 || args->width <= 0 || args->height <= 0 ||
         args->clientsNb == 0 || args->freq == 0.0f) {
+        return KO;
+    }
+    if (args->width > 30 || args->height > 30) {
         return KO;
     }
     return OK;
