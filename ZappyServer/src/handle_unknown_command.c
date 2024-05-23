@@ -10,6 +10,8 @@
 
 static void send_map_info(zappy_server_t *zappy_server)
 {
+    team_t *tmp_team = NULL;
+
     dprintf(zappy_server->actual_sockfd, "msz %d %d\n",
         zappy_server->args->width, zappy_server->args->height);
     for (int i = 0; i < zappy_server->args->height; i++) {
@@ -24,6 +26,9 @@ static void send_map_info(zappy_server_t *zappy_server)
                 zappy_server->map_tile[i][j].phiras,
                 zappy_server->map_tile[i][j].thystame);
         }
+    }
+    TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next) {
+        dprintf(zappy_server->actual_sockfd, "tna %s\n", tmp_team->name);
     }
 }
 
@@ -44,6 +49,9 @@ static int ia_client_find_team(zappy_server_t *zappy_server, team_t *tmp_team,
         }
         tmp_team->nb_drones += 1;
         tmp_team->nb_matures_eggs -= 1;
+        // mettre bonne valuer ligne en dessous /!/
+        dprintf(zappy_server->actual_sockfd, "2 %d %d\n",
+            zappy_server->args->width, zappy_server->args->height);
         zappy_server->clients[zappy_server->actual_sockfd].type = IA;
         return 1;
     }
