@@ -23,6 +23,7 @@
     #define PHIRAS_DENSITY 0.08
     #define THYSTAME_DENSITY 0.05
     #define MAX_CLIENTS 10
+    #define CLEAR_SCREEN "\e[1;1H\e[2J"
 
 
 #endif /* !MACRO_SERVER_H_ */
