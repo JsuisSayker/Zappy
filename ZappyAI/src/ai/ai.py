@@ -1,4 +1,4 @@
-from infos import LEVELS
+from ZappyAI.src.ai.infos import LEVELS
 
 
 class AI():
@@ -13,6 +13,9 @@ class AI():
         self.searchingRessource: str = ""
         self.look: str = ""
         self.commandList: list[str] = []
+        self.run = True
+        self.dataToSend: str = ""
+        self.clientNumber: int = 0
 
     def isIncantationPossible(self) -> bool:
         requiredRessources = LEVELS[self.level]
@@ -39,5 +42,8 @@ class AI():
                 return
         self.commandList.append("Incantation\n")
 
+    def algorithm(self) -> None:
+        return
 
-# do the algorithm
+
+# reste au sol les ressources

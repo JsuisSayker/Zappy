@@ -7,18 +7,22 @@
 
 all:
 	make all -C ZappyServer
+	make all -C ZappyAI
 
 debug:
 	make debug -C ZappyServer
+	make debug -C ZappyAI
 
 clean:
 	make clean -C ZappyServer
 
 fclean: clean
 	make fclean -C ZappyServer
+	make fclean -C ZappyAI
 
 re:
 	make re -C ZappyServer
+	make re -C ZappyAI
 
 unit_tests:
 	make unit_tests -C ZappyServer
