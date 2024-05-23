@@ -107,22 +107,3 @@ map_tile_t **setup_map_tile(int x, int y)
     free(resourse_list);
     return map_tile;
 }
-
-void display_map_tile(map_tile_t **map_tile)
-{
-    int i = 0;
-    int j = 0;
-
-    for (i = 0; map_tile[i] != NULL; i += 1) {
-        for (j = 0; map_tile[i][j].x != -1; j += 1) {
-            printf("Tile: [%d][%d]\nFood: %d\nLinemate: %d\nDeraumere: %d\n"
-                    "Sibur: %d\nMendiane: %d\nPhiras: %d\nThystame: %d\n"
-                    "<======>\n",
-                map_tile[i][j].x, map_tile[i][j].y, map_tile[i][j].food,
-                map_tile[i][j].linemate, map_tile[i][j].deraumere,
-                map_tile[i][j].sibur, map_tile[i][j].mendiane,
-                map_tile[i][j].phiras, map_tile[i][j].thystame);
-        }
-    }
-    printf("<==============>\n");
-}

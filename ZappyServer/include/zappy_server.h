@@ -84,6 +84,7 @@ void free_map_tile(map_tile_t **map_tile);
 void put_resource_on_map_tile(map_tile_t **map_tile,
     struct char_tab_head *head, int x, int y);
 map_tile_t **setup_map_tile(int x, int y);
+void display_tile(map_tile_t tile);
 void display_map_tile(map_tile_t **map_tile);
 
 // int array functions
@@ -218,9 +219,12 @@ void server_command_quit(zappy_server_t *zappy, char *command);
 void server_command_map(zappy_server_t *zappy, char *command);
 void server_command_clients(zappy_server_t *zappy, char *command);
 void server_command_clear(zappy_server_t *zappy, char *command);
+void server_command_tile(zappy_server_t *zappy, char *command);
 // AI COMMANDS FUNCTIONS
 
 // GUI COMMANDS FUNCTIONS
 
+// ERROR FUNCTIONS
+void error_command_argument(char *command, int nb_argument, int nb_expected);
 
 #endif /* !ZAPPY_SERVER_H_ */

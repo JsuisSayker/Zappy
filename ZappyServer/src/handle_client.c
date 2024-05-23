@@ -20,7 +20,7 @@ static int handle_command(zappy_server_t *zappy_server, char *command)
         break;
     case GUI:
         break;
-    } 
+    }
     return ERROR;
 }
 

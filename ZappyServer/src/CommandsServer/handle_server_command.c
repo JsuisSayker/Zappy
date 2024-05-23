@@ -13,6 +13,7 @@ static const struct command_s COMMAND_FUNCS[] = {
     {"/map", &server_command_map},
     {"/clients", &server_command_clients},
     {"/clear", &server_command_clear},
+    {"/tile", &server_command_tile},
     {"NULL", NULL}
 };
 

@@ -7,7 +7,7 @@
 
 #include <zappy_server.h>
 
-void server_command_map(UNUSED zappy_server_t *zappy, UNUSED char *command)
+void server_command_map(zappy_server_t *zappy, UNUSED char *command)
 {
     display_map_tile(zappy->map_tile);
 }
