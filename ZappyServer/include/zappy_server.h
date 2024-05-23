@@ -240,6 +240,7 @@ void server_command_help(zappy_server_t *zappy, char *command);
 void server_command_quit(zappy_server_t *zappy, char *command);
 
 // AI COMMANDS FUNCTIONS
+int handle_ia_command(zappy_server_t *zappy, client_t *client, char *command);
 int cast_action(zappy_server_t *zappy, client_t *client, int freq);
 bool check_action(zappy_server_t *zappy, client_t *client);
 

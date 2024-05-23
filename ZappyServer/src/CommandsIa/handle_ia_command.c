@@ -29,7 +29,8 @@ int handle_ia_command(zappy_server_t *zappy, client_t *client, char *command)
     for (int i = 0; COMMAND_FUNCS[i].func != NULL; i += 1) {
         if (strncmp(command, COMMAND_FUNCS[i].command,
             strlen(COMMAND_FUNCS[i].command)) == 0) {
-            COMMAND_FUNCS[i].func(zappy, client, &command[strlen(COMMAND_FUNCS[i].command)]);
+            COMMAND_FUNCS[i].func(zappy, client,
+                &command[strlen(COMMAND_FUNCS[i].command)]);
             return OK;
         }
     }

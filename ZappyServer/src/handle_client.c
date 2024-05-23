@@ -10,7 +10,7 @@
 static void handle_command(zappy_server_t *zappy_server, char *command)
 {
     if (zappy_server->actual_sockfd == 1) {
-        return handle_server_command(zappy_server, command);
+        return handle_ia_command(zappy_server, command);
     }
 }
 
@@ -45,7 +45,7 @@ void handle_client(zappy_server_t *zappy_server)
             break;
         }
     }
-    
+
     lines = splitter(buffer, END_LINE);
     if (lines == NULL) {
         return;
