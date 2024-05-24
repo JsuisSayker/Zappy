@@ -9,7 +9,7 @@ vertObjFiles = $(patsubst %.vert, %.vert.spv, $(vertSources))
 fragSources = $(shell find ./shaders -type f -name "*.frag")
 fragObjFiles = $(patsubst %.frag, %.frag.spv, $(fragSources))
 
-TARGET = a.out
+TARGET = zappy_gui
 $(TARGET): $(vertObjFiles) $(fragObjFiles)
 $(TARGET): *.cpp *.hpp
 	g++ $(CFLAGS) -o $(TARGET) *.cpp $(LDFLAGS)
@@ -20,9 +20,9 @@ $(TARGET): *.cpp *.hpp
 
 .PHONY: test clean
 
-test: a.out
-	./a.out
+test: zappy_gui
+	./zappy_gui
 
 clean:
-	rm -f a.out
+	rm -f zappy_gui
 	rm -f *.spv

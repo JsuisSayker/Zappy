@@ -21,14 +21,14 @@
 
 namespace zappy {
 
-ZappyGui::ZappyGui()
+ZappyGui::ZappyGui(int width, int height)
 {
     globalPool = LveDescriptorPool::Builder(lveDevice)
                      .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
                      .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
                          ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
                      .build();
-    loadGameObjects();
+    loadMap(width, height);
 }
 
 ZappyGui::~ZappyGui() {}
@@ -117,30 +117,15 @@ void ZappyGui::run()
     vkDeviceWaitIdle(lveDevice.device());
 }
 
-void ZappyGui::loadGameObjects()
+void ZappyGui::loadMap(int width, int height)
 {
     std::shared_ptr<ZappyModel> lveModel =
-        ZappyModel::createModelFromFile(lveDevice, "models/flat_vase.obj");
+        ZappyModel::createModelFromFile(lveDevice, "models/cube.obj");
     auto flatVase = ZappyGameObject::createGameObject();
     flatVase.model = lveModel;
     flatVase.transform.translation = {-.5f, .5f, 0.f};
-    flatVase.transform.scale = {3.f, 1.5f, 3.f};
+    flatVase.transform.scale = {1.f, 1.f, 1.f};
     gameObjects.emplace(flatVase.getId(), std::move(flatVase));
-
-    lveModel =
-        ZappyModel::createModelFromFile(lveDevice, "models/smooth_vase.obj");
-    auto smoothVase = ZappyGameObject::createGameObject();
-    smoothVase.model = lveModel;
-    smoothVase.transform.translation = {.5f, .5f, 0.f};
-    smoothVase.transform.scale = {3.f, 1.5f, 3.f};
-    gameObjects.emplace(smoothVase.getId(), std::move(smoothVase));
-
-    lveModel = ZappyModel::createModelFromFile(lveDevice, "models/quad.obj");
-    auto floor = ZappyGameObject::createGameObject();
-    floor.model = lveModel;
-    floor.transform.translation = {0.f, .5f, 0.f};
-    floor.transform.scale = {3.f, 1.f, 3.f};
-    gameObjects.emplace(floor.getId(), std::move(floor));
 
     std::vector<glm::vec3> lightColors{
         {1.f, .1f, .1f}, {.1f, .1f, 1.f}, {.1f, 1.f, .1f}, {1.f, 1.f, .1f},

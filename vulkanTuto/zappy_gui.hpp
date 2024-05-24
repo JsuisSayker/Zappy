@@ -13,10 +13,10 @@
 namespace zappy {
 class ZappyGui {
  public:
-  static constexpr int WIDTH = 800;
-  static constexpr int HEIGHT = 600;
+  static constexpr int WIDTH = 1920;
+  static constexpr int HEIGHT = 1080;
 
-  ZappyGui();
+  ZappyGui(int width, int height);
   ~ZappyGui();
 
   ZappyGui(const ZappyGui &) = delete;
@@ -25,7 +25,7 @@ class ZappyGui {
   void run();
 
  private:
-  void loadGameObjects();
+  void loadMap(int width, int height);
 
   ZappyWindow lveWindow{WIDTH, HEIGHT, "Vulkan Tutorial"};
   ZappyDevice lveDevice{lveWindow};
