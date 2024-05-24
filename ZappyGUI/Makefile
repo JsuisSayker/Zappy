@@ -11,7 +11,7 @@ SRC			=	Zappy.cpp			\
 				Lve_device.cpp		\
 				Lve_swap_chain.cpp	\
 
-MAIN 		=	main.cpp
+MAIN			=	main.cpp
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 
@@ -29,18 +29,40 @@ OBJ			=	$(OBJ_DIR_SRC) $(OBJ_MAIN)
 
 CPPFLAGS	=	-I./include
 
-$(NAME): $(OBJ)
-		g++ $(CFLAGS) $(CPPFLAGS) -o $(NAME) $(OBJ) $(LDFLAGS)
+# shaders compilation
+SHADER		=	simple_shader.vert	\
+				simple_shader.frag	\
+
+SHADER_DIR	=	$(addprefix shaders/, $(SHADER))
+
+SHADER_OUT	=	$(SHADER_DIR:.vert=.vert.spv) $(SHADER_DIR:.frag=.frag.spv)
+
+%.vert.spv: %.vert
+	glslc $< -o $@
+
+%.frag.spv: %.frag
+	glslc $< -o $@
+
+# Règle pour compiler les fichiers objets
+%.o: %.cpp
+	g++ $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+
+# Règle principale
+$(NAME): $(OBJ) $(SHADER_OUT)
+	g++ $(CFLAGS) $(CPPFLAGS) -o $(NAME) $(OBJ) $(LDFLAGS)
 
 all: $(NAME)
 
-test: $(NAME)	
+test: $(NAME)
 	./$(NAME)
 
 clean:
-	rm -f $(NAME)
 	rm -f $(OBJ)
+	rm -f shaders/*.spv
 
-re: clean all
+fclean: clean
+	rm -f $(NAME)
 
-.PHONY: test clean re all
+re: fclean all
+
+.PHONY: test clean re all fclean
