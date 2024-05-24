@@ -34,17 +34,17 @@ static int graphic_client(zappy_server_t *zappy_server)
 
 static void send_info_ia_to_gui(zappy_server_t *zappy_server, client_t *client)
 {
-    for (int i = 3; i < FD_SETSIZE; i++) {
-        if (zappy_server->clients[i].type == GUI) {
-            dprintf(i, "pnw #%d %d %d %s %d %s\n",
-                client->client_number,
-                client->pos.x,
-                client->pos.y,
-                direction_string(client->pos.direction),
-                client->level,
-                client->team_name);
-        }
-    }
+    // for (int i = 3; i < FD_SETSIZE; i++) {
+    //     if (zappy_server->clients[i].type == GUI) {
+    //         dprintf(i, "pnw #0 %d %d %s %d %s\n",
+    //             // client->client_number,
+    //             client->pos.x,
+    //             client->pos.y,
+    //             direction_string(client->pos.direction),
+    //             client->level,
+    //             client->team_name);
+    //     }
+    // }
 }
 
 static int ia_value_direction_setter(client_t *ia)

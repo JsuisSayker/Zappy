@@ -9,7 +9,7 @@
 
 static bool need_to_generate_more_resource(int i, int x, int y, double density)
 {
-    return (i < x * y * density || i < 1);
+    return (i < x * y * density / 100|| i < 1);
 }
 
 static void add_food_resource(
