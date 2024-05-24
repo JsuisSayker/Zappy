@@ -18,6 +18,7 @@
 #include <cassert>
 #include <chrono>
 #include <stdexcept>
+#include <iostream>
 
 namespace zappy {
 
@@ -73,6 +74,10 @@ void ZappyGui::run()
 
     auto currentTime = std::chrono::high_resolution_clock::now();
     while (!lveWindow.shouldClose()) {
+        // print camera position
+        // std::cout << "Camera position: " << viewerObject.transform.translation.x
+                //   << ", " << viewerObject.transform.translation.y << ", "
+                //   << viewerObject.transform.translation.z << std::endl;
         glfwPollEvents();
 
         auto newTime = std::chrono::high_resolution_clock::now();
@@ -119,27 +124,18 @@ void ZappyGui::run()
 
 void ZappyGui::loadMap(int width, int height)
 {
-    std::shared_ptr<ZappyModel> lveModel =
-        ZappyModel::createModelFromFile(lveDevice, "models/cube.obj");
-    auto flatVase = ZappyGameObject::createGameObject();
-    flatVase.model = lveModel;
-    flatVase.transform.translation = {-.5f, .5f, 0.f};
-    flatVase.transform.scale = {1.f, 1.f, 1.f};
-    gameObjects.emplace(flatVase.getId(), std::move(flatVase));
-
-    std::vector<glm::vec3> lightColors{
-        {1.f, .1f, .1f}, {.1f, .1f, 1.f}, {.1f, 1.f, .1f}, {1.f, 1.f, .1f},
-        {.1f, 1.f, 1.f}, {1.f, 1.f, 1.f} //
-    };
-
-    for (int i = 0; i < lightColors.size(); i++) {
-        auto pointLight = ZappyGameObject::makePointLight(0.2f);
-        pointLight.color = lightColors[i];
-        auto rotateLight = glm::rotate(glm::mat4(1.f),
-            (i * glm::two_pi<float>()) / lightColors.size(), {0.f, -1.f, 0.f});
-        pointLight.transform.translation =
-            glm::vec3(rotateLight * glm::vec4(-1.f, -1.f, -1.f, 1.f));
-        gameObjects.emplace(pointLight.getId(), std::move(pointLight));
+    std::shared_ptr<ZappyModel> whiteCubeModel =
+        ZappyModel::createModelFromFile(lveDevice, "models/cube_white.obj");
+    std::shared_ptr<ZappyModel> blackCubeModel =
+        ZappyModel::createModelFromFile(lveDevice, "models/cube_black.obj");
+    for (int x = 0; x < width; x++) {
+        for (int z = 0; z < height; z++) {
+            auto cube = ZappyGameObject::createGameObject();
+            cube.model = (x + z) % 2 == 0 ? whiteCubeModel : blackCubeModel;
+            cube.transform.translation = {x, 0.f, z};
+            cube.transform.scale = {1.f, 1.f, 1.f};
+            gameObjects.emplace(cube.getId(), std::move(cube));
+        }
     }
 }
 
