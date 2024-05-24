@@ -31,6 +31,13 @@ typedef enum client_type_s {
     UNKNOWN,
 }client_type_t;
 
+typedef enum direction_s {
+    NORTH,
+    EAST,
+    SOUTH,
+    WEST,
+} direction_t;
+
 typedef struct char_tab_s {
     char *str;
     TAILQ_ENTRY(char_tab_s) next;
@@ -141,6 +148,11 @@ typedef struct client_s {
     buffer_t buffer;
     client_type_t type;
     int client_number;
+    int x;
+    int y;
+    direction_t orientation;
+    int level;
+    char *team_name;
     struct sockaddr_in other_socket_addr;
 } client_t;
 
