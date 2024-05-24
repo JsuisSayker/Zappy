@@ -1,6 +1,6 @@
-#include "lve_pipeline.hpp"
+#include "pipeline.hpp"
 
-#include "lve_model.hpp"
+#include "model.hpp"
 
 // std
 #include <cassert>
@@ -8,10 +8,10 @@
 #include <iostream>
 #include <stdexcept>
 
-namespace lve {
+namespace zappy {
 
-LvePipeline::LvePipeline(
-    LveDevice& device,
+ZappyPipeline::ZappyPipeline(
+    ZappyDevice& device,
     const std::string& vertFilepath,
     const std::string& fragFilepath,
     const PipelineConfigInfo& configInfo)
@@ -19,13 +19,13 @@ LvePipeline::LvePipeline(
   createGraphicsPipeline(vertFilepath, fragFilepath, configInfo);
 }
 
-LvePipeline::~LvePipeline() {
+ZappyPipeline::~ZappyPipeline() {
   vkDestroyShaderModule(lveDevice.device(), vertShaderModule, nullptr);
   vkDestroyShaderModule(lveDevice.device(), fragShaderModule, nullptr);
   vkDestroyPipeline(lveDevice.device(), graphicsPipeline, nullptr);
 }
 
-std::vector<char> LvePipeline::readFile(const std::string& filepath) {
+std::vector<char> ZappyPipeline::readFile(const std::string& filepath) {
   std::ifstream file{filepath, std::ios::ate | std::ios::binary};
 
   if (!file.is_open()) {
@@ -42,7 +42,7 @@ std::vector<char> LvePipeline::readFile(const std::string& filepath) {
   return buffer;
 }
 
-void LvePipeline::createGraphicsPipeline(
+void ZappyPipeline::createGraphicsPipeline(
     const std::string& vertFilepath,
     const std::string& fragFilepath,
     const PipelineConfigInfo& configInfo) {
@@ -116,7 +116,7 @@ void LvePipeline::createGraphicsPipeline(
   }
 }
 
-void LvePipeline::createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule) {
+void ZappyPipeline::createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule) {
   VkShaderModuleCreateInfo createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
   createInfo.codeSize = code.size();
@@ -127,11 +127,11 @@ void LvePipeline::createShaderModule(const std::vector<char>& code, VkShaderModu
   }
 }
 
-void LvePipeline::bind(VkCommandBuffer commandBuffer) {
+void ZappyPipeline::bind(VkCommandBuffer commandBuffer) {
   vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 }
 
-void LvePipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo) {
+void ZappyPipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo) {
   configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
   configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
   configInfo.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
@@ -201,8 +201,8 @@ void LvePipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo) {
       static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
   configInfo.dynamicStateInfo.flags = 0;
 
-  configInfo.bindingDescriptions = LveModel::Vertex::getBindingDescriptions();
-  configInfo.attributeDescriptions = LveModel::Vertex::getAttributeDescriptions();
+  configInfo.bindingDescriptions = ZappyModel::Vertex::getBindingDescriptions();
+  configInfo.attributeDescriptions = ZappyModel::Vertex::getAttributeDescriptions();
 }
 
-}  // namespace lve
+}  // namespace zappy

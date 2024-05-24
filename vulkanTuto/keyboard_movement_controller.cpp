@@ -3,10 +3,10 @@
 // std
 #include <limits>
 
-namespace lve {
+namespace zappy {
 
 void KeyboardMovementController::moveInPlaneXZ(
-    GLFWwindow* window, float dt, LveGameObject& gameObject) {
+    GLFWwindow* window, float dt, ZappyGameObject& gameObject) {
   glm::vec3 rotate{0};
   if (glfwGetKey(window, keys.lookRight) == GLFW_PRESS) rotate.y += 1.f;
   if (glfwGetKey(window, keys.lookLeft) == GLFW_PRESS) rotate.y -= 1.f;
@@ -38,4 +38,4 @@ void KeyboardMovementController::moveInPlaneXZ(
     gameObject.transform.translation += moveSpeed * dt * glm::normalize(moveDir);
   }
 }
-}  // namespace lve
+}  // namespace zappy

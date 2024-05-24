@@ -1,6 +1,6 @@
-#include "lve_game_object.hpp"
+#include "game_object.hpp"
 
-namespace lve {
+namespace zappy {
 
 glm::mat4 TransformComponent::mat4() {
   const float c3 = glm::cos(rotation.z);
@@ -59,4 +59,13 @@ glm::mat3 TransformComponent::normalMatrix() {
   };
 }
 
-}  // namespace lve
+ZappyGameObject ZappyGameObject::makePointLight(float intensity, float radius, glm::vec3 color) {
+  ZappyGameObject gameObj = ZappyGameObject::createGameObject();
+  gameObj.color = color;
+  gameObj.transform.scale.x = radius;
+  gameObj.pointLight = std::make_unique<PointLightComponent>();
+  gameObj.pointLight->lightIntensity = intensity;
+  return gameObj;
+}
+
+}  // namespace zappy

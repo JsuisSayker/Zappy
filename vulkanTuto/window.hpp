@@ -4,15 +4,15 @@
 #include <GLFW/glfw3.h>
 
 #include <string>
-namespace lve {
+namespace zappy {
 
-class LveWindow {
+class ZappyWindow {
  public:
-  LveWindow(int w, int h, std::string name);
-  ~LveWindow();
+  ZappyWindow(int w, int h, std::string name);
+  ~ZappyWindow();
 
-  LveWindow(const LveWindow &) = delete;
-  LveWindow &operator=(const LveWindow &) = delete;
+  ZappyWindow(const ZappyWindow &) = delete;
+  ZappyWindow &operator=(const ZappyWindow &) = delete;
 
   bool shouldClose() { return glfwWindowShouldClose(window); }
   VkExtent2D getExtent() { return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)}; }
@@ -33,4 +33,4 @@ class LveWindow {
   std::string windowName;
   GLFWwindow *window;
 };
-}  // namespace lve
+}  // namespace zappy

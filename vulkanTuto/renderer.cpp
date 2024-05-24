@@ -1,21 +1,21 @@
-#include "lve_renderer.hpp"
+#include "renderer.hpp"
 
 // std
 #include <array>
 #include <cassert>
 #include <stdexcept>
 
-namespace lve {
+namespace zappy {
 
-LveRenderer::LveRenderer(LveWindow& window, LveDevice& device)
+ZappyRenderer::ZappyRenderer(ZappyWindow& window, ZappyDevice& device)
     : lveWindow{window}, lveDevice{device} {
   recreateSwapChain();
   createCommandBuffers();
 }
 
-LveRenderer::~LveRenderer() { freeCommandBuffers(); }
+ZappyRenderer::~ZappyRenderer() { freeCommandBuffers(); }
 
-void LveRenderer::recreateSwapChain() {
+void ZappyRenderer::recreateSwapChain() {
   auto extent = lveWindow.getExtent();
   while (extent.width == 0 || extent.height == 0) {
     extent = lveWindow.getExtent();
@@ -24,10 +24,10 @@ void LveRenderer::recreateSwapChain() {
   vkDeviceWaitIdle(lveDevice.device());
 
   if (lveSwapChain == nullptr) {
-    lveSwapChain = std::make_unique<LveSwapChain>(lveDevice, extent);
+    lveSwapChain = std::make_unique<ZappySwapChain>(lveDevice, extent);
   } else {
-    std::shared_ptr<LveSwapChain> oldSwapChain = std::move(lveSwapChain);
-    lveSwapChain = std::make_unique<LveSwapChain>(lveDevice, extent, oldSwapChain);
+    std::shared_ptr<ZappySwapChain> oldSwapChain = std::move(lveSwapChain);
+    lveSwapChain = std::make_unique<ZappySwapChain>(lveDevice, extent, oldSwapChain);
 
     if (!oldSwapChain->compareSwapFormats(*lveSwapChain.get())) {
       throw std::runtime_error("Swap chain image(or depth) format has changed!");
@@ -35,8 +35,8 @@ void LveRenderer::recreateSwapChain() {
   }
 }
 
-void LveRenderer::createCommandBuffers() {
-  commandBuffers.resize(LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+void ZappyRenderer::createCommandBuffers() {
+  commandBuffers.resize(ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
 
   VkCommandBufferAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -50,7 +50,7 @@ void LveRenderer::createCommandBuffers() {
   }
 }
 
-void LveRenderer::freeCommandBuffers() {
+void ZappyRenderer::freeCommandBuffers() {
   vkFreeCommandBuffers(
       lveDevice.device(),
       lveDevice.getCommandPool(),
@@ -59,7 +59,7 @@ void LveRenderer::freeCommandBuffers() {
   commandBuffers.clear();
 }
 
-VkCommandBuffer LveRenderer::beginFrame() {
+VkCommandBuffer ZappyRenderer::beginFrame() {
   assert(!isFrameStarted && "Can't call beginFrame while already in progress");
 
   auto result = lveSwapChain->acquireNextImage(&currentImageIndex);
@@ -84,7 +84,7 @@ VkCommandBuffer LveRenderer::beginFrame() {
   return commandBuffer;
 }
 
-void LveRenderer::endFrame() {
+void ZappyRenderer::endFrame() {
   assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
   auto commandBuffer = getCurrentCommandBuffer();
   if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
@@ -101,10 +101,10 @@ void LveRenderer::endFrame() {
   }
 
   isFrameStarted = false;
-  currentFrameIndex = (currentFrameIndex + 1) % LveSwapChain::MAX_FRAMES_IN_FLIGHT;
+  currentFrameIndex = (currentFrameIndex + 1) % ZappySwapChain::MAX_FRAMES_IN_FLIGHT;
 }
 
-void LveRenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer) {
+void ZappyRenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer) {
   assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
   assert(
       commandBuffer == getCurrentCommandBuffer() &&
@@ -138,7 +138,7 @@ void LveRenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer) {
   vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 }
 
-void LveRenderer::endSwapChainRenderPass(VkCommandBuffer commandBuffer) {
+void ZappyRenderer::endSwapChainRenderPass(VkCommandBuffer commandBuffer) {
   assert(isFrameStarted && "Can't call endSwapChainRenderPass if frame is not in progress");
   assert(
       commandBuffer == getCurrentCommandBuffer() &&
@@ -146,4 +146,4 @@ void LveRenderer::endSwapChainRenderPass(VkCommandBuffer commandBuffer) {
   vkCmdEndRenderPass(commandBuffer);
 }
 
-}  // namespace lve
+}  // namespace zappy

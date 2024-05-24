@@ -1,4 +1,4 @@
-#include "simple_render_system.hpp"
+#include "render_system.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -11,25 +11,25 @@
 #include <cassert>
 #include <stdexcept>
 
-namespace lve {
+namespace zappy {
 
 struct SimplePushConstantData {
   glm::mat4 modelMatrix{1.f};
   glm::mat4 normalMatrix{1.f};
 };
 
-SimpleRenderSystem::SimpleRenderSystem(
-    LveDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
+RenderSystem::RenderSystem(
+    ZappyDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
     : lveDevice{device} {
   createPipelineLayout(globalSetLayout);
   createPipeline(renderPass);
 }
 
-SimpleRenderSystem::~SimpleRenderSystem() {
+RenderSystem::~RenderSystem() {
   vkDestroyPipelineLayout(lveDevice.device(), pipelineLayout, nullptr);
 }
 
-void SimpleRenderSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayout) {
+void RenderSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayout) {
   VkPushConstantRange pushConstantRange{};
   pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
   pushConstantRange.offset = 0;
@@ -49,21 +49,21 @@ void SimpleRenderSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLay
   }
 }
 
-void SimpleRenderSystem::createPipeline(VkRenderPass renderPass) {
+void RenderSystem::createPipeline(VkRenderPass renderPass) {
   assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
 
   PipelineConfigInfo pipelineConfig{};
-  LvePipeline::defaultPipelineConfigInfo(pipelineConfig);
+  ZappyPipeline::defaultPipelineConfigInfo(pipelineConfig);
   pipelineConfig.renderPass = renderPass;
   pipelineConfig.pipelineLayout = pipelineLayout;
-  lvePipeline = std::make_unique<LvePipeline>(
+  lvePipeline = std::make_unique<ZappyPipeline>(
       lveDevice,
       "shaders/simple_shader.vert.spv",
       "shaders/simple_shader.frag.spv",
       pipelineConfig);
 }
 
-void SimpleRenderSystem::renderGameObjects(FrameInfo& frameInfo) {
+void RenderSystem::renderGameObjects(FrameInfo& frameInfo) {
   lvePipeline->bind(frameInfo.commandBuffer);
 
   vkCmdBindDescriptorSets(
@@ -95,4 +95,4 @@ void SimpleRenderSystem::renderGameObjects(FrameInfo& frameInfo) {
   }
 }
 
-}  // namespace lve
+}  // namespace zappy

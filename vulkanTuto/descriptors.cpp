@@ -1,14 +1,14 @@
-#include "lve_descriptors.hpp"
+#include "descriptors.hpp"
 
 // std
 #include <cassert>
 #include <stdexcept>
 
-namespace lve {
+namespace zappy {
 
 // *************** Descriptor Set Layout Builder *********************
 
-LveDescriptorSetLayout::Builder &LveDescriptorSetLayout::Builder::addBinding(
+ZappyDescriptorSetLayout::Builder &ZappyDescriptorSetLayout::Builder::addBinding(
     uint32_t binding,
     VkDescriptorType descriptorType,
     VkShaderStageFlags stageFlags,
@@ -23,14 +23,14 @@ LveDescriptorSetLayout::Builder &LveDescriptorSetLayout::Builder::addBinding(
   return *this;
 }
 
-std::unique_ptr<LveDescriptorSetLayout> LveDescriptorSetLayout::Builder::build() const {
-  return std::make_unique<LveDescriptorSetLayout>(lveDevice, bindings);
+std::unique_ptr<ZappyDescriptorSetLayout> ZappyDescriptorSetLayout::Builder::build() const {
+  return std::make_unique<ZappyDescriptorSetLayout>(lveDevice, bindings);
 }
 
 // *************** Descriptor Set Layout *********************
 
-LveDescriptorSetLayout::LveDescriptorSetLayout(
-    LveDevice &lveDevice, std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings)
+ZappyDescriptorSetLayout::ZappyDescriptorSetLayout(
+    ZappyDevice &lveDevice, std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings)
     : lveDevice{lveDevice}, bindings{bindings} {
   std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings{};
   for (auto kv : bindings) {
@@ -51,7 +51,7 @@ LveDescriptorSetLayout::LveDescriptorSetLayout(
   }
 }
 
-LveDescriptorSetLayout::~LveDescriptorSetLayout() {
+ZappyDescriptorSetLayout::~ZappyDescriptorSetLayout() {
   vkDestroyDescriptorSetLayout(lveDevice.device(), descriptorSetLayout, nullptr);
 }
 
@@ -80,7 +80,7 @@ std::unique_ptr<LveDescriptorPool> LveDescriptorPool::Builder::build() const {
 // *************** Descriptor Pool *********************
 
 LveDescriptorPool::LveDescriptorPool(
-    LveDevice &lveDevice,
+    ZappyDevice &lveDevice,
     uint32_t maxSets,
     VkDescriptorPoolCreateFlags poolFlags,
     const std::vector<VkDescriptorPoolSize> &poolSizes)
@@ -132,7 +132,7 @@ void LveDescriptorPool::resetPool() {
 
 // *************** Descriptor Writer *********************
 
-LveDescriptorWriter::LveDescriptorWriter(LveDescriptorSetLayout &setLayout, LveDescriptorPool &pool)
+LveDescriptorWriter::LveDescriptorWriter(ZappyDescriptorSetLayout &setLayout, LveDescriptorPool &pool)
     : setLayout{setLayout}, pool{pool} {}
 
 LveDescriptorWriter &LveDescriptorWriter::writeBuffer(
@@ -193,4 +193,4 @@ void LveDescriptorWriter::overwrite(VkDescriptorSet &set) {
   vkUpdateDescriptorSets(pool.lveDevice.device(), writes.size(), writes.data(), 0, nullptr);
 }
 
-}  // namespace lve
+}  // namespace zappy

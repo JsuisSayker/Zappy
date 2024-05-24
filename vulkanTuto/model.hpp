@@ -1,7 +1,7 @@
 #pragma once
 
-#include "lve_buffer.hpp"
-#include "lve_device.hpp"
+#include "buffer.hpp"
+#include "device.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -12,8 +12,8 @@
 #include <memory>
 #include <vector>
 
-namespace lve {
-class LveModel {
+namespace zappy {
+class ZappyModel {
  public:
   struct Vertex {
     glm::vec3 position{};
@@ -37,14 +37,14 @@ class LveModel {
     void loadModel(const std::string &filepath);
   };
 
-  LveModel(LveDevice &device, const LveModel::Builder &builder);
-  ~LveModel();
+  ZappyModel(ZappyDevice &device, const ZappyModel::Builder &builder);
+  ~ZappyModel();
 
-  LveModel(const LveModel &) = delete;
-  LveModel &operator=(const LveModel &) = delete;
+  ZappyModel(const ZappyModel &) = delete;
+  ZappyModel &operator=(const ZappyModel &) = delete;
 
-  static std::unique_ptr<LveModel> createModelFromFile(
-      LveDevice &device, const std::string &filepath);
+  static std::unique_ptr<ZappyModel> createModelFromFile(
+      ZappyDevice &device, const std::string &filepath);
 
   void bind(VkCommandBuffer commandBuffer);
   void draw(VkCommandBuffer commandBuffer);
@@ -53,13 +53,13 @@ class LveModel {
   void createVertexBuffers(const std::vector<Vertex> &vertices);
   void createIndexBuffers(const std::vector<uint32_t> &indices);
 
-  LveDevice &lveDevice;
+  ZappyDevice &lveDevice;
 
-  std::unique_ptr<LveBuffer> vertexBuffer;
+  std::unique_ptr<ZappyBuffer> vertexBuffer;
   uint32_t vertexCount;
 
   bool hasIndexBuffer = false;
-  std::unique_ptr<LveBuffer> indexBuffer;
+  std::unique_ptr<ZappyBuffer> indexBuffer;
   uint32_t indexCount;
 };
-}  // namespace lve
+}  // namespace zappy

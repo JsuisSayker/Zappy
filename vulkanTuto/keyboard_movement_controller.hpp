@@ -1,9 +1,9 @@
 #pragma once
 
-#include "lve_game_object.hpp"
-#include "lve_window.hpp"
+#include "game_object.hpp"
+#include "window.hpp"
 
-namespace lve {
+namespace zappy {
 class KeyboardMovementController {
  public:
   struct KeyMappings {
@@ -19,10 +19,10 @@ class KeyboardMovementController {
     int lookDown = GLFW_KEY_DOWN;
   };
 
-  void moveInPlaneXZ(GLFWwindow* window, float dt, LveGameObject& gameObject);
+  void moveInPlaneXZ(GLFWwindow* window, float dt, ZappyGameObject& gameObject);
 
   KeyMappings keys{};
   float moveSpeed{3.f};
   float lookSpeed{1.5f};
 };
-}  // namespace lve
+}  // namespace zappy

@@ -1,22 +1,22 @@
 #pragma once
 
-#include "lve_device.hpp"
-#include "lve_swap_chain.hpp"
-#include "lve_window.hpp"
+#include "device.hpp"
+#include "swap_chain.hpp"
+#include "window.hpp"
 
 // std
 #include <cassert>
 #include <memory>
 #include <vector>
 
-namespace lve {
-class LveRenderer {
+namespace zappy {
+class ZappyRenderer {
  public:
-  LveRenderer(LveWindow &window, LveDevice &device);
-  ~LveRenderer();
+  ZappyRenderer(ZappyWindow &window, ZappyDevice &device);
+  ~ZappyRenderer();
 
-  LveRenderer(const LveRenderer &) = delete;
-  LveRenderer &operator=(const LveRenderer &) = delete;
+  ZappyRenderer(const ZappyRenderer &) = delete;
+  ZappyRenderer &operator=(const ZappyRenderer &) = delete;
 
   VkRenderPass getSwapChainRenderPass() const { return lveSwapChain->getRenderPass(); }
   float getAspectRatio() const { return lveSwapChain->extentAspectRatio(); }
@@ -42,13 +42,13 @@ class LveRenderer {
   void freeCommandBuffers();
   void recreateSwapChain();
 
-  LveWindow &lveWindow;
-  LveDevice &lveDevice;
-  std::unique_ptr<LveSwapChain> lveSwapChain;
+  ZappyWindow &lveWindow;
+  ZappyDevice &lveDevice;
+  std::unique_ptr<ZappySwapChain> lveSwapChain;
   std::vector<VkCommandBuffer> commandBuffers;
 
   uint32_t currentImageIndex;
   int currentFrameIndex{0};
   bool isFrameStarted{false};
 };
-}  // namespace lve
+}  // namespace zappy

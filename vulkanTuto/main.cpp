@@ -1,5 +1,5 @@
 
-#include "first_app.hpp"
+#include "zappy_gui.hpp"
 
 // std
 #include <cstdlib>
@@ -7,7 +7,7 @@
 #include <stdexcept>
 
 int main() {
-  lve::FirstApp app{};
+  zappy::ZappyGui app{};
 
   try {
     app.run();

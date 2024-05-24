@@ -1,6 +1,6 @@
-#include "lve_model.hpp"
+#include "model.hpp"
 
-#include "lve_utils.hpp"
+#include "utils.hpp"
 
 // libs
 #define TINYOBJLOADER_IMPLEMENTATION
@@ -15,38 +15,38 @@
 
 namespace std {
 template <>
-struct hash<lve::LveModel::Vertex> {
-  size_t operator()(lve::LveModel::Vertex const &vertex) const {
+struct hash<zappy::ZappyModel::Vertex> {
+  size_t operator()(zappy::ZappyModel::Vertex const &vertex) const {
     size_t seed = 0;
-    lve::hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+    zappy::hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
     return seed;
   }
 };
 }  // namespace std
 
-namespace lve {
+namespace zappy {
 
-LveModel::LveModel(LveDevice &device, const LveModel::Builder &builder) : lveDevice{device} {
+ZappyModel::ZappyModel(ZappyDevice &device, const ZappyModel::Builder &builder) : lveDevice{device} {
   createVertexBuffers(builder.vertices);
   createIndexBuffers(builder.indices);
 }
 
-LveModel::~LveModel() {}
+ZappyModel::~ZappyModel() {}
 
-std::unique_ptr<LveModel> LveModel::createModelFromFile(
-    LveDevice &device, const std::string &filepath) {
+std::unique_ptr<ZappyModel> ZappyModel::createModelFromFile(
+    ZappyDevice &device, const std::string &filepath) {
   Builder builder{};
   builder.loadModel(filepath);
-  return std::make_unique<LveModel>(device, builder);
+  return std::make_unique<ZappyModel>(device, builder);
 }
 
-void LveModel::createVertexBuffers(const std::vector<Vertex> &vertices) {
+void ZappyModel::createVertexBuffers(const std::vector<Vertex> &vertices) {
   vertexCount = static_cast<uint32_t>(vertices.size());
   assert(vertexCount >= 3 && "Vertex count must be at least 3");
   VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
   uint32_t vertexSize = sizeof(vertices[0]);
 
-  LveBuffer stagingBuffer{
+  ZappyBuffer stagingBuffer{
       lveDevice,
       vertexSize,
       vertexCount,
@@ -57,7 +57,7 @@ void LveModel::createVertexBuffers(const std::vector<Vertex> &vertices) {
   stagingBuffer.map();
   stagingBuffer.writeToBuffer((void *)vertices.data());
 
-  vertexBuffer = std::make_unique<LveBuffer>(
+  vertexBuffer = std::make_unique<ZappyBuffer>(
       lveDevice,
       vertexSize,
       vertexCount,
@@ -67,7 +67,7 @@ void LveModel::createVertexBuffers(const std::vector<Vertex> &vertices) {
   lveDevice.copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
 }
 
-void LveModel::createIndexBuffers(const std::vector<uint32_t> &indices) {
+void ZappyModel::createIndexBuffers(const std::vector<uint32_t> &indices) {
   indexCount = static_cast<uint32_t>(indices.size());
   hasIndexBuffer = indexCount > 0;
 
@@ -78,7 +78,7 @@ void LveModel::createIndexBuffers(const std::vector<uint32_t> &indices) {
   VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
   uint32_t indexSize = sizeof(indices[0]);
 
-  LveBuffer stagingBuffer{
+  ZappyBuffer stagingBuffer{
       lveDevice,
       indexSize,
       indexCount,
@@ -89,7 +89,7 @@ void LveModel::createIndexBuffers(const std::vector<uint32_t> &indices) {
   stagingBuffer.map();
   stagingBuffer.writeToBuffer((void *)indices.data());
 
-  indexBuffer = std::make_unique<LveBuffer>(
+  indexBuffer = std::make_unique<ZappyBuffer>(
       lveDevice,
       indexSize,
       indexCount,
@@ -99,7 +99,7 @@ void LveModel::createIndexBuffers(const std::vector<uint32_t> &indices) {
   lveDevice.copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
 }
 
-void LveModel::draw(VkCommandBuffer commandBuffer) {
+void ZappyModel::draw(VkCommandBuffer commandBuffer) {
   if (hasIndexBuffer) {
     vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
   } else {
@@ -107,7 +107,7 @@ void LveModel::draw(VkCommandBuffer commandBuffer) {
   }
 }
 
-void LveModel::bind(VkCommandBuffer commandBuffer) {
+void ZappyModel::bind(VkCommandBuffer commandBuffer) {
   VkBuffer buffers[] = {vertexBuffer->getBuffer()};
   VkDeviceSize offsets[] = {0};
   vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
@@ -117,7 +117,7 @@ void LveModel::bind(VkCommandBuffer commandBuffer) {
   }
 }
 
-std::vector<VkVertexInputBindingDescription> LveModel::Vertex::getBindingDescriptions() {
+std::vector<VkVertexInputBindingDescription> ZappyModel::Vertex::getBindingDescriptions() {
   std::vector<VkVertexInputBindingDescription> bindingDescriptions(1);
   bindingDescriptions[0].binding = 0;
   bindingDescriptions[0].stride = sizeof(Vertex);
@@ -125,7 +125,7 @@ std::vector<VkVertexInputBindingDescription> LveModel::Vertex::getBindingDescrip
   return bindingDescriptions;
 }
 
-std::vector<VkVertexInputAttributeDescription> LveModel::Vertex::getAttributeDescriptions() {
+std::vector<VkVertexInputAttributeDescription> ZappyModel::Vertex::getAttributeDescriptions() {
   std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
 
   attributeDescriptions.push_back({0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position)});
@@ -136,7 +136,7 @@ std::vector<VkVertexInputAttributeDescription> LveModel::Vertex::getAttributeDes
   return attributeDescriptions;
 }
 
-void LveModel::Builder::loadModel(const std::string &filepath) {
+void ZappyModel::Builder::loadModel(const std::string &filepath) {
   tinyobj::attrib_t attrib;
   std::vector<tinyobj::shape_t> shapes;
   std::vector<tinyobj::material_t> materials;
@@ -192,4 +192,4 @@ void LveModel::Builder::loadModel(const std::string &filepath) {
   }
 }
 
-}  // namespace lve
+}  // namespace zappy

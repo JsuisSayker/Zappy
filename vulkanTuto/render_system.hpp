@@ -11,17 +11,16 @@
 #include <vector>
 
 namespace zappy {
-class PointLightSystem {
+class RenderSystem {
  public:
-  PointLightSystem(
+  RenderSystem(
       ZappyDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
-  ~PointLightSystem();
+  ~RenderSystem();
 
-  PointLightSystem(const PointLightSystem &) = delete;
-  PointLightSystem &operator=(const PointLightSystem &) = delete;
+  RenderSystem(const RenderSystem &) = delete;
+  RenderSystem &operator=(const RenderSystem &) = delete;
 
-  void update(FrameInfo &frameInfo, GlobalUbo &ubo);
-  void render(FrameInfo &frameInfo);
+  void renderGameObjects(FrameInfo &frameInfo);
 
  private:
   void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
