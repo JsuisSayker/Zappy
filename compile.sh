@@ -1,2 +1,0 @@
-/home/rgiraud/VulkanSDK/1.3.283.0/x86_64/bin/glslc ZappyGUI/shaders/simple_shader.vert -o ZappyGUI/shaders/simple_shader.vert.spv
-/home/rgiraud/VulkanSDK/1.3.283.0/x86_64/bin/glslc ZappyGUI/shaders/simple_shader.frag -o ZappyGUI/shaders/simple_shader.frag.spv
