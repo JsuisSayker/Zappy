@@ -157,7 +157,7 @@ typedef struct client_s {
     struct sockaddr_in other_socket_addr;
     int freq;
     struct timeval start;
-    ia_position_t position;
+    ia_position_t pos;
     bool is_contracted;
 } client_t;
 
