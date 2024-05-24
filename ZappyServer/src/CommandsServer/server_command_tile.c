@@ -24,11 +24,9 @@ void server_command_tile(zappy_server_t *zappy, char *command)
     }
     x = atoi(command_args[0]);
     y = atoi(command_args[1]);
-    if (x >= 0 && x < zappy->args->width && y >= 0 &&
-        y < zappy->args->height) {
+    if (x >= 0 && x < zappy->args->width && y >= 0 && y < zappy->args->height)
         display_tile(zappy->map_tile[y][x]);
-    } else {
+    else
         printf("Invalid coordinates\n");
-    }
     free_array(command_args);
 }

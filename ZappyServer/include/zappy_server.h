@@ -140,6 +140,7 @@ typedef struct fd_s {
 typedef struct client_s {
     buffer_t buffer;
     client_type_t type;
+    int client_number;
     struct sockaddr_in other_socket_addr;
 } client_t;
 
@@ -228,6 +229,7 @@ int handle_server_command(zappy_server_t *zappy_server, char *command);
 void gui_command_msz(zappy_server_t *zappy, UNUSED char *command);
 void gui_command_bct(zappy_server_t *zappy, char *command);
 void gui_command_mct(zappy_server_t *zappy, char *command);
+void gui_command_tna(zappy_server_t *zappy, char *command);
 
 // ERROR FUNCTIONS
 void error_command_argument(char *command, int nb_argument, int nb_expected);

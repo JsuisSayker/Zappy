@@ -16,15 +16,8 @@ static void send_map_info(zappy_server_t *zappy_server)
         zappy_server->args->width, zappy_server->args->height);
     for (int i = 0; i < zappy_server->args->height; i++) {
         for (int j = 0; j < zappy_server->args->width; j++) {
-            dprintf(zappy_server->actual_sockfd,
-                "bct %d %d %d %d %d %d %d %d %d\n",
-                i, j, zappy_server->map_tile[i][j].food,
-                zappy_server->map_tile[i][j].linemate,
-                zappy_server->map_tile[i][j].deraumere,
-                zappy_server->map_tile[i][j].sibur,
-                zappy_server->map_tile[i][j].mendiane,
-                zappy_server->map_tile[i][j].phiras,
-                zappy_server->map_tile[i][j].thystame);
+            display_gui_tile(zappy_server->map_tile[i][j],
+                zappy_server->actual_sockfd);
         }
     }
     TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next) {
@@ -39,6 +32,7 @@ static int graphic_client(zappy_server_t *zappy_server)
     return OK;
 }
 
+
 static int ia_client_find_team(zappy_server_t *zappy_server, team_t *tmp_team,
     char *command)
 {
@@ -52,6 +46,8 @@ static int ia_client_find_team(zappy_server_t *zappy_server, team_t *tmp_team,
         // mettre bonne valuer ligne en dessous /!/
         dprintf(zappy_server->actual_sockfd, "2 %d %d\n",
             zappy_server->args->width, zappy_server->args->height);
+        zappy_server->clients[zappy_server->actual_sockfd].client_number =
+            zappy_server->actual_sockfd;
         zappy_server->clients[zappy_server->actual_sockfd].type = IA;
         return 1;
     }
