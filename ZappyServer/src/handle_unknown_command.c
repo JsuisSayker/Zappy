@@ -32,21 +32,40 @@ static int graphic_client(zappy_server_t *zappy_server)
     return OK;
 }
 
-
-static int ia_value_setter(zappy_server_t *zappy_server, client_t *ia,
-    team_t *tmp_team)
+char *direction_string(ia_direction_t orientation)
 {
-    int rdm_x = 0;
-    int rdm_y = 0;
-    int rdm_orientation = 0;
+    if (orientation == NORTH)
+        return "N";
+    if (orientation == EAST)
+        return "E";
+    if (orientation == SOUTH)
+        return "S";
+    if (orientation == WEST)
+        return "W";
+    return "U";
+}
 
-    if (zappy_server == NULL || ia == NULL || tmp_team == NULL)
+static void send_info_ia_to_gui(zappy_server_t *zappy_server, client_t *client)
+{
+    for (int i = 3; i < FD_SETSIZE; i++) {
+        if (zappy_server->clients[i].type == GUI) {
+            dprintf(i, "pnw #%d %d %d %s %d %s\n",
+                client->client_number,
+                client->pos.x,
+                client->pos.y,
+                direction_string(client->pos.direction),
+                client->level,
+                client->team_name);
+        }
+    }
+}
+
+static int ia_value_direction_setter(client_t *ia)
+{
+    int rdm_orientation = rand() % 3;;
+
+    if (ia == NULL)
         return ERROR;
-    rdm_x = rand() % zappy_server->args->width;
-    rdm_y = rand() % zappy_server->args->height;
-    rdm_orientation = rand() % 3;
-    ia->pos.x = rdm_x;
-    ia->pos.y = rdm_y;
     if (rdm_orientation == 0)
         ia->pos.direction = NORTH;
     if (rdm_orientation == 1)
@@ -58,14 +77,35 @@ static int ia_value_setter(zappy_server_t *zappy_server, client_t *ia,
     return OK;
 }
 
+static int ia_value_setter(zappy_server_t *zappy_server, client_t *ia,
+    team_t *tmp_team)
+{
+    int rdm_x = 0;
+    int rdm_y = 0;
+
+    if (zappy_server == NULL || ia == NULL || tmp_team == NULL)
+        return ERROR;
+    rdm_x = rand() % zappy_server->args->width;
+    rdm_y = rand() % zappy_server->args->height;
+    ia->pos.x = rdm_x;
+    ia->pos.y = rdm_y;
+    ia->team_name = strdup(tmp_team->name);
+    ia->client_number = zappy_server->actual_sockfd;
+    ia->type = IA;
+    ia->level = 1;
+    if (ia_value_direction_setter(ia) == ERROR)
+        return ERROR;
+    return OK;
+}
+
 static int ia_client_find_team(zappy_server_t *zappy_server, team_t *tmp_team,
     char *command)
 {
     client_t *tmp_client = NULL;
 
-    if (zappy_server == NULL|| tmp_client == NULL|| command == NULL)
+    if (zappy_server == NULL|| tmp_team == NULL|| command == NULL)
         return ERROR;
-    if (strcmp(tmp_team->name, command) == 0) {
+    if (strncmp(tmp_team->name, command, strlen(tmp_team->name)) == 0) {
         if (tmp_team->nb_matures_eggs == 0) {
             printf("no slot in the team %s left", tmp_team->name);
             return ERROR;
@@ -75,10 +115,9 @@ static int ia_client_find_team(zappy_server_t *zappy_server, team_t *tmp_team,
         tmp_client = &zappy_server->clients[zappy_server->actual_sockfd];
         if (ia_value_setter(zappy_server, tmp_client, tmp_team) == ERROR)
             return ERROR;
-        dprintf(zappy_server->actual_sockfd, "2\n %d %d\n",
+        dprintf(zappy_server->actual_sockfd, "2\n%d %d\n",
             tmp_client->pos.x, tmp_client->pos.y);
-        tmp_client->client_number = zappy_server->actual_sockfd;
-        tmp_client->type = IA;
+        send_info_ia_to_gui(zappy_server, tmp_client);
         return 1;
     }
     return OK;

@@ -154,6 +154,8 @@ typedef struct client_s {
     buffer_t buffer;
     client_type_t type;
     int client_number;
+    int level;
+    char *team_name;
     struct sockaddr_in other_socket_addr;
     int freq;
     struct timeval start;
