@@ -7,7 +7,7 @@
 
 #include <zappy_server.h>
 
-char *direction_string(direction_t orientation)
+char *direction_string(ia_direction_t orientation)
 {
     if (orientation == NORTH)
         return "N";

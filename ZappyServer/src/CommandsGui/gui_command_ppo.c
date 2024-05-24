@@ -16,5 +16,6 @@ void gui_command_ppo(zappy_server_t *zappy, char *command)
     client_nb = atoi(command);
     if (client_nb < 3)
         return;
-    dprintf(zappy->actual_sockfd, "ppo %d %d %d\n", client_nb, zappy->clients[client_nb].x, zappy->clients[client_nb].y);
+    dprintf(zappy->actual_sockfd, "ppo %d %d %d\n", client_nb,
+        zappy->clients[client_nb].pos.x, zappy->clients[client_nb].pos.y);
 }

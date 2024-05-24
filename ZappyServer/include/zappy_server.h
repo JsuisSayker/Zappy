@@ -31,14 +31,14 @@ typedef enum client_type_s {
     UNKNOWN,
 }client_type_t;
 
-typedef enum direction_s {
+typedef enum ia_direction_s {
     NORTH,
     EAST,
     SOUTH,
     WEST,
-} direction_t;
+} ia_direction_t;
 
-char *direction_string(direction_t orientation);
+char *direction_string(ia_direction_t orientation);
 
 typedef struct char_tab_s {
     char *str;
@@ -61,7 +61,7 @@ typedef struct args_config_s {
     int width;
     int height;
     int clientsNb;
-    float freq;
+    int freq;
     struct char_tab_head names;
 } args_config_t;
 
@@ -146,16 +146,23 @@ typedef struct fd_s {
     fd_set ouput;
 } fd_t;
 
+typedef struct ia_position_s {
+    int x;
+    int y;
+    ia_direction_t direction;
+} ia_position_t;
+
 typedef struct client_s {
     buffer_t buffer;
     client_type_t type;
     int client_number;
-    int x;
-    int y;
-    direction_t orientation;
     int level;
     char *team_name;
     struct sockaddr_in other_socket_addr;
+    int freq;
+    struct timeval start;
+    ia_position_t pos;
+    bool is_contracted;
 } client_t;
 
 
@@ -226,6 +233,12 @@ typedef struct command_s {
     void (*func)(zappy_server_t *zappy_server, char *command);
 } command_t;
 
+// COMMANDS IA
+typedef struct command_ia_s {
+    char *command;
+    int (*func)(zappy_server_t *zappy_server, client_t *client, char *command);
+} command_ia_t;
+
 int handle_unknown_command(zappy_server_t *zappy_server, char *command);
 
 // SERVER COMMANDS FUNCTIONS
@@ -236,7 +249,14 @@ void server_command_map(zappy_server_t *zappy, char *command);
 void server_command_clients(zappy_server_t *zappy, char *command);
 void server_command_clear(zappy_server_t *zappy, char *command);
 void server_command_tile(zappy_server_t *zappy, char *command);
+
 // AI COMMANDS FUNCTIONS
+int handle_ia_command(zappy_server_t *zappy, client_t *client, char *command);
+int cast_action(zappy_server_t *zappy, client_t *client, int freq);
+bool check_action(zappy_server_t *zappy, client_t *client);
+
+int ia_command_help(zappy_server_t *zappy, client_t *client, char *cmd);
+int ia_command_forward(zappy_server_t *zappy, client_t *client, char *cmd);
 
 // GUI COMMANDS FUNCTIONS
 int handle_server_command(zappy_server_t *zappy_server, char *command);

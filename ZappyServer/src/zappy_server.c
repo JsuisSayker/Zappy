@@ -36,7 +36,7 @@ static int display_info_server(zappy_server_t *zappy_server)
     printf("width = %d\n", zappy_server->args->width);
     printf("height = %d\n", zappy_server->args->height);
     printf("clients_nb = %d\n", zappy_server->args->clientsNb);
-    printf("freq = %f\n", zappy_server->args->freq);
+    printf("freq = %d\n", zappy_server->args->freq);
     printf("Teams [%d]:\n", get_nb_teams(&zappy_server->all_teams));
     TAILQ_FOREACH(tmp, &zappy_server->all_teams, next){
         printf("name : [%s]\n", tmp->name);
