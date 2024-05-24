@@ -19,10 +19,12 @@ SRC			=	zappy_server.c						\
 				argument_function.c					\
 				generate_ressourse_list.c			\
 				map_tile_function.c					\
+				map_tile_function_sub.c				\
 				int_array_function.c				\
 				close_server.c						\
 				fd_is_set.c							\
 				handle_unknown_command.c			\
+				error_display.c						\
 				${DIR_TOOLS}						\
 				${DIR_COMMAND_IA}					\
 				${DIR_COMMAND_GUI}					\
@@ -38,14 +40,19 @@ COMMAND_IA		=	cast_action.c			\
 					handle_ia_command.c		\
 					ia_command_help.c		\
 
-COMMAND_GUI		=	\
+COMMAND_GUI		=	handle_gui_command.c		\
+					gui_command_msz.c			\
+					gui_command_bct.c			\
+					gui_command_mct.c			\
+					gui_command_tna.c			\
 
 COMMAND_SERVER	=	handle_server_command.c		\
 					server_command_help.c		\
 					server_command_quit.c		\
 					server_command_map.c		\
-					server_command_clients.c		\
+					server_command_clients.c	\
 					server_command_clear.c		\
+					server_command_tile.c		\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 

@@ -1,4 +1,4 @@
-from infos import LEVELS
+from ZappyAI.src.ai.infos import LEVELS, Activity
 
 
 class AI():
@@ -13,6 +13,13 @@ class AI():
         self.searchingRessource: str = ""
         self.look: str = ""
         self.commandList: list[str] = []
+        self.run = True
+        self.dataToSend: str = ""
+        self.availableSlots: int = 0
+        self.canFork: bool = False
+        self.clientId: str = ""
+        self.clientIdList: list[str] = []
+        self.actualActivity: Activity = Activity.STARTING
 
     def isIncantationPossible(self) -> bool:
         requiredRessources = LEVELS[self.level]
@@ -39,5 +46,39 @@ class AI():
                 return
         self.commandList.append("Incantation\n")
 
+    def startingActivity(self):
+        self.dataToSend = "Connect_nbr\n"
+        if self.availableSlots > 0:
+            self.canFork = True
+        self.actualActivity = Activity.POPULATING
 
-# do the algorithm
+    def populatingActivity(self):
+        if self.availableSlots > 0 and len(self.clientIdList) < 6:
+            print("Fork")
+            self.dataToSend = "Fork\n"
+            self.canFork = False
+        else:
+            self.dataToSend = "Look\n"
+        self.actualActivity = Activity.LOOKING
+
+    def lookingActivity(self):
+        self.dataToSend = "Look\n"
+        # self.actualActivity = Activity.SEARCHING
+
+    def inventoryActivity(self):
+        self.dataToSend = "Inventory\n"
+
+    def switchCase(self, activity: Activity):
+        return {
+            Activity.STARTING: self.startingActivity(),
+            Activity.POPULATING: self.populatingActivity(),
+            Activity.LOOKING: self.lookingActivity(),
+            Activity.INVENTORY: self.inventoryActivity()
+        }[activity]
+
+    def algorithm(self) -> None:
+        self.switchCase(self.actualActivity)
+        return
+
+
+# reste au sol les ressources

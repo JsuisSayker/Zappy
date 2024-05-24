@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+from ZappyAI.src.parseArgs import my_parser
+from ZappyAI.src.client.client import Client
+import uuid
+
+
+def entrypoint() -> int:
+    args = my_parser.parser.parse_args(
+        None, my_parser.OrderNamespace()
+    )
+    args.order = args.order[3:]
+    if (args.order[0][0] == "h" and ("elp" in args.order[0][1])):
+        print("USAGE: ./zappy_ai -p port -n name -h machine")
+        return 0
+    if (len(args.order) < 3):
+        return 84
+    port = args.order[0][1][0]
+    name = args.order[1][1][0]
+    machine = args.order[2][1][0]
+    clientId = str(uuid.uuid4())
+    client = Client(port, name, machine, clientId)
+    client.connectWithServer()
+    client.launch_client()
+    client.closeConnection()
+    return 0
+
+
+if __name__ == "__main__":
+    entrypoint()

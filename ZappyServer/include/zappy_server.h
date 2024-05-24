@@ -91,6 +91,8 @@ void free_map_tile(map_tile_t **map_tile);
 void put_resource_on_map_tile(map_tile_t **map_tile,
     struct char_tab_head *head, int x, int y);
 map_tile_t **setup_map_tile(int x, int y);
+void display_tile(map_tile_t tile);
+void display_gui_tile(map_tile_t tile, int socket);
 void display_map_tile(map_tile_t **map_tile);
 
 // int array functions
@@ -151,6 +153,7 @@ typedef struct ia_position_s {
 typedef struct client_s {
     buffer_t buffer;
     client_type_t type;
+    int client_number;
     struct sockaddr_in other_socket_addr;
     int freq;
     struct timeval start;
@@ -241,6 +244,7 @@ void server_command_quit(zappy_server_t *zappy, char *command);
 void server_command_map(zappy_server_t *zappy, char *command);
 void server_command_clients(zappy_server_t *zappy, char *command);
 void server_command_clear(zappy_server_t *zappy, char *command);
+void server_command_tile(zappy_server_t *zappy, char *command);
 
 // AI COMMANDS FUNCTIONS
 int handle_ia_command(zappy_server_t *zappy, client_t *client, char *command);
@@ -251,6 +255,13 @@ int ia_command_help(zappy_server_t *zappy, client_t *client, char *cmd);
 int ia_command_forward(zappy_server_t *zappy, client_t *client, char *cmd);
 
 // GUI COMMANDS FUNCTIONS
+int handle_server_command(zappy_server_t *zappy_server, char *command);
+void gui_command_msz(zappy_server_t *zappy, UNUSED char *command);
+void gui_command_bct(zappy_server_t *zappy, char *command);
+void gui_command_mct(zappy_server_t *zappy, char *command);
+void gui_command_tna(zappy_server_t *zappy, char *command);
 
+// ERROR FUNCTIONS
+void error_command_argument(char *command, int nb_argument, int nb_expected);
 
 #endif /* !ZAPPY_SERVER_H_ */
