@@ -7,7 +7,7 @@
 
 #include <zappy_server.h>
 
-void server_command_tile(zappy_server_t *zappy, char *command)
+void gui_command_bct(zappy_server_t *zappy, char *command)
 {
     int x = 0;
     int y = 0;
@@ -26,7 +26,7 @@ void server_command_tile(zappy_server_t *zappy, char *command)
     y = atoi(command_args[1]);
     if (x >= 0 && x < zappy->args->width && y >= 0 &&
         y < zappy->args->height) {
-        display_tile(zappy->map_tile[y][x]);
+        display_gui_tile(zappy->map_tile[y][x], zappy->actual_sockfd);
     } else {
         printf("Invalid coordinates\n");
     }

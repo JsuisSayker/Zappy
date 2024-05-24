@@ -38,7 +38,10 @@ TOOLS		=	splitter.c						\
 
 COMMAND_IA		=	\
 
-COMMAND_GUI		=	\
+COMMAND_GUI		=	handle_gui_command.c		\
+					gui_command_msz.c			\
+					gui_command_bct.c			\
+					gui_command_mct.c			\
 
 COMMAND_SERVER	=	handle_server_command.c		\
 					server_command_help.c		\

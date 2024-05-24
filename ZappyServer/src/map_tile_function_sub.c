@@ -17,6 +17,13 @@ void display_tile(map_tile_t tile)
         tile.phiras, tile.thystame);
 }
 
+void display_gui_tile(map_tile_t tile, int socket)
+{
+    dprintf(socket, "bct %d %d %d %d %d %d %d %d %d\n", tile.x, tile.y,
+        tile.food, tile.linemate, tile.deraumere, tile.sibur,
+        tile.mendiane, tile.phiras, tile.thystame);
+}
+
 void display_map_tile(map_tile_t **map_tile)
 {
     int i = 0;
