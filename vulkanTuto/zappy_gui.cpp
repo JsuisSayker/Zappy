@@ -22,14 +22,14 @@
 
 namespace zappy {
 
-ZappyGui::ZappyGui(int width, int height)
+ZappyGui::ZappyGui(int width, int height) : mapWidth(width), mapHeight(height)
 {
     globalPool = LveDescriptorPool::Builder(lveDevice)
                      .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
                      .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
                          ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
                      .build();
-    loadMap(width, height);
+    loadMap();
 }
 
 ZappyGui::~ZappyGui() {}
@@ -69,7 +69,13 @@ void ZappyGui::run()
     ZappyCamera camera{};
 
     auto viewerObject = ZappyGameObject::createGameObject();
-    viewerObject.transform.translation.z = -2.5f;
+    viewerObject.transform.translation.x = mapWidth / 2.f;
+    viewerObject.transform.translation.y = -mapWidth / 1.5f;
+    if (mapWidth < mapHeight) {
+        viewerObject.transform.translation.y = -mapHeight / 1.5f;
+    }
+    viewerObject.transform.translation.z = mapHeight / 2.f;
+    viewerObject.transform.rotation.x = -40.f;
     KeyboardMovementController cameraController{};
 
     auto currentTime = std::chrono::high_resolution_clock::now();
@@ -122,14 +128,14 @@ void ZappyGui::run()
     vkDeviceWaitIdle(lveDevice.device());
 }
 
-void ZappyGui::loadMap(int width, int height)
+void ZappyGui::loadMap()
 {
     std::shared_ptr<ZappyModel> whiteCubeModel =
         ZappyModel::createModelFromFile(lveDevice, "models/cube_white.obj");
     std::shared_ptr<ZappyModel> blackCubeModel =
         ZappyModel::createModelFromFile(lveDevice, "models/cube_black.obj");
-    for (int x = 0; x < width; x++) {
-        for (int z = 0; z < height; z++) {
+    for (int x = 0; x < mapWidth; x++) {
+        for (int z = 0; z < mapHeight; z++) {
             auto cube = ZappyGameObject::createGameObject();
             cube.model = (x + z) % 2 == 0 ? whiteCubeModel : blackCubeModel;
             cube.transform.translation = {x, 0.f, z};

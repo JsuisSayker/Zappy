@@ -25,7 +25,7 @@ class ZappyGui {
   void run();
 
  private:
-  void loadMap(int width, int height);
+  void loadMap();
 
   ZappyWindow lveWindow{WIDTH, HEIGHT, "Vulkan Tutorial"};
   ZappyDevice lveDevice{lveWindow};
@@ -34,5 +34,8 @@ class ZappyGui {
   // note: order of declarations matters
   std::unique_ptr<LveDescriptorPool> globalPool{};
   ZappyGameObject::Map gameObjects;
+
+  int mapWidth;
+  int mapHeight;
 };
 }  // namespace zappy
