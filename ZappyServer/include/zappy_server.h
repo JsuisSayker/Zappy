@@ -50,6 +50,16 @@ struct char_tab_head {
     struct char_tab_s **tqh_last;
 };
 
+typedef struct inventory_s{
+    int food;
+    int linemate;
+    int deraumere;
+    int sibur;
+    int mendiane;
+    int phiras;
+    int thystame;
+} inventory_t;
+
 // char_tab functions
 void free_char_tab_list(struct char_tab_head *head);
 void display_char_tab_list(struct char_tab_head *head);
@@ -68,13 +78,7 @@ typedef struct args_config_s {
 typedef struct map_tile_s {
     int x;
     int y;
-    int food;
-    int linemate;
-    int deraumere;
-    int sibur;
-    int mendiane;
-    int phiras;
-    int thystame;
+    inventory_t inventory;
 } map_tile_t;
 
 // args_config functions
@@ -159,6 +163,7 @@ typedef struct client_s {
     int level;
     char *team_name;
     struct sockaddr_in other_socket_addr;
+    inventory_t inventory;
     int freq;
     struct timeval start;
     ia_position_t pos;
@@ -266,6 +271,7 @@ void gui_command_mct(zappy_server_t *zappy, char *command);
 void gui_command_tna(zappy_server_t *zappy, char *command);
 void gui_command_ppo(zappy_server_t *zappy, char *command);
 void gui_command_plv(zappy_server_t *zappy, char *command);
+void gui_command_pin(zappy_server_t *zappy, char *command);
 
 // ERROR FUNCTIONS
 void error_command_argument(char *command, int nb_argument, int nb_expected);

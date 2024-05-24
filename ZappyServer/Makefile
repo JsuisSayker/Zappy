@@ -48,6 +48,7 @@ COMMAND_GUI		=	handle_gui_command.c		\
 					gui_command_tna.c			\
 					gui_command_ppo.c			\
 					gui_command_plv.c			\
+					gui_command_pin.c			\
 
 COMMAND_SERVER	=	handle_server_command.c		\
 					server_command_help.c		\
