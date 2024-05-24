@@ -32,25 +32,12 @@ static int graphic_client(zappy_server_t *zappy_server)
     return OK;
 }
 
-char *direction_string(direction_t orientation)
-{
-    if (orientation == NORTH)
-        return "N";
-    if (orientation == EAST)
-        return "E";
-    if (orientation == SOUTH)
-        return "S";
-    if (orientation == WEST)
-        return "W";
-    return "U";
-}
-
 static void send_info_ia_to_gui(zappy_server_t *zappy_server, client_t *client)
 {
     for (int i = 3; i < FD_SETSIZE; i++) {
         if (zappy_server->clients[i].type == GUI) {
-            dprintf(i, "pnw #%d %d %d %s %d %s\n",
-                client->client_number,
+            dprintf(i, "pnw #0 %d %d %s %d %s\n",
+                // client->client_number,
                 client->x,
                 client->y,
                 direction_string(client->orientation),

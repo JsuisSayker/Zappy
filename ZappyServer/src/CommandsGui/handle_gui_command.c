@@ -12,6 +12,8 @@ static const struct command_s COMMAND_FUNCS[] = {
     {"bct", &gui_command_bct},
     {"mct", &gui_command_mct},
     {"tna", &gui_command_tna},
+    {"ppo", &gui_command_ppo},
+    {"plv", &gui_command_plv},
     {"NULL", NULL}
 };
 

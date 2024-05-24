@@ -38,6 +38,8 @@ typedef enum direction_s {
     WEST,
 } direction_t;
 
+char *direction_string(direction_t orientation);
+
 typedef struct char_tab_s {
     char *str;
     TAILQ_ENTRY(char_tab_s) next;
@@ -242,6 +244,8 @@ void gui_command_msz(zappy_server_t *zappy, UNUSED char *command);
 void gui_command_bct(zappy_server_t *zappy, char *command);
 void gui_command_mct(zappy_server_t *zappy, char *command);
 void gui_command_tna(zappy_server_t *zappy, char *command);
+void gui_command_ppo(zappy_server_t *zappy, char *command);
+void gui_command_plv(zappy_server_t *zappy, char *command);
 
 // ERROR FUNCTIONS
 void error_command_argument(char *command, int nb_argument, int nb_expected);
