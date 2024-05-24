@@ -6,6 +6,7 @@
 */
 
 #include <zappy_server.h>
+#include <sys/time.h>
 
 int cast_action(zappy_server_t *zappy, client_t *client, int freq)
 {
@@ -13,24 +14,25 @@ int cast_action(zappy_server_t *zappy, client_t *client, int freq)
         return ERROR;
     if (client->is_contracted == false) {
         client->is_contracted = true;
-        client->freq = freq;
-        client->start_timer = clock();
+        client->freq = freq / zappy->args->freq;
+        gettimeofday(&client->start, NULL);
     }
     return OK;
 }
 
 bool check_action(zappy_server_t *zappy, client_t *client)
 {
-    int frequence = 0;
+    struct timeval end;
+    double elapsed;
 
     if (client == NULL || zappy == NULL)
         return false;
-    frequence = client->freq / zappy->args->freq;
-    if (client->is_contracted == true &&  frequence >
-    (clock() - client->start_timer) / CLOCKS_PER_SEC) {
+    gettimeofday(&end, NULL);
+    elapsed = end.tv_sec - client->start.tv_sec;
+    if (client->is_contracted == true && client->freq < elapsed) {
         client->is_contracted = false;
-        client->start_timer = 0;
         client->freq = 0;
+        client->start.tv_sec = 0;
         return true;
     }
     return false;

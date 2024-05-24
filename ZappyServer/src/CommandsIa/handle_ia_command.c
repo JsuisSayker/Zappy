@@ -20,7 +20,7 @@
     // {"/connect_nbr", &connect_nbr},
 
 static const struct command_ia_s COMMAND_FUNCS[] = {
-    {"/help", &ia_command_help},
+    {"Help", &ia_command_help},
     {"NULL", NULL}
 };
 

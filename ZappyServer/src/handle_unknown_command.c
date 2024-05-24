@@ -10,7 +10,6 @@
 int handle_unknown_command(zappy_server_t *zappy_server, char *command)
 {
     team_t *tmp_team = NULL;
-
     if (strcmp("GRAPHIC", command) == 0) {
         zappy_server->clients[zappy_server->actual_sockfd].type = GUI;
         dprintf(zappy_server->actual_sockfd, "msz %d %d\n",
@@ -30,7 +29,8 @@ int handle_unknown_command(zappy_server_t *zappy_server, char *command)
         return OK;
     } else {
         TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next) {
-            if (strcmp(tmp_team->name, command) == 0) {
+            zappy_server->clients[zappy_server->actual_sockfd].type = IA;
+            if (strncmp(tmp_team->name, command, strlen(tmp_team->name)) == 0) {
                 if (tmp_team->nb_matures_eggs == 0) {
                     printf("no slot in the team %s left", tmp_team->name);
                     return ERROR;
