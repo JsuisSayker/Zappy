@@ -7,14 +7,13 @@
 
 #include <zappy_server.h>
 
-static int send_logout_to_all_clients(UNUSED zappy_server_t *zappy_server)
+static int send_logout_to_all_clients(zappy_server_t *zappy_server)
 {
     for (zappy_server->actual_sockfd = 0;
         zappy_server->actual_sockfd < __FD_SETSIZE;
         zappy_server->actual_sockfd += 1) {
         if (zappy_server->clients[zappy_server->actual_sockfd].team_name)
             free(zappy_server->clients[zappy_server->actual_sockfd].team_name);
-    //         return ERROR;
     }
     return OK;
 }
