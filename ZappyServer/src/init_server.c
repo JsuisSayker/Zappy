@@ -74,6 +74,7 @@ static void init_value(zappy_server_t *zappy_server)
     for (int i = 0; i < FD_SETSIZE; i += 1) {
         zappy_server->clients[i].type = UNKNOWN;
         zappy_server->clients[i].client_number = -1;
+        zappy_server->clients[i].team_name = NULL;
     }
 }
 

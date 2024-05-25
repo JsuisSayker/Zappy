@@ -21,7 +21,7 @@ gui:
 
 debug:
 	make debug -C ZappyServer
-	make debug -C ZappyAI
+	# make debug -C ZappyAI
 
 clean:
 	make clean -C ZappyServer
