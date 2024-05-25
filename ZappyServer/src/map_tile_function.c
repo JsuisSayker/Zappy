@@ -11,13 +11,13 @@ static void init_tile_value(map_tile_t **map_tile, int x, int y)
 {
     map_tile[y][x].x = x;
     map_tile[y][x].y = y;
-    map_tile[y][x].food = 0;
-    map_tile[y][x].linemate = 0;
-    map_tile[y][x].deraumere = 0;
-    map_tile[y][x].sibur = 0;
-    map_tile[y][x].mendiane = 0;
-    map_tile[y][x].phiras = 0;
-    map_tile[y][x].thystame = 0;
+    map_tile[y][x].inventory.food = 0;
+    map_tile[y][x].inventory.linemate = 0;
+    map_tile[y][x].inventory.deraumere = 0;
+    map_tile[y][x].inventory.sibur = 0;
+    map_tile[y][x].inventory.mendiane = 0;
+    map_tile[y][x].inventory.phiras = 0;
+    map_tile[y][x].inventory.thystame = 0;
 }
 
 map_tile_t **generate_map_tile(int x, int y)
@@ -49,19 +49,19 @@ void free_map_tile(map_tile_t **map_tile)
 static void add_resource_to_tile(map_tile_t *tile_map_tile, char *resourse)
 {
     if (strcmp(resourse, "food") == 0)
-        tile_map_tile->food += 1;
+        tile_map_tile->inventory.food += 1;
     if (strcmp(resourse, "linemate") == 0)
-        tile_map_tile->linemate += 1;
+        tile_map_tile->inventory.linemate += 1;
     if (strcmp(resourse, "deraumere") == 0)
-        tile_map_tile->deraumere += 1;
+        tile_map_tile->inventory.deraumere += 1;
     if (strcmp(resourse, "sibur") == 0)
-        tile_map_tile->sibur += 1;
+        tile_map_tile->inventory.sibur += 1;
     if (strcmp(resourse, "mendiane") == 0)
-        tile_map_tile->mendiane += 1;
+        tile_map_tile->inventory.mendiane += 1;
     if (strcmp(resourse, "phiras") == 0)
-        tile_map_tile->phiras += 1;
+        tile_map_tile->inventory.phiras += 1;
     if (strcmp(resourse, "thystame") == 0)
-        tile_map_tile->thystame += 1;
+        tile_map_tile->inventory.thystame += 1;
 }
 
 static void add_all_resource_to_tile(map_tile_t **map_tile, char_tab_t **tmp,

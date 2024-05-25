@@ -25,6 +25,7 @@ SRC			=	zappy_server.c						\
 				fd_is_set.c							\
 				handle_unknown_command.c			\
 				error_display.c						\
+				ia_direction_function.c				\
 				${DIR_TOOLS}						\
 				${DIR_COMMAND_IA}					\
 				${DIR_COMMAND_GUI}					\
@@ -36,9 +37,18 @@ TOOLS		=	splitter.c						\
 				char_tab_list_function.c
 
 
-COMMAND_IA		=	\
+COMMAND_IA		=	cast_action.c			\
+					handle_ia_command.c		\
+					ia_command_help.c		\
 
-COMMAND_GUI		=	\
+COMMAND_GUI		=	handle_gui_command.c		\
+					gui_command_msz.c			\
+					gui_command_bct.c			\
+					gui_command_mct.c			\
+					gui_command_tna.c			\
+					gui_command_ppo.c			\
+					gui_command_plv.c			\
+					gui_command_pin.c			\
 
 COMMAND_SERVER	=	handle_server_command.c		\
 					server_command_help.c		\

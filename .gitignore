@@ -67,6 +67,8 @@ __pycache__
 .tmp_versions/
 modules.order
 Module.symvers
+zappy_ai
+zappy_server
 Mkfile.old
 dkms.conf
 

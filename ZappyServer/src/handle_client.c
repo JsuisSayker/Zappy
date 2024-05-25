@@ -17,7 +17,8 @@ static int handle_command(zappy_server_t *zappy_server, char *command)
     case UNKNOWN:
         return handle_unknown_command(zappy_server, command);
     case IA:
-        break;
+        return handle_ia_command(zappy_server,
+            &zappy_server->clients[zappy_server->actual_sockfd], command);
     case GUI:
         break;
     }
