@@ -22,13 +22,28 @@ void init_list(zappy_server_t *zappy_server)
     zappy_server->all_teams.tqh_first = NULL;
 }
 
+void generate_egg_by_team(zappy_server_t *zappy_server, team_t *new_team)
+{
+    egg_t *new_egg = NULL;
+
+    for (int i = 0; i < zappy_server->args->clientsNb; i += 1) {
+        egg_t *new_egg = calloc(sizeof(egg_t), 1);
+        if (new_egg == NULL)
+            return;
+        new_egg->egg_number = zappy_server->index_eggs;
+        new_egg->client_number = -1;
+        new_egg->x = rand() % zappy_server->args->width;
+        new_egg->y = rand() % zappy_server->args->height;
+        TAILQ_INSERT_TAIL(&(new_team->eggs_head), new_egg, next);
+        zappy_server->index_eggs += 1;
+    }
+}
+
 void create_teams(zappy_server_t *zappy_server)
 {
-    team_t *new_team = calloc(sizeof(team_t), 1);
+    team_t *new_team = NULL;
     char_tab_t *team_name = NULL;
 
-    if (new_team == NULL)
-        return;
     team_name = TAILQ_FIRST(&(zappy_server->args->names));
     while (team_name != NULL){
         new_team = calloc(sizeof(team_t), 1);
@@ -39,6 +54,8 @@ void create_teams(zappy_server_t *zappy_server)
         strcpy(new_team->name, team_name->str);
         new_team->nb_drones = 0;
         new_team->nb_matures_eggs = zappy_server->args->clientsNb;
+        TAILQ_INIT(&(new_team->eggs_head));
+        generate_egg_by_team(zappy_server, new_team);
         TAILQ_INSERT_TAIL(&(zappy_server->all_teams), new_team, next);
         team_name = TAILQ_NEXT(team_name, next);
     }
@@ -57,6 +74,8 @@ int init_server(zappy_server_t *zappy_server, args_config_t *args)
     }
     init_fd_struct(&zappy_server->fd, zappy_server->my_socket);
     zappy_server->args = args;
+    zappy_server->index_eggs = 0;
+    zappy_server->index_clients = 0;
     init_list(zappy_server);
     create_teams(zappy_server);
     zappy_server->map_tile = setup_map_tile(zappy_server->args->width,

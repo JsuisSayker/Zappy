@@ -170,12 +170,25 @@ typedef struct client_s {
     bool is_contracted;
 } client_t;
 
+typedef struct egg_s {
+    int egg_number;
+    int client_number;
+    int x;
+    int y;
+    TAILQ_ENTRY(egg_s) next;
+} egg_t;
+
+struct egghead {
+    struct egg_s *tqh_first;
+    struct egg_s **tqh_last;
+};
 
 typedef struct team_s {
     char *name;
     char team_uuid[MAX_UUID_LENGTH];
     int nb_drones;
     int nb_matures_eggs;
+    struct egghead eggs_head;
     client_t *client;
     TAILQ_ENTRY(team_s) next;
 } team_t;
@@ -190,6 +203,8 @@ typedef struct zappy_server_s {
     fd_t fd;
     int my_socket;
     int actual_sockfd;
+    int index_eggs;
+    int index_clients;
     bool server_running;
     struct sockaddr_in server_addr;
     struct teamhead all_teams;
