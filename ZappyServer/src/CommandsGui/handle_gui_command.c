@@ -28,5 +28,6 @@ int handle_gui_command(zappy_server_t *zappy_server, char *command)
             return OK;
         }
     }
+    gui_command_suc(zappy_server, command);
     return ERROR;
 }

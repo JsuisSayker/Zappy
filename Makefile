@@ -10,6 +10,15 @@ all:
 	make all -C ZappyAI
 	make all -C vulkanTuto
 
+server:
+	make -C ZappyServer
+
+ai:
+	make -C ZappyAI
+
+gui:
+	make -C vulkanTuto
+
 debug:
 	make debug -C ZappyServer
 	make debug -C ZappyAI
