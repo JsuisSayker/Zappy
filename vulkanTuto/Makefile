@@ -9,7 +9,7 @@ vertObjFiles = $(patsubst %.vert, %.vert.spv, $(vertSources))
 fragSources = $(shell find ./shaders -type f -name "*.frag")
 fragObjFiles = $(patsubst %.frag, %.frag.spv, $(fragSources))
 
-TARGET = zappy_gui
+TARGET = ../zappy_gui
 $(TARGET): $(vertObjFiles) $(fragObjFiles)
 $(TARGET): *.cpp *.hpp
 	g++ $(CFLAGS) -o $(TARGET) *.cpp $(LDFLAGS)
@@ -18,11 +18,13 @@ $(TARGET): *.cpp *.hpp
 %.spv: %
 	${GLSLC} $< -o $@
 
-.PHONY: test clean
-
-test: zappy_gui
-	./zappy_gui
+test: $(TARGET)
+	./$(TARGET)
 
 clean:
-	rm -f zappy_gui
+	rm -f $(TARGET)
 	rm -f *.spv
+
+re: clean $(TARGET)
+
+.PHONY: test clean re

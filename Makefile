@@ -8,6 +8,7 @@
 all:
 	make all -C ZappyServer
 	make all -C ZappyAI
+	make all -C vulkanTuto
 
 debug:
 	make debug -C ZappyServer
@@ -15,6 +16,7 @@ debug:
 
 clean:
 	make clean -C ZappyServer
+	make clean -C vulkanTuto
 
 fclean: clean
 	make fclean -C ZappyServer
@@ -23,6 +25,7 @@ fclean: clean
 re:
 	make re -C ZappyServer
 	make re -C ZappyAI
+	make re -C vulkanTuto
 
 unit_tests:
 	make unit_tests -C ZappyServer
