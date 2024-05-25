@@ -10,6 +10,7 @@
 void gui_command_ppo(zappy_server_t *zappy, char *command)
 {
     int client_nb = 0;
+
     if (command[0] != ' ' && command[1] != '#')
         return;
     command = &command[1];

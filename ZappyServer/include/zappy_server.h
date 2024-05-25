@@ -50,7 +50,7 @@ struct char_tab_head {
     struct char_tab_s **tqh_last;
 };
 
-typedef struct inventory_s{
+typedef struct inventory_s {
     int food;
     int linemate;
     int deraumere;

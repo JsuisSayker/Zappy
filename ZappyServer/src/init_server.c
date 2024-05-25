@@ -16,18 +16,19 @@ static void init_fd_struct(fd_t *fd, int my_socket)
     FD_SET(my_socket, &fd->ouput);
 }
 
-void init_list(zappy_server_t *zappy_server)
+static void init_list(zappy_server_t *zappy_server)
 {
     TAILQ_INIT(&(zappy_server->all_teams));
     zappy_server->all_teams.tqh_first = NULL;
 }
 
-void generate_egg_by_team(zappy_server_t *zappy_server, team_t *new_team)
+static void generate_egg_by_team(zappy_server_t *zappy_server,
+    team_t *new_team)
 {
     egg_t *new_egg = NULL;
 
     for (int i = 0; i < zappy_server->args->clientsNb; i += 1) {
-        egg_t *new_egg = calloc(sizeof(egg_t), 1);
+        new_egg = calloc(sizeof(egg_t), 1);
         if (new_egg == NULL)
             return;
         new_egg->egg_number = zappy_server->index_eggs;
@@ -39,7 +40,7 @@ void generate_egg_by_team(zappy_server_t *zappy_server, team_t *new_team)
     }
 }
 
-void create_teams(zappy_server_t *zappy_server)
+static void create_teams(zappy_server_t *zappy_server)
 {
     team_t *new_team = NULL;
     char_tab_t *team_name = NULL;
@@ -61,6 +62,21 @@ void create_teams(zappy_server_t *zappy_server)
     }
 }
 
+static void init_value(zappy_server_t *zappy_server)
+{
+    zappy_server->index_eggs = 0;
+    zappy_server->index_clients = 0;
+    zappy_server->server_running = true;
+    init_list(zappy_server);
+    create_teams(zappy_server);
+    zappy_server->map_tile = setup_map_tile(zappy_server->args->width,
+        zappy_server->args->height);
+    for (int i = 0; i < FD_SETSIZE; i += 1) {
+        zappy_server->clients[i].type = UNKNOWN;
+        zappy_server->clients[i].client_number = -1;
+    }
+}
+
 int init_server(zappy_server_t *zappy_server, args_config_t *args)
 {
     if (zappy_server == NULL) {
@@ -74,15 +90,6 @@ int init_server(zappy_server_t *zappy_server, args_config_t *args)
     }
     init_fd_struct(&zappy_server->fd, zappy_server->my_socket);
     zappy_server->args = args;
-    zappy_server->index_eggs = 0;
-    zappy_server->index_clients = 0;
-    init_list(zappy_server);
-    create_teams(zappy_server);
-    zappy_server->map_tile = setup_map_tile(zappy_server->args->width,
-        zappy_server->args->height);
-    zappy_server->server_running = true;
-    for (int i = 0; i < FD_SETSIZE; i += 1) {
-        zappy_server->clients[i].type = UNKNOWN;
-    }
+    init_value(zappy_server);
     return 0;
 }

@@ -7,10 +7,25 @@
 
 #include <zappy_server.h>
 
-static void send_map_info(zappy_server_t *zappy_server)
+static void send_egg_info(zappy_server_t *zappy_server)
 {
     team_t *tmp_team = NULL;
     egg_t *tmp_egg = NULL;
+
+    TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next) {
+        TAILQ_FOREACH(tmp_egg, &tmp_team->eggs_head, next) {
+            dprintf(zappy_server->actual_sockfd, "enw %d %d %d %d\n",
+                tmp_egg->egg_number, tmp_egg->client_number, tmp_egg->x,
+                tmp_egg->y);
+            dprintf(zappy_server->actual_sockfd, "eht %d\n",
+                tmp_egg->egg_number);
+        }
+    }
+}
+
+static void send_map_info(zappy_server_t *zappy_server)
+{
+    team_t *tmp_team = NULL;
 
     dprintf(zappy_server->actual_sockfd, "msz %d %d\n",
         zappy_server->args->width, zappy_server->args->height);
@@ -24,45 +39,31 @@ static void send_map_info(zappy_server_t *zappy_server)
     TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next) {
         dprintf(zappy_server->actual_sockfd, "tna %s\n", tmp_team->name);
     }
-    TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next) {
-        TAILQ_FOREACH(tmp_egg, &tmp_team->eggs_head, next) {
-            dprintf(zappy_server->actual_sockfd, "enw %d %d %d %d\n",
-                tmp_egg->egg_number, tmp_egg->client_number, tmp_egg->x,
-                tmp_egg->y);
-            dprintf(zappy_server->actual_sockfd, "eht %d\n",
-                tmp_egg->egg_number);
-        }
-    }
 }
 
 static int graphic_client(zappy_server_t *zappy_server)
 {
     zappy_server->clients[zappy_server->actual_sockfd].type = GUI;
     send_map_info(zappy_server);
+    send_egg_info(zappy_server);
     return OK;
 }
 
 // official GUI don't accept N E W S as direction
 // so I put 1 2 3 4 instead
 // and command pnw don't have '#'
-
 static void send_info_ia_to_gui(zappy_server_t *zappy_server, client_t *client)
 {
     for (int i = 3; i < FD_SETSIZE; i++) {
         if (zappy_server->clients[i].type == GUI) {
-            dprintf(i, "pnw %d %d %d %d %d %s\n", client->client_number, client->pos.x,
-                client->pos.y, client->pos.direction,
+            dprintf(i, "pnw %d %d %d %d %d %s\n", client->client_number,
+                client->pos.x, client->pos.y, client->pos.direction,
                 client->level, client->team_name);
-            dprintf(i,
-                "pin %d %d %d %d %d %d %d %d %d %d\n", client->client_number,
-                client->pos.x,
-                client->pos.y,
-                client->inventory.food,
-                client->inventory.linemate,
-                client->inventory.deraumere,
-                client->inventory.sibur,
-                client->inventory.mendiane,
-                client->inventory.phiras,
+            dprintf(i, "pin %d %d %d %d %d %d %d %d %d %d\n",
+                client->client_number, client->pos.x, client->pos.y,
+                client->inventory.food, client->inventory.linemate,
+                client->inventory.deraumere, client->inventory.sibur,
+                client->inventory.mendiane, client->inventory.phiras,
                 client->inventory.thystame);
             // change line below
             dprintf(i, "ebo %d\n", 2);
@@ -73,7 +74,6 @@ static void send_info_ia_to_gui(zappy_server_t *zappy_server, client_t *client)
 static int ia_value_direction_setter(client_t *ia)
 {
     int rdm_orientation = rand() % 3;
-    ;
 
     if (ia == NULL)
         return ERROR;
