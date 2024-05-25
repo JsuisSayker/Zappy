@@ -46,7 +46,7 @@ jobs:
           repository: ""
 
       - name : Install dependencies
-        run: sudo apt-get update && sudo apt-get install freeglut3-dev -y
+        run: sudo apt update && sudo apt install freeglut3-dev -y
       
       - name: Compile repository
         run: make
