@@ -21,6 +21,7 @@ clean:
 fclean: clean
 	make fclean -C ZappyServer
 	make fclean -C ZappyAI
+	make clean -C vulkanTuto
 
 re:
 	make re -C ZappyServer

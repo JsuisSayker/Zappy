@@ -25,9 +25,11 @@ test: $(TARGET)
 	./$(TARGET)
 
 clean:
-	rm -f $(TARGET)
 	rm -f *.spv
 
-re: clean $(TARGET)
+fclean: clean
+	rm -f $(TARGET)
 
-.PHONY: test clean re
+re: fclean $(TARGET)
+
+.PHONY: test clean fclean re
