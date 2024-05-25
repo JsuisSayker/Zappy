@@ -25,7 +25,7 @@ test: $(TARGET)
 	./$(TARGET)
 
 clean:
-	rm -f *.spv
+	rm -rf shaders/*.spv
 
 fclean: clean
 	rm -f $(TARGET)

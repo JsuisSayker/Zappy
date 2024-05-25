@@ -45,6 +45,9 @@ jobs:
         with:
           repository: ""
 
+      - name : Install dependencies
+        run: sudo apt-get install freeglut3-dev
+      
       - name: Compile repository
         run: make
 
