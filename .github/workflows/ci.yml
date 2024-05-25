@@ -46,7 +46,7 @@ jobs:
           repository: ""
 
       - name : Install dependencies
-        run: sudo dnf install glslc glfw-devel -y
+        run: sudo dnf install glslc glfw-devel vulkan-devel glm-devel -y
       
       - name: Compile repository
         run: make
