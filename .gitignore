@@ -7,10 +7,13 @@
 *.editorconfig
 *.pdf
 *.swp
+*.spv
 
 unit*
 vgcore*
 tmp
+
+.env
 
 zappy_server
 zappy_cli
