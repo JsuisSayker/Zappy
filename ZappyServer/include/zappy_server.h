@@ -244,10 +244,6 @@ team_t *search_in_teams(struct teamhead *team_head, char *uuid);
 int get_len_char_tab(char **command);
 time_t get_actual_time(void);
 int count_str_char(char *str, char c);
-// get UUID
-team_t *get_team_by_uuid(struct teamhead *teams_head, char *uuid);
-thread_t *get_thread_by_uuid(struct threadhead *thread_head, char *uuid);
-thread_t *get_all_thread_by_uuid(struct teamhead *team_head, char *uuid);
 
 // COMMANDS
 typedef struct command_s {

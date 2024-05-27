@@ -13,8 +13,6 @@ SRC			=	zappy_server.c						\
 				accept_new_connection.c				\
 				setup_server.c						\
 				search_in_object.c					\
-				get_team_by_uuid.c					\
-				get_thread_by_uuid.c				\
 				linked_list/free_list.c				\
 				argument_function.c					\
 				generate_ressourse_list.c			\
@@ -80,7 +78,8 @@ MAIN		=	main.c						\
 
 DIR_MAIN		=	$(addprefix src/, $(MAIN))
 
-TEST		=	\
+TEST		=	test_splitter.c						\
+				test_zappy_server.c					\
 
 DIR_TESTS	=	$(addprefix tests/, $(TEST))
 
