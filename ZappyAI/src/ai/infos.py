@@ -9,6 +9,8 @@ class Activity(Enum):
     LOOKING = 4
     POPULATING = 5
     INVENTORY = 6
+    FILLING = 7
+    EXECUTE_COMMAND = 8
 
 
 LEVELS: dict[int, dict[str, int]] = {
