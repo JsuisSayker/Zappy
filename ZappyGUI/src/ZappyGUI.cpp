@@ -1,34 +1,27 @@
-#include "ZappyGUI.hpp"
 
-#include "KeyboardMovementController.hpp"
-#include "Buffer.hpp"
-#include "Camera.hpp"
-#include "FrameInfo.hpp"
-#include "PointLightSystem.hpp"
-#include "RenderSystem.hpp"
-
-// libs
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
 
-// std
-#include <array>
-#include <cassert>
-#include <chrono>
+#include <glm/gtc/constants.hpp>
+#include <glm/glm.hpp>
 #include <stdexcept>
 #include <iostream>
+#include <cassert>
+#include <chrono>
+#include <array>
+#include "Camera.hpp"
+#include "Buffer.hpp"
+#include "FrameInfo.hpp"
+#include "RenderSystem.hpp"
+#include "PointLightSystem.hpp"
+#include "KeyboardMovementController.hpp"
+#include "ZappyGUI.hpp"
 
 namespace zappy {
 
 ZappyGui::ZappyGui(int width, int height)
 {
-    globalPool = LveDescriptorPool::Builder(lveDevice)
-                     .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
-                     .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                         ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
-                     .build();
+    globalPool = LveDescriptorPool::Builder(lveDevice).setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT).addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, ZappySwapChain::MAX_FRAMES_IN_FLIGHT).build();
     loadMap(width, height);
 }
 
@@ -39,33 +32,22 @@ void ZappyGui::run()
     std::vector<std::unique_ptr<ZappyBuffer>> uboBuffers(
         ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
     for (int i = 0; i < uboBuffers.size(); i++) {
-        uboBuffers[i] = std::make_unique<ZappyBuffer>(lveDevice,
-            sizeof(GlobalUbo), 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+        uboBuffers[i] = std::make_unique<ZappyBuffer>(lveDevice, sizeof(GlobalUbo), 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
         uboBuffers[i]->map();
     }
 
     auto globalSetLayout =
-        ZappyDescriptorSetLayout::Builder(lveDevice)
-            .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                VK_SHADER_STAGE_ALL_GRAPHICS)
-            .build();
+        ZappyDescriptorSetLayout::Builder(lveDevice).addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS).build();
 
     std::vector<VkDescriptorSet> globalDescriptorSets(
         ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
     for (int i = 0; i < globalDescriptorSets.size(); i++) {
         auto bufferInfo = uboBuffers[i]->descriptorInfo();
-        LveDescriptorWriter(*globalSetLayout, *globalPool)
-            .writeBuffer(0, &bufferInfo)
-            .build(globalDescriptorSets[i]);
+        LveDescriptorWriter(*globalSetLayout, *globalPool).writeBuffer(0, &bufferInfo).build(globalDescriptorSets[i]);
     }
 
-    RenderSystem simpleRenderSystem{lveDevice,
-        lveRenderer.getSwapChainRenderPass(),
-        globalSetLayout->getDescriptorSetLayout()};
-    PointLightSystem pointLightSystem{lveDevice,
-        lveRenderer.getSwapChainRenderPass(),
-        globalSetLayout->getDescriptorSetLayout()};
+    RenderSystem simpleRenderSystem{lveDevice, lveRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
+    PointLightSystem pointLightSystem{lveDevice, lveRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
     ZappyCamera camera{};
 
     auto viewerObject = ZappyGameObject::createGameObject();
@@ -74,10 +56,6 @@ void ZappyGui::run()
 
     auto currentTime = std::chrono::high_resolution_clock::now();
     while (!lveWindow.shouldClose()) {
-        // print camera position
-        // std::cout << "Camera position: " << viewerObject.transform.translation.x
-                //   << ", " << viewerObject.transform.translation.y << ", "
-                //   << viewerObject.transform.translation.z << std::endl;
         glfwPollEvents();
 
         auto newTime = std::chrono::high_resolution_clock::now();
@@ -124,10 +102,8 @@ void ZappyGui::run()
 
 void ZappyGui::loadMap(int width, int height)
 {
-    std::shared_ptr<ZappyModel> whiteCubeModel =
-        ZappyModel::createModelFromFile(lveDevice, "models/cube_white.obj");
-    std::shared_ptr<ZappyModel> blackCubeModel =
-        ZappyModel::createModelFromFile(lveDevice, "models/cube_black.obj");
+    std::shared_ptr<ZappyModel> whiteCubeModel = ZappyModel::createModelFromFile(lveDevice, "models/cube_white.obj");
+    std::shared_ptr<ZappyModel> blackCubeModel = ZappyModel::createModelFromFile(lveDevice, "models/cube_black.obj");
     for (int x = 0; x < width; x++) {
         for (int z = 0; z < height; z++) {
             auto cube = ZappyGameObject::createGameObject();

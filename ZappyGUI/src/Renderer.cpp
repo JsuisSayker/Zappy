@@ -1,3 +1,4 @@
+#include "ErrorHandling.hpp"
 #include "Renderer.hpp"
 
 // std
@@ -30,7 +31,7 @@ void ZappyRenderer::recreateSwapChain() {
     lveSwapChain = std::make_unique<ZappySwapChain>(lveDevice, extent, oldSwapChain);
 
     if (!oldSwapChain->compareSwapFormats(*lveSwapChain.get())) {
-      throw std::runtime_error("Swap chain image(or depth) format has changed!");
+      throw zappy::SCFormatChangedException();
     }
   }
 }
@@ -46,7 +47,7 @@ void ZappyRenderer::createCommandBuffers() {
 
   if (vkAllocateCommandBuffers(lveDevice.device(), &allocInfo, commandBuffers.data()) !=
       VK_SUCCESS) {
-    throw std::runtime_error("failed to allocate command buffers!");
+    throw zappy::MemoryAllocationFailedException();
   }
 }
 

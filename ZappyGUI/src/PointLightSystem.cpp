@@ -1,3 +1,4 @@
+#include "ErrorHandling.hpp"
 #include "PointLightSystem.hpp"
 
 // libs
@@ -44,9 +45,8 @@ void PointLightSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayou
   pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
   pipelineLayoutInfo.pushConstantRangeCount = 1;
   pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
-  if (vkCreatePipelineLayout(lveDevice.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) !=
-      VK_SUCCESS) {
-    throw std::runtime_error("failed to create pipeline layout!");
+  if (vkCreatePipelineLayout(lveDevice.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+    throw zappy::PLCreationFailedException();
   }
 }
 
@@ -61,8 +61,8 @@ void PointLightSystem::createPipeline(VkRenderPass renderPass) {
   pipelineConfig.pipelineLayout = pipelineLayout;
   lvePipeline = std::make_unique<ZappyPipeline>(
       lveDevice,
-      "shaders/point_light.vert.spv",
-      "shaders/point_light.frag.spv",
+      "shaders/PointLight.vert.spv",
+      "shaders/PointLight.frag.spv",
       pipelineConfig);
 }
 

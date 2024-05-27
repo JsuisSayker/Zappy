@@ -1,3 +1,4 @@
+#include "ErrorHandling.hpp"
 #include "Descriptors.hpp"
 
 // std
@@ -47,7 +48,7 @@ ZappyDescriptorSetLayout::ZappyDescriptorSetLayout(
           &descriptorSetLayoutInfo,
           nullptr,
           &descriptorSetLayout) != VK_SUCCESS) {
-    throw std::runtime_error("failed to create descriptor set layout!");
+    throw zappy::DSLCreationFailedException();
   }
 }
 
@@ -94,7 +95,7 @@ LveDescriptorPool::LveDescriptorPool(
 
   if (vkCreateDescriptorPool(lveDevice.device(), &descriptorPoolInfo, nullptr, &descriptorPool) !=
       VK_SUCCESS) {
-    throw std::runtime_error("failed to create descriptor pool!");
+    throw zappy::DPCreationFailedException();
   }
 }
 

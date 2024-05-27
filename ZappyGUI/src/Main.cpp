@@ -19,9 +19,9 @@ int main(int ac, char **av)
     std::cerr << "Invalid number of arguments\n";
     EXIT_FAILURE;
   }
-  // zappy::ZappyGui app{std::stoi(av[1]), std::stoi(av[2])};
+  //zappy::ZappyGui app{std::stoi(av[1]), std::stoi(av[2])};
   try {
-    // app.run();
+    //app.run();
   } catch (const std::exception &e) {
     std::cerr << e.what() << '\n';
     return EXIT_FAILURE;
