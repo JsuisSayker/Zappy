@@ -33,4 +33,5 @@ void server_command_set_tile(zappy_server_t *zappy, char *command)
     if (get_len_char_tab(command_array) != 4)
         return;
     server_command_set_tile_sub(zappy, command_array);
+    free_array(command_array);
 }

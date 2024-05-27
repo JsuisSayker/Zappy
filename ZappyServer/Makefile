@@ -64,6 +64,7 @@ COMMAND_SERVER	=	handle_server_command.c		\
 					server_command_tp.c			\
 					server_command_set_tile.c	\
 					server_command_set_inventory.c\
+					server_command_set_freq.c	\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 

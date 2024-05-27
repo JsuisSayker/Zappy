@@ -15,8 +15,9 @@ static const struct command_s COMMAND_FUNCS[] = {
     {"/clear", &server_command_clear},
     {"/tile", &server_command_tile},
     {"/tp", &server_command_tp},
-    {"/setTile", &server_command_setTile},
-    {"/setInventory", &server_command_setInventory},
+    {"/setTile", &server_command_set_tile},
+    {"/setInventory", &server_command_set_inventory},
+    {"/setFreq", &server_command_set_freq},
     {"NULL", NULL}
 };
 
