@@ -35,7 +35,7 @@ char *read_client_message(int client_socket)
     return strdup(buffer);
 }
 
-void client(char *ip, int port, char *command)
+void client(char *ip, int port, char *command, int listen_nb)
 {
     int server_socket;
     socklen_t server_socket_addr_len;
@@ -73,12 +73,11 @@ void client(char *ip, int port, char *command)
     dprintf(server_socket, "%s\n", command);
 
     /* Code to deal with incoming connection(s)... */
-    buffer = read_client_message(server_socket);
-    printf("server code: |%s|", buffer);
-    free(buffer);
-    buffer = read_client_message(server_socket);
-    printf("server code: |%s|", buffer);
-    free(buffer);
+    for (int i = 0; i < listen_nb; i++) {
+        buffer = read_client_message(server_socket);
+        printf("server code: |%s|", buffer);
+        free(buffer);
+    }
 
     if (close(server_socket) == -1) {
         perror("ERROR on close");
@@ -107,7 +106,7 @@ Test(zappy_server, test_zappy_server)
     if (pid == 0) {
         // Child process
         sleep(4);
-        client("127.0.0.1", 4242, "GRAPHIC");
+        client("127.0.0.1", 4242, "GRAPHIC", 2);
         exit(0);
     } else {
         pid_t pid = fork();
@@ -115,18 +114,27 @@ Test(zappy_server, test_zappy_server)
         if (pid == 0) {
             // Child process
             sleep(8);
-            kill(getppid(), SIGINT);
+            client("127.0.0.1", 4242, "toto", 1);
             exit(0);
         } else {
-            // Parent process
-            // Start the server
-            int value = zappy_server(args);
-            cr_assert_eq(value, 0, "Server did not exit with code 0");
-            // Wait for the child process to finish
-            int status;
-            waitpid(pid, &status, 0);
-            cr_assert(WIFEXITED(status) && (WEXITSTATUS(status) == 0),
-                "Child process did not exit cleanly");
+            pid_t pid = fork();
+            cr_assert(pid >= 0, "Fork failed");
+            if (pid == 0) {
+                // Child process
+                sleep(12);
+                kill(getppid(), SIGINT);
+                exit(0);
+            } else {
+                // Parent process
+                // Start the server
+                int value = zappy_server(args);
+                cr_assert_eq(value, 0, "Server did not exit with code 0");
+                // Wait for the child process to finish
+                int status;
+                waitpid(pid, &status, 0);
+                cr_assert(WIFEXITED(status) && (WEXITSTATUS(status) == 0),
+                    "Child process did not exit cleanly");
+            }
         }
     }
 }
