@@ -13,10 +13,10 @@ class Client():
         self.host = host
         self.socket = None
         self.selector = selectors.DefaultSelector()
-        self.logged = False
-        self.widthValue = 0
-        self.heightValue = 0
-        self.actualStep = 0
+        self.logged: bool = False
+        # self.widthValue = 0
+        # self.heightValue = 0
+        self.actualStep: int = 0
         self.clientId = clientId
         self.ai = AI(teamName)
         self.ai.clientId = clientId
@@ -62,8 +62,8 @@ class Client():
         else:
             self.ai.availableSlots = int(tmpList[0])
         print(f"availableSlots: {self.ai.availableSlots}")
-        self.widthValue = int(tmpList[1])
-        self.heightValue = int(tmpList[2])
+        self.ai.widthValue = int(tmpList[1])
+        self.ai.heightValue = int(tmpList[2])
         self.ai.dataToSend = ""
         self.actualStep = 3
         self.logged = True
@@ -92,18 +92,23 @@ class Client():
                         elif "dead" in element:
                             print("I'm dead")
                             exit(0)
+                        elif self.ai.dataToSend == "Look\n":
+                            self.ai.look = element
+                            print(f"look: {self.ai.look}")
+                        elif "Take" in self.ai.dataToSend:
+                            print("updating inventory")
                         elif self.ai.dataToSend == "Fork\n":
                             subprocess.Popen(["python3", "zappy_ai", "-p",
                                               str(self.port), "-n",
                                               self.teamName, "-h", self.host])
                             print("forking")
-                            self.ai.canFork = False
+                            # self.ai.canFork = False
                         self.ai.run = True
 
                 if mask & selectors.EVENT_WRITE:
                     if self.logged and self.ai.run is True:
                         self.ai.algorithm()
-                    if self.ai.dataToSend and self.ai.run is not False:
+                    if self.ai.dataToSend and self.ai.run is True:
                         # if self.ai.dataToSend == (
                         #         self.teamName + '\n'
                         #         ) and self.logged is False:
