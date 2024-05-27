@@ -80,9 +80,8 @@ static void init_value(zappy_server_t *zappy_server)
 
 int init_server(zappy_server_t *zappy_server, args_config_t *args)
 {
-    if (zappy_server == NULL) {
+    if (zappy_server == NULL)
         return ERROR;
-    }
     zappy_server->my_socket = setup_server(args->port, 42);
     if (zappy_server->my_socket == -1) {
         printf("can't open server port\n");
@@ -92,5 +91,5 @@ int init_server(zappy_server_t *zappy_server, args_config_t *args)
     init_fd_struct(&zappy_server->fd, zappy_server->my_socket);
     zappy_server->args = args;
     init_value(zappy_server);
-    return 0;
+    return OK;
 }
