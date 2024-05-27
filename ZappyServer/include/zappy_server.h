@@ -272,8 +272,8 @@ void server_command_clients(zappy_server_t *zappy, char *command);
 void server_command_clear(zappy_server_t *zappy, char *command);
 void server_command_tile(zappy_server_t *zappy, char *command);
 void server_command_tp(zappy_server_t *zappy, char *command);
-void server_command_setTile(zappy_server_t *zappy, char *command);
-void server_command_setInventory(zappy_server_t *zappy, char *command);
+void server_command_set_tile(zappy_server_t *zappy, char *command);
+void server_command_set_inventory(zappy_server_t *zappy, char *command);
 
 // AI COMMANDS FUNCTIONS
 int handle_ia_command(zappy_server_t *zappy, client_t *client, char *command);

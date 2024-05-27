@@ -7,7 +7,18 @@
 
 #include <zappy_server.h>
 
-void server_command_setInventory(zappy_server_t *zappy, char *command)
+static void set_inventory(zappy_server_t *zappy, int id, char *resource,
+    int resource_quantity)
+{
+    for (int i = 0; i < FD_SETSIZE; i += 1) {
+        if (zappy->clients[i].client_number == id) {
+            set_inventory_resource_quantite(&zappy->clients[i].inventory,
+            resource, resource_quantity);
+        }
+    }
+}
+
+void server_command_set_inventory(zappy_server_t *zappy, char *command)
 {
     int id = 0;
     char *resource = NULL;
@@ -24,15 +35,7 @@ void server_command_setInventory(zappy_server_t *zappy, char *command)
     resource_quantity = atoi(command_array[2]);
     if (resource_quantity > 0 && id > 0 && is_valid_resource(resource)
         == true) {
-        for (int i = 0; i < FD_SETSIZE; i += 1) {
-            if (zappy->clients[i].client_number == id) {
-                set_inventory_resource_quantite(&zappy->clients[i].inventory,
-                resource, resource_quantity);
-            }
-        }
+        set_inventory(zappy, id, resource, resource_quantity);
         printf("setInventory done\n");
-    } else {
-        printf("setInventory failed\n");
     }
-    
 }

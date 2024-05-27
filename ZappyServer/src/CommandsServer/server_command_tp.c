@@ -32,11 +32,11 @@ void server_command_tp(zappy_server_t *zappy, char *command)
     client_number = atoi(command_array[0]);
     x = atoi(command_array[1]);
     y = atoi(command_array[2]);
-    if (client_number > 0 && x >= 0 && x < zappy->args->width && y >= 0 && y < zappy->args->height) {
+    if (client_number > 0 && x >= 0 && x < zappy->args->width && y >= 0 &&
+        y < zappy->args->height) {
         tp_client(zappy, client_number, x, y);
         printf("tp done\n");
     } else {
         printf("tp failed\n");
     }
-    
 }
