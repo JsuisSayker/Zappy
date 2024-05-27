@@ -13,7 +13,6 @@ SRC			=	zappy_server.c						\
 				accept_new_connection.c				\
 				setup_server.c						\
 				search_in_object.c					\
-				linked_list/free_list.c				\
 				argument_function.c					\
 				generate_ressourse_list.c			\
 				map_tile_function.c					\
@@ -35,6 +34,7 @@ TOOLS		=	splitter.c							\
 				char_tab_list_function.c			\
 				is_valid_resource.c					\
 				set_inventory_resource_quantite.c	\
+				free_list.c							\
 
 COMMAND_IA		=	cast_action.c			\
 					handle_ia_command.c		\
