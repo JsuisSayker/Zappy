@@ -7,12 +7,84 @@
 
 #include <criterion/criterion.h>
 #include <criterion/logging.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <zappy_server.h>
-#include <signal.h>
+
+char *read_client_message(int client_socket)
+{
+    char buffer[BUFSIZ];
+    int n_bytes_read = 0;
+    int msg_size = 0;
+
+    n_bytes_read =
+        read(client_socket, buffer + msg_size, sizeof(buffer) - msg_size - 1);
+    while (n_bytes_read > 0) {
+        msg_size += n_bytes_read;
+        if (msg_size > BUFSIZ - 1 || buffer[msg_size - 1] == '\n')
+            break;
+        n_bytes_read = read(
+            client_socket, buffer + msg_size, sizeof(buffer) - msg_size - 1);
+    }
+    if (n_bytes_read == -1)
+        return NULL;
+    buffer[msg_size] = '\0';
+    return strdup(buffer);
+}
+
+void client(char *ip, int port, char *command)
+{
+    int server_socket;
+    socklen_t server_socket_addr_len;
+    struct sockaddr_in server_socket_addr;
+
+    // Create a socket
+    server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_socket < 0) {
+        perror("ERROR opening socket");
+        exit(1);
+    }
+
+    if (inet_aton(ip, &(server_socket_addr.sin_addr)) <= 0) {
+        perror("ERROR invalid address");
+        exit(1);
+    }
+
+    // Set up the structure~
+    server_socket_addr.sin_family = AF_INET;   // Internet address family
+    server_socket_addr.sin_port = htons(port); // Any port
+
+    // connect the host address
+    server_socket_addr_len = sizeof(server_socket_addr);
+    if (connect(server_socket, (const struct sockaddr *)&server_socket_addr,
+            server_socket_addr_len) == -1) {
+        perror("ERROR on connect");
+        exit(1);
+    }
+
+    printf("Connected to server\n");
+    char *buffer = read_client_message(server_socket);
+    printf("server code: %s", buffer);
+    free(buffer);
+    // Send message to the server
+    dprintf(server_socket, "%s\n", command);
+
+    /* Code to deal with incoming connection(s)... */
+    buffer = read_client_message(server_socket);
+    printf("server code: |%s|", buffer);
+    free(buffer);
+    buffer = read_client_message(server_socket);
+    printf("server code: |%s|", buffer);
+    free(buffer);
+
+    if (close(server_socket) == -1) {
+        perror("ERROR on close");
+        exit(1);
+    }
+}
 
 Test(zappy_server, test_zappy_server)
 {
@@ -34,18 +106,27 @@ Test(zappy_server, test_zappy_server)
     cr_assert(pid >= 0, "Fork failed");
     if (pid == 0) {
         // Child process
-        sleep(3);
-        kill (getppid(), SIGINT);
+        sleep(4);
+        client("127.0.0.1", 4242, "GRAPHIC");
         exit(0);
     } else {
-        // Parent process
-        // Start the server
-        int value = zappy_server(args);
-        cr_assert_eq(value, 0, "Server did not exit with code 0");
-        // Wait for the child process to finish
-        int status;
-        waitpid(pid, &status, 0);
-        cr_assert(WIFEXITED(status) && (WEXITSTATUS(status) == 0),
-            "Child process did not exit cleanly");
+        pid_t pid = fork();
+        cr_assert(pid >= 0, "Fork failed");
+        if (pid == 0) {
+            // Child process
+            sleep(8);
+            kill(getppid(), SIGINT);
+            exit(0);
+        } else {
+            // Parent process
+            // Start the server
+            int value = zappy_server(args);
+            cr_assert_eq(value, 0, "Server did not exit with code 0");
+            // Wait for the child process to finish
+            int status;
+            waitpid(pid, &status, 0);
+            cr_assert(WIFEXITED(status) && (WEXITSTATUS(status) == 0),
+                "Child process did not exit cleanly");
+        }
     }
 }
