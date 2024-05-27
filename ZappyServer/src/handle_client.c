@@ -17,7 +17,7 @@ static int handle_command(zappy_server_t *zappy_server, char *command)
     case UNKNOWN:
         return handle_unknown_command(zappy_server, command);
     case IA:
-        return handle_ia_command(zappy_server,
+        return handle_ai_command(zappy_server,
             &zappy_server->clients[zappy_server->actual_sockfd], command);
     case GUI:
         break;
@@ -51,7 +51,7 @@ void handle_client(zappy_server_t *zappy_server)
 {
     int j = 0;
     char buffer[BUFSIZ];
-    ssize_t n = read(zappy_server->actual_sockfd, buffer, sizeof(buffer) - 1);
+    ssize_t n = read(zappy_server->actual_sockfd, buffer, BUFSIZ);
     char **lines = NULL;
 
     if (n == -1 || n == 0)
@@ -62,7 +62,8 @@ void handle_client(zappy_server_t *zappy_server)
     lines = splitter(buffer, END_LINE);
     if (lines == NULL)
         return;
-    for (int j = 0; lines[1] != NULL && lines[j + 1]; j += 1) {
+    printf("lines[0] = %s\n", lines[0]);
+    for (j = 0; lines[1] != NULL && lines[j + 1]; j += 1) {
         handle_command(zappy_server, lines[j]);
     }
     last_split(zappy_server, buffer, lines[j]);

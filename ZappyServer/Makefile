@@ -36,9 +36,10 @@ TOOLS		=	splitter.c						\
 				char_tab_list_function.c
 
 
-COMMAND_IA		=	cast_action.c			\
-					handle_ia_command.c		\
-					ia_command_help.c		\
+COMMAND_IA		=	ai_action.c				\
+					handle_ai_command.c		\
+					ai_command_help.c		\
+					ai_command_forward.c	\
 
 COMMAND_GUI		=	handle_gui_command.c		\
 					gui_command_msz.c			\
@@ -99,12 +100,12 @@ debug:
 			-ggdb3
 
 clean:
-		rm -f $(OBJ)
+		@ rm -f $(OBJ)
 
 fclean: clean
-		rm -rf unit_tests
-		rm -rf *.gcov
-		rm -f $(NAME)
+		@ rm -rf unit_tests
+		@ rm -rf *.gcov
+		@ rm -f $(NAME)
 
 re:		fclean all
 

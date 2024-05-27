@@ -10,7 +10,7 @@
 int help(zappy_server_t *zappy, client_t *client, char *cmd)
 {
     printf("Implemented commands :\n/clients\n"
-    "/quit\n/send_ais \"informations\"\n/send_guis \"informations\"\n"
+    "/quit\n/send_ai_s \"informations\"\n/send_guis \"informations\"\n"
     "/map\n/clear\n/pause\n/start\n/help\n"
     "/setTile ressource quantity x y\n"
     "/tile x y\n/tp id x y\n/kill id\n"

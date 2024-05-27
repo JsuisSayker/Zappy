@@ -32,7 +32,7 @@ static int graphic_client(zappy_server_t *zappy_server)
     return OK;
 }
 
-char *direction_string(ia_direction_t orientation)
+char *direction_string(ai_direction_t orientation)
 {
     if (orientation == NORTH)
         return "N";
@@ -45,7 +45,7 @@ char *direction_string(ia_direction_t orientation)
     return "U";
 }
 
-static void send_info_ia_to_gui(zappy_server_t *zappy_server, client_t *client)
+static void send_info_ai_to_gui(zappy_server_t *zappy_server, client_t *client)
 {
     for (int i = 3; i < FD_SETSIZE; i++) {
         if (zappy_server->clients[i].type == GUI) {
@@ -60,7 +60,7 @@ static void send_info_ia_to_gui(zappy_server_t *zappy_server, client_t *client)
     }
 }
 
-static int ia_value_direction_setter(client_t *ia)
+static int ai_value_direction_setter(client_t *ia)
 {
     int rdm_orientation = rand() % 3;;
 
@@ -77,7 +77,7 @@ static int ia_value_direction_setter(client_t *ia)
     return OK;
 }
 
-static int ia_value_setter(zappy_server_t *zappy_server, client_t *ia,
+static int ai_value_setter(zappy_server_t *zappy_server, client_t *ia,
     team_t *tmp_team)
 {
     int rdm_x = 0;
@@ -93,12 +93,16 @@ static int ia_value_setter(zappy_server_t *zappy_server, client_t *ia,
     ia->client_number = zappy_server->actual_sockfd;
     ia->type = IA;
     ia->level = 1;
-    if (ia_value_direction_setter(ia) == ERROR)
+    ia->command.execusion = NULL;
+    init_queue(ia);
+    if (ia->command.queue == NULL)
+        return ERROR;
+    if (ai_value_direction_setter(ia) == ERROR)
         return ERROR;
     return OK;
 }
 
-static int ia_client_find_team(zappy_server_t *zappy_server, team_t *tmp_team,
+static int ai_client_find_team(zappy_server_t *zappy_server, team_t *tmp_team,
     char *command)
 {
     client_t *tmp_client = NULL;
@@ -113,23 +117,23 @@ static int ia_client_find_team(zappy_server_t *zappy_server, team_t *tmp_team,
         tmp_team->nb_drones += 1;
         tmp_team->nb_matures_eggs -= 1;
         tmp_client = &zappy_server->clients[zappy_server->actual_sockfd];
-        if (ia_value_setter(zappy_server, tmp_client, tmp_team) == ERROR)
+        if (ai_value_setter(zappy_server, tmp_client, tmp_team) == ERROR)
             return ERROR;
         dprintf(zappy_server->actual_sockfd, "2\n%d %d\n",
             tmp_client->pos.x, tmp_client->pos.y);
-        send_info_ia_to_gui(zappy_server, tmp_client);
+        send_info_ai_to_gui(zappy_server, tmp_client);
         return 1;
     }
     return OK;
 }
 
-static int ia_client(zappy_server_t *zappy_server, char *command)
+static int ai_client(zappy_server_t *zappy_server, char *command)
 {
     team_t *tmp_team = NULL;
     int team_find = 0;
 
     TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next) {
-        team_find = ia_client_find_team(zappy_server, tmp_team, command);
+        team_find = ai_client_find_team(zappy_server, tmp_team, command);
         if (team_find == 1)
             return OK;
         if (team_find == ERROR)
@@ -143,6 +147,6 @@ int handle_unknown_command(zappy_server_t *zappy_server, char *command)
     if (strcmp("GRAPHIC", command) == 0)
         return graphic_client(zappy_server);
     else
-        return ia_client(zappy_server, command);
+        return ai_client(zappy_server, command);
     return ERROR;
 }
