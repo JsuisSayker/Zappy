@@ -17,7 +17,8 @@ static int handle_command(zappy_server_t *zappy_server, char *command)
     case UNKNOWN:
         return handle_unknown_command(zappy_server, command);
     case IA:
-        break;
+        return handle_ia_command(zappy_server,
+            &zappy_server->clients[zappy_server->actual_sockfd], command);
     case GUI:
         break;
     }
@@ -49,9 +50,9 @@ int clean_string(char *buffer)
 void handle_client(zappy_server_t *zappy_server)
 {
     int j = 0;
-    char buffer[BUFSIZ];
-    ssize_t n = read(zappy_server->actual_sockfd, buffer, sizeof(buffer) - 1);
     char **lines = NULL;
+    char buffer[BUFSIZ] = {0};
+    ssize_t n = read(zappy_server->actual_sockfd, buffer, sizeof(buffer) - 1);
 
     if (n == -1 || n == 0)
         return;

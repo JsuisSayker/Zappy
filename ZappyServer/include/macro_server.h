@@ -15,13 +15,13 @@
     #define THREADS_CHAR 'h'
     #define REPLY_CHAR 'r'
     #define SUBSCRIBE_CHAR 's'
-    #define FOOD_DENSITY 0.5
-    #define LINEMATE_DENSITY 0.3
-    #define DERAUMERE_DENSITY 0.15
-    #define SIBUR_DENSITY 0.1
-    #define MENDIANE_DENSITY 0.1
-    #define PHIRAS_DENSITY 0.08
-    #define THYSTAME_DENSITY 0.05
+    #define FOOD_DENSITY 50
+    #define LINEMATE_DENSITY 30
+    #define DERAUMERE_DENSITY 15
+    #define SIBUR_DENSITY 10
+    #define MENDIANE_DENSITY 10
+    #define PHIRAS_DENSITY 8
+    #define THYSTAME_DENSITY 5
     #define MAX_CLIENTS 10
     #define CLEAR_SCREEN "\e[1;1H\e[2J"
 

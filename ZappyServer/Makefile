@@ -25,20 +25,34 @@ SRC			=	zappy_server.c						\
 				fd_is_set.c							\
 				handle_unknown_command.c			\
 				error_display.c						\
+				ia_direction_function.c				\
 				${DIR_TOOLS}						\
 				${DIR_COMMAND_IA}					\
 				${DIR_COMMAND_GUI}					\
 				${DIR_COMMAND_SERVER}
 
-TOOLS		=	splitter.c						\
-				free_array.c					\
-				get_len_char_tab.c				\
-				char_tab_list_function.c
+TOOLS		=	splitter.c							\
+				free_array.c						\
+				get_len_char_tab.c					\
+				char_tab_list_function.c			\
+				is_valid_resource.c					\
+				set_inventory_resource_quantite.c	\
 
+COMMAND_IA		=	cast_action.c			\
+					handle_ia_command.c		\
+					ia_command_help.c		\
 
-COMMAND_IA		=	\
-
-COMMAND_GUI		=	\
+COMMAND_GUI		=	handle_gui_command.c		\
+					gui_command_msz.c			\
+					gui_command_bct.c			\
+					gui_command_mct.c			\
+					gui_command_tna.c			\
+					gui_command_ppo.c			\
+					gui_command_plv.c			\
+					gui_command_pin.c			\
+					gui_command_suc.c			\
+					gui_command_sgt.c			\
+					gui_command_sst.c			\
 
 COMMAND_SERVER	=	handle_server_command.c		\
 					server_command_help.c		\
@@ -47,6 +61,9 @@ COMMAND_SERVER	=	handle_server_command.c		\
 					server_command_clients.c	\
 					server_command_clear.c		\
 					server_command_tile.c		\
+					server_command_tp.c			\
+					server_command_setTile.c	\
+					server_command_setInventory.c\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 
