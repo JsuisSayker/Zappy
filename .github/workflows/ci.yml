@@ -40,20 +40,21 @@ jobs:
     needs: auto_format
     container: epitechcontent/epitest-docker:latest
     steps:
+      - name: Cache Container Images
+        id: cache-container-images
+        uses: jamesmortensen/cache-container-images-action@v1
+        with:
+          images: epitechcontent/epitest-docker:latest
       - name: Checkout GH repository
         uses: actions/checkout@master
         with:
           repository: ""
-
       - name : Install dependencies
         run: sudo dnf install glslc glfw-devel vulkan-devel glm-devel -y
-      
       - name: Compile repository
         run: make
-
       - name: Clean repository
         run: make clean
-
       - name: Check file
         run: |
           for file in ${{ vars.EXECUTABLES }};do
@@ -69,12 +70,15 @@ jobs:
     needs: check_program_compilation
     container: epitechcontent/epitest-docker:latest
     steps:
-
+      - name: Cache Container Images
+        id: cache-container-images
+        uses: jamesmortensen/cache-container-images-action@v1
+        with:
+          images: epitechcontent/epitest-docker:latest
       - name: Checkout GH repository
         uses: actions/checkout@master
         with:
           repository: ''
-
       - name: Compile tests binaries
         run: make tests_run
 
