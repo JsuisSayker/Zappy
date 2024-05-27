@@ -288,6 +288,8 @@ void gui_command_ppo(zappy_server_t *zappy, char *command);
 void gui_command_plv(zappy_server_t *zappy, char *command);
 void gui_command_pin(zappy_server_t *zappy, char *command);
 void gui_command_suc(zappy_server_t *zappy, char *command);
+void gui_command_sgt(zappy_server_t *zappy, char *command);
+void gui_command_sst(zappy_server_t *zappy, char *command);
 
 // ERROR FUNCTIONS
 void error_command_argument(char *command, int nb_argument, int nb_expected);
