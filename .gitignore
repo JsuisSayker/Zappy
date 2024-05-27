@@ -7,13 +7,16 @@
 *.editorconfig
 *.pdf
 *.swp
+.exemple/
 
 unit*
 vgcore*
 tmp
 
-zappy_server
-zappy_cli
+ai_test_folder
+font.ttf
+__pycache__
+
 
 # Prerequisites
 *.d
@@ -64,6 +67,9 @@ zappy_cli
 .tmp_versions/
 modules.order
 Module.symvers
+zappy_ai
+zappy_gui
+zappy_server
 Mkfile.old
 dkms.conf
 

@@ -5,87 +5,68 @@
 ** my_project
 */
 
-#include "zappy_server.h"
+#include <zappy_server.h>
 #include <errno.h>
 #include <signal.h>
 #include <stdio.h>
 
-static bool loopRunning = true;
-
-void signal_handler(int signal)
+void signal_handler(UNUSED int signal)
 {
-    if (signal == SIGINT) {
-        loopRunning = false;
-    }
 }
 
-static int check_connected_client(teams_server_t *teams_server)
+int get_nb_teams(struct teamhead *head)
 {
-    if (teams_server->actual_sockfd == teams_server->my_socket) {
-        return OK;
-    } else {
-        logout_command(teams_server, "");
-        printf("client disconnected\n");
-    }
-    return OK;
-}
+    int i = 0;
+    team_t *tmp;
 
-static int fd_is_set(teams_server_t *teams_server)
-{
-    if (FD_ISSET(teams_server->actual_sockfd, &teams_server->fd.input)) {
-        if (check_connected_client(teams_server) == ERROR) {
-            return ERROR;
-        }
-        return OK;
+    TAILQ_FOREACH(tmp, head, next) {
+        i += 1;
     }
-    return OK;
-}
+    return i;
+};
 
-int send_logout_to_all_clients(teams_server_t *teams_server)
+static int display_info_server(zappy_server_t *zappy_server)
 {
-    for (teams_server->actual_sockfd = 0;
-        teams_server->actual_sockfd < __FD_SETSIZE;
-        teams_server->actual_sockfd += 1) {
-        if (fd_is_set(teams_server) == ERROR) {
-            return ERROR;
-        }
+    team_t *tmp;
+
+    if (zappy_server == NULL)
+        return ERROR;
+    printf("=============Zappy Server=============\n");
+    printf("port = %d\n", zappy_server->args->port);
+    printf("width = %d\n", zappy_server->args->width);
+    printf("height = %d\n", zappy_server->args->height);
+    printf("clients_nb = %d\n", zappy_server->args->clientsNb);
+    printf("freq = %d\n", zappy_server->args->freq);
+    printf("Teams [%d]:\n", get_nb_teams(&zappy_server->all_teams));
+    TAILQ_FOREACH(tmp, &zappy_server->all_teams, next){
+        printf("name : [%s]\n", tmp->name);
+        printf("nb_drones = [%d]\n", tmp->nb_drones);
+        printf("nb_matures_eggs = [%d]\n", tmp->nb_matures_eggs);
     }
-    return OK;
-}
-
-int close_server(teams_server_t *teams_server)
-{
-    save_info_to_file(teams_server);
-    send_logout_to_all_clients(teams_server);
-    close(teams_server->my_socket);
-    free_users(&(teams_server->all_user));
-    free_messages(&(teams_server->private_messages));
-    free_subscribed(&(teams_server->subscribed_teams_users));
-    free_teams(&teams_server->all_teams);
-    free(teams_server);
+    printf("=====================================\n");
     return OK;
 }
 
 int zappy_server(args_config_t *args)
 {
-    teams_server_t *teams_server = calloc(sizeof(teams_server_t), 1);
+    zappy_server_t *zappy_server = calloc(sizeof(zappy_server_t), 1);
 
     signal(SIGINT, signal_handler);
-    if (init_server(teams_server, args->port) == KO) {
+    if (init_server(zappy_server, args) == KO)
         return ERROR;
-    }
-    read_info_from_save_file(teams_server);
-    while (loopRunning) {
-        teams_server->fd.input = teams_server->fd.save_input;
-        if (select(FD_SETSIZE, &(teams_server->fd.input),
-                &(teams_server->fd.ouput), NULL, NULL) == KO &&
-            loopRunning) {
+    if (display_info_server(zappy_server) == KO)
+        return ERROR;
+    while (zappy_server->server_running) {
+        zappy_server->fd.input = zappy_server->fd.save_input;
+        if (select(FD_SETSIZE, &(zappy_server->fd.input),
+            &(zappy_server->fd.ouput), NULL, NULL) == ERROR && errno != EINTR
+            && zappy_server->server_running)
             return ERROR;
-        }
-        if (loopRunning && scan_fd(teams_server) == ERROR) {
+        if (errno == EINTR)
+            zappy_server->server_running = false;
+        if (zappy_server->server_running && scan_fd(zappy_server) == ERROR)
             return ERROR;
-        }
     }
-    close_server(teams_server);
+    close_server(zappy_server);
     return OK;
 }

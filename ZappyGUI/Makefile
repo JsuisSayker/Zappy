@@ -1,68 +1,35 @@
-##
-## EPITECH PROJECT, 2024
-## Zappy
-## File description:
-## Makefile
-##
+include .env
 
-SRC			=	Zappy.cpp			\
-				Lve_window.cpp		\
-				Lve_pipeline.cpp	\
-				Lve_device.cpp		\
-				Lve_swap_chain.cpp	\
+CFLAGS = -std=c++17 -I./include -I$(VULKAN_SDK_PATH)/include -I$(TINYOBJ_PATH)
+LDFLAGS = -L$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lvulkan
 
-MAIN			=	main.cpp
+# create list of all spv files and set as dependency
+vertSources = $(shell find ./shaders -type f -name "*.vert")
+vertObjFiles = $(patsubst %.vert, %.vert.spv, $(vertSources))
+fragSources = $(shell find ./shaders -type f -name "*.frag")
+fragObjFiles = $(patsubst %.frag, %.frag.spv, $(fragSources))
 
-DIR_SRC		=	$(addprefix src/, $(SRC))
+TARGET = ../zappy_gui
 
-CFLAGS		=	-std=c++17 -O2
+$(TARGET): $(vertObjFiles) $(fragObjFiles)
+$(TARGET): src/*.cpp
+	g++ $(CFLAGS) -o $(TARGET) src/*.cpp $(LDFLAGS)
 
-LDFLAGS		=	-lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
+all: $(TARGET)
 
-NAME		=	../zappy_gui
+# make shader targets
+%.spv: %
+	${GLSLC} $< -o $@
 
-OBJ_DIR_SRC	=	$(DIR_SRC:.cpp=.o)
-
-OBJ_MAIN	=	$(MAIN:.cpp=.o)
-
-OBJ			=	$(OBJ_DIR_SRC) $(OBJ_MAIN)
-
-CPPFLAGS	=	-I./include
-
-# shaders compilation
-SHADER		=	simple_shader.vert	\
-				simple_shader.frag	\
-
-SHADER_DIR	=	$(addprefix shaders/, $(SHADER))
-
-SHADER_OUT	=	$(SHADER_DIR:.vert=.vert.spv) $(SHADER_DIR:.frag=.frag.spv)
-
-%.vert.spv: %.vert
-	glslc $< -o $@
-
-%.frag.spv: %.frag
-	glslc $< -o $@
-
-# Règle pour compiler les fichiers objets
-%.o: %.cpp
-	g++ $(CFLAGS) $(CPPFLAGS) -c $< -o $@
-
-# Règle principale
-$(NAME): $(OBJ) $(SHADER_OUT)
-	g++ $(CFLAGS) $(CPPFLAGS) -o $(NAME) $(OBJ) $(LDFLAGS)
-
-all: $(NAME)
-
-test: $(NAME)
-	./$(NAME)
+test: $(TARGET)
+	./$(TARGET)
 
 clean:
-	rm -f $(OBJ)
-	rm -f shaders/*.spv
+	rm -rf shaders/*.spv
 
 fclean: clean
-	rm -f $(NAME)
+	rm -f $(TARGET)
 
-re: fclean all
+re: fclean $(TARGET)
 
-.PHONY: test clean re all fclean
+.PHONY: test clean fclean re

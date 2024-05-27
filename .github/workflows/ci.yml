@@ -1,0 +1,94 @@
+name: ci
+run-name: ${{github.actor}} verifying my code
+
+on:
+  push:
+    branches-ignore:
+      - " ga-ignore-"
+  pull_request:
+    branches-ignore:
+      - " ga-ignore-"
+
+jobs:
+  auto_format:
+    # Check if the PR is not from a fork
+    runs-on: ubuntu-latest
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the changed files back to the repository.
+      contents: write
+    if: github.repository == 'JsuisSayker/Zappy'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Install autopep8
+        run: pip install autopep8
+      - name: format file
+        run: ./format.sh
+      - name: Check for modified files
+        id: git-check
+        run: echo "modified=$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)" >> $GITHUB_OUTPUT
+      - name: Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        if: steps.git-check.outputs.modified == 'true'
+        with:
+          commit_message: Automated Change
+
+  check_program_compilation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    needs: auto_format
+    container: epitechcontent/epitest-docker:latest
+    steps:
+      - name: Checkout GH repository
+        uses: actions/checkout@master
+        with:
+          repository: ""
+
+      - name : Install dependencies
+        run: sudo dnf install glslc glfw-devel vulkan-devel glm-devel -y
+      
+      - name: Compile repository
+        run: make
+
+      - name: Clean repository
+        run: make clean
+
+      - name: Check file
+        run: |
+          for file in ${{ vars.EXECUTABLES }};do
+             if [ ! -x "./$file" ]; then
+              echo"File $file does not exist or is not executable"
+              exit 1
+            fi
+          done
+
+  # run_tests:
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 2
+  #   container: epitechcontent/epitest-docker:latest
+  #   needs:  check_program_compilation
+  #   steps:
+
+  #     - name: Checkout GH repository
+  #       uses: actions/checkout@master
+  #       with:
+  #         repository: ''
+
+  #     - name: Compile tests binaries
+  #       run: make tests_run
+
+  push_to_mirror:
+    runs-on: ubuntu-latest
+    # needs:  run_tests
+    needs: check_program_compilation
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          target_repo_url: ${{ vars.MIRROR_URL }}
+          ssh_private_key: # <-- use 'secrets' to pass credential information.
+            ${{ secrets.GIT_SSH_PRIVATE_KEY }}
