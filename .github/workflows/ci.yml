@@ -53,7 +53,7 @@ jobs:
       - name: Check file
         run: |
           for file in ${{ vars.EXECUTABLES }};do
-             if [ ! -x "./$file" ]; then
+            if [ ! -x "./$file" ]; then
               echo"File $file does not exist or is not executable"
               exit 1
             fi
