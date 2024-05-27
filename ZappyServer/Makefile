@@ -31,11 +31,12 @@ SRC			=	zappy_server.c						\
 				${DIR_COMMAND_GUI}					\
 				${DIR_COMMAND_SERVER}
 
-TOOLS		=	splitter.c						\
-				free_array.c					\
-				get_len_char_tab.c				\
-				char_tab_list_function.c
-
+TOOLS		=	splitter.c							\
+				free_array.c						\
+				get_len_char_tab.c					\
+				char_tab_list_function.c			\
+				is_valid_resource.c					\
+				set_inventory_resource_quantite.c	\
 
 COMMAND_IA		=	cast_action.c			\
 					handle_ia_command.c		\
@@ -62,6 +63,7 @@ COMMAND_SERVER	=	handle_server_command.c		\
 					server_command_tile.c		\
 					server_command_tp.c			\
 					server_command_setTile.c	\
+					server_command_setInventory.c\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 

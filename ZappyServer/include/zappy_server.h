@@ -219,8 +219,10 @@ void free_threads(struct threadhead *head);
 void free_teams(struct teamhead *head);
 
 // Tools functions
+bool is_valid_resource(char *resource);
 void free_array(char **array);
-
+void set_inventory_resource_quantite(inventory_t *tile_inventory,
+    char *resource, int resource_quantity);
 // Server functions
 int init_server(zappy_server_t *zappy_server, args_config_t *args);
 int close_server(zappy_server_t *zappy_server);
@@ -271,6 +273,7 @@ void server_command_clear(zappy_server_t *zappy, char *command);
 void server_command_tile(zappy_server_t *zappy, char *command);
 void server_command_tp(zappy_server_t *zappy, char *command);
 void server_command_setTile(zappy_server_t *zappy, char *command);
+void server_command_setInventory(zappy_server_t *zappy, char *command);
 
 // AI COMMANDS FUNCTIONS
 int handle_ia_command(zappy_server_t *zappy, client_t *client, char *command);
