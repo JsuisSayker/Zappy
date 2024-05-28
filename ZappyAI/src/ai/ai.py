@@ -1,5 +1,6 @@
 import random
 import re
+from collections import Counter
 from ZappyAI.src.ai.infos import LEVELS, Activity
 
 
@@ -10,6 +11,7 @@ class AI():
                                           "deraumere": 0, "sibur": 0,
                                           "mendiane": 0, "phiras": 0,
                                           "thystame": 0}
+        self.sharedInventory: dict = {}
         self.level: int = 1
         self.incantation: bool = False
         self.searchingRessource: str = ""
@@ -19,8 +21,7 @@ class AI():
         self.dataToSend: str = ""
         self.availableSlots: int = 0
         self.canFork: bool = False
-        self.clientId: str = ""
-        self.clientIdList: list[str] = []
+        self.clientId: int = 1
         self.widthValue: int = 0
         self.heightValue: int = 0
         self.actualActivity: Activity = Activity.STARTING
@@ -31,11 +32,33 @@ class AI():
                 return {"x": row.index(object), "y": i}
         return None
 
+    def parse_inventory(self, data):
+        for char in "[]":
+            data = data.replace(char, "")
+        data = data.split(",")
+        for i in range(len(data)):
+            data[i] = data[i][1:]
+        data[len(data) - 1] = data[len(data) - 1][:-1]
+        for elem in data:
+            if elem:
+                self.inventory[elem.split()[0]] = int(elem.split()[1])
+
+    def checkIncanationActivity(self):
+        self.actualActivity = Activity.LOOKING
+        return
+
     def executeCommand(self):
         if self.commandList:
             self.dataToSend = self.commandList.pop(0)
         else:
             self.dataToSend = "Inventory\n"
+            self.actualActivity = Activity.CHECK_INCANTATION
+
+    def updateSharedInventory(self):
+        self.sharedInventory[self.clientId] = self.inventory
+        updateCounter = Counter()
+        for key in self.sharedInventory:
+            updateCounter.update(self.sharedInventory[key])
 
     def isIncantationPossible(self) -> bool:
         requiredRessources = LEVELS[self.level]
@@ -71,11 +94,13 @@ class AI():
         self.actualActivity = Activity.POPULATING
 
     def populatingActivity(self):
-        # if self.availableSlots > 0 and len(self.clientIdList) < 6:
+        # if self.availableSlots > 0 and int(self.clientId) < 6:
         #     print("Fork")
         #     self.dataToSend = "Fork\n"
         #     self.canFork = False
-        self.actualActivity = Activity.LOOKING
+        # else:
+        #     self.dataToSend = "Look\n"
+        self.actualActivity = Activity.EXECUTE_COMMAND
 
     def generateEmptyMap(self) -> list:
         return [["" for _ in range(self.widthValue)
@@ -108,10 +133,6 @@ class AI():
             for i in range(3):
                 finalResult.append(random.choice(["Forward\n", "Right\n",
                                                   "Left\n"]))
-                finalResult.append(random.choice(["Forward\n", "Right\n",
-                                                  "Left\n"]))
-                finalResult.append(random.choice(["Forward\n", "Right\n",
-                                                  "Left\n"]))
             return finalResult
         else:
             if objectPosition["x"] > self.widthValue / 2:
@@ -127,16 +148,16 @@ class AI():
             return finalResult
 
     def fillingActivity(self, data: str):
-        print(f'food in inventory: {self.inventory["food"]}')
         if "food" in self.inventory and self.inventory["food"] < 50:
             self.commandList = self.fillingInventory(data, "food")
+            self.actualActivity = Activity.EXECUTE_COMMAND
         else:
-            # self.searchingRessource =
-            print("Searching ressource")
-            exit(0)
+            self.searchingRessource = self.searchingActivity()
+            self.commandList = self.fillingInventory(data,
+                                                     self.searchingRessource)
+            self.actualActivity = Activity.EXECUTE_COMMAND
 
     def lookingActivity(self):
-        print("Looking")
         self.dataToSend = "Look\n"
         self.actualActivity = Activity.FILLING
 
@@ -154,18 +175,30 @@ class AI():
     # def inventoryActivity(self):
     #     self.dataToSend = "Inventory\n"
 
-    def switchCase(self, activity: Activity):
-        return {
-            Activity.STARTING: self.startingActivity(),
-            Activity.POPULATING: self.populatingActivity(),
-            Activity.LOOKING: self.lookingActivity(),
-            Activity.FILLING: self.fillingActivity(self.look),
-            Activity.EXECUTE_COMMAND: self.executeCommand(),
-            # Activity.INVENTORY: self.inventoryActivity(),
-        }[activity]
+    # def switchCase(self, activity: Activity):
+    #     return {
+    #         Activity.STARTING: self.startingActivity(),
+    #         Activity.POPULATING: self.populatingActivity(),
+    #         Activity.LOOKING: self.lookingActivity(),
+    #         Activity.FILLING: self.fillingActivity(self.look),
+    #         Activity.EXECUTE_COMMAND: self.executeCommand(),
+    #         # Activity.INVENTORY: self.inventoryActivity(),
+    #     }[activity]
 
     def algorithm(self) -> None:
-        self.switchCase(self.actualActivity)
+        # self.switchCase(self.actualActivity)
+        if self.actualActivity == Activity.STARTING:
+            self.startingActivity()
+        elif self.actualActivity == Activity.POPULATING:
+            self.populatingActivity()
+        elif self.actualActivity == Activity.LOOKING:
+            self.lookingActivity()
+        elif self.actualActivity == Activity.FILLING:
+            self.fillingActivity(self.look)
+        elif self.actualActivity == Activity.EXECUTE_COMMAND:
+            self.executeCommand()
+        elif self.actualActivity == Activity.CHECK_INCANTATION:
+            self.checkIncanationActivity()
         return
 
 

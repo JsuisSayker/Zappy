@@ -15,7 +15,7 @@ class OrderNamespace(argparse.Namespace):
 parser = argparse.ArgumentParser(
     prog="zappy_ai",
     description="an AI for the Zappy project",
-    usage="./zappy_ai -p port -n name -h machine",
+    usage="./zappy_ai -p port -n name -h machine -i id",
     add_help=False,
 )
 
@@ -40,8 +40,14 @@ parser.add_argument(
     help="name of the machine",
 )
 
+parser.add_argument(
+    "-i",
+    metavar="id",
+    nargs="?"
+)
+
 try:
-    args = parser.parse_args(args=None, namespace=OrderNamespace())
+    parsedArgs = parser.parse_args(args=None, namespace=OrderNamespace())
 except SystemExit as e:
     print(f"error {e.code}, {e.args}")
     exit(84)

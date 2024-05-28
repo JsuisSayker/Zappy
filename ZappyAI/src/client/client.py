@@ -7,7 +7,8 @@ import errno
 
 
 class Client():
-    def __init__(self, port: int, teamName: str, host: str, clientId: str):
+    def __init__(self, port: int, teamName: str, host: str,
+                 clientId: int):
         self.port: int = int(port)
         self.teamName: str = teamName
         self.host = host
@@ -20,7 +21,6 @@ class Client():
         self.clientId = clientId
         self.ai = AI(teamName)
         self.ai.clientId = clientId
-        self.ai.clientIdList.append(clientId)
 
     def connectWithServer(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -56,7 +56,7 @@ class Client():
             data[i] = data[i].split(" ")
             for j in range(len(data[i])):
                 tmpList.append(data[i][j])
-        print(f"tmpList: {tmpList}")
+        print(f"tmpList while saving: {tmpList}")
         if tmpList[0] == "ko":
             exit(0)
         else:
@@ -95,14 +95,19 @@ class Client():
                         elif self.ai.dataToSend == "Look\n":
                             self.ai.look = element
                             print(f"look: {self.ai.look}")
-                        elif "Take" in self.ai.dataToSend:
-                            print("updating inventory")
+                        elif "Take" in self.ai.dataToSend and "food"\
+                                not in self.ai.dataToSend and "ok" in element:
+                            self.ai.updateSharedInventory()
+                        elif "Inventory\n" in self.ai.dataToSend:
+                            self.ai.parse_inventory(element)
                         elif self.ai.dataToSend == "Fork\n":
+                            newClientId = int(self.clientId) + 1
                             subprocess.Popen(["python3", "zappy_ai", "-p",
                                               str(self.port), "-n",
-                                              self.teamName, "-h", self.host])
+                                              self.teamName, "-h", self.host,
+                                              "-i", str(newClientId)])
                             print("forking")
-                            # self.ai.canFork = False
+                            self.ai.canFork = False
                         self.ai.run = True
 
                 if mask & selectors.EVENT_WRITE:
