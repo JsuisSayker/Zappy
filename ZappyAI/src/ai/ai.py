@@ -24,6 +24,7 @@ class AI():
         self.clientId: int = 1
         self.widthValue: int = 0
         self.heightValue: int = 0
+        self.newRessource: bool = False
         self.actualActivity: Activity = Activity.STARTING
 
     def findObjectOnMap(self, map: list, object: str) -> dict | None:
@@ -44,7 +45,22 @@ class AI():
                 self.inventory[elem.split()[0]] = int(elem.split()[1])
 
     def checkIncanationActivity(self):
-        self.actualActivity = Activity.LOOKING
+        if self.newRessource is True:
+            if self.newRessource is True:
+                if not self.isIncantationPossible():
+                    messageToSend = "toto"
+                    self.dataToSend = "Broadcast " + messageToSend + "\n"
+                else:
+                    messageToSend = "incantation"
+                    self.dataToSend = "Broadcast " + messageToSend + "\n"
+                    self.newRessource = False
+                    self.actualActivity = Activity.PREPA_FOR_INCANTATION
+                    return
+        else:
+            self.actualActivity = Activity.LOOKING
+        return
+
+    def prepareForIncantationActivity(self):
         return
 
     def executeCommand(self):
@@ -199,6 +215,8 @@ class AI():
             self.executeCommand()
         elif self.actualActivity == Activity.CHECK_INCANTATION:
             self.checkIncanationActivity()
+        elif self.actualActivity == Activity.PREPA_FOR_INCANTATION:
+            self.prepareForIncantationActivity()
         return
 
 

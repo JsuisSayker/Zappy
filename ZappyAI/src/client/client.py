@@ -98,6 +98,7 @@ class Client():
                         elif "Take" in self.ai.dataToSend and "food"\
                                 not in self.ai.dataToSend and "ok" in element:
                             self.ai.updateSharedInventory()
+                            self.ai.newRessource = True
                         elif "Inventory\n" in self.ai.dataToSend:
                             self.ai.parse_inventory(element)
                         elif self.ai.dataToSend == "Fork\n":

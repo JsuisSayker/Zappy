@@ -12,6 +12,7 @@ class Activity(Enum):
     FILLING = 7
     EXECUTE_COMMAND = 8
     CHECK_INCANTATION = 9
+    PREPA_FOR_INCANTATION = 10
 
 
 LEVELS: dict[int, dict[str, int]] = {
