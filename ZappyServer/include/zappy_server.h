@@ -71,7 +71,7 @@ typedef struct args_config_s {
     int width;
     int height;
     int clientsNb;
-    int freq;
+    double freq;
     struct char_tab_head names;
 } args_config_t;
 

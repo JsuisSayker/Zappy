@@ -85,8 +85,9 @@ TEST		=	test_splitter.c						\
 				test_server_command_clear.c			\
 				test_server_command_quit.c			\
 				test_server_command_set_freq.c		\
-				test_server_command_tile.c		\
+				test_server_command_tile.c			\
 				test_handle_server_command.c		\
+				test_fill_args_conf.c				\
 				test_zappy_server.c					\
 
 DIR_TESTS	=	$(addprefix tests/, $(TEST))

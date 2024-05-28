@@ -11,5 +11,5 @@ void server_command_set_freq(zappy_server_t *zappy, char *command)
 {
     if (command == NULL || command[0] != ' ')
         return;
-    zappy->args->freq = atoi(&command[1]);
+    zappy->args->freq = atof(&command[1]);
 }
