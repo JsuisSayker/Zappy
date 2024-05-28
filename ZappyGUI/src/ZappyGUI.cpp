@@ -102,8 +102,8 @@ void ZappyGui::run()
 
 void ZappyGui::loadMap(int width, int height)
 {
-    std::shared_ptr<ZappyModel> whiteCubeModel = ZappyModel::createModelFromFile(lveDevice, "models/cube_white.obj");
-    std::shared_ptr<ZappyModel> blackCubeModel = ZappyModel::createModelFromFile(lveDevice, "models/cube_black.obj");
+    std::shared_ptr<ZappyModel> whiteCubeModel = ZappyModel::createModelFromFile(lveDevice, "models/cube.obj");
+    std::shared_ptr<ZappyModel> blackCubeModel = ZappyModel::createModelFromFile(lveDevice, "models/cube.obj");
     for (int x = 0; x < width; x++) {
         for (int z = 0; z < height; z++) {
             auto cube = ZappyGameObject::createGameObject();
