@@ -80,6 +80,7 @@ DIR_MAIN		=	$(addprefix src/, $(MAIN))
 
 TEST		=	test_splitter.c						\
 				test_zappy_server.c					\
+				test_get_len_char_tab.c				\
 
 DIR_TESTS	=	$(addprefix tests/, $(TEST))
 
