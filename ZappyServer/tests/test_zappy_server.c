@@ -105,7 +105,7 @@ Test(zappy_server, test_zappy_server)
     cr_assert(pid >= 0, "Fork failed");
     if (pid == 0) {
         // Child process
-        sleep(8);
+        sleep(4);
         kill(getppid(), SIGINT);
         exit(0);
     } else {
