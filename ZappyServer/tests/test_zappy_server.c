@@ -83,6 +83,7 @@ static void client(char *ip, int port, char *command, int listen_nb)
         perror("ERROR on close");
         exit(1);
     }
+    return 0;
 }
 
 Test(zappy_server, test_zappy_server)
@@ -121,101 +122,146 @@ Test(zappy_server, test_zappy_server)
     }
 }
 
-// Test(zappy_server, test_zappy_server_graphic)
-// {
-//     // Configuration for the server
-//     args_config_t *args = calloc(1, sizeof(args_config_t));
-//     cr_assert_not_null(args);
-//     args->clientsNb = 2;
-//     args->port = 4242;
-//     args->width = 10;
-//     args->height = 10;
-//     args->freq = 100;
-//     TAILQ_INIT(&args->names);
-//     char_tab_t *names = calloc(1, sizeof(char_tab_t));
-//     cr_assert_not_null(names);
-//     names->str = strdup("toto");
-//     TAILQ_INSERT_TAIL(&args->names, names, next);
-//     // Forking the process to create a child
-//     pid_t pid = fork();
-//     cr_assert(pid >= 0, "Fork failed");
-//     if (pid == 0) {
-//         // Child process
-//         sleep(4);
-//         client("127.0.0.1", args->port, "GRAPHIC", 2);
-//         exit(0);
-//     } else {
-//         pid_t pid = fork();
-//         cr_assert(pid >= 0, "Fork failed");
-//         if (pid == 0) {
-//             // Child process
-//             sleep(8);
-//             kill(getppid(), SIGINT);
-//             exit(0);
-//         } else {
-//             // Parent process
-//             // Start the server
-//             int value = zappy_server(args);
-//             cr_assert_eq(value, 0, "Server did not exit with code 0");
-//             // Wait for the child process to finish
-//             int status;
-//             waitpid(pid, &status, 0);
-//             cr_assert(WIFEXITED(status) && (WEXITSTATUS(status) == 0),
-//                 "Child process did not exit cleanly");
-//         }
-//     }
-// }
+Test(zappy_server, test_zappy_server_graphic)
+{
+    // Configuration for the server
+    args_config_t *args = calloc(1, sizeof(args_config_t));
+    cr_assert_not_null(args);
+    args->clientsNb = 2;
+    args->port = 4243;
+    args->width = 10;
+    args->height = 10;
+    args->freq = 100;
+    TAILQ_INIT(&args->names);
+    char_tab_t *names = calloc(1, sizeof(char_tab_t));
+    cr_assert_not_null(names);
+    names->str = strdup("toto");
+    TAILQ_INSERT_TAIL(&args->names, names, next);
+    // Forking the process to create a child
+    pid_t pid_1 = fork();
+    cr_assert(pid_1 >= 0, "Fork failed");
+    if (pid_1 == 0) {
+        // Child process
+        sleep(4);
+        client("127.0.0.1", args->port, "GRAPHIC", 3);
+        exit(0);
+    } else {
+        pid_t pid_2 = fork();
+        cr_assert(pid_2 >= 0, "Fork failed");
+        if (pid_2 == 0) {
+            // Child process
+            sleep(8);
+            kill(getppid(), SIGINT);
+            exit(0);
+        } else {
+            // Parent process
+            // Start the server
+            int value = zappy_server(args);
+            cr_assert_eq(value, 0, "Server did not exit with code 0");
+            // Wait for the child process to finish
+            int status;
+            waitpid(pid_2, &status, 0);
+            cr_assert(WIFEXITED(status) && (WEXITSTATUS(status) == 0),
+                "Child process did not exit cleanly");
+        }
+    }
+}
 
-// Test(zappy_server, test_zappy_server_graphic_ai)
-// {
-//     // Configuration for the server
-//     args_config_t *args = calloc(1, sizeof(args_config_t));
-//     cr_assert_not_null(args);
-//     args->clientsNb = 2;
-//     args->port = 4242;
-//     args->width = 10;
-//     args->height = 10;
-//     args->freq = 100;
-//     TAILQ_INIT(&args->names);
-//     char_tab_t *names = calloc(1, sizeof(char_tab_t));
-//     cr_assert_not_null(names);
-//     names->str = strdup("toto");
-//     TAILQ_INSERT_TAIL(&args->names, names, next);
-//     // Forking the process to create a child
-//     pid_t pid = fork();
-//     cr_assert(pid >= 0, "Fork failed");
-//     if (pid == 0) {
-//         // Child process
-//         sleep(4);
-//         client("127.0.0.1", args->port, "GRAPHIC", 2);
-//         exit(0);
-//     } else {
-//         pid_t pid = fork();
-//         cr_assert(pid >= 0, "Fork failed");
-//         if (pid == 0) {
-//             // Child process
-//             sleep(8);
-//             client("127.0.0.1", args->port, "toto", 1);
-//             exit(0);
-//         } else {
-//             pid_t pid = fork();
-//             cr_assert(pid >= 0, "Fork failed");
-//             if (pid == 0) {
-//                 // Child process
-//                 sleep(12);
-//                 kill(getppid(), SIGINT);
-//                 exit(0);
-//             } else {
-//                 // Parent process
-//                 // Start the server
-//                 int value = zappy_server(args);
-//                 cr_assert_eq(value, 0, "Server did not exit with code 0");
-//                 // Wait for the child process to finish
-//                 int status;
-//                 waitpid(pid, &status, 0);
-//                 cr_assert(WIFEXITED(status) && (WEXITSTATUS(status) == 0),
-//                     "Child process did not exit cleanly");
-//             }
-//         }
-//     }
-// }
+Test(zappy_server, test_zappy_server_ai)
+{
+    // Configuration for the server
+    args_config_t *args = calloc(1, sizeof(args_config_t));
+    cr_assert_not_null(args);
+    args->clientsNb = 2;
+    args->port = 4244;
+    args->width = 10;
+    args->height = 10;
+    args->freq = 100;
+    TAILQ_INIT(&args->names);
+    char_tab_t *names = calloc(1, sizeof(char_tab_t));
+    cr_assert_not_null(names);
+    names->str = strdup("toto");
+    TAILQ_INSERT_TAIL(&args->names, names, next);
+    // Forking the process to create a child
+    pid_t pid_1 = fork();
+    cr_assert(pid_1 >= 0, "Fork failed");
+    if (pid_1 == 0) {
+        // Child process
+        sleep(4);
+        client("127.0.0.1", args->port, "toto", 2);
+        exit(0);
+    } else {
+        pid_t pid_2 = fork();
+        cr_assert(pid_2 >= 0, "Fork failed");
+        if (pid_2 == 0) {
+            // Child process
+            sleep(8);
+            kill(getppid(), SIGINT);
+            exit(0);
+        } else {
+            // Parent process
+            // Start the server
+            int value = zappy_server(args);
+            cr_assert_eq(value, 0, "Server did not exit with code 0");
+            // Wait for the child process to finish
+            int status;
+            waitpid(pid_2, &status, 0);
+            cr_assert(WIFEXITED(status) && (WEXITSTATUS(status) == 0),
+                "Child process did not exit cleanly");
+        }
+    }
+}
+
+Test(zappy_server, test_zappy_server_graphic_ai)
+{
+    // Configuration for the server
+    args_config_t *args = calloc(1, sizeof(args_config_t));
+    cr_assert_not_null(args);
+    args->clientsNb = 2;
+    args->port = 4245;
+    args->width = 10;
+    args->height = 10;
+    args->freq = 100;
+    TAILQ_INIT(&args->names);
+    char_tab_t *names = calloc(1, sizeof(char_tab_t));
+    cr_assert_not_null(names);
+    names->str = strdup("toto");
+    TAILQ_INSERT_TAIL(&args->names, names, next);
+    // Forking the process to create a child
+    pid_t pid = fork();
+    cr_assert(pid >= 0, "Fork failed");
+    if (pid == 0) {
+        // Child process
+        sleep(4);
+        client("127.0.0.1", args->port, "GRAPHIC", 5);
+        exit(0);
+    } else {
+        pid_t pid = fork();
+        cr_assert(pid >= 0, "Fork failed");
+        if (pid == 0) {
+            // Child process
+            sleep(8);
+            client("127.0.0.1", args->port, "toto", 2);
+            exit(0);
+        } else {
+            pid_t pid = fork();
+            cr_assert(pid >= 0, "Fork failed");
+            if (pid == 0) {
+                // Child process
+                sleep(12);
+                kill(getppid(), SIGINT);
+                exit(0);
+            } else {
+                // Parent process
+                // Start the server
+                int value = zappy_server(args);
+                cr_assert_eq(value, 0, "Server did not exit with code 0");
+                // Wait for the child process to finish
+                int status;
+                waitpid(pid, &status, 0);
+                cr_assert(WIFEXITED(status) && (WEXITSTATUS(status) == 0),
+                    "Child process did not exit cleanly");
+            }
+        }
+    }
+}
