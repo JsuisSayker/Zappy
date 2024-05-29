@@ -100,7 +100,15 @@ class Client():
                             self.ai.updateSharedInventory()
                             self.ai.newRessource = True
                         elif "Inventory\n" in self.ai.dataToSend:
-                            self.ai.parse_inventory(element)
+                            try:
+                                self.ai.parse_inventory(element)
+                            except ValueError:
+                                print("ValueError", element)
+                                pass
+                        # elif "Elevation underway" in element:
+                        #     # self.ai.dataToSend = ""
+                        #     pass
+                        #     return
                         elif self.ai.dataToSend == "Fork\n":
                             newClientId = int(self.clientId) + 1
                             subprocess.Popen(["python3", "zappy_ai", "-p",
