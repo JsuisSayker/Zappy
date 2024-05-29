@@ -28,6 +28,15 @@ re:
 	make re -C ZappyAI
 	make re -C ZappyGui
 
+server:
+	make -C ZappyServer
+
+gui:
+	make -C ZappyGui
+
+ai:
+	make -C ZappyAi
+
 unit_tests:
 	make unit_tests -C ZappyServer
 

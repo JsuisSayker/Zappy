@@ -26,8 +26,12 @@ int main(int argc, char **argv)
     args_config_t *args = NULL;
 
     srand(time(NULL));
+    if (argc == 1)
+        return KO;
     if (strcmp(argv[1], "-help") == 0)
         return help();
+    if (argc < 13)
+        return KO;
     args = init_args_config();
     if (args == NULL)
         return KO;
