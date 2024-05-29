@@ -8,6 +8,10 @@
 #include <iostream>
 #include <stdexcept>
 
+#ifndef ENGINE_DIR
+#define ENGINE_DIR ""
+#endif
+
 namespace zappy {
 
 ZappyPipeline::ZappyPipeline(
@@ -26,10 +30,11 @@ ZappyPipeline::~ZappyPipeline() {
 }
 
 std::vector<char> ZappyPipeline::readFile(const std::string& filepath) {
-  std::ifstream file{filepath, std::ios::ate | std::ios::binary};
+  std::string enginePath = ENGINE_DIR + filepath;
+  std::ifstream file{enginePath, std::ios::ate | std::ios::binary};
 
   if (!file.is_open()) {
-    throw std::runtime_error("failed to open file: " + filepath);
+    throw std::runtime_error("failed to open file: " + enginePath);
   }
 
   size_t fileSize = static_cast<size_t>(file.tellg());
@@ -203,6 +208,19 @@ void ZappyPipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo) {
 
   configInfo.bindingDescriptions = ZappyModel::Vertex::getBindingDescriptions();
   configInfo.attributeDescriptions = ZappyModel::Vertex::getAttributeDescriptions();
+}
+
+void ZappyPipeline::enableAlphaBlending(PipelineConfigInfo& configInfo) {
+  configInfo.colorBlendAttachment.blendEnable = VK_TRUE;
+  configInfo.colorBlendAttachment.colorWriteMask =
+      VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
+      VK_COLOR_COMPONENT_A_BIT;
+  configInfo.colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+  configInfo.colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+  configInfo.colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+  configInfo.colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+  configInfo.colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+  configInfo.colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 }
 
 }  // namespace zappy

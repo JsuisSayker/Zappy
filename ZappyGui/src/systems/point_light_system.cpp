@@ -9,7 +9,9 @@
 // std
 #include <array>
 #include <cassert>
+#include <map>
 #include <stdexcept>
+#include <filesystem>
 
 namespace zappy {
 
@@ -20,8 +22,8 @@ struct PointLightPushConstants {
 };
 
 PointLightSystem::PointLightSystem(
-    ZappyDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
-    : lveDevice{device} {
+    ZappyDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout, std::string executablePath)
+    : lveDevice{device}, executablePath{executablePath} {
   createPipelineLayout(globalSetLayout);
   createPipeline(renderPass);
 }
@@ -55,14 +57,15 @@ void PointLightSystem::createPipeline(VkRenderPass renderPass) {
 
   PipelineConfigInfo pipelineConfig{};
   ZappyPipeline::defaultPipelineConfigInfo(pipelineConfig);
+  ZappyPipeline::enableAlphaBlending(pipelineConfig);
   pipelineConfig.attributeDescriptions.clear();
   pipelineConfig.bindingDescriptions.clear();
   pipelineConfig.renderPass = renderPass;
   pipelineConfig.pipelineLayout = pipelineLayout;
   lvePipeline = std::make_unique<ZappyPipeline>(
       lveDevice,
-      "shaders/point_light.vert.spv",
-      "shaders/point_light.frag.spv",
+      executablePath + "/ZappyGui/shaders/point_light.vert.spv",
+      executablePath + "/ZappyGui/shaders/point_light.frag.spv",
       pipelineConfig);
 }
 
@@ -88,6 +91,18 @@ void PointLightSystem::update(FrameInfo& frameInfo, GlobalUbo& ubo) {
 }
 
 void PointLightSystem::render(FrameInfo& frameInfo) {
+  // sort lights
+  std::map<float, ZappyGameObject::id_t> sorted;
+  for (auto& kv : frameInfo.gameObjects) {
+    auto& obj = kv.second;
+    if (obj.pointLight == nullptr) continue;
+
+    // calculate distance
+    auto offset = frameInfo.camera.getPosition() - obj.transform.translation;
+    float disSquared = glm::dot(offset, offset);
+    sorted[disSquared] = obj.getId();
+  }
+
   lvePipeline->bind(frameInfo.commandBuffer);
 
   vkCmdBindDescriptorSets(
@@ -100,9 +115,10 @@ void PointLightSystem::render(FrameInfo& frameInfo) {
       0,
       nullptr);
 
-  for (auto& kv : frameInfo.gameObjects) {
-    auto& obj = kv.second;
-    if (obj.pointLight == nullptr) continue;
+  // iterate through sorted lights in reverse order
+  for (auto it = sorted.rbegin(); it != sorted.rend(); ++it) {
+    // use game obj id to find light object
+    auto& obj = frameInfo.gameObjects.at(it->second);
 
     PointLightPushConstants push{};
     push.position = glm::vec4(obj.transform.translation, 1.f);

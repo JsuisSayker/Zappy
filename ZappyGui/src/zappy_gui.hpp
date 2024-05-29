@@ -5,37 +5,40 @@
 #include "game_object.hpp"
 #include "renderer.hpp"
 #include "window.hpp"
+#include "texture.hpp"
 
 // std
 #include <memory>
 #include <vector>
 
 namespace zappy {
-class ZappyGui {
+class FirstApp {
  public:
-  static constexpr int WIDTH = 1920;
-  static constexpr int HEIGHT = 1080;
+  static constexpr int WIDTH = 800;
+  static constexpr int HEIGHT = 600;
 
-  ZappyGui(int width, int height);
-  ~ZappyGui();
+  FirstApp();
+  ~FirstApp();
 
-  ZappyGui(const ZappyGui &) = delete;
-  ZappyGui &operator=(const ZappyGui &) = delete;
+  FirstApp(const FirstApp &) = delete;
+  FirstApp &operator=(const FirstApp &) = delete;
+
+  static std::string getExecutablePath();
 
   void run();
 
  private:
-  void loadMap();
+  void loadGameObjects();
 
   ZappyWindow lveWindow{WIDTH, HEIGHT, "Vulkan Tutorial"};
   ZappyDevice lveDevice{lveWindow};
   ZappyRenderer lveRenderer{lveWindow, lveDevice};
 
   // note: order of declarations matters
-  std::unique_ptr<LveDescriptorPool> globalPool{};
+  std::unique_ptr<ZappyDescriptorPool> globalPool{};
+  std::unique_ptr<Texture> texture{};
   ZappyGameObject::Map gameObjects;
 
-  int mapWidth;
-  int mapHeight;
+  std::string executablePath;
 };
 }  // namespace zappy

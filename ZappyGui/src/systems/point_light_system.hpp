@@ -1,10 +1,10 @@
 #pragma once
 
-#include "camera.hpp"
-#include "device.hpp"
-#include "frame_info.hpp"
-#include "game_object.hpp"
-#include "pipeline.hpp"
+#include "../camera.hpp"
+#include "../device.hpp"
+#include "../frame_info.hpp"
+#include "../game_object.hpp"
+#include "../pipeline.hpp"
 
 // std
 #include <memory>
@@ -14,7 +14,7 @@ namespace zappy {
 class PointLightSystem {
  public:
   PointLightSystem(
-      ZappyDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
+      ZappyDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout, std::string executablePath);
   ~PointLightSystem();
 
   PointLightSystem(const PointLightSystem &) = delete;
@@ -31,5 +31,6 @@ class PointLightSystem {
 
   std::unique_ptr<ZappyPipeline> lvePipeline;
   VkPipelineLayout pipelineLayout;
+  std::string executablePath;
 };
 }  // namespace zappy

@@ -40,10 +40,10 @@ class ZappyDescriptorSetLayout {
   VkDescriptorSetLayout descriptorSetLayout;
   std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings;
 
-  friend class LveDescriptorWriter;
+  friend class ZappyDescriptorWriter;
 };
 
-class LveDescriptorPool {
+class ZappyDescriptorPool {
  public:
   class Builder {
    public:
@@ -52,7 +52,7 @@ class LveDescriptorPool {
     Builder &addPoolSize(VkDescriptorType descriptorType, uint32_t count);
     Builder &setPoolFlags(VkDescriptorPoolCreateFlags flags);
     Builder &setMaxSets(uint32_t count);
-    std::unique_ptr<LveDescriptorPool> build() const;
+    std::unique_ptr<ZappyDescriptorPool> build() const;
 
    private:
     ZappyDevice &lveDevice;
@@ -61,14 +61,14 @@ class LveDescriptorPool {
     VkDescriptorPoolCreateFlags poolFlags = 0;
   };
 
-  LveDescriptorPool(
+  ZappyDescriptorPool(
       ZappyDevice &lveDevice,
       uint32_t maxSets,
       VkDescriptorPoolCreateFlags poolFlags,
       const std::vector<VkDescriptorPoolSize> &poolSizes);
-  ~LveDescriptorPool();
-  LveDescriptorPool(const LveDescriptorPool &) = delete;
-  LveDescriptorPool &operator=(const LveDescriptorPool &) = delete;
+  ~ZappyDescriptorPool();
+  ZappyDescriptorPool(const ZappyDescriptorPool &) = delete;
+  ZappyDescriptorPool &operator=(const ZappyDescriptorPool &) = delete;
 
   bool allocateDescriptor(
       const VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet &descriptor) const;
@@ -81,22 +81,22 @@ class LveDescriptorPool {
   ZappyDevice &lveDevice;
   VkDescriptorPool descriptorPool;
 
-  friend class LveDescriptorWriter;
+  friend class ZappyDescriptorWriter;
 };
 
-class LveDescriptorWriter {
+class ZappyDescriptorWriter {
  public:
-  LveDescriptorWriter(ZappyDescriptorSetLayout &setLayout, LveDescriptorPool &pool);
+  ZappyDescriptorWriter(ZappyDescriptorSetLayout &setLayout, ZappyDescriptorPool &pool);
 
-  LveDescriptorWriter &writeBuffer(uint32_t binding, VkDescriptorBufferInfo *bufferInfo);
-  LveDescriptorWriter &writeImage(uint32_t binding, VkDescriptorImageInfo *imageInfo);
+  ZappyDescriptorWriter &writeBuffer(uint32_t binding, VkDescriptorBufferInfo *bufferInfo);
+  ZappyDescriptorWriter &writeImage(uint32_t binding, VkDescriptorImageInfo *imageInfo);
 
   bool build(VkDescriptorSet &set);
   void overwrite(VkDescriptorSet &set);
 
  private:
   ZappyDescriptorSetLayout &setLayout;
-  LveDescriptorPool &pool;
+  ZappyDescriptorPool &pool;
   std::vector<VkWriteDescriptorSet> writes;
 };
 
