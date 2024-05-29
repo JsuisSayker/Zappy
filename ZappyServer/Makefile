@@ -129,7 +129,7 @@ fclean: clean
 re:		fclean all
 
 unit_tests:	re
-		mkdir unit_tests
+		mkdir -p unit_tests
 		gcc -o unit_tests/unit_tests $(DIR_SRC) $(DIR_TESTS)\
 		$(CPPFLAGS) $(LDLIBS) --coverage -lcriterion
 

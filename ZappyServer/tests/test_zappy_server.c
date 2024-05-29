@@ -217,11 +217,11 @@ Test(zappy_server, test_zappy_server_ai)
 Test(zappy_server, test_zappy_server_graphic_ai)
 {
     // Configuration for the server
-    int sleep_time = 3;
+    int sleep_time = 4;
     args_config_t *args = calloc(1, sizeof(args_config_t));
     cr_assert_not_null(args);
     args->clientsNb = 2;
-    args->port = 4245;
+    args->port = 4246;
     args->width = 10;
     args->height = 10;
     args->freq = 100;
