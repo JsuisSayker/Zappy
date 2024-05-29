@@ -73,3 +73,5 @@ Mkfile.old
 dkms.conf
 
 *.spv
+
+vulkan-sdk*
