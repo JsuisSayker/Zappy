@@ -11,16 +11,17 @@
 int cast_action(zappy_server_t *zappy, client_t *client, int cast_time,
     char *cmd)
 {
+    struct timeval start;
+
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
     if (client->command.is_contracted == false) {
+        printf("Cast action\n cast_time: %d\n command: %s\n zappy.freq: %d\n--\n", cast_time, cmd, zappy->args->freq);
         client->command.is_contracted = true;
-        client->command.cast_time = cast_time / zappy->args->freq;
-        printf("Client.cast time: %f\n", client->command.cast_time);
-        printf("cast_time: %d\n", cast_time);
+        client->command.cast_time = (double)cast_time / (double)zappy->args->freq;
         client->command.execusion = strdup(cmd);
-        printf("Command execute: %s\n", client->command.execusion);
-        gettimeofday(&client->command.timeval, NULL);
+        gettimeofday(&start, NULL);
+        client->command.time = start.tv_sec + start.tv_usec / 1000000.0;
     }
     return OK;
 }
@@ -30,18 +31,16 @@ bool check_action(zappy_server_t *zappy, client_t *client)
     struct timeval end;
     double elapsed;
 
-    printf("Check action\n");
-
     if (client == NULL || zappy == NULL)
         return false;
     gettimeofday(&end, NULL);
-    elapsed = end.tv_sec - client->command.timeval.tv_sec;
-    printf("Elapsed: %ld\n", client->command.timeval.tv_sec);
+    elapsed = (end.tv_sec + end.tv_usec / 1000000.0) - client->command.time;
+    printf("Check action\n elapsed: %lf\n cast_time: %f\n--\n", elapsed, client->command.cast_time);
     if (client->command.is_contracted == true &&
     client->command.cast_time < elapsed) {
         client->command.is_contracted = false;
         client->command.cast_time = 0;
-        client->command.timeval.tv_sec = 0;
+        client->command.time = 0.0;
         if (client->command.execusion != NULL){
             free(client->command.execusion);
             client->command.execusion = NULL;
@@ -69,14 +68,17 @@ static int queue_to_exec_sub(client_t *client)
 
 int queue_to_exec(client_t *client)
 {
+    printf("Queue to exec\n");
     if (client == NULL)
         return ERROR;
     if (client->command.queue[0] != NULL) {
+        printf("add in exec\n");
         if (client->command.execusion != NULL)
             free(client->command.execusion);
         if (queue_to_exec_sub(client) == ERROR)
             return ERROR;
     }
+    printf("Queue to exec end\n--\n");
     return OK;
 }
 
@@ -99,6 +101,7 @@ int add_in_queue(client_t *client, char *cmd)
 
     if (client == NULL || cmd == NULL)
         return ERROR;
+    printf("Add in queue\n cmd: %s\n--\n", cmd);
     for (i = 0; i < 10; i += 1){
         if (client->command.queue[i] == NULL){
             client->command.queue[i] = strdup(cmd);

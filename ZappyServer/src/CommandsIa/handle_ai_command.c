@@ -41,19 +41,17 @@ static int handle_exec_command(zappy_server_t *zappy, client_t *client)
 
 int handle_ai_command(zappy_server_t *zappy, client_t *client, char *command)
 {
-    if (zappy == NULL || client == NULL || command == NULL)
+    if (zappy == NULL || client == NULL)
         return ERROR;
     if (queue_to_exec(client) != OK)
         return ERROR;
     if (client->command.execusion != NULL){
         if (command != NULL && add_in_queue(client, command) == ERROR)
             return ERROR;
-        printf("cmd.execution: (%s)\n", client->command.execusion);
         if (handle_exec_command(zappy, client) == OK)
             return OK;
         return OK;
     }
-    printf("Command: %s\n", command);
     for (int i = 0; COMMAND_FUNCS[i].func != NULL; i += 1) {
         if (strncmp(command, COMMAND_FUNCS[i].command,
             strlen(COMMAND_FUNCS[i].command)) == 0) {

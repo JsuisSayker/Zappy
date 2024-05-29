@@ -153,9 +153,9 @@ typedef struct ai_position_s {
 typedef struct ai_command_data_s {
     char *execusion;
     char **queue;
-    struct timeval timeval;
     float cast_time;
     bool is_contracted;
+    double time;
 } ai_command_data_t;
 
 typedef struct client_s {

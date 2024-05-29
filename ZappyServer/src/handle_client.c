@@ -68,4 +68,5 @@ void handle_client(zappy_server_t *zappy_server)
     }
     last_split(zappy_server, buffer, lines[j]);
     free_array(lines);
+    printf("Handle client end\n--\n");
 }

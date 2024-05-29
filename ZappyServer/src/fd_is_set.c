@@ -35,7 +35,7 @@ int fd_is_set(zappy_server_t *zappy_server)
     } else if (zappy_server->clients[zappy_server->actual_sockfd].command.execusion != NULL)
         if (handle_ai_command(zappy_server,
         &zappy_server->clients[zappy_server->actual_sockfd],
-        zappy_server->clients[zappy_server->actual_sockfd].command.execusion)
+        NULL)
         != OK)
             return KO;
     return OK;
