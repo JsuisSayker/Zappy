@@ -29,7 +29,8 @@ static void send_map_info(zappy_server_t *zappy_server)
 
     dprintf(zappy_server->actual_sockfd, "msz %d %d\n",
         zappy_server->args->width, zappy_server->args->height);
-    dprintf(zappy_server->actual_sockfd, "sgt %.0f\n", zappy_server->args->freq);
+    dprintf(zappy_server->actual_sockfd, "sgt %.0f\n",
+        zappy_server->args->freq);
     for (int i = 0; i < zappy_server->args->height; i++) {
         for (int j = 0; j < zappy_server->args->width; j++) {
             display_gui_tile(zappy_server->map_tile[i][j],
