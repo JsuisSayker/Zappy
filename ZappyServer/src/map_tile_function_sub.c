@@ -35,3 +35,40 @@ void display_map_tile(map_tile_t **map_tile)
     }
     printf("<==============>\n");
 }
+
+int get_len_map_tile(map_tile_t **map_tile)
+{
+    int len = 0;
+
+    for (len = 0; map_tile[len] != NULL; len += 1) {
+        len += 1;
+    }
+    return len;
+}
+
+int get_len_line_map_tile(map_tile_t **map_tile)
+{
+    int len = 0;
+
+    for (len = 0; map_tile[0][len].x != -1; len += 1) {
+        len += 1;
+    }
+    return len;
+}
+
+map_tile_t **copy_map_tile(map_tile_t **source)
+{
+    int len_x = get_len_line_map_tile(source);
+    int len_y = get_len_map_tile(source);
+    map_tile_t **destination = calloc(sizeof(map_tile_t *), len_y + 1);
+
+    for (int i = 0; source[i] != NULL; i += 1) {
+        destination[i] = calloc(sizeof(map_tile_t), len_x + 1);
+        for (int j = 0; source[i][j].x != -1; j += 1) {
+            destination[i][j] = source[i][j];
+        }
+        destination[i][len_x].x = -1;
+        destination[i][len_x].y = -1;
+    }
+    destination[len_y] = NULL;
+}
