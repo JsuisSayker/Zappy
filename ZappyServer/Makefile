@@ -13,9 +13,6 @@ SRC			=	zappy_server.c						\
 				accept_new_connection.c				\
 				setup_server.c						\
 				search_in_object.c					\
-				get_team_by_uuid.c					\
-				get_thread_by_uuid.c				\
-				linked_list/free_list.c				\
 				argument_function.c					\
 				generate_ressourse_list.c			\
 				map_tile_function.c					\
@@ -29,7 +26,7 @@ SRC			=	zappy_server.c						\
 				${DIR_TOOLS}						\
 				${DIR_COMMAND_IA}					\
 				${DIR_COMMAND_GUI}					\
-				${DIR_COMMAND_SERVER}
+				${DIR_COMMAND_SERVER}				\
 
 TOOLS		=	splitter.c							\
 				free_array.c						\
@@ -37,33 +34,35 @@ TOOLS		=	splitter.c							\
 				char_tab_list_function.c			\
 				is_valid_resource.c					\
 				set_inventory_resource_quantite.c	\
+				free_list.c							\
 
-COMMAND_IA		=	cast_action.c			\
-					handle_ia_command.c		\
-					ia_command_help.c		\
+COMMAND_IA		=	cast_action.c					\
+					handle_ia_command.c				\
+					ia_command_help.c				\
 
-COMMAND_GUI		=	handle_gui_command.c		\
-					gui_command_msz.c			\
-					gui_command_bct.c			\
-					gui_command_mct.c			\
-					gui_command_tna.c			\
-					gui_command_ppo.c			\
-					gui_command_plv.c			\
-					gui_command_pin.c			\
-					gui_command_suc.c			\
-					gui_command_sgt.c			\
-					gui_command_sst.c			\
+COMMAND_GUI		=	handle_gui_command.c			\
+					gui_command_msz.c				\
+					gui_command_bct.c				\
+					gui_command_mct.c				\
+					gui_command_tna.c				\
+					gui_command_ppo.c				\
+					gui_command_plv.c				\
+					gui_command_pin.c				\
+					gui_command_suc.c				\
+					gui_command_sgt.c				\
+					gui_command_sst.c				\
 
-COMMAND_SERVER	=	handle_server_command.c		\
-					server_command_help.c		\
-					server_command_quit.c		\
-					server_command_map.c		\
-					server_command_clients.c	\
-					server_command_clear.c		\
-					server_command_tile.c		\
-					server_command_tp.c			\
-					server_command_setTile.c	\
-					server_command_setInventory.c\
+COMMAND_SERVER	=	handle_server_command.c			\
+					server_command_help.c			\
+					server_command_quit.c			\
+					server_command_map.c			\
+					server_command_clients.c		\
+					server_command_clear.c			\
+					server_command_tile.c			\
+					server_command_tp.c				\
+					server_command_set_tile.c		\
+					server_command_set_inventory.c	\
+					server_command_set_freq.c		\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 
@@ -79,7 +78,17 @@ MAIN		=	main.c						\
 
 DIR_MAIN		=	$(addprefix src/, $(MAIN))
 
-TEST		=	\
+TEST		=	test_splitter.c						\
+				test_get_len_char_tab.c				\
+				test_server_command_help.c			\
+				test_server_command_map.c			\
+				test_server_command_clear.c			\
+				test_server_command_quit.c			\
+				test_server_command_set_freq.c		\
+				test_server_command_tile.c			\
+				test_handle_server_command.c		\
+				test_fill_args_conf.c				\
+				test_zappy_server.c					\
 
 DIR_TESTS	=	$(addprefix tests/, $(TEST))
 
@@ -120,7 +129,7 @@ fclean: clean
 re:		fclean all
 
 unit_tests:	re
-		mkdir unit_tests
+		mkdir -p unit_tests
 		gcc -o unit_tests/unit_tests $(DIR_SRC) $(DIR_TESTS)\
 		$(CPPFLAGS) $(LDLIBS) --coverage -lcriterion
 

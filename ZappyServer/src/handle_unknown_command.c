@@ -29,11 +29,11 @@ static void send_map_info(zappy_server_t *zappy_server)
 
     dprintf(zappy_server->actual_sockfd, "msz %d %d\n",
         zappy_server->args->width, zappy_server->args->height);
-    dprintf(zappy_server->actual_sockfd, "sgt %d\n", zappy_server->args->freq);
+    dprintf(zappy_server->actual_sockfd, "sgt %.0f\n", zappy_server->args->freq);
     for (int i = 0; i < zappy_server->args->height; i++) {
         for (int j = 0; j < zappy_server->args->width; j++) {
-            display_gui_tile(
-                zappy_server->map_tile[i][j], zappy_server->actual_sockfd);
+            display_gui_tile(zappy_server->map_tile[i][j],
+                zappy_server->actual_sockfd);
         }
     }
     TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next) {
@@ -141,8 +141,7 @@ static int ia_client(zappy_server_t *zappy_server, char *command)
     team_t *tmp_team = NULL;
     int team_find = 0;
 
-    TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next)
-    {
+    TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next) {
         team_find = ia_client_find_team(zappy_server, tmp_team, command);
         if (team_find == 1)
             return OK;

@@ -15,11 +15,14 @@ static int handle_command(zappy_server_t *zappy_server, char *command)
         return handle_server_command(zappy_server, command);
     switch (zappy_server->clients[zappy_server->actual_sockfd].type) {
     case UNKNOWN:
+        printf("Unknown client type\n");
         return handle_unknown_command(zappy_server, command);
     case IA:
+        printf("IA client\n");
         return handle_ia_command(zappy_server,
             &zappy_server->clients[zappy_server->actual_sockfd], command);
     case GUI:
+        printf("GUI client\n");
         break;
     }
     return ERROR;

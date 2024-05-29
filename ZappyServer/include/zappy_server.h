@@ -71,7 +71,7 @@ typedef struct args_config_s {
     int width;
     int height;
     int clientsNb;
-    int freq;
+    double freq;
     struct char_tab_head names;
 } args_config_t;
 
@@ -244,10 +244,6 @@ team_t *search_in_teams(struct teamhead *team_head, char *uuid);
 int get_len_char_tab(char **command);
 time_t get_actual_time(void);
 int count_str_char(char *str, char c);
-// get UUID
-team_t *get_team_by_uuid(struct teamhead *teams_head, char *uuid);
-thread_t *get_thread_by_uuid(struct threadhead *thread_head, char *uuid);
-thread_t *get_all_thread_by_uuid(struct teamhead *team_head, char *uuid);
 
 // COMMANDS
 typedef struct command_s {
@@ -272,8 +268,9 @@ void server_command_clients(zappy_server_t *zappy, char *command);
 void server_command_clear(zappy_server_t *zappy, char *command);
 void server_command_tile(zappy_server_t *zappy, char *command);
 void server_command_tp(zappy_server_t *zappy, char *command);
-void server_command_setTile(zappy_server_t *zappy, char *command);
-void server_command_setInventory(zappy_server_t *zappy, char *command);
+void server_command_set_tile(zappy_server_t *zappy, char *command);
+void server_command_set_inventory(zappy_server_t *zappy, char *command);
+void server_command_set_freq(zappy_server_t *zappy, char *command);
 
 // AI COMMANDS FUNCTIONS
 int handle_ia_command(zappy_server_t *zappy, client_t *client, char *command);

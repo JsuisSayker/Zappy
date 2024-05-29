@@ -7,9 +7,9 @@
 
 #include <zappy_server.h>
 
-void gui_command_sst(zappy_server_t *zappy, char *command)
+void server_command_set_freq(zappy_server_t *zappy, char *command)
 {
     if (command == NULL || command[0] != ' ')
         return;
-    dprintf(zappy->actual_sockfd, "sst %.0f\n", zappy->args->freq);
+    zappy->args->freq = atof(&command[1]);
 }

@@ -8,16 +8,7 @@
 all:
 	make all -C ZappyServer
 	make all -C ZappyAI
-	make all -C vulkanTuto
-
-server:
-	make -C ZappyServer
-
-ai:
-	make -C ZappyAI
-
-gui:
-	make -C vulkanTuto
+	make all -C ZappyGui
 
 debug:
 	make debug -C ZappyServer
@@ -25,17 +16,17 @@ debug:
 
 clean:
 	make clean -C ZappyServer
-	make clean -C vulkanTuto
+	make clean -C ZappyGui
 
 fclean:
 	make fclean -C ZappyServer
 	make fclean -C ZappyAI
-	make fclean -C vulkanTuto
+	make fclean -C ZappyGui
 
 re:
 	make re -C ZappyServer
 	make re -C ZappyAI
-	make re -C vulkanTuto
+	make re -C ZappyGui
 
 unit_tests:
 	make unit_tests -C ZappyServer
