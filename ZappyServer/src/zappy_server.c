@@ -67,7 +67,6 @@ int zappy_server(args_config_t *args)
         if (zappy_server->server_running && scan_fd(zappy_server) == ERROR)
             return ERROR;
     }
-    printf("Server closed\n");
     close_server(zappy_server);
     return OK;
 }
