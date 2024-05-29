@@ -29,7 +29,7 @@ static void send_map_info(zappy_server_t *zappy_server)
 
     dprintf(zappy_server->actual_sockfd, "msz %d %d\n",
         zappy_server->args->width, zappy_server->args->height);
-    dprintf(zappy_server->actual_sockfd, "sgt %.0f\n",
+    dprintf(zappy_server->actual_sockfd, "sgt %d\n",
         zappy_server->args->freq);
     for (int i = 0; i < zappy_server->args->height; i++) {
         for (int j = 0; j < zappy_server->args->width; j++) {
