@@ -28,9 +28,8 @@ static int check_connection(zappy_server_t *zappy_server)
 int fd_is_set(zappy_server_t *zappy_server)
 {
     if (FD_ISSET(zappy_server->actual_sockfd, &zappy_server->fd.input)) {
-        if (check_connection(zappy_server) == ERROR) {
+        if (check_connection(zappy_server) == ERROR)
             return ERROR;
-        }
         return OK;
     }
     return OK;

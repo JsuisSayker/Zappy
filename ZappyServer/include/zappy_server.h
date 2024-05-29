@@ -31,6 +31,15 @@ typedef enum client_type_s {
     UNKNOWN,
 }client_type_t;
 
+typedef enum ia_direction_s {
+    NORTH,
+    EAST,
+    SOUTH,
+    WEST,
+} ia_direction_t;
+
+char *direction_string(ia_direction_t orientation);
+
 typedef struct char_tab_s {
     char *str;
     TAILQ_ENTRY(char_tab_s) next;
@@ -40,6 +49,16 @@ struct char_tab_head {
     struct char_tab_s *tqh_first;
     struct char_tab_s **tqh_last;
 };
+
+typedef struct inventory_s {
+    int food;
+    int linemate;
+    int deraumere;
+    int sibur;
+    int mendiane;
+    int phiras;
+    int thystame;
+} inventory_t;
 
 // char_tab functions
 void free_char_tab_list(struct char_tab_head *head);
@@ -52,20 +71,14 @@ typedef struct args_config_s {
     int width;
     int height;
     int clientsNb;
-    float freq;
+    double freq;
     struct char_tab_head names;
 } args_config_t;
 
 typedef struct map_tile_s {
     int x;
     int y;
-    int food;
-    int linemate;
-    int deraumere;
-    int sibur;
-    int mendiane;
-    int phiras;
-    int thystame;
+    inventory_t inventory;
 } map_tile_t;
 
 // args_config functions
@@ -85,6 +98,7 @@ void put_resource_on_map_tile(map_tile_t **map_tile,
     struct char_tab_head *head, int x, int y);
 map_tile_t **setup_map_tile(int x, int y);
 void display_tile(map_tile_t tile);
+void display_gui_tile(map_tile_t tile, int socket);
 void display_map_tile(map_tile_t **map_tile);
 
 // int array functions
@@ -136,18 +150,45 @@ typedef struct fd_s {
     fd_set ouput;
 } fd_t;
 
+typedef struct ia_position_s {
+    int x;
+    int y;
+    ia_direction_t direction;
+} ia_position_t;
+
 typedef struct client_s {
     buffer_t buffer;
     client_type_t type;
+    int client_number;
+    int level;
+    char *team_name;
     struct sockaddr_in other_socket_addr;
+    inventory_t inventory;
+    int freq;
+    struct timeval start;
+    ia_position_t pos;
+    bool is_contracted;
 } client_t;
 
+typedef struct egg_s {
+    int egg_number;
+    int client_number;
+    int x;
+    int y;
+    TAILQ_ENTRY(egg_s) next;
+} egg_t;
+
+struct egghead {
+    struct egg_s *tqh_first;
+    struct egg_s **tqh_last;
+};
 
 typedef struct team_s {
     char *name;
     char team_uuid[MAX_UUID_LENGTH];
     int nb_drones;
     int nb_matures_eggs;
+    struct egghead eggs_head;
     client_t *client;
     TAILQ_ENTRY(team_s) next;
 } team_t;
@@ -162,6 +203,8 @@ typedef struct zappy_server_s {
     fd_t fd;
     int my_socket;
     int actual_sockfd;
+    int index_eggs;
+    int index_clients;
     bool server_running;
     struct sockaddr_in server_addr;
     struct teamhead all_teams;
@@ -176,8 +219,10 @@ void free_threads(struct threadhead *head);
 void free_teams(struct teamhead *head);
 
 // Tools functions
+bool is_valid_resource(char *resource);
 void free_array(char **array);
-
+void set_inventory_resource_quantite(inventory_t *tile_inventory,
+    char *resource, int resource_quantity);
 // Server functions
 int init_server(zappy_server_t *zappy_server, args_config_t *args);
 int close_server(zappy_server_t *zappy_server);
@@ -199,16 +244,18 @@ team_t *search_in_teams(struct teamhead *team_head, char *uuid);
 int get_len_char_tab(char **command);
 time_t get_actual_time(void);
 int count_str_char(char *str, char c);
-// get UUID
-team_t *get_team_by_uuid(struct teamhead *teams_head, char *uuid);
-thread_t *get_thread_by_uuid(struct threadhead *thread_head, char *uuid);
-thread_t *get_all_thread_by_uuid(struct teamhead *team_head, char *uuid);
 
 // COMMANDS
 typedef struct command_s {
     char *command;
     void (*func)(zappy_server_t *zappy_server, char *command);
 } command_t;
+
+// COMMANDS IA
+typedef struct command_ia_s {
+    char *command;
+    int (*func)(zappy_server_t *zappy_server, client_t *client, char *command);
+} command_ia_t;
 
 int handle_unknown_command(zappy_server_t *zappy_server, char *command);
 
@@ -220,9 +267,31 @@ void server_command_map(zappy_server_t *zappy, char *command);
 void server_command_clients(zappy_server_t *zappy, char *command);
 void server_command_clear(zappy_server_t *zappy, char *command);
 void server_command_tile(zappy_server_t *zappy, char *command);
+void server_command_tp(zappy_server_t *zappy, char *command);
+void server_command_set_tile(zappy_server_t *zappy, char *command);
+void server_command_set_inventory(zappy_server_t *zappy, char *command);
+void server_command_set_freq(zappy_server_t *zappy, char *command);
+
 // AI COMMANDS FUNCTIONS
+int handle_ia_command(zappy_server_t *zappy, client_t *client, char *command);
+int cast_action(zappy_server_t *zappy, client_t *client, int freq);
+bool check_action(zappy_server_t *zappy, client_t *client);
+
+int ia_command_help(zappy_server_t *zappy, client_t *client, char *cmd);
+int ia_command_forward(zappy_server_t *zappy, client_t *client, char *cmd);
 
 // GUI COMMANDS FUNCTIONS
+int handle_server_command(zappy_server_t *zappy_server, char *command);
+void gui_command_msz(zappy_server_t *zappy, UNUSED char *command);
+void gui_command_bct(zappy_server_t *zappy, char *command);
+void gui_command_mct(zappy_server_t *zappy, char *command);
+void gui_command_tna(zappy_server_t *zappy, char *command);
+void gui_command_ppo(zappy_server_t *zappy, char *command);
+void gui_command_plv(zappy_server_t *zappy, char *command);
+void gui_command_pin(zappy_server_t *zappy, char *command);
+void gui_command_suc(zappy_server_t *zappy, char *command);
+void gui_command_sgt(zappy_server_t *zappy, char *command);
+void gui_command_sst(zappy_server_t *zappy, char *command);
 
 // ERROR FUNCTIONS
 void error_command_argument(char *command, int nb_argument, int nb_expected);

@@ -35,6 +35,18 @@ void free_threads(struct threadhead *head)
     }
 }
 
+void free_eggs(struct egghead *head)
+{
+    egg_t *n1 = TAILQ_FIRST(head);
+    egg_t *n2 = NULL;
+
+    while (n1 != NULL) {
+        n2 = n1;
+        n1 = TAILQ_NEXT(n1, next);
+        free(n2);
+    }
+}
+
 void free_teams(struct teamhead *head)
 {
     team_t *n1 = TAILQ_FIRST(head);
@@ -43,6 +55,8 @@ void free_teams(struct teamhead *head)
     while (n1 != NULL) {
         n2 = n1;
         n1 = TAILQ_NEXT(n1, next);
+        free(n2->name);
+        free_eggs(&n2->eggs_head);
         free(n2);
     }
 }
