@@ -18,7 +18,7 @@ static int handle_command(zappy_server_t *zappy_server, char *command)
         printf("Unknown client type\n");
         return handle_unknown_command(zappy_server, command);
     case IA:
-        return handle_ai_command(zappy_server,
+        return ai_function(zappy_server,
             &zappy_server->clients[zappy_server->actual_sockfd], command);
     case GUI:
         printf("GUI client\n");

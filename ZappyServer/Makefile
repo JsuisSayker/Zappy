@@ -37,6 +37,7 @@ TOOLS		=	splitter.c							\
 				free_list.c							\
 
 COMMAND_IA		=	handle_ai_command.c		\
+					ai_function.c					\
 					ai_initialisation.c		\
 					ai_action.c				\
 					ai_command_help.c		\

@@ -6,7 +6,6 @@
 */
 
 #include <zappy_server.h>
-#include <sys/time.h>
 
 int cast_action(zappy_server_t *zappy, client_t *client, int cast_time,
     char *cmd)

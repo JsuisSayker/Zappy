@@ -22,6 +22,7 @@
     #include <sys/socket.h>
     #include <sys/types.h>
     #include <time.h>
+    #include <sys/time.h>
     #include <unistd.h>
     #include "macro_server.h"
 
@@ -164,6 +165,12 @@ typedef struct ai_command_data_s {
     double time;
 } ai_command_data_t;
 
+typedef struct ai_health_s {
+    bool is_alive;
+    double last_meal;
+    double time_to_eat;
+} ai_health_t;
+
 typedef struct client_s {
     buffer_t buffer;
     client_type_t type;
@@ -171,6 +178,7 @@ typedef struct client_s {
     int level;
     char *team_name;
     struct sockaddr_in other_socket_addr;
+    ai_health_t health;
     ai_command_data_t command;
     ai_position_t pos;
     inventory_t inventory;
@@ -278,6 +286,7 @@ typedef struct command_ai_s {
     int (*func)(zappy_server_t *zappy_server, client_t *client, char *command);
 } command_ai_t;
 
+int ai_function(zappy_server_t *zappy, client_t *client, char *cmd);
 int queue_to_exec(client_t *client);
 int add_in_queue(client_t *client, char *cmd);
 int handle_ai_command(zappy_server_t *zappy, client_t *client, char *command);
@@ -291,6 +300,7 @@ int ai_command_help(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_forward(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_right(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_left(zappy_server_t *zappy, client_t *client, char *cmd);
+bool is_alive(zappy_server_t *zappy, client_t *client);
 
 // GUI COMMANDS FUNCTIONS
 int handle_server_command(zappy_server_t *zappy_server, char *command);

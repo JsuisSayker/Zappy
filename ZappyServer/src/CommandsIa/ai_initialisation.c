@@ -25,10 +25,17 @@ static int ai_value_direction_setter(client_t *ia)
     return OK;
 }
 
-static int init_value(client_t *ia, team_t *tmp_team, egg_t *new_egg)
+static int init_value(client_t *ia, team_t *tmp_team, egg_t *new_egg,
+    int freq)
 {
+    struct timeval tv;
+
     if (ia == NULL || tmp_team == NULL || new_egg == NULL)
         return ERROR;
+    gettimeofday(&tv, NULL);
+    ia->health.time_to_eat = 126.0 / (double)freq;
+    ia->health.last_meal = tv.tv_sec + tv.tv_usec / 1000000.0;
+    ia->health.is_alive = true;
     ia->pos.x = new_egg->x;
     ia->pos.y = new_egg->y;
     ia->team_name = strdup(tmp_team->name);
@@ -64,7 +71,7 @@ int ai_initialisation(zappy_server_t *zappy_server, client_t *ia,
     for (int i = 0; i < tmp_team->nb_drones; i += 1) {
         new_egg = TAILQ_NEXT(new_egg, next);
     }
-    if (init_value(ia, tmp_team, new_egg) == ERROR)
+    if (init_value(ia, tmp_team, new_egg, zappy_server->args->freq) == ERROR)
         return ERROR;
     if (init_queue(ia) != OK)
         return ERROR;
