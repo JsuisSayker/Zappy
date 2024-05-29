@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2024
+** Zappy
+** File description:
+** PointLightSystem
+*/
+
 #pragma once
 
 #include "../../include/Camera.hpp"
@@ -12,25 +19,25 @@
 
 namespace zappy {
 class PointLightSystem {
- public:
-  PointLightSystem(
-      ZappyDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout, std::string executablePath);
-  ~PointLightSystem();
+  public:
+    PointLightSystem(ZappyDevice &device, VkRenderPass renderPass,
+        VkDescriptorSetLayout globalSetLayout, std::string executablePath);
+    ~PointLightSystem();
 
-  PointLightSystem(const PointLightSystem &) = delete;
-  PointLightSystem &operator=(const PointLightSystem &) = delete;
+    PointLightSystem(const PointLightSystem &) = delete;
+    PointLightSystem &operator=(const PointLightSystem &) = delete;
 
-  void update(FrameInfo &frameInfo, GlobalUbo &ubo);
-  void render(FrameInfo &frameInfo);
+    void update(FrameInfo &frameInfo, GlobalUbo &ubo);
+    void render(FrameInfo &frameInfo);
 
- private:
-  void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
-  void createPipeline(VkRenderPass renderPass);
+  private:
+    void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
+    void createPipeline(VkRenderPass renderPass);
 
-  ZappyDevice &lveDevice;
+    ZappyDevice &lveDevice;
 
-  std::unique_ptr<ZappyPipeline> lvePipeline;
-  VkPipelineLayout pipelineLayout;
-  std::string executablePath;
+    std::unique_ptr<ZappyPipeline> lvePipeline;
+    VkPipelineLayout pipelineLayout;
+    std::string executablePath;
 };
-}  // namespace zappy
+} // namespace zappy

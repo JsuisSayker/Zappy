@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2024
+** Zappy
+** File description:
+** SimpleRenderSystem
+*/
+
 #pragma once
 
 #include "../../include/Camera.hpp"
@@ -12,24 +19,24 @@
 
 namespace zappy {
 class SimpleRenderSystem {
- public:
-  SimpleRenderSystem(
-      ZappyDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout, std::string executablePath);
-  ~SimpleRenderSystem();
+  public:
+    SimpleRenderSystem(ZappyDevice &device, VkRenderPass renderPass,
+        VkDescriptorSetLayout globalSetLayout, std::string executablePath);
+    ~SimpleRenderSystem();
 
-  SimpleRenderSystem(const SimpleRenderSystem &) = delete;
-  SimpleRenderSystem &operator=(const SimpleRenderSystem &) = delete;
+    SimpleRenderSystem(const SimpleRenderSystem &) = delete;
+    SimpleRenderSystem &operator=(const SimpleRenderSystem &) = delete;
 
-  void renderGameObjects(FrameInfo &frameInfo);
+    void renderGameObjects(FrameInfo &frameInfo);
 
- private:
-  void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
-  void createPipeline(VkRenderPass renderPass);
+  private:
+    void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
+    void createPipeline(VkRenderPass renderPass);
 
-  ZappyDevice &lveDevice;
+    ZappyDevice &lveDevice;
 
-  std::unique_ptr<ZappyPipeline> lvePipeline;
-  VkPipelineLayout pipelineLayout;
-  std::string executablePath;
+    std::unique_ptr<ZappyPipeline> lvePipeline;
+    VkPipelineLayout pipelineLayout;
+    std::string executablePath;
 };
-}  // namespace zappy
+} // namespace zappy

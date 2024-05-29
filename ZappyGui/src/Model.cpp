@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2024
+** Zappy
+** File description:
+** Model
+*/
+
 #include "Model.hpp"
 
 #include "Utils.hpp"
