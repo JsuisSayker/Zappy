@@ -59,8 +59,8 @@ void SimpleRenderSystem::createPipeline(VkRenderPass renderPass) {
   pipelineConfig.pipelineLayout = pipelineLayout;
   lvePipeline = std::make_unique<ZappyPipeline>(
       lveDevice,
-      executablePath + "/ZappyGui/shaders/simple_shader.vert.spv",
-      executablePath + "/ZappyGui/shaders/simple_shader.frag.spv",
+      executablePath + "/ZappyGui/shaders/SimpleShader.vert.spv",
+      executablePath + "/ZappyGui/shaders/SimpleShader.frag.spv",
       pipelineConfig);
 }
 
