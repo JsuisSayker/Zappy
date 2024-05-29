@@ -6,6 +6,7 @@
 */
 
 #include "Renderer.hpp"
+#include "ErrorHandling.hpp"
 
 // std
 #include <array>
@@ -39,11 +40,10 @@ void ZappyRenderer::recreateSwapChain()
         lveSwapChain =
             std::make_unique<ZappySwapChain>(lveDevice, extent, oldSwapChain);
 
-        if (!oldSwapChain->compareSwapFormats(*lveSwapChain.get())) {
-            throw std::runtime_error(
-                "Swap chain image(or depth) format has changed!");
-        }
+    if (!oldSwapChain->compareSwapFormats(*lveSwapChain.get())) {
+      throw zappy::SwapChainFormatChangedException();
     }
+  }
 }
 
 void ZappyRenderer::createCommandBuffers()
@@ -57,10 +57,10 @@ void ZappyRenderer::createCommandBuffers()
     allocInfo.commandBufferCount =
         static_cast<uint32_t>(commandBuffers.size());
 
-    if (vkAllocateCommandBuffers(lveDevice.device(), &allocInfo,
-            commandBuffers.data()) != VK_SUCCESS) {
-        throw std::runtime_error("failed to allocate command buffers!");
-    }
+  if (vkAllocateCommandBuffers(lveDevice.device(), &allocInfo, commandBuffers.data()) !=
+      VK_SUCCESS) {
+    throw zappy::MemoryAllocationFailedException();
+  }
 }
 
 void ZappyRenderer::freeCommandBuffers()
@@ -81,9 +81,9 @@ VkCommandBuffer ZappyRenderer::beginFrame()
         return nullptr;
     }
 
-    if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-        throw std::runtime_error("failed to acquire swap chain image!");
-    }
+  if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+    throw zappy::SwapChainImageAdquisitionFailedException();
+  }
 
     isFrameStarted = true;
 
@@ -91,30 +91,27 @@ VkCommandBuffer ZappyRenderer::beginFrame()
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-    if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-        throw std::runtime_error("failed to begin recording command buffer!");
-    }
-    return commandBuffer;
+  if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+    throw zappy::CommandBufferRecordingFailedToBeginException();
+  }
+  return commandBuffer;
 }
 
-void ZappyRenderer::endFrame()
-{
-    assert(isFrameStarted &&
-        "Can't call endFrame while frame is not in progress");
-    auto commandBuffer = getCurrentCommandBuffer();
-    if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-        throw std::runtime_error("failed to record command buffer!");
-    }
+void ZappyRenderer::endFrame() {
+  assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
+  auto commandBuffer = getCurrentCommandBuffer();
+  if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+    throw zappy::CommandBufferRecordingFailedException();
+  }
 
-    auto result =
-        lveSwapChain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
-        lveWindow.wasWindowResized()) {
-        lveWindow.resetWindowResizedFlag();
-        recreateSwapChain();
-    } else if (result != VK_SUCCESS) {
-        throw std::runtime_error("failed to present swap chain image!");
-    }
+  auto result = lveSwapChain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+  if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+      lveWindow.wasWindowResized()) {
+    lveWindow.resetWindowResizedFlag();
+    recreateSwapChain();
+  } else if (result != VK_SUCCESS) {
+    throw zappy::SwapChainImagePresentationFailedException();
+  }
 
     isFrameStarted = false;
     currentFrameIndex =

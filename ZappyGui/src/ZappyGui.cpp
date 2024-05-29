@@ -14,6 +14,7 @@
 #include "KeyboardMovementController.hpp"
 #include "systems/PointLightSystem.hpp"
 #include "systems/SimpleRenderSystem.hpp"
+#include "ErrorHandling.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -151,8 +152,7 @@ std::string FirstApp::getExecutablePath()
     char buffer[1024];
     ssize_t count = readlink("/proc/self/exe", buffer, sizeof(buffer));
     if (count == -1) {
-        throw std::runtime_error(
-            "Failed to read the symbolic link /proc/self/exe");
+        throw zappy::ReadLinkFailedException();
     }
     // cut the binary name from the path
     for (ssize_t i = count; i >= 0; i--) {

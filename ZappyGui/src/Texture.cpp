@@ -13,6 +13,7 @@
 #include "../external/stb/stb_image.h"
 #include "Buffer.hpp"
 #include <stdexcept>
+#include "ErrorHandling.hpp"
 
 namespace zappy {
 Texture::Texture(ZappyDevice &device, const std::string &filepath)
@@ -143,11 +144,12 @@ void Texture::transitionImageLayout(
         barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
         barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-        sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    } else {
-        throw std::runtime_error("unsupported layout transition!");
-    }
+            sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        }
+        else {
+            throw zappy::LayoutTransitionUnsupportedException();
+        }
 
     vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0,
         nullptr, 0, nullptr, 1, &barrier);
@@ -161,11 +163,9 @@ void Texture::generateMipmaps()
     vkGetPhysicalDeviceFormatProperties(
         lveDevice.getPhysicalDevice(), imageFormat, &formatProperties);
 
-    if (!(formatProperties.optimalTilingFeatures &
-            VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) {
-        throw std::runtime_error(
-            "texture image format does not support linear blitting!");
-    }
+        if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) {
+            throw zappy::LinearBlittingNotSupportedException();
+        }
 
     VkCommandBuffer commandBuffer = lveDevice.beginSingleTimeCommands();
 
