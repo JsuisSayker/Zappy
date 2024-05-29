@@ -1,5 +1,5 @@
 
-#include "zappy_gui.hpp"
+#include "ZappyGui.hpp"
 
 // std
 #include <cstdlib>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "device.hpp"
+#include "Device.hpp"
 
 namespace zappy {
 

@@ -1,4 +1,4 @@
-#include "point_light_system.hpp"
+#include "PointLightSystem.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -64,8 +64,8 @@ void PointLightSystem::createPipeline(VkRenderPass renderPass) {
   pipelineConfig.pipelineLayout = pipelineLayout;
   lvePipeline = std::make_unique<ZappyPipeline>(
       lveDevice,
-      executablePath + "/ZappyGui/shaders/point_light.vert.spv",
-      executablePath + "/ZappyGui/shaders/point_light.frag.spv",
+      executablePath + "/ZappyGui/shaders/PointLight.vert.spv",
+      executablePath + "/ZappyGui/shaders/PointLight.frag.spv",
       pipelineConfig);
 }
 

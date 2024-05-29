@@ -1,10 +1,10 @@
-#include "texture.hpp"
+#include "Texture.hpp"
 #include <vulkan/vulkan_core.h>
 #include <stdexcept>
-#include "device.hpp"
+#include "Device.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "../external/stb/stb_image.h"
-#include "buffer.hpp"
+#include "Buffer.hpp"
 #include <stdexcept>
 
 namespace zappy {

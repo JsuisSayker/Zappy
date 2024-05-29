@@ -1,11 +1,11 @@
 #pragma once
 
-#include "descriptors.hpp"
-#include "device.hpp"
-#include "game_object.hpp"
-#include "renderer.hpp"
-#include "window.hpp"
-#include "texture.hpp"
+#include "Descriptors.hpp"
+#include "Device.hpp"
+#include "GameObject.hpp"
+#include "Renderer.hpp"
+#include "Window.hpp"
+#include "Texture.hpp"
 
 // std
 #include <memory>

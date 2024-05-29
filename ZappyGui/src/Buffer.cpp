@@ -5,7 +5,7 @@
  * https://github.com/SaschaWillems/Vulkan/blob/master/base/VulkanBuffer.h
  */
 
-#include "buffer.hpp"
+#include "Buffer.hpp"
 
 // std
 #include <cassert>

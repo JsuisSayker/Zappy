@@ -1,4 +1,4 @@
-#include "device.hpp"
+#include "Device.hpp"
 
 // std headers
 #include <cstring>

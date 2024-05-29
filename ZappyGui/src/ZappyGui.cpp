@@ -1,12 +1,12 @@
-#include "zappy_gui.hpp"
+#include "ZappyGui.hpp"
 #include <vulkan/vulkan_core.h>
 #include <memory>
 
-#include "keyboard_movement_controller.hpp"
-#include "buffer.hpp"
-#include "camera.hpp"
-#include "systems/point_light_system.hpp"
-#include "systems/simple_render_system.hpp"
+#include "KeyboardMovementController.hpp"
+#include "Buffer.hpp"
+#include "Camera.hpp"
+#include "systems/PointLightSystem.hpp"
+#include "systems/SimpleRenderSystem.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS

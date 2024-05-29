@@ -1,4 +1,4 @@
-#include "renderer.hpp"
+#include "Renderer.hpp"
 
 // std
 #include <array>

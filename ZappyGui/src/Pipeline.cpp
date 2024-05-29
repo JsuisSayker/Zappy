@@ -1,6 +1,6 @@
-#include "pipeline.hpp"
+#include "Pipeline.hpp"
 
-#include "model.hpp"
+#include "Model.hpp"
 
 // std
 #include <cassert>

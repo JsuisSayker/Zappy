@@ -1,4 +1,4 @@
-#include "swap_chain.hpp"
+#include "SwapChain.hpp"
 
 // std
 #include <array>

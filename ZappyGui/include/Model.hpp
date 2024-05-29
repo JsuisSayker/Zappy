@@ -1,7 +1,7 @@
 #pragma once
 
-#include "buffer.hpp"
-#include "device.hpp"
+#include "Buffer.hpp"
+#include "Device.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS

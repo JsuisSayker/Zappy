@@ -1,7 +1,7 @@
 #pragma once
 
-#include "game_object.hpp"
-#include "window.hpp"
+#include "GameObject.hpp"
+#include "Window.hpp"
 
 namespace zappy {
 class KeyboardMovementController {
