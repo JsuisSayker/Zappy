@@ -28,17 +28,13 @@ void server_command_set_inventory(zappy_server_t *zappy, char *command)
     if (command == NULL || command[0] != ' ')
         return;
     command_array = splitter(command, " ");
-    if (get_len_char_tab(command_array) != 4) {
-        free_array(command_array);
-        return;
-    }
+    if (get_len_char_tab(command_array) != 4)
+        return free_array(command_array);
     id = atoi(command_array[0]);
     resource = command_array[1];
     resource_quantity = atoi(command_array[2]);
     if (resource_quantity > 0 && id > 0 && is_valid_resource(resource)
-        == true) {
+        == true)
         set_inventory(zappy, id, resource, resource_quantity);
-        printf("setInventory done\n");
-    }
     free_array(command_array);
 }
