@@ -1,4 +1,11 @@
 /*
+** EPITECH PROJECT, 2024
+** Zappy
+** File description:
+** tiny_obj_loader
+*/
+
+/*
 The MIT License (MIT)
 
 Copyright (c) 2012-Present, Syoyo Fujita and many contributors.
