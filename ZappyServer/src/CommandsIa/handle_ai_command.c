@@ -22,19 +22,27 @@
 static const struct command_ai_s COMMAND_FUNCS[] = {
     {"Help", &ai_command_help},
     {"Forward", &ai_command_forward},
+    {"Right", &ai_command_right},
+    {"Left", &ai_command_left},
     {"NULL", NULL}
 };
 
-static int handle_exec_command(zappy_server_t *zappy, client_t *client)
+static int handle_ai_command_sub(zappy_server_t *zappy, client_t *client,
+    char *cmd)
 {
     if (zappy == NULL || client == NULL)
         return ERROR;
     for (int i = 0; COMMAND_FUNCS[i].func != NULL; i += 1) {
-        if (strncmp(client->command.execusion, COMMAND_FUNCS[i].command,
+        if (strncmp(cmd, COMMAND_FUNCS[i].command,
             strlen(COMMAND_FUNCS[i].command)) == 0) {
-            COMMAND_FUNCS[i].func(zappy, client, client->command.execusion);
+            COMMAND_FUNCS[i].func(zappy, client, cmd);
             return OK;
         }
+    }
+    dprintf(zappy->actual_sockfd, "ko\n");
+    if (client->command.execusion != NULL){
+        free(client->command.execusion);
+        client->command.execusion = NULL;
     }
     return ERROR;
 }
@@ -48,16 +56,12 @@ int handle_ai_command(zappy_server_t *zappy, client_t *client, char *command)
     if (client->command.execusion != NULL){
         if (command != NULL && add_in_queue(client, command) == ERROR)
             return ERROR;
-        if (handle_exec_command(zappy, client) == OK)
-            return OK;
+        if (handle_ai_command_sub(zappy, client, client->command.execusion)
+            != OK)
+            return ERROR;
         return OK;
     }
-    for (int i = 0; COMMAND_FUNCS[i].func != NULL; i += 1) {
-        if (strncmp(command, COMMAND_FUNCS[i].command,
-            strlen(COMMAND_FUNCS[i].command)) == 0) {
-            COMMAND_FUNCS[i].func(zappy, client, command);
-            return OK;
-        }
-    }
+    if (handle_ai_command_sub(zappy, client, command) != OK)
+        return ERROR;
     return ERROR;
 }

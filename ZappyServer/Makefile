@@ -40,6 +40,8 @@ COMMAND_IA		=	ai_action.c				\
 					handle_ai_command.c		\
 					ai_command_help.c		\
 					ai_command_forward.c	\
+					ai_command_left.c		\
+					ai_command_right.c		\
 
 COMMAND_GUI		=	handle_gui_command.c		\
 					gui_command_msz.c			\

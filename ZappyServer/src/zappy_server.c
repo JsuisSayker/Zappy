@@ -65,8 +65,8 @@ static int run_zappy_server(zappy_server_t *zappy_server)
         timeout.tv_sec = 0;
         timeout.tv_usec = 10000;
         if (select(FD_SETSIZE, &(zappy_server->fd.input),
-            &(zappy_server->fd.ouput), NULL, &timeout) == ERROR && errno != EINTR
-            && zappy_server->server_running)
+            &(zappy_server->fd.ouput), NULL, &timeout) == ERROR
+                && errno != EINTR && zappy_server->server_running)
             return ERROR;
         if (errno == EINTR)
             zappy_server->server_running = false;

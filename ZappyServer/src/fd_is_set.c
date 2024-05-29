@@ -27,16 +27,19 @@ static int check_connection(zappy_server_t *zappy_server)
 
 int fd_is_set(zappy_server_t *zappy_server)
 {
+    client_t *client;
+
+    if (zappy_server == NULL)
+        return ERROR;
+    client = &zappy_server->clients[zappy_server->actual_sockfd];
     if (FD_ISSET(zappy_server->actual_sockfd, &zappy_server->fd.input)) {
         if (check_connection(zappy_server) == ERROR) {
             return ERROR;
         }
         return OK;
-    } else if (zappy_server->clients[zappy_server->actual_sockfd].command.execusion != NULL)
-        if (handle_ai_command(zappy_server,
-        &zappy_server->clients[zappy_server->actual_sockfd],
-        NULL)
-        != OK)
+    } else if (client->command.execusion != NULL || (client->command.queue
+        != NULL && client->command.queue[0] != NULL))
+        if (handle_ai_command(zappy_server, client, NULL) != OK)
             return KO;
     return OK;
 }
