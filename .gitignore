@@ -24,7 +24,6 @@ __pycache__
 # Object files
 *.o
 *.ko
-*.obj
 *.elf
 
 # Linker output
