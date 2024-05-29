@@ -70,8 +70,6 @@ static void send_info_ai_to_gui(zappy_server_t *zappy_server, client_t *client)
     }
 }
 
-
-
 static int ai_client_find_team(zappy_server_t *zappy_server, team_t *tmp_team,
     char *command)
 {
