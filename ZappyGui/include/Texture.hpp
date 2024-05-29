@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2024
+** Zappy
+** File description:
+** Texture
+*/
+
 #pragma once
 
 #include "Device.hpp"
@@ -5,31 +12,33 @@
 #include <vulkan/vulkan_core.h>
 
 namespace zappy {
-    class Texture {
-    public:
-        Texture(ZappyDevice &device, const std::string &filepath);
-        ~Texture();
+class Texture {
+  public:
+    Texture(ZappyDevice &device, const std::string &filepath);
+    ~Texture();
 
-        Texture(const Texture &) = delete;
-        Texture &operator=(const Texture &) = delete;
-        Texture(Texture &&) = delete;
-        Texture &operator=(Texture &&) = delete;
+    Texture(const Texture &) = delete;
+    Texture &operator=(const Texture &) = delete;
+    Texture(Texture &&) = delete;
+    Texture &operator=(Texture &&) = delete;
 
-        VkSampler getSampler() { return sampler; }
-        VkImageView getImageView() { return imageView; }
-        VkImageLayout getImageLayout() { return imageLayout; }
-    private:
-        void transitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout);
-        void generateMipmaps();
+    VkSampler getSampler() { return sampler; }
+    VkImageView getImageView() { return imageView; }
+    VkImageLayout getImageLayout() { return imageLayout; }
 
-        int width, height, mipLevels;
+  private:
+    void transitionImageLayout(
+        VkImageLayout oldLayout, VkImageLayout newLayout);
+    void generateMipmaps();
 
-        ZappyDevice& lveDevice;
-        VkImage image;
-        VkDeviceMemory imageMemory;
-        VkImageView imageView;
-        VkSampler sampler;
-        VkFormat imageFormat;
-        VkImageLayout imageLayout;
-    };
-}
+    int width, height, mipLevels;
+
+    ZappyDevice &lveDevice;
+    VkImage image;
+    VkDeviceMemory imageMemory;
+    VkImageView imageView;
+    VkSampler sampler;
+    VkFormat imageFormat;
+    VkImageLayout imageLayout;
+};
+} // namespace zappy
