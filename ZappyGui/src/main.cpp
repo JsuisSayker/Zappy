@@ -6,11 +6,9 @@
 #include <iostream>
 #include <stdexcept>
 
-int main(int ac, char **av) {
-  if (ac != 3)
-    throw std::runtime_error("Usage: ./zappy_gui <width> <height>");
+int main() {
+  zappy::FirstApp app{};
 
-  zappy::ZappyGui app{std::stoi(av[1]), std::stoi(av[2])};
   try {
     app.run();
   } catch (const std::exception &e) {

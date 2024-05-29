@@ -57,29 +57,29 @@ ZappyDescriptorSetLayout::~ZappyDescriptorSetLayout() {
 
 // *************** Descriptor Pool Builder *********************
 
-LveDescriptorPool::Builder &LveDescriptorPool::Builder::addPoolSize(
+ZappyDescriptorPool::Builder &ZappyDescriptorPool::Builder::addPoolSize(
     VkDescriptorType descriptorType, uint32_t count) {
   poolSizes.push_back({descriptorType, count});
   return *this;
 }
 
-LveDescriptorPool::Builder &LveDescriptorPool::Builder::setPoolFlags(
+ZappyDescriptorPool::Builder &ZappyDescriptorPool::Builder::setPoolFlags(
     VkDescriptorPoolCreateFlags flags) {
   poolFlags = flags;
   return *this;
 }
-LveDescriptorPool::Builder &LveDescriptorPool::Builder::setMaxSets(uint32_t count) {
+ZappyDescriptorPool::Builder &ZappyDescriptorPool::Builder::setMaxSets(uint32_t count) {
   maxSets = count;
   return *this;
 }
 
-std::unique_ptr<LveDescriptorPool> LveDescriptorPool::Builder::build() const {
-  return std::make_unique<LveDescriptorPool>(lveDevice, maxSets, poolFlags, poolSizes);
+std::unique_ptr<ZappyDescriptorPool> ZappyDescriptorPool::Builder::build() const {
+  return std::make_unique<ZappyDescriptorPool>(lveDevice, maxSets, poolFlags, poolSizes);
 }
 
 // *************** Descriptor Pool *********************
 
-LveDescriptorPool::LveDescriptorPool(
+ZappyDescriptorPool::ZappyDescriptorPool(
     ZappyDevice &lveDevice,
     uint32_t maxSets,
     VkDescriptorPoolCreateFlags poolFlags,
@@ -98,11 +98,11 @@ LveDescriptorPool::LveDescriptorPool(
   }
 }
 
-LveDescriptorPool::~LveDescriptorPool() {
+ZappyDescriptorPool::~ZappyDescriptorPool() {
   vkDestroyDescriptorPool(lveDevice.device(), descriptorPool, nullptr);
 }
 
-bool LveDescriptorPool::allocateDescriptor(
+bool ZappyDescriptorPool::allocateDescriptor(
     const VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet &descriptor) const {
   VkDescriptorSetAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -118,7 +118,7 @@ bool LveDescriptorPool::allocateDescriptor(
   return true;
 }
 
-void LveDescriptorPool::freeDescriptors(std::vector<VkDescriptorSet> &descriptors) const {
+void ZappyDescriptorPool::freeDescriptors(std::vector<VkDescriptorSet> &descriptors) const {
   vkFreeDescriptorSets(
       lveDevice.device(),
       descriptorPool,
@@ -126,16 +126,16 @@ void LveDescriptorPool::freeDescriptors(std::vector<VkDescriptorSet> &descriptor
       descriptors.data());
 }
 
-void LveDescriptorPool::resetPool() {
+void ZappyDescriptorPool::resetPool() {
   vkResetDescriptorPool(lveDevice.device(), descriptorPool, 0);
 }
 
 // *************** Descriptor Writer *********************
 
-LveDescriptorWriter::LveDescriptorWriter(ZappyDescriptorSetLayout &setLayout, LveDescriptorPool &pool)
+ZappyDescriptorWriter::ZappyDescriptorWriter(ZappyDescriptorSetLayout &setLayout, ZappyDescriptorPool &pool)
     : setLayout{setLayout}, pool{pool} {}
 
-LveDescriptorWriter &LveDescriptorWriter::writeBuffer(
+ZappyDescriptorWriter &ZappyDescriptorWriter::writeBuffer(
     uint32_t binding, VkDescriptorBufferInfo *bufferInfo) {
   assert(setLayout.bindings.count(binding) == 1 && "Layout does not contain specified binding");
 
@@ -156,7 +156,7 @@ LveDescriptorWriter &LveDescriptorWriter::writeBuffer(
   return *this;
 }
 
-LveDescriptorWriter &LveDescriptorWriter::writeImage(
+ZappyDescriptorWriter &ZappyDescriptorWriter::writeImage(
     uint32_t binding, VkDescriptorImageInfo *imageInfo) {
   assert(setLayout.bindings.count(binding) == 1 && "Layout does not contain specified binding");
 
@@ -177,7 +177,7 @@ LveDescriptorWriter &LveDescriptorWriter::writeImage(
   return *this;
 }
 
-bool LveDescriptorWriter::build(VkDescriptorSet &set) {
+bool ZappyDescriptorWriter::build(VkDescriptorSet &set) {
   bool success = pool.allocateDescriptor(setLayout.getDescriptorSetLayout(), set);
   if (!success) {
     return false;
@@ -186,7 +186,7 @@ bool LveDescriptorWriter::build(VkDescriptorSet &set) {
   return true;
 }
 
-void LveDescriptorWriter::overwrite(VkDescriptorSet &set) {
+void ZappyDescriptorWriter::overwrite(VkDescriptorSet &set) {
   for (auto &write : writes) {
     write.dstSet = set;
   }

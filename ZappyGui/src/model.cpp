@@ -13,6 +13,10 @@
 #include <cstring>
 #include <unordered_map>
 
+#ifndef ENGINE_DIR
+#define ENGINE_DIR ""
+#endif
+
 namespace std {
 template <>
 struct hash<zappy::ZappyModel::Vertex> {
@@ -36,7 +40,7 @@ ZappyModel::~ZappyModel() {}
 std::unique_ptr<ZappyModel> ZappyModel::createModelFromFile(
     ZappyDevice &device, const std::string &filepath) {
   Builder builder{};
-  builder.loadModel(filepath);
+  builder.loadModel(ENGINE_DIR + filepath);
   return std::make_unique<ZappyModel>(device, builder);
 }
 
