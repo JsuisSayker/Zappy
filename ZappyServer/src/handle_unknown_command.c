@@ -76,7 +76,7 @@ static int ai_client_find_team(zappy_server_t *zappy_server, team_t *tmp_team,
 {
     client_t *tmp_client = NULL;
 
-    if (zappy_server == NULL|| tmp_team == NULL || command == NULL)
+    if (zappy_server == NULL || tmp_team == NULL || command == NULL)
         return ERROR;
     if (strncmp(tmp_team->name, command, strlen(tmp_team->name)) == 0) {
         if (tmp_team->nb_matures_eggs == 0) {

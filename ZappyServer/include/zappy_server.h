@@ -284,7 +284,7 @@ int handle_ai_command(zappy_server_t *zappy, client_t *client, char *command);
 int cast_action(zappy_server_t *zappy, client_t *client, int freq, char *cmd);
 bool check_action(zappy_server_t *zappy, client_t *client);
 int ai_initialisation(zappy_server_t *zappy_server, client_t *ia,
-team_t *tmp_team);
+    team_t *tmp_team);
 
 // AI COMMANDS FUNCTIONS
 int ai_command_help(zappy_server_t *zappy, client_t *client, char *cmd);
