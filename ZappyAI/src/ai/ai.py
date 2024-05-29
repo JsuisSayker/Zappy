@@ -50,12 +50,12 @@ class AI():
             else:
                 h += 1
             tv = v
-            while tv >= v-h:
+            while tv >= v - h:
                 if map[v][h] != [] and object in map[tv][h][0]:
                     return [tv, h]
                 tv -= 1
             tv = v
-            while tv <= v+h:
+            while tv <= v + h:
                 if map[v][h] != [] and object in map[tv][h][0]:
                     return [tv, h]
                 tv += 1
