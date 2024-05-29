@@ -21,7 +21,7 @@ def entrypoint() -> int:
     client = Client(port, name, machine, clientId)
     client.connectWithServer()
     client.launch_client()
-    client.closeConnection()
+    client.close()
     return 0
 
 

@@ -66,9 +66,8 @@ static int fill_args_conf_sec(
         args->height = atoi(optarg);
         break;
     default:
-        if (fill_args_conf_three(args, argc, argv, opt) == KO) {
+        if (fill_args_conf_three(args, argc, argv, opt) == KO)
             return KO;
-        }
     }
     return OK;
 }
@@ -76,12 +75,10 @@ static int fill_args_conf_sec(
 static int check_args(args_config_t *args)
 {
     if (args->port <= 0 || args->width <= 0 || args->height <= 0 ||
-        args->clientsNb == 0 || args->freq == 0.0f) {
+        args->clientsNb == 0 || args->freq == 0.0f)
         return KO;
-    }
-    if (args->width > 30 || args->height > 30) {
+    if (args->width > 30 || args->height > 30)
         return KO;
-    }
     return OK;
 }
 
@@ -90,13 +87,11 @@ int fill_args_conf(args_config_t *args, int argc, char **argv)
     int opt = getopt(argc, argv, "p:x:y:n:c:f:");
 
     while (opt != -1) {
-        if (fill_args_conf_sec(args, argc, argv, opt) == KO) {
+        if (fill_args_conf_sec(args, argc, argv, opt) == KO)
             return KO;
-        }
         opt = getopt(argc, argv, "p:x:y:n:c:f:");
     }
-    if (check_args(args) == KO) {
+    if (check_args(args) == KO)
         return KO;
-    }
     return OK;
 }

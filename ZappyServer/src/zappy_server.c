@@ -10,7 +10,7 @@
 #include <signal.h>
 #include <stdio.h>
 
-void signal_handler(UNUSED int signal)
+static void signal_handler(UNUSED int signal)
 {
 }
 

@@ -12,6 +12,11 @@ static const struct command_s COMMAND_FUNCS[] = {
     {"bct", &gui_command_bct},
     {"mct", &gui_command_mct},
     {"tna", &gui_command_tna},
+    {"ppo", &gui_command_ppo},
+    {"plv", &gui_command_plv},
+    {"pin", &gui_command_pin},
+    {"sgt", &gui_command_sgt},
+    {"sst", &gui_command_sst},
     {"NULL", NULL}
 };
 
@@ -25,5 +30,6 @@ int handle_gui_command(zappy_server_t *zappy_server, char *command)
             return OK;
         }
     }
+    gui_command_suc(zappy_server, command);
     return ERROR;
 }

@@ -13,7 +13,7 @@ void server_command_tile(zappy_server_t *zappy, char *command)
     int y = 0;
     char **command_args = NULL;
 
-    if (command[0] != ' ')
+    if (command == NULL || command[0] != ' ')
         return;
     command_args = splitter(command, " ");
     if (command_args == NULL || command_args[0] == NULL ||

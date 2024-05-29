@@ -14,11 +14,17 @@ static const struct command_s COMMAND_FUNCS[] = {
     {"/clients", &server_command_clients},
     {"/clear", &server_command_clear},
     {"/tile", &server_command_tile},
+    {"/tp", &server_command_tp},
+    {"/setTile", &server_command_set_tile},
+    {"/setInventory", &server_command_set_inventory},
+    {"/setFreq", &server_command_set_freq},
     {"NULL", NULL}
 };
 
 int handle_server_command(zappy_server_t *zappy_server, char *command)
 {
+    if (command == NULL)
+        return ERROR;
     for (int i = 0; COMMAND_FUNCS[i].func != NULL; i += 1) {
         if (strncmp(command, COMMAND_FUNCS[i].command,
             strlen(COMMAND_FUNCS[i].command)) == 0) {

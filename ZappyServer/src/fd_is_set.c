@@ -33,11 +33,11 @@ int fd_is_set(zappy_server_t *zappy_server)
         return ERROR;
     client = &zappy_server->clients[zappy_server->actual_sockfd];
     if (FD_ISSET(zappy_server->actual_sockfd, &zappy_server->fd.input)) {
-        if (check_connection(zappy_server) == ERROR) {
+        if (check_connection(zappy_server) == ERROR)
             return ERROR;
-        }
         return OK;
-    } else if (client->command.execusion != NULL || (client->command.queue
+    }
+    if (client->command.execusion != NULL || (client->command.queue
         != NULL && client->command.queue[0] != NULL))
         if (handle_ai_command(zappy_server, client, NULL) != OK)
             return KO;

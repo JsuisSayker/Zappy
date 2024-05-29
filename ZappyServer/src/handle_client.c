@@ -15,11 +15,13 @@ static int handle_command(zappy_server_t *zappy_server, char *command)
         return handle_server_command(zappy_server, command);
     switch (zappy_server->clients[zappy_server->actual_sockfd].type) {
     case UNKNOWN:
+        printf("Unknown client type\n");
         return handle_unknown_command(zappy_server, command);
     case IA:
         return handle_ai_command(zappy_server,
             &zappy_server->clients[zappy_server->actual_sockfd], command);
     case GUI:
+        printf("GUI client\n");
         break;
     }
     return ERROR;
@@ -50,9 +52,9 @@ int clean_string(char *buffer)
 void handle_client(zappy_server_t *zappy_server)
 {
     int j = 0;
-    char buffer[BUFSIZ];
-    ssize_t n = read(zappy_server->actual_sockfd, buffer, BUFSIZ);
+    char buffer[BUFSIZ] = {0};
     char **lines = NULL;
+    ssize_t n = read(zappy_server->actual_sockfd, buffer, sizeof(buffer) - 1);
 
     if (n == -1 || n == 0)
         return;
@@ -62,7 +64,6 @@ void handle_client(zappy_server_t *zappy_server)
     lines = splitter(buffer, END_LINE);
     if (lines == NULL)
         return;
-    printf("lines[0] = %s\n", lines[0]);
     for (j = 0; lines[1] != NULL && lines[j + 1]; j += 1) {
         handle_command(zappy_server, lines[j]);
     }

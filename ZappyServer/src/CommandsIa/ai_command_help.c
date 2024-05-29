@@ -16,7 +16,7 @@ int ai_command_help(zappy_server_t *zappy, client_t *client, char *cmd)
         free(client->command.execusion);
         client->command.execusion = NULL;
     }
-    dprintf(client->client_number, "Implemented commands :\n/clients\n"
+    dprintf(zappy->actual_sockfd, "Implemented commands :\n/clients\n"
     "/quit\n/send_ai_s \"informations\"\n/send_guis \"informations\"\n"
     "/map\n/clear\n/pause\n/start\n/help\n"
     "/setTile ressource quantity x y\n"

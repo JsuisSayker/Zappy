@@ -89,19 +89,6 @@ int queue_to_exec(client_t *client)
     return OK;
 }
 
-int init_queue(client_t *client)
-{
-    if (client == NULL)
-        return ERROR;
-    client->command.queue = malloc(sizeof(char *) * 11);
-    if (client->command.queue == NULL)
-        return ERROR;
-    client->command.queue[10] = NULL;
-    for (int i = 0; i < 10; i += 1)
-        client->command.queue[i] = NULL;
-    return OK;
-}
-
 int add_in_queue(client_t *client, char *cmd)
 {
     int i = 0;
