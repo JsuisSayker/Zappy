@@ -14,6 +14,7 @@ void gui_command_pin(zappy_server_t *zappy, char *command)
     if (command[0] != ' ' && command[1] != '#')
         return;
     command = &command[1];
+    // bad logic index
     client_nb = atoi(command);
     if (client_nb < 3)
         return;

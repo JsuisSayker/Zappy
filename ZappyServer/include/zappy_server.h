@@ -293,7 +293,7 @@ int ai_command_right(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_left(zappy_server_t *zappy, client_t *client, char *cmd);
 
 // GUI COMMANDS FUNCTIONS
-int handle_server_command(zappy_server_t *zappy_server, char *command);
+int handle_gui_command(zappy_server_t *zappy_server, char *command);
 void gui_command_msz(zappy_server_t *zappy, UNUSED char *command);
 void gui_command_bct(zappy_server_t *zappy, char *command);
 void gui_command_mct(zappy_server_t *zappy, char *command);

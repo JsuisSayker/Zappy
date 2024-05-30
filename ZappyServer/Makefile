@@ -91,6 +91,10 @@ TEST		=	test_splitter.c						\
 				test_server_command_set_freq.c		\
 				test_server_command_tile.c			\
 				test_handle_server_command.c		\
+				test_gui_command_bct.c				\
+				test_gui_command_mct.c				\
+				test_gui_command_msz.c				\
+				test_gui_command_pin.c				\
 				test_fill_args_conf.c				\
 				test_zappy_server.c					\
 

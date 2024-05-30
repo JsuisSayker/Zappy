@@ -71,4 +71,5 @@ map_tile_t **copy_map_tile(map_tile_t **source)
         destination[i][len_x].y = -1;
     }
     destination[len_y] = NULL;
+    return destination;
 }

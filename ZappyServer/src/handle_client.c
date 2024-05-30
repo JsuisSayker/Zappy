@@ -22,7 +22,7 @@ static int handle_command(zappy_server_t *zappy_server, char *command)
             &zappy_server->clients[zappy_server->actual_sockfd], command);
     case GUI:
         printf("GUI client\n");
-        break;
+        return handle_gui_command(zappy_server, command);
     }
     return ERROR;
 }
@@ -38,7 +38,7 @@ static void last_split(
     }
 }
 
-int clean_string(char *buffer)
+static int clean_string(char *buffer)
 {
     for (int i = strlen(buffer); i > 0; i -= 1) {
         if (buffer[i] != *END_LINE)
