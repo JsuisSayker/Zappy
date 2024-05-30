@@ -191,35 +191,24 @@ void FirstApp::loadGameObjects()
     // floor.transform.scale = {3.f, 1.f, 3.f};
     // gameObjects.emplace(floor.getId(), std::move(floor));
 
-    std::shared_ptr<ZappyModel> lveModel = ZappyModel::createModelFromFile(lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj");
-
     std::vector<std::vector<glm::vec3>> trantPositions = {
-        {{-0.5f, 0.5f, 0.0f}, {-0.3f, 0.6f, 0.0f}, {-0.6f, 0.6f, 0.0f}, {-0.4f, 0.4f, 0.0f}},
-        {{0.5f, 0.5f, 0.0f}, {0.3f, 0.6f, 0.0f}, {0.6f, 0.6f, 0.0f}, {0.4f, 0.4f, 0.0f}}
+        {{-0.1f, 0.0f, 0.0f}, {-0.4f, 0.0f, 0.0f}, {-0.8f, 0.0f, 0.0f}, {-1.2f, 0.0f, 0.0f}},
+        {{0.1f, 0.0f, 0.0f}, {0.4f, 0.0f, 0.0f}, {0.8f, 0.0f, 0.0f}, {1.2f, 0.0f, 0.0f}}
     };
+
+    std::shared_ptr<ZappyModel> lveModel = ZappyModel::createModelFromFile(lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj");
 
     std::vector<std::string> teamNames = {"Team-A", "Team-B"};
 
-    for (int i = 0, j = 1; i < 2; i++) { // number of teams you want to create
-        j = 1;
-        auto object = std::make_shared<zappy::ZappyGameObject>(zappy::ZappyGameObject::createGameObject());
-        object->model = lveModel;
-        object->transform.translation = trantPositions[i][0];;
-        object->transform.scale = {3.f, 1.5f, 3.f};
-        gameObjects.emplace(object->getId(), std::move(*object));
+    for (int i = 0; i < 2; i++) { // Number of teams
+        for (int j = 0; j < 4; j++) { // Number of trantorians in each team
+            auto object = std::make_shared<zappy::ZappyGameObject>(zappy::ZappyGameObject::createGameObject());
+            object->model = lveModel;
+            object->transform.translation = trantPositions[i][j];
+            object->transform.scale = {3.f, 1.5f, 3.f};
+            gameObjects.emplace(object->getId(), std::move(*object));
 
-        zappy::Trantorian team(object, teamNames[i], j);
-
-        j += 1;
-
-        for (int k = 0; k < 3; k++, j++) { // number of trantorians you want per team
-            Trantorian::trantorian trant(object, teamNames[i], j);
-            //trant.gameObject->transform.translation = trantPositions[i][j - 1];
-            team.addTrantorian(trant);
-        }
-
-        for (const auto& trant : team.getTrantorians()) {
-            std::cout << "\nTeam: " << trant.team << "\nNum: " << trant.number << std::endl;
+            Trantorian trant(object, teamNames[i], j);
         }
     }
 
@@ -227,7 +216,7 @@ void FirstApp::loadGameObjects()
 
     std::vector<glm::vec3> lightColors{
         {1.f, .1f, .1f}, {.1f, .1f, 1.f}, {.1f, 1.f, .1f}, {1.f, 1.f, .1f},
-        {.1f, 1.f, 1.f}, {1.f, 1.f, 1.f} //
+        {.1f, 1.f, 1.f}, {1.f, 1.f, 1.f}
     };
 
     for (int i = 0; i < lightColors.size(); i++) {

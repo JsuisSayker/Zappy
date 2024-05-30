@@ -39,7 +39,7 @@ namespace zappy {
         Trantorian(std::shared_ptr<ZappyGameObject> gameObject, std::string team, int number);
         ~Trantorian() = default;
 
-        void addTrantorian(const trantorian &trant);
+        // void addTrantorian(const trantorian &trant);
 
         void removeTrantorian(const std::string &team, std::shared_ptr<ZappyGameObject> gameObject);
 

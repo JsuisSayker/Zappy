@@ -15,10 +15,10 @@ Trantorian::Trantorian(std::shared_ptr<ZappyGameObject> gameObject, std::string 
     trantorians_.push_back(newTrantorian);
 }
 
-void Trantorian::addTrantorian(const trantorian& trant)
-{
-    trantorians_.push_back(trant);
-}
+// void Trantorian::addTrantorian(const trantorian& trant)
+// {
+//     trantorians_.push_back(trant);
+// }
 
 void Trantorian::removeTrantorian(const std::string& team, std::shared_ptr<ZappyGameObject> gameObject)
 {
