@@ -35,12 +35,12 @@ namespace zappy {
 
 FirstApp::FirstApp()
 {
+    this->client = std::make_unique<Client>();
     executablePath = getExecutablePath();
     globalPool = ZappyDescriptorPool::Builder(lveDevice)
                      .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
                      .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
                          ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
-                         
                      .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                          ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
                      .build();
@@ -51,6 +51,9 @@ FirstApp::~FirstApp() {}
 
 void FirstApp::run()
 {
+    this->getClient()->connectToServer();
+    fd_set readfds;
+
     std::vector<std::unique_ptr<ZappyBuffer>> uboBuffers(
         ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
     for (int i = 0; i < uboBuffers.size(); i++) {
@@ -59,6 +62,9 @@ void FirstApp::run()
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
         uboBuffers[i]->map();
     }
+
+    FD_ZERO(&readfds);
+
 
     texture = std::make_unique<Texture>(
         lveDevice, executablePath + "/ZappyGui/textures/meme.png");
@@ -100,6 +106,22 @@ void FirstApp::run()
 
     auto currentTime = std::chrono::high_resolution_clock::now();
     while (!lveWindow.shouldClose()) {
+        // set all fd clients to read
+        FD_SET(this->client.get()->getSocketFd(), &readfds);
+        FD_SET(STDIN_FILENO, &readfds);
+
+        if (select(this->client.get()->getSocketFd() + 1, &readfds, NULL, NULL,
+                NULL) < 0) {
+            perror("select");
+            exit(84);
+        }
+
+        if (FD_ISSET(this->client.get()->getSocketFd(), &readfds)) {
+            this->client.get()->receiveFromServer();
+        }
+
+
+
         glfwPollEvents();
 
         auto newTime = std::chrono::high_resolution_clock::now();
