@@ -83,33 +83,33 @@ void FirstApp::run()
         .build();
 
     // Init viking_room
-    std::shared_ptr<ZappyModel> vikingModel = ZappyModel::createModelFromFile(
-        lveDevice, executablePath + "/ZappyGui/models/viking_room.obj");
-    ZappyGameObject vikingRoom = ZappyGameObject::createGameObject();
-    vikingRoom.model = vikingModel;
-    vikingRoom.transform.translation = {0.f, 0.f, 0.f};
-    vikingRoom.transform.scale = {1.f, 1.f, 1.f};
-    vikingRoom.hasDescriptorSet = true;
+    std::shared_ptr<ZappyModel> grassBlockModel = ZappyModel::createModelFromFile(
+        lveDevice, executablePath + "/ZappyGui/models/Grass_Block.obj");
+    ZappyGameObject grassBlock = ZappyGameObject::createGameObject();
+    grassBlock.model = grassBlockModel;
+    grassBlock.transform.translation = {0.f, 0.f, 0.f};
+    grassBlock.transform.scale = {1.f, 1.f, 1.f};
+    grassBlock.hasDescriptorSet = true;
 
-    std::unique_ptr<Texture> vikingTexture = std::make_unique<Texture>(
-        lveDevice, executablePath + "/ZappyGui/textures/viking_room.png");
-    VkDescriptorImageInfo vikingImageInfo = {};
-    vikingImageInfo.sampler = vikingTexture->getSampler();
-    vikingImageInfo.imageView = vikingTexture->getImageView();
-    vikingImageInfo.imageLayout = vikingTexture->getImageLayout();
+    std::unique_ptr<Texture> grassBlockTexture = std::make_unique<Texture>(
+        lveDevice, executablePath + "/ZappyGui/textures/Grass_Block.png");
+    VkDescriptorImageInfo grassBlockImageInfo = {};
+    grassBlockImageInfo.sampler = grassBlockTexture->getSampler();
+    grassBlockImageInfo.imageView = grassBlockTexture->getImageView();
+    grassBlockImageInfo.imageLayout = grassBlockTexture->getImageLayout();
 
     // Initialize descriptor sets array for vikingRoom
-    vikingRoom.descriptorSets.resize(ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
+    grassBlock.descriptorSets.resize(ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
 
     for (int i = 0; i < uboBuffers.size(); i++) {
         auto bufferInfo = uboBuffers[i]->descriptorInfo();
         ZappyDescriptorWriter(*globalSetLayout, *globalPool)
             .writeBuffer(0, &bufferInfo)
-            .writeImage(1, &vikingImageInfo)
-            .build(vikingRoom.descriptorSets[i]);
+            .writeImage(1, &grassBlockImageInfo)
+            .build(grassBlock.descriptorSets[i]);
     }
 
-    gameObjects.emplace(vikingRoom.getId(), std::move(vikingRoom));
+    gameObjects.emplace(grassBlock.getId(), std::move(grassBlock));
 
     std::vector<VkDescriptorSet> globalDescriptorSets(
         ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -210,21 +210,21 @@ void FirstApp::loadGameObjects()
     flatVase.transform.scale = {3.f, 1.5f, 3.f};
     gameObjects.emplace(flatVase.getId(), std::move(flatVase));
 
-    lveModel = ZappyModel::createModelFromFile(
-        lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj");
-    auto smoothVase = ZappyGameObject::createGameObject();
-    smoothVase.model = lveModel;
-    smoothVase.transform.translation = {.5f, .5f, 0.f};
-    smoothVase.transform.scale = {3.f, 1.5f, 3.f};
-    gameObjects.emplace(smoothVase.getId(), std::move(smoothVase));
+    // lveModel = ZappyModel::createModelFromFile(
+    //     lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj");
+    // auto smoothVase = ZappyGameObject::createGameObject();
+    // smoothVase.model = lveModel;
+    // smoothVase.transform.translation = {.5f, .5f, 0.f};
+    // smoothVase.transform.scale = {3.f, 1.5f, 3.f};
+    // gameObjects.emplace(smoothVase.getId(), std::move(smoothVase));
 
-    lveModel = ZappyModel::createModelFromFile(
-        lveDevice, executablePath + "/ZappyGui/models/quad.obj");
-    auto floor = ZappyGameObject::createGameObject();
-    floor.model = lveModel;
-    floor.transform.translation = {0.f, .5f, 0.f};
-    floor.transform.scale = {3.f, 1.f, 3.f};
-    gameObjects.emplace(floor.getId(), std::move(floor));
+    // lveModel = ZappyModel::createModelFromFile(
+    //     lveDevice, executablePath + "/ZappyGui/models/quad.obj");
+    // auto floor = ZappyGameObject::createGameObject();
+    // floor.model = lveModel;
+    // floor.transform.translation = {0.f, .5f, 0.f};
+    // floor.transform.scale = {3.f, 1.f, 3.f};
+    // gameObjects.emplace(floor.getId(), std::move(floor));
 
     std::vector<glm::vec3> lightColors{
         {1.f, .1f, .1f}, {.1f, .1f, 1.f}, {.1f, 1.f, .1f}, {1.f, 1.f, .1f},

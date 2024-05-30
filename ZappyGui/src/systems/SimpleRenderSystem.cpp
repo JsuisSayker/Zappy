@@ -18,7 +18,6 @@
 #include <cassert>
 #include <filesystem>
 #include <stdexcept>
-#include <iostream>
 
 namespace zappy {
 
@@ -94,7 +93,6 @@ void SimpleRenderSystem::renderGameObjects(FrameInfo &frameInfo)
             vkCmdBindDescriptorSets(frameInfo.commandBuffer,
                 VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1,
                 &obj.descriptorSets[frameInfo.frameIndex], 0, nullptr);
-            std::cout << "Binding descriptor set" << std::endl;
         } else {
             vkCmdBindDescriptorSets(frameInfo.commandBuffer,
                 VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1,
