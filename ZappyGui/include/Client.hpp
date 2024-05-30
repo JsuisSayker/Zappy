@@ -35,9 +35,13 @@ class Client {
     int getSocketFd() { return this->_socketFd; }
     void setSocketFd(int socket_fd) { this->_socketFd = socket_fd; }
 
+    std::string getBuffer() { return this->_buffer; }
+    void setBuffer(std::string buffer) { this->_buffer = buffer; }  
+
   protected:
-    std::string _hostname = "default";
-    int _port = 0;
-    int _socketFd = 0;
+    std::string _hostname;
+    int _port;
+    int _socketFd;
+    std::string _buffer;
 };
 } // namespace zappy

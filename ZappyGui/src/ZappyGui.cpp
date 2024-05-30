@@ -63,9 +63,6 @@ void FirstApp::run()
         uboBuffers[i]->map();
     }
 
-    FD_ZERO(&readfds);
-
-
     texture = std::make_unique<Texture>(
         lveDevice, executablePath + "/ZappyGui/textures/meme.png");
 
@@ -107,20 +104,31 @@ void FirstApp::run()
     auto currentTime = std::chrono::high_resolution_clock::now();
     while (!lveWindow.shouldClose()) {
         // set all fd clients to read
-        FD_SET(this->client.get()->getSocketFd(), &readfds);
+        FD_ZERO(&readfds);
+
+        int socket_fd = this->client.get()->getSocketFd();
+        FD_SET(socket_fd, &readfds);
         FD_SET(STDIN_FILENO, &readfds);
 
-        if (select(this->client.get()->getSocketFd() + 1, &readfds, NULL, NULL,
-                NULL) < 0) {
+        // Calculate the maximum file descriptor
+        int max_fd = std::max(socket_fd, STDIN_FILENO) + 1;
+
+        // Set timeout for select
+        struct timeval timeout;
+        timeout.tv_sec = 0;
+        timeout.tv_usec = 16000; // 16 ms timeout for roughly 60 FPS
+
+        // Wait for an activity on one of the file descriptors
+        int activity = select(max_fd, &readfds, NULL, NULL, &timeout);
+        if (activity < 0) {
             perror("select");
             exit(84);
         }
 
-        if (FD_ISSET(this->client.get()->getSocketFd(), &readfds)) {
+        // Check if there is activity on the socket file descriptor
+        if (activity > 0 && FD_ISSET(socket_fd, &readfds)) {
             this->client.get()->receiveFromServer();
         }
-
-
 
         glfwPollEvents();
 

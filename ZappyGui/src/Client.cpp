@@ -33,35 +33,38 @@ void zappy::Client::connectToServer()
     }
 }
 
-void zappy::Client::sendToServer() {}
+void zappy::Client::sendToServer()
+{
+    
+}
 
 void zappy::Client::receiveFromServer()
 {
     int size = 0;
     int nBytesRead = 0;
-    std::string buf;
-    buf.resize(BUFSIZ);
+    this->_buffer.resize(BUFSIZ);
 
-    nBytesRead = read(this->_socketFd, &buf[size], buf.size() - size - 1);
+    nBytesRead = read(this->_socketFd, &this->_buffer[size], this->_buffer.size() - size - 1);
     if (nBytesRead == -1) {
         return;
     }
 
     while (nBytesRead > 0) {
         size += nBytesRead;
-        if (size > BUFSIZ - 1 || buf[size - 1] == END_STR) {
+        if (size > BUFSIZ - 1 || this->_buffer[size - 1] == END_STR) {
             break;
         }
-        buf.resize(buf.size() + BUFSIZ); // Increase buffer size if necessary
-        nBytesRead = read(this->_socketFd, &buf[size], buf.size() - size - 1);
+        this->_buffer.resize(this->_buffer.size() + BUFSIZ); // Increase buffer size if necessary
+        nBytesRead = read(this->_socketFd, &this->_buffer[size], this->_buffer.size() - size - 1);
     }
 
-    buf.resize(size); // Adjust the size of the string to the actual data size
-    if (!buf.empty() && buf.back() == END_STR) {
-        buf.pop_back();
+    this->_buffer.resize(size); // Adjust the size of the string to the actual data size
+    if (!this->_buffer.empty() && this->_buffer.back() == END_STR) {
+        this->_buffer.pop_back();
     }
 
-    std::cout << "Buffer :" << buf << std::endl;
+
+    std::cout << "Buffer :" << this->_buffer << std::endl;
 }
 
 void zappy::Client::init(int argc, char **argv)
