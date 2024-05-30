@@ -16,9 +16,3 @@ cd sdk || exit 1
 chmod +x setup-env.sh
 ./setup-env.sh
 ./vulkansdk
-
-# # Set environment variables
-# export VULKAN_SDK=$PWD/vulkan-sdk/sdk/x86_64
-# export PATH=$VULKAN_SDK/bin:$PATH
-# export LD_LIBRARY_PATH=$VULKAN_SDK/lib:$LD_LIBRARY_PATH
-# export VK_LAYER_PATH=$VULKAN_SDK/etc/vulkan/explicit_layer.d
