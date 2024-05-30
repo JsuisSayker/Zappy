@@ -75,6 +75,42 @@ void FirstApp::run()
                 VK_SHADER_STAGE_FRAGMENT_BIT)
             .build();
 
+    // Create descriptor pool with adequate size
+    auto globalPool = ZappyDescriptorPool::Builder(lveDevice)
+        .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 2)  // Adjusted to fit more sets
+        .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 2)
+        .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 2)
+        .build();
+
+    // Init viking_room
+    std::shared_ptr<ZappyModel> vikingModel = ZappyModel::createModelFromFile(
+        lveDevice, executablePath + "/ZappyGui/models/viking_room.obj");
+    ZappyGameObject vikingRoom = ZappyGameObject::createGameObject();
+    vikingRoom.model = vikingModel;
+    vikingRoom.transform.translation = {0.f, 0.f, 0.f};
+    vikingRoom.transform.scale = {1.f, 1.f, 1.f};
+    vikingRoom.hasDescriptorSet = true;
+
+    std::unique_ptr<Texture> vikingTexture = std::make_unique<Texture>(
+        lveDevice, executablePath + "/ZappyGui/textures/viking_room.png");
+    VkDescriptorImageInfo vikingImageInfo = {};
+    vikingImageInfo.sampler = vikingTexture->getSampler();
+    vikingImageInfo.imageView = vikingTexture->getImageView();
+    vikingImageInfo.imageLayout = vikingTexture->getImageLayout();
+
+    // Initialize descriptor sets array for vikingRoom
+    vikingRoom.descriptorSets.resize(ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
+
+    for (int i = 0; i < uboBuffers.size(); i++) {
+        auto bufferInfo = uboBuffers[i]->descriptorInfo();
+        ZappyDescriptorWriter(*globalSetLayout, *globalPool)
+            .writeBuffer(0, &bufferInfo)
+            .writeImage(1, &vikingImageInfo)
+            .build(vikingRoom.descriptorSets[i]);
+    }
+
+    gameObjects.emplace(vikingRoom.getId(), std::move(vikingRoom));
+
     std::vector<VkDescriptorSet> globalDescriptorSets(
         ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
     for (int i = 0; i < globalDescriptorSets.size(); i++) {
