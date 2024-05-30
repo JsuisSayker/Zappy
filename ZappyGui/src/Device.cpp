@@ -6,6 +6,7 @@
 */
 
 #include "Device.hpp"
+#include "ErrorHandling.hpp"
 
 // std headers
 #include <cstring>
@@ -75,12 +76,10 @@ ZappyDevice::~ZappyDevice()
     vkDestroyInstance(instance, nullptr);
 }
 
-void ZappyDevice::createInstance()
-{
-    if (enableValidationLayers && !checkValidationLayerSupport()) {
-        throw std::runtime_error(
-            "validation layers requested, but not available!");
-    }
+void ZappyDevice::createInstance() {
+  if (enableValidationLayers && !checkValidationLayerSupport()) {
+    throw zappy::UnavailableValidationLayersException();
+  }
 
     VkApplicationInfo appInfo = {};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -113,23 +112,22 @@ void ZappyDevice::createInstance()
         createInfo.pNext = nullptr;
     }
 
-    if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create instance!");
-    }
+  if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
+    throw zappy::InstanceCreationFailedException();
+  }
 
     hasGflwRequiredInstanceExtensions();
 }
 
-void ZappyDevice::pickPhysicalDevice()
-{
-    uint32_t deviceCount = 0;
-    vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
-    if (deviceCount == 0) {
-        throw std::runtime_error("failed to find GPUs with Vulkan support!");
-    }
-    std::cout << "Device count: " << deviceCount << std::endl;
-    std::vector<VkPhysicalDevice> devices(deviceCount);
-    vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+void ZappyDevice::pickPhysicalDevice() {
+  uint32_t deviceCount = 0;
+  vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+  if (deviceCount == 0) {
+    throw zappy::GPUException();
+  }
+  std::cout << "Device count: " << deviceCount << std::endl;
+  std::vector<VkPhysicalDevice> devices(deviceCount);
+  vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
     for (const auto &device : devices) {
         if (isDeviceSuitable(device)) {
@@ -138,9 +136,9 @@ void ZappyDevice::pickPhysicalDevice()
         }
     }
 
-    if (physicalDevice == VK_NULL_HANDLE) {
-        throw std::runtime_error("failed to find a suitable GPU!");
-    }
+  if (physicalDevice == VK_NULL_HANDLE) {
+    throw zappy::GPUException();
+  }
 
     vkGetPhysicalDeviceProperties(physicalDevice, &properties);
     std::cout << "physical device: " << properties.deviceName << std::endl;
@@ -189,10 +187,9 @@ void ZappyDevice::createLogicalDevice()
         createInfo.enabledLayerCount = 0;
     }
 
-    if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device_) !=
-        VK_SUCCESS) {
-        throw std::runtime_error("failed to create logical device!");
-    }
+  if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device_) != VK_SUCCESS) {
+    throw zappy::LogicalDeviceCreationFailedException();
+  }
 
     vkGetDeviceQueue(device_, indices.graphicsFamily, 0, &graphicsQueue_);
     vkGetDeviceQueue(device_, indices.presentFamily, 0, &presentQueue_);
@@ -208,10 +205,9 @@ void ZappyDevice::createCommandPool()
     poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT |
         VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-    if (vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool) !=
-        VK_SUCCESS) {
-        throw std::runtime_error("failed to create command pool!");
-    }
+  if (vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) {
+    throw zappy::CommandPoolCreationFailedException();
+  }
 }
 
 void ZappyDevice::createSurface()
@@ -255,16 +251,13 @@ void ZappyDevice::populateDebugMessengerCreateInfo(
     createInfo.pUserData = nullptr; // Optional
 }
 
-void ZappyDevice::setupDebugMessenger()
-{
-    if (!enableValidationLayers)
-        return;
-    VkDebugUtilsMessengerCreateInfoEXT createInfo;
-    populateDebugMessengerCreateInfo(createInfo);
-    if (CreateDebugUtilsMessengerEXT(
-            instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS) {
-        throw std::runtime_error("failed to set up debug messenger!");
-    }
+void ZappyDevice::setupDebugMessenger() {
+  if (!enableValidationLayers) return;
+  VkDebugUtilsMessengerCreateInfoEXT createInfo;
+  populateDebugMessengerCreateInfo(createInfo);
+  if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS) {
+    throw zappy::DebugMessengerSetupFailedException();
+  }
 }
 
 bool ZappyDevice::checkValidationLayerSupport()
@@ -324,14 +317,14 @@ void ZappyDevice::hasGflwRequiredInstanceExtensions()
         available.insert(extension.extensionName);
     }
 
-    std::cout << "required extensions:" << std::endl;
-    auto requiredExtensions = getRequiredExtensions();
-    for (const auto &required : requiredExtensions) {
-        std::cout << "\t" << required << std::endl;
-        if (available.find(required) == available.end()) {
-            throw std::runtime_error("Missing required glfw extension");
-        }
+  std::cout << "required extensions:" << std::endl;
+  auto requiredExtensions = getRequiredExtensions();
+  for (const auto &required : requiredExtensions) {
+    std::cout << "\t" << required << std::endl;
+    if (available.find(required) == available.end()) {
+      throw zappy::MissingGLFWExtensionException();
     }
+  }
 }
 
 bool ZappyDevice::checkDeviceExtensionSupport(VkPhysicalDevice device)
@@ -427,15 +420,14 @@ VkFormat ZappyDevice::findSupportedFormat(
         VkFormatProperties props;
         vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
 
-        if (tiling == VK_IMAGE_TILING_LINEAR &&
-            (props.linearTilingFeatures & features) == features) {
-            return format;
-        } else if (tiling == VK_IMAGE_TILING_OPTIMAL &&
-            (props.optimalTilingFeatures & features) == features) {
-            return format;
-        }
+    if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
+      return format;
+    } else if (
+        tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
+      return format;
     }
-    throw std::runtime_error("failed to find supported format!");
+  }
+  throw zappy::NoSupportedFormatException();
 }
 
 uint32_t ZappyDevice::findMemoryType(
@@ -451,7 +443,7 @@ uint32_t ZappyDevice::findMemoryType(
         }
     }
 
-    throw std::runtime_error("failed to find suitable memory type!");
+  throw zappy::NoSuitableMemoryTypeException();
 }
 
 void ZappyDevice::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
@@ -464,9 +456,9 @@ void ZappyDevice::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
     bufferInfo.usage = usage;
     bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    if (vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create vertex buffer!");
-    }
+  if (vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
+    throw zappy::VertexBufferCreationFailedException();
+  }
 
     VkMemoryRequirements memRequirements;
     vkGetBufferMemoryRequirements(device_, buffer, &memRequirements);
@@ -477,10 +469,9 @@ void ZappyDevice::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
     allocInfo.memoryTypeIndex =
         findMemoryType(memRequirements.memoryTypeBits, properties);
 
-    if (vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory) !=
-        VK_SUCCESS) {
-        throw std::runtime_error("failed to allocate vertex buffer memory!");
-    }
+  if (vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
+    throw zappy::MemoryAllocationFailedException();
+  }
 
     vkBindBufferMemory(device_, buffer, bufferMemory, 0);
 }
@@ -556,13 +547,14 @@ void ZappyDevice::copyBufferToImage(VkBuffer buffer, VkImage image,
     endSingleTimeCommands(commandBuffer);
 }
 
-void ZappyDevice::createImageWithInfo(const VkImageCreateInfo &imageInfo,
-    VkMemoryPropertyFlags properties, VkImage &image,
-    VkDeviceMemory &imageMemory)
-{
-    if (vkCreateImage(device_, &imageInfo, nullptr, &image) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create image!");
-    }
+void ZappyDevice::createImageWithInfo(
+    const VkImageCreateInfo &imageInfo,
+    VkMemoryPropertyFlags properties,
+    VkImage &image,
+    VkDeviceMemory &imageMemory) {
+  if (vkCreateImage(device_, &imageInfo, nullptr, &image) != VK_SUCCESS) {
+    throw zappy::ImageCreationFailedException();
+  }
 
     VkMemoryRequirements memRequirements;
     vkGetImageMemoryRequirements(device_, image, &memRequirements);
@@ -573,14 +565,13 @@ void ZappyDevice::createImageWithInfo(const VkImageCreateInfo &imageInfo,
     allocInfo.memoryTypeIndex =
         findMemoryType(memRequirements.memoryTypeBits, properties);
 
-    if (vkAllocateMemory(device_, &allocInfo, nullptr, &imageMemory) !=
-        VK_SUCCESS) {
-        throw std::runtime_error("failed to allocate image memory!");
-    }
+  if (vkAllocateMemory(device_, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
+    throw zappy::MemoryAllocationFailedException();
+  }
 
-    if (vkBindImageMemory(device_, image, imageMemory, 0) != VK_SUCCESS) {
-        throw std::runtime_error("failed to bind image memory!");
-    }
+  if (vkBindImageMemory(device_, image, imageMemory, 0) != VK_SUCCESS) {
+    throw zappy::ImageMemoryBindFailedException();
+  }
 }
 
 } // namespace zappy
