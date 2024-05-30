@@ -95,6 +95,12 @@ TEST		=	test_splitter.c						\
 				test_gui_command_mct.c				\
 				test_gui_command_msz.c				\
 				test_gui_command_pin.c				\
+				test_gui_command_plv.c				\
+				test_gui_command_ppo.c				\
+				test_gui_command_sgt.c				\
+				test_gui_command_sst.c				\
+				test_gui_command_suc.c				\
+				test_gui_command_tna.c				\
 				test_fill_args_conf.c				\
 				test_zappy_server.c					\
 
