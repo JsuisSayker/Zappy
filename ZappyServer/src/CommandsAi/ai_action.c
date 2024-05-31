@@ -36,7 +36,7 @@ bool check_action(zappy_server_t *zappy, client_t *client)
         return false;
     gettimeofday(&end, NULL);
     elapsed = (end.tv_sec + end.tv_usec / 1000000.0) - client->command.time;
-    printf("Check action\n elapsed: %lf\n cast_time: %f\n--\n", elapsed, client->command.cast_time);
+    // printf("Check action\n elapsed: %lf\n cast_time: %f\n--\n", elapsed, client->command.cast_time);
     if (client->command.is_contracted == true &&
     client->command.cast_time < elapsed) {
         client->command.is_contracted = false;

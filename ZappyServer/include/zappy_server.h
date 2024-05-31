@@ -297,6 +297,7 @@ int ai_command_left(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_take_object(zappy_server_t *zappy, client_t *client, char *cmd);
 
 void send_ppo_command_to_all_gui(zappy_server_t *zappy, client_t *client);
+void send_pin_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 
 // GUI COMMANDS FUNCTIONS
 int handle_gui_command(zappy_server_t *zappy_server, char *command);

@@ -75,5 +75,6 @@ int ai_command_take_object(zappy_server_t *zappy, client_t *client, char *cmd)
         return ERROR;
     if (selector_object(zappy, client, cmd) == ERROR)
         return ERROR;
+    send_pin_command_to_all_gui(zappy, client);
     return OK;
 }
