@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "Client.hpp"
 #include "Descriptors.hpp"
 #include "Device.hpp"
 #include "GameObject.hpp"
@@ -17,6 +18,7 @@
 // std
 #include <memory>
 #include <vector>
+#include <signal.h>
 
 namespace zappy {
 class FirstApp {
@@ -32,6 +34,9 @@ class FirstApp {
 
     static std::string getExecutablePath();
 
+    void setClient(std::shared_ptr<Client> client) { this->client = client; }
+    std::shared_ptr<Client> getClient() { return this->client; }
+
     void run();
 
   private:
@@ -46,6 +51,7 @@ class FirstApp {
     std::unique_ptr<Texture> texture{};
     ZappyGameObject::Map gameObjects;
 
+    std::shared_ptr<Client> client;
     std::string executablePath;
 };
 } // namespace zappy

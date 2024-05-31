@@ -7,22 +7,21 @@
 
 
 #include "ZappyGui.hpp"
+#include "Client.hpp"
 
 // std
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
 
-int main()
+int main(int argc, char **argv)
 {
-    zappy::FirstApp app{};
-
-    try {
-        app.run();
-    } catch (const std::exception &e) {
-        std::cerr << e.what() << '\n';
+    if (argc != 5) {
+        std::cerr << "Usage: " << argv[0] << " <path_to_model>" << std::endl;
         return EXIT_FAILURE;
     }
-
+    zappy::FirstApp app{};
+    app.getClient()->init(argc, argv);
+    app.run();
     return EXIT_SUCCESS;
 }
