@@ -131,7 +131,7 @@ class Client():
                         elif "Inventory" in self.ai.dataToSend:
                             try:
                                 self.ai.parse_inventory(element)
-                            except ValueError:
+                            except IndexError:
                                 print("ValueError", element)
                                 pass
                         elif "Elevation underway" in element:
