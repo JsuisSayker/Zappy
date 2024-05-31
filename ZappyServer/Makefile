@@ -17,6 +17,7 @@ SRC			=	zappy_server.c						\
 				generate_ressourse_list.c			\
 				map_tile_function.c					\
 				map_tile_function_sub.c				\
+				map_tile_function_ter.c				\
 				int_array_function.c				\
 				close_server.c						\
 				fd_is_set.c							\

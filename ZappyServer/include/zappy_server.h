@@ -292,6 +292,7 @@ int ai_command_help(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_forward(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_right(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_left(zappy_server_t *zappy, client_t *client, char *cmd);
+int ai_command_take_object(zappy_server_t *zappy, client_t *client, char *cmd);
 
 // GUI COMMANDS FUNCTIONS
 int handle_gui_command(zappy_server_t *zappy_server, char *command);

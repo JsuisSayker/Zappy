@@ -23,6 +23,7 @@ static const struct command_ai_s COMMAND_FUNCS[] = {
     {"Forward", &ai_command_forward},
     {"Right", &ai_command_right},
     {"Left", &ai_command_left},
+    {"Take", &ai_command_take_object},
     {"NULL", NULL}
 };
 

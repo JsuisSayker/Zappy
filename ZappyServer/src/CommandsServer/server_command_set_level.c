@@ -29,7 +29,7 @@ void server_command_set_level(zappy_server_t *zappy, char *command)
         return free_array(command_array);
     id = atoi(command_array[0]);
     level = atoi(command_array[1]);
-    if (level >= 1 && level <= 8  && id > 0)
+    if (level >= 1 && level <= 8 && id > 0)
         ai_set_level(zappy, id, level);
     free_array(command_array);
 }
