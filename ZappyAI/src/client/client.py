@@ -118,7 +118,7 @@ class Client():
                         elif self.actualStep < 3:
                             self.saveStartingInformation(element,
                                                          self.actualStep)
-                        elif "dead" in element or "ko" in element:
+                        elif "dead" in element:
                             print("I'm dead")
                             exit(0)
                         elif self.ai.dataToSend == "Look\n":
