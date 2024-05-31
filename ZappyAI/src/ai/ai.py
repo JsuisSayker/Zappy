@@ -1,7 +1,10 @@
+import json
 import math
 import random
 import re
 from collections import Counter
+from itertools import cycle
+from cryptography.fernet import Fernet
 from ZappyAI.src.ai.infos import LEVELS, Activity
 
 
@@ -15,7 +18,7 @@ class AI():
         self.sharedInventory: dict = {}
         self.level: int = 1
         self.incantation: bool = False
-        self.nbPlayers: int = 1
+        self.nbNeededPlayers: int = 1
         self.searchingRessource: str = ""
         self.look: str = ""
         self.commandList: list[str] = []
@@ -27,7 +30,18 @@ class AI():
         self.widthValue: int = 0
         self.heightValue: int = 0
         self.newRessource: bool = False
+        self.key: bytes = Fernet.generate_key()
         self.actualActivity: Activity = Activity.STARTING
+
+    def encryption(self, data: str) -> bytes:
+        cipher_suite = Fernet(self.key)
+        ciphered_text = cipher_suite.encrypt(data.encode())
+        return ciphered_text
+
+    def decryption(self, data: bytes) -> str:
+        cipher_suite = Fernet(self.key)
+        unciphered_text = (cipher_suite.decrypt(data))
+        return unciphered_text.decode()
 
     def size_look(self, array: list) -> int:
         nb = 0
@@ -50,12 +64,12 @@ class AI():
             else:
                 h += 1
             tv = v
-            while tv >= v-h:
+            while tv >= v - h:
                 if map[v][h] != [] and object in map[tv][h][0]:
                     return [tv, h]
                 tv -= 1
             tv = v
-            while tv <= v+h:
+            while tv <= v + h:
                 if map[v][h] != [] and object in map[tv][h][0]:
                     return [tv, h]
                 tv += 1
@@ -67,11 +81,51 @@ class AI():
             data = data.replace(char, "")
         data = data.split(",")
         for i in range(len(data)):
-            data[i] = data[i][1:]
-        data[len(data) - 1] = data[len(data) - 1][:-1]
+            if data[i][0] == " ":
+                data[i] = data[i][1:]
+        # data[len(data) - 1] = data[len(data) - 1][:-1]
+        print(f"data in parse inventory: {data}")
         for elem in data:
+            # Uncomment the following lines to avoid the killing of the AI while incantating
+            # if "ok" or "ko" in elem:
+            #     return
             if elem:
+                print(f"While parsing inventory: |{elem}|")
                 self.inventory[elem.split()[0]] = int(elem.split()[1])
+
+    def sxor(self, s1: str, s2: str):
+        """Xor two strings"""
+        return ''.join(chr(ord(c) ^ ord(k)) for c, k in zip
+                       (s2, cycle(s1)))
+
+    def parse_broadcast(self, messageReceived: str):
+        signalDirection = int(messageReceived[8])
+        print(f"messageReceived: {messageReceived}")
+        messageReceived = self.sxor(self.teamName,
+                                    bytes.fromhex(messageReceived[10:]
+                                                  ).decode("utf-8"))
+        # exit(0)
+        # if len(str(messageReceived[10:])) > 100:
+        #     byteReceivedMessage = self.decryption(
+        #         bytes(messageReceived[1], "utf-8"))
+        # if len(messageReceived[]) > 100:
+        #     byteReceivedMessage = self.decryption(bytes(
+        #         messageReceived[1], "utf-8"))
+        # if byteReceivedMessage is not None:
+        #     print(f"byteReceivedMessage: {byteReceivedMessage}")
+        #     exit(0)
+        if "inventory" in messageReceived:
+            print("parsing inventory")
+            # self.parse_inventory()
+        if "incantation" in messageReceived:
+            if self.incantation is True:
+                self.goToBroadcastSignal(signalDirection)
+            return
+        if "on my way" in messageReceived:
+            self.nbNeededPlayers += 1
+            print("on my way")
+        if "ready" in messageReceived:
+            print("ready")
 
     def checkIncanationActivity(self):
         if self.newRessource is True:
@@ -79,11 +133,27 @@ class AI():
                 possibility = self.isIncantationPossible()
                 print(f"possibility: {possibility}")
                 if not self.isIncantationPossible():
-                    messageToSend = "NO"
+                    # messageToSend = bytes(
+                    #     self.sxor(self.teamName,
+                    #               ("inventory" + str(
+                    #                   self.clientId) + ";" + str(
+                    #                       self.level) + ";" + str(
+                    #                           json.dumps(
+                    #                               self.inventory)))),
+                    #     "utf-8").hex()
+                    messageToSend = self.encryption(
+                        f"{str(self.teamName)};inventory{str(self.clientId)};"
+                        f"{str(self.level)};{str(json.dumps(self.inventory))}"
+                        ).hex()
+                    print(f"messageToSend: {messageToSend}")
+                    exit(0)
                     self.dataToSend = "Broadcast " + messageToSend + "\n"
                     self.incantation = False
                 else:
-                    messageToSend = "incantation"
+                    messageToSend = bytes(self.sxor(self.teamName, (str(
+                        self.clientId) + ";incantation;" + str(
+                            self.level))), "utf-8").hex()
+                    # messageToSend = messageToSend[2:-1]
                     self.dataToSend = "Broadcast " + messageToSend + "\n"
                     self.newRessource = False
                     self.incantation = True
@@ -94,10 +164,12 @@ class AI():
         return
 
     def prepareForIncantationActivity(self):
-        if self.incantation is False and self.nbPlayers != 1:
-            messageToSend = "on my way"
+        if self.incantation is False and self.nbNeededPlayers >= self.level:
+            messageToSend = bytes(self.sxor(self.teamName, str(
+                self.clientId) + " on my way"), "utf-8").hex()
             self.dataToSend = "Broadcast " + messageToSend + "\n"
-        elif self.nbPlayers >= self.level and self.incantation is True:
+
+        elif self.nbNeededPlayers >= self.level and self.incantation is True:
             self.actualActivity = Activity.INCANTATING
         return
 
@@ -108,6 +180,7 @@ class AI():
             self.dataToSend = self.commandList.pop(0)
         else:
             self.dataToSend = "Inventory\n"
+        # self.actualActivity = Activity.LOOKING
         return
 
     def executeCommand(self):
@@ -116,6 +189,7 @@ class AI():
         else:
             self.dataToSend = "Inventory\n"
             self.actualActivity = Activity.CHECK_INCANTATION
+        return
 
     def updateSharedInventory(self):
         self.sharedInventory[self.clientId] = self.inventory
@@ -127,18 +201,30 @@ class AI():
         requiredRessources = LEVELS[self.level]
         if self.searchingRessource in self.inventory:
             self.inventory[self.searchingRessource] += 1
-        print(f"requiredRessources: {requiredRessources}"
-              f" inventory: {self.inventory}"
-              f" searchingRessource: {self.searchingRessource}")
+        # print(f"requiredRessources: {requiredRessources}"
+        #       f" inventory: {self.inventory}"
+        #       f" searchingRessource: {self.searchingRessource}")
         for ressource in requiredRessources:
-            print(f"ressource: {ressource}"
-                  f" requiredRessources: {requiredRessources[ressource]}"
-                  f" inventory: {self.inventory[ressource]}")
+            # print(f"ressource: {ressource}"
+            #       f" requiredRessources: {requiredRessources[ressource]}"
+            #       f" inventory: {self.inventory[ressource]}")
             if self.inventory[ressource] < requiredRessources[ressource]:
                 return False
         return True
 
-    # def goToBroadcastSignal(self):
+    def goToBroadcastSignal(self, signalDirection: int):
+        match signalDirection:
+            case 0:
+                messageToSend = bytes(self.sxor(
+                    self.teamName, ("ready")), "utf-8").hex()
+                self.dataToSend = "Broadcast " + messageToSend + "\n"
+                self.commandList = []
+            case 1 | 2 | 8:
+                self.commandList.append("Forward\n")
+            case 5 | 6 | 7:
+                self.commandList.append("Right\n")
+            case _:
+                self.commandList.append("Left\n")
 
     def startingIncantation(self) -> None:
         data = self.look.split(",")[0]
@@ -155,7 +241,6 @@ class AI():
         for ressource in requiredRessources:
             if requiredRessources[ressource] > 0:
                 return
-        self.commandList.append("Incantation\n")
         self.commandList.append("Incantation\n")
 
     def dropRessourcesWhileIncantating(self):
@@ -269,12 +354,12 @@ class AI():
     def fillingActivity(self, data: str):
         if "food" in self.inventory and self.inventory["food"] < 50:
             self.commandList = self.fillingInventory(data, "food")
-            self.actualActivity = Activity.EXECUTE_COMMAND
+            # self.actualActivity = Activity.EXECUTE_COMMAND
         else:
             self.searchingRessource = self.searchingActivity()
             self.commandList = self.fillingInventory(data,
                                                      self.searchingRessource)
-            self.actualActivity = Activity.EXECUTE_COMMAND
+        self.actualActivity = Activity.EXECUTE_COMMAND
 
     def lookingActivity(self):
         self.dataToSend = "Look\n"
@@ -294,35 +379,24 @@ class AI():
     # def inventoryActivity(self):
     #     self.dataToSend = "Inventory\n"
 
-    # def switchCase(self, activity: Activity):
-    #     return {
-    #         Activity.STARTING: self.startingActivity(),
-    #         Activity.POPULATING: self.populatingActivity(),
-    #         Activity.LOOKING: self.lookingActivity(),
-    #         Activity.FILLING: self.fillingActivity(self.look),
-    #         Activity.EXECUTE_COMMAND: self.executeCommand(),
-    #         # Activity.INVENTORY: self.inventoryActivity(),
-    #     }[activity]
-
     def algorithm(self) -> None:
         # self.switchCase(self.actualActivity)
-        if self.actualActivity == Activity.STARTING:
-            self.startingActivity()
-        elif self.actualActivity == Activity.POPULATING:
-            self.populatingActivity()
-        elif self.actualActivity == Activity.LOOKING:
-            self.lookingActivity()
-        elif self.actualActivity == Activity.FILLING:
-            self.fillingActivity(self.look)
-        elif self.actualActivity == Activity.EXECUTE_COMMAND:
-            self.executeCommand()
-        elif self.actualActivity == Activity.CHECK_INCANTATION:
-            self.checkIncanationActivity()
-        elif self.actualActivity == Activity.PREPA_FOR_INCANTATION:
-            self.prepareForIncantationActivity()
-        elif self.actualActivity == Activity.INCANTATING:
-            self.incantatingActivity()
+        self.nbPlayers = int(self.clientId)
+        match self.actualActivity:
+            case Activity.STARTING:
+                self.startingActivity()
+            case Activity.POPULATING:
+                self.populatingActivity()
+            case Activity.LOOKING:
+                self.lookingActivity()
+            case Activity.FILLING:
+                self.fillingActivity(self.look)
+            case Activity.EXECUTE_COMMAND:
+                self.executeCommand()
+            case Activity.CHECK_INCANTATION:
+                self.checkIncanationActivity()
+            case Activity.PREPA_FOR_INCANTATION:
+                self.prepareForIncantationActivity()
+            case Activity.INCANTATING:
+                self.incantatingActivity()
         return
-
-
-# reste au sol les ressources

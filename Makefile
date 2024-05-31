@@ -6,32 +6,32 @@
 ##
 
 all:
-	make all -C ZappyServer
+	make all -C Server
 	make all -C ZappyAI
 	make all -C ZappyGui
 
 debug:
-	make debug -C ZappyServer
+	make debug -C Server
 	# make debug -C ZappyAI
 
 clean:
-	make clean -C ZappyServer
+	make clean -C Server
 	make clean -C ZappyGui
 
 fclean:
-	make fclean -C ZappyServer
+	make fclean -C Server
 	make fclean -C ZappyAI
 	make fclean -C ZappyGui
 
 re:
-	make re -C ZappyServer
+	make re -C Server
 	make re -C ZappyAI
 	make re -C ZappyGui
 
 unit_tests:
-	make unit_tests -C ZappyServer
+	make unit_tests -C Server
 
 tests_run:
-	make tests_run -C ZappyServer
+	make tests_run -C Server
 
 .PHONY: all clean fclean re tests_run
