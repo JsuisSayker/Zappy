@@ -44,6 +44,9 @@ COMMAND_AI		=	handle_ai_command.c				\
 					ai_command_left.c				\
 					ai_command_right.c				\
 					ai_command_take_object.c		\
+					ai_command_fork.c				\
+					ai_command_inventory.c			\
+					ai_command_look.c			\
 					send_ppo_command_to_all_gui.c	\
 					send_pin_command_to_all_gui.c	\
 
