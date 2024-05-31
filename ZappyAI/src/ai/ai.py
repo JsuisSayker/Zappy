@@ -144,7 +144,7 @@ class AI():
                     messageToSend = self.encryption(
                         f"{str(self.teamName)};inventory{str(self.clientId)};"
                         f"{str(self.level)};{str(json.dumps(self.inventory))}"
-                        ).hex()
+                    ).hex()
                     print(f"messageToSend: {messageToSend}")
                     exit(0)
                     self.dataToSend = "Broadcast " + messageToSend + "\n"
