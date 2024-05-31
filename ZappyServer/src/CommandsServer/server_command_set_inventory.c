@@ -28,7 +28,7 @@ void server_command_set_inventory(zappy_server_t *zappy, char *command)
     if (command == NULL || command[0] != ' ')
         return;
     command_array = splitter(command, " ");
-    if (get_len_char_tab(command_array) != 4)
+    if (get_len_char_tab(command_array) != 3)
         return free_array(command_array);
     id = atoi(command_array[0]);
     resource = command_array[1];

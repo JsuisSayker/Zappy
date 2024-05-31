@@ -17,6 +17,7 @@ SRC			=	zappy_server.c						\
 				generate_ressourse_list.c			\
 				map_tile_function.c					\
 				map_tile_function_sub.c				\
+				map_tile_function_ter.c				\
 				int_array_function.c				\
 				close_server.c						\
 				fd_is_set.c							\
@@ -36,13 +37,14 @@ TOOLS		=	splitter.c							\
 				set_inventory_resource_quantite.c	\
 				free_list.c							\
 
-COMMAND_IA		=	handle_ai_command.c		\
-					ai_initialisation.c		\
-					ai_action.c				\
-					ai_command_help.c		\
-					ai_command_forward.c	\
-					ai_command_left.c		\
-					ai_command_right.c		\
+COMMAND_AI		=	handle_ai_command.c				\
+					ai_initialisation.c				\
+					ai_action.c						\
+					ai_command_forward.c			\
+					ai_command_left.c				\
+					ai_command_right.c				\
+					ai_command_take_object.c		\
+					send_ppo_command_to_all_gui.c	\
 
 COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_msz.c				\
@@ -67,10 +69,11 @@ COMMAND_SERVER	=	handle_server_command.c			\
 					server_command_set_tile.c		\
 					server_command_set_inventory.c	\
 					server_command_set_freq.c		\
+					server_command_set_level.c		\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 
-DIR_COMMAND_IA	=	$(addprefix CommandsIa/, $(COMMAND_IA))
+DIR_COMMAND_IA	=	$(addprefix CommandsAi/, $(COMMAND_AI))
 
 DIR_COMMAND_GUI	=	$(addprefix CommandsGui/, $(COMMAND_GUI))
 
