@@ -36,10 +36,9 @@ TOOLS		=	splitter.c							\
 				set_inventory_resource_quantite.c	\
 				free_list.c							\
 
-COMMAND_IA		=	handle_ai_command.c				\
+COMMAND_AI		=	handle_ai_command.c				\
 					ai_initialisation.c				\
 					ai_action.c						\
-					ai_command_help.c				\
 					ai_command_forward.c			\
 					ai_command_left.c				\
 					ai_command_right.c				\
@@ -67,10 +66,11 @@ COMMAND_SERVER	=	handle_server_command.c			\
 					server_command_set_tile.c		\
 					server_command_set_inventory.c	\
 					server_command_set_freq.c		\
+					server_command_set_level.c		\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 
-DIR_COMMAND_IA	=	$(addprefix CommandsAi/, $(COMMAND_IA))
+DIR_COMMAND_IA	=	$(addprefix CommandsAi/, $(COMMAND_AI))
 
 DIR_COMMAND_GUI	=	$(addprefix CommandsGui/, $(COMMAND_GUI))
 
