@@ -155,7 +155,7 @@ class Client():
                     if self.ai.dataToSend and self.ai.run is True:
                         if self.ai.dataToSend == (
                                 self.teamName + '\n'
-                                ) and self.logged is False:
+                        ) and self.logged is False:
                             self.actualStep = 1
                         #     print("sending the teamName")
                         self.socket.send(self.ai.dataToSend.encode())
