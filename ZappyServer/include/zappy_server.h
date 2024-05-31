@@ -100,6 +100,8 @@ map_tile_t **setup_map_tile(int x, int y);
 void display_tile(map_tile_t tile);
 void display_gui_tile(map_tile_t tile, int socket);
 void display_map_tile(map_tile_t **map_tile);
+int get_len_map_tile(map_tile_t **map_tile);
+int get_len_line_map_tile(map_tile_t **map_tile);
 
 // int array functions
 int **generate_int_array(int x, int y);
@@ -293,6 +295,8 @@ int ai_command_forward(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_right(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_left(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_take_object(zappy_server_t *zappy, client_t *client, char *cmd);
+
+void send_ppo_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 
 // GUI COMMANDS FUNCTIONS
 int handle_gui_command(zappy_server_t *zappy_server, char *command);

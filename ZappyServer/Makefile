@@ -43,6 +43,8 @@ COMMAND_AI		=	handle_ai_command.c				\
 					ai_command_forward.c			\
 					ai_command_left.c				\
 					ai_command_right.c				\
+					ai_command_take_object.c		\
+					send_ppo_command_to_all_gui.c	\
 
 COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_msz.c				\

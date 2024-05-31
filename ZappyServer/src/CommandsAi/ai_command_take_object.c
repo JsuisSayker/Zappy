@@ -73,7 +73,7 @@ int ai_command_take_object(zappy_server_t *zappy, client_t *client, char *cmd)
         return OK;
     if (is_valid_resource(cmd) == false)
         return ERROR;
-    if (selector_object() == ERROR)
+    if (selector_object(zappy, client, cmd) == ERROR)
         return ERROR;
     return OK;
 }
