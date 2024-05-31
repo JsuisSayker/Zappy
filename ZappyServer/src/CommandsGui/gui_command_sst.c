@@ -11,5 +11,5 @@ void gui_command_sst(zappy_server_t *zappy, char *command)
 {
     if (command == NULL || command[0] != ' ')
         return;
-    dprintf(zappy->actual_sockfd, "sst %.0f\n", zappy->args->freq);
+    dprintf(zappy->actual_sockfd, "sst %d\n", zappy->args->freq);
 }

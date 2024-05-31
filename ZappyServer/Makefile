@@ -36,9 +36,13 @@ TOOLS		=	splitter.c							\
 				set_inventory_resource_quantite.c	\
 				free_list.c							\
 
-COMMAND_IA		=	cast_action.c					\
-					handle_ia_command.c				\
-					ia_command_help.c				\
+COMMAND_IA		=	handle_ai_command.c		\
+					ai_initialisation.c		\
+					ai_action.c				\
+					ai_command_help.c		\
+					ai_command_forward.c	\
+					ai_command_left.c		\
+					ai_command_right.c		\
 
 COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_msz.c				\
@@ -87,6 +91,16 @@ TEST		=	test_splitter.c						\
 				test_server_command_set_freq.c		\
 				test_server_command_tile.c			\
 				test_handle_server_command.c		\
+				test_gui_command_bct.c				\
+				test_gui_command_mct.c				\
+				test_gui_command_msz.c				\
+				test_gui_command_pin.c				\
+				test_gui_command_plv.c				\
+				test_gui_command_ppo.c				\
+				test_gui_command_sgt.c				\
+				test_gui_command_sst.c				\
+				test_gui_command_suc.c				\
+				test_gui_command_tna.c				\
 				test_fill_args_conf.c				\
 				test_zappy_server.c					\
 
@@ -119,12 +133,12 @@ debug:
 			-ggdb3
 
 clean:
-		rm -f $(OBJ)
+		@ rm -f $(OBJ)
 
 fclean: clean
-		rm -rf unit_tests
-		rm -rf *.gcov
-		rm -f $(NAME)
+		@ rm -rf unit_tests
+		@ rm -rf *.gcov
+		@ rm -f $(NAME)
 
 re:		fclean all
 

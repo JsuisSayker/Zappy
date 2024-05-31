@@ -36,7 +36,7 @@ static int display_info_server(zappy_server_t *zappy_server)
     printf("width = %d\n", zappy_server->args->width);
     printf("height = %d\n", zappy_server->args->height);
     printf("clients_nb = %d\n", zappy_server->args->clientsNb);
-    printf("freq = %.0f\n", zappy_server->args->freq);
+    printf("freq = %d\n", zappy_server->args->freq);
     printf("Teams [%d]:\n", get_nb_teams(&zappy_server->all_teams));
     TAILQ_FOREACH(tmp, &zappy_server->all_teams, next){
         printf("name : [%s]\n", tmp->name);
@@ -47,20 +47,26 @@ static int display_info_server(zappy_server_t *zappy_server)
     return OK;
 }
 
-int zappy_server(args_config_t *args)
+static int init_zappy_server(zappy_server_t *zappy_server, args_config_t *args)
 {
-    zappy_server_t *zappy_server = calloc(sizeof(zappy_server_t), 1);
-
     signal(SIGINT, signal_handler);
     if (init_server(zappy_server, args) == KO)
         return ERROR;
     if (display_info_server(zappy_server) == KO)
         return ERROR;
+    return OK;
+}
+
+static int run_zappy_server(zappy_server_t *zappy_server)
+{
+    struct timeval timeout;
     while (zappy_server->server_running) {
         zappy_server->fd.input = zappy_server->fd.save_input;
+        timeout.tv_sec = 0;
+        timeout.tv_usec = 10000;
         if (select(FD_SETSIZE, &(zappy_server->fd.input),
-            &(zappy_server->fd.ouput), NULL, NULL) == ERROR && errno != EINTR
-            && zappy_server->server_running)
+            &(zappy_server->fd.ouput), NULL, &timeout) == ERROR
+                && errno != EINTR && zappy_server->server_running)
             return ERROR;
         if (errno == EINTR)
             zappy_server->server_running = false;
@@ -69,4 +75,12 @@ int zappy_server(args_config_t *args)
     }
     close_server(zappy_server);
     return OK;
+}
+
+int zappy_server(args_config_t *args)
+{
+    zappy_server_t *zappy_server = calloc(sizeof(zappy_server_t), 1);
+    if (init_zappy_server(zappy_server, args) == ERROR)
+        return ERROR;
+    return run_zappy_server(zappy_server);
 }
