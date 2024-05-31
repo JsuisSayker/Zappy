@@ -18,14 +18,14 @@ char **splitter(char const *const str, char *separator)
 {
     int i = 0;
     char **tab = NULL;
-    char *cpy_str = malloc(sizeof(char) * (strlen(str) + 1));
+    char *cpy_str = calloc(sizeof(char), (strlen(str) + 1));
     char *tmp_str;
 
     strcpy(cpy_str, str);
     tmp_str = strtok(cpy_str, separator);
     if (tmp_str == NULL)
         return free_copy(cpy_str);
-    tab = malloc(sizeof(char *) * (strlen(str) + 1));
+    tab = calloc(sizeof(char *), (strlen(str) + 1));
     if (tab == NULL)
         return free_copy(cpy_str);
     while (tmp_str != NULL) {
