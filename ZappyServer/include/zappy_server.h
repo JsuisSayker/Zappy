@@ -298,6 +298,8 @@ int ai_command_take_object(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_fork(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_inventory(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_look(zappy_server_t *zappy, client_t *client, char *cmd);
+int ai_command_connect_nbr(zappy_server_t *zappy, client_t *client,
+    char *cmd);
 
 void send_ppo_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_pin_command_to_all_gui(zappy_server_t *zappy, client_t *client);

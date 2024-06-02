@@ -27,6 +27,7 @@ static const struct command_ai_s COMMAND_FUNCS[] = {
     {"Fork", &ai_command_fork},
     {"Inventory", &ai_command_inventory},
     {"Look", &ai_command_look},
+    {"Connect_nbr", &ai_command_connect_nbr},
     {"NULL", NULL}
 };
 

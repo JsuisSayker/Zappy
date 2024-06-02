@@ -46,7 +46,8 @@ COMMAND_AI		=	handle_ai_command.c				\
 					ai_command_take_object.c		\
 					ai_command_fork.c				\
 					ai_command_inventory.c			\
-					ai_command_look.c			\
+					ai_command_look.c				\
+					ai_command_connect_nbr.c		\
 					send_ppo_command_to_all_gui.c	\
 					send_pin_command_to_all_gui.c	\
 
@@ -85,7 +86,7 @@ DIR_COMMAND_SERVER	=	$(addprefix CommandsServer/, $(COMMAND_SERVER))
 
 DIR_TOOLS	=	$(addprefix tools/, $(TOOLS))
 
-MAIN		=	main.c						\
+MAIN		=	main.c								\
 
 DIR_MAIN		=	$(addprefix src/, $(MAIN))
 
