@@ -16,11 +16,14 @@
     // {"/connect_nbr", &connect_nbr},
 
 static const struct command_ai_s COMMAND_FUNCS[] = {
-    {"Help", &ai_command_help},
     {"Forward", &ai_command_forward},
     {"Right", &ai_command_right},
     {"Left", &ai_command_left},
+    {"Take", &ai_command_take_object},
+    {"Fork", &ai_command_fork},
     {"Inventory", &ai_command_inventory},
+    {"Look", &ai_command_look},
+    {"Connect_nbr", &ai_command_connect_nbr},
     {"NULL", NULL}
 };
 
@@ -29,6 +32,7 @@ static int handle_ai_command_sub(zappy_server_t *zappy, client_t *client,
 {
     if (zappy == NULL || client == NULL)
         return ERROR;
+    printf("cmd = [%s]\n", cmd);
     for (int i = 0; COMMAND_FUNCS[i].func != NULL; i += 1) {
         if (strncmp(cmd, COMMAND_FUNCS[i].command,
             strlen(COMMAND_FUNCS[i].command)) == 0) {

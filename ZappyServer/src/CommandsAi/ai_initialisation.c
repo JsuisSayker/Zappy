@@ -5,25 +5,7 @@
 ** ai_initialisation
 */
 
-#include "zappy_server.h"
-
-static int ai_value_direction_setter(client_t *ia)
-{
-    int rdm_orientation = 0;
-
-    if (ia == NULL)
-        return ERROR;
-    rdm_orientation = rand() % 3;
-    if (rdm_orientation == 0)
-        ia->pos.direction = NORTH;
-    if (rdm_orientation == 1)
-        ia->pos.direction = EAST;
-    if (rdm_orientation == 2)
-        ia->pos.direction = SOUTH;
-    if (rdm_orientation == 3)
-        ia->pos.direction = WEST;
-    return OK;
-}
+#include <zappy_server.h>
 
 static int init_value(client_t *ia, team_t *tmp_team, egg_t *new_egg,
     int freq)
@@ -65,12 +47,13 @@ static int init_queue(client_t *client)
 {
     if (client == NULL)
         return ERROR;
-    client->command.queue = malloc(sizeof(char *) * 11);
+    client->command.queue = calloc(sizeof(char *), 11);
     if (client->command.queue == NULL)
         return ERROR;
     client->command.queue[10] = NULL;
-    for (int i = 0; i < 10; i += 1)
+    for (int i = 0; i < 10; i += 1) {
         client->command.queue[i] = NULL;
+    }
     return OK;
 }
 
@@ -93,7 +76,6 @@ int ai_initialisation(zappy_server_t *zappy_server, client_t *ia,
         return ERROR;
     if (ia->command.queue == NULL)
         return ERROR;
-    if (ai_value_direction_setter(ia) == ERROR)
-        return ERROR;
+    ia->pos.direction = rand() % 4;
     return OK;
 }

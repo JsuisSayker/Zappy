@@ -6,6 +6,7 @@
 */
 
 #include "SwapChain.hpp"
+#include "ErrorHandling.hpp"
 
 // std
 #include <array>
@@ -116,11 +117,11 @@ VkResult ZappySwapChain::submitCommandBuffers(
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
-    vkResetFences(device.device(), 1, &inFlightFences[currentFrame]);
-    if (vkQueueSubmit(device.graphicsQueue(), 1, &submitInfo,
-            inFlightFences[currentFrame]) != VK_SUCCESS) {
-        throw std::runtime_error("failed to submit draw command buffer!");
-    }
+  vkResetFences(device.device(), 1, &inFlightFences[currentFrame]);
+  if (vkQueueSubmit(device.graphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) !=
+      VK_SUCCESS) {
+    throw zappy::DrawCommandBufferSubmitFailedException();
+  }
 
     VkPresentInfoKHR presentInfo = {};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -191,10 +192,9 @@ void ZappySwapChain::createSwapChain()
     createInfo.oldSwapchain =
         oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
-    if (vkCreateSwapchainKHR(
-            device.device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create swap chain!");
-    }
+  if (vkCreateSwapchainKHR(device.device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
+    throw zappy::SwapChainCreationFailedException();
+  }
 
     // we only specified a minimum number of images in the swap chain, so the
     // implementation is allowed to create a swap chain with more. That's why
@@ -225,11 +225,11 @@ void ZappySwapChain::createImageViews()
         viewInfo.subresourceRange.baseArrayLayer = 0;
         viewInfo.subresourceRange.layerCount = 1;
 
-        if (vkCreateImageView(device.device(), &viewInfo, nullptr,
-                &swapChainImageViews[i]) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create texture image view!");
-        }
+    if (vkCreateImageView(device.device(), &viewInfo, nullptr, &swapChainImageViews[i]) !=
+        VK_SUCCESS) {
+      throw zappy::TextureImageViewCreationFailedException();
     }
+  }
 }
 
 void ZappySwapChain::createRenderPass()
@@ -292,10 +292,9 @@ void ZappySwapChain::createRenderPass()
     renderPassInfo.dependencyCount = 1;
     renderPassInfo.pDependencies = &dependency;
 
-    if (vkCreateRenderPass(device.device(), &renderPassInfo, nullptr,
-            &renderPass) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create render pass!");
-    }
+  if (vkCreateRenderPass(device.device(), &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
+    throw zappy::RenderPassCreationFailedException();
+  }
 }
 
 void ZappySwapChain::createFramebuffers()
@@ -316,11 +315,14 @@ void ZappySwapChain::createFramebuffers()
         framebufferInfo.height = swapChainExtent.height;
         framebufferInfo.layers = 1;
 
-        if (vkCreateFramebuffer(device.device(), &framebufferInfo, nullptr,
-                &swapChainFramebuffers[i]) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create framebuffer!");
-        }
+    if (vkCreateFramebuffer(
+            device.device(),
+            &framebufferInfo,
+            nullptr,
+            &swapChainFramebuffers[i]) != VK_SUCCESS) {
+      throw zappy::FrameBufferCreationFailedException();
     }
+  }
 }
 
 void ZappySwapChain::createDepthResources()
@@ -365,11 +367,10 @@ void ZappySwapChain::createDepthResources()
         viewInfo.subresourceRange.baseArrayLayer = 0;
         viewInfo.subresourceRange.layerCount = 1;
 
-        if (vkCreateImageView(device.device(), &viewInfo, nullptr,
-                &depthImageViews[i]) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create texture image view!");
-        }
+    if (vkCreateImageView(device.device(), &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS) {
+      throw zappy::TextureImageViewCreationFailedException();
     }
+  }
 }
 
 void ZappySwapChain::createSyncObjects()
@@ -386,17 +387,15 @@ void ZappySwapChain::createSyncObjects()
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        if (vkCreateSemaphore(device.device(), &semaphoreInfo, nullptr,
-                &imageAvailableSemaphores[i]) != VK_SUCCESS ||
-            vkCreateSemaphore(device.device(), &semaphoreInfo, nullptr,
-                &renderFinishedSemaphores[i]) != VK_SUCCESS ||
-            vkCreateFence(device.device(), &fenceInfo, nullptr,
-                &inFlightFences[i]) != VK_SUCCESS) {
-            throw std::runtime_error(
-                "failed to create synchronization objects for a frame!");
-        }
+  for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+    if (vkCreateSemaphore(device.device(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) !=
+            VK_SUCCESS ||
+        vkCreateSemaphore(device.device(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) !=
+            VK_SUCCESS ||
+        vkCreateFence(device.device(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS) {
+      throw zappy::FrameSyncObjectsCreationFailedException();
     }
+  }
 }
 
 VkSurfaceFormatKHR ZappySwapChain::chooseSwapSurfaceFormat(
@@ -413,21 +412,12 @@ VkSurfaceFormatKHR ZappySwapChain::chooseSwapSurfaceFormat(
 }
 
 VkPresentModeKHR ZappySwapChain::chooseSwapPresentMode(
-    const std::vector<VkPresentModeKHR> &availablePresentModes)
-{
-    for (const auto &availablePresentMode : availablePresentModes) {
-        if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-            std::cout << "Present mode: Mailbox" << std::endl;
-            return availablePresentMode;
-        }
+    const std::vector<VkPresentModeKHR> &availablePresentModes) {
+  for (const auto &availablePresentMode : availablePresentModes) {
+    if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+      return availablePresentMode;
     }
-
-    // for (const auto &availablePresentMode : availablePresentModes) {
-    //   if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
-    //     std::cout << "Present mode: Immediate" << std::endl;
-    //     return availablePresentMode;
-    //   }
-    // }
+  }
 
     std::cout << "Present mode: V-Sync" << std::endl;
     return VK_PRESENT_MODE_FIFO_KHR;

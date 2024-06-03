@@ -6,7 +6,7 @@
 */
 
 #include "Model.hpp"
-
+#include "ErrorHandling.hpp"
 #include "Utils.hpp"
 
 // libs
@@ -19,6 +19,7 @@
 #include <cassert>
 #include <cstring>
 #include <unordered_map>
+#include <iostream>
 
 #ifndef ENGINE_DIR
 #define ENGINE_DIR ""
@@ -154,7 +155,8 @@ void ZappyModel::Builder::loadModel(const std::string &filepath) {
   std::string warn, err;
 
   if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.c_str())) {
-    throw std::runtime_error(warn + err);
+    std::cout << "Error: " << warn + err << std::endl;
+    throw zappy::LoadObjFailedException();
   }
 
   vertices.clear();

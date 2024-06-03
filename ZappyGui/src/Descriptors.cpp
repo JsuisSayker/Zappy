@@ -6,6 +6,7 @@
 */
 
 #include "Descriptors.hpp"
+#include "ErrorHandling.hpp"
 
 // std
 #include <cassert>
@@ -54,11 +55,13 @@ ZappyDescriptorSetLayout::ZappyDescriptorSetLayout(ZappyDevice &lveDevice,
         static_cast<uint32_t>(setLayoutBindings.size());
     descriptorSetLayoutInfo.pBindings = setLayoutBindings.data();
 
-    if (vkCreateDescriptorSetLayout(lveDevice.device(),
-            &descriptorSetLayoutInfo, nullptr,
-            &descriptorSetLayout) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create descriptor set layout!");
-    }
+  if (vkCreateDescriptorSetLayout(
+          lveDevice.device(),
+          &descriptorSetLayoutInfo,
+          nullptr,
+          &descriptorSetLayout) != VK_SUCCESS) {
+    throw zappy::DescriptorSetLayoutCreationFailedException();
+  }
 }
 
 ZappyDescriptorSetLayout::~ZappyDescriptorSetLayout()
@@ -110,10 +113,10 @@ ZappyDescriptorPool::ZappyDescriptorPool(ZappyDevice &lveDevice,
     descriptorPoolInfo.maxSets = maxSets;
     descriptorPoolInfo.flags = poolFlags;
 
-    if (vkCreateDescriptorPool(lveDevice.device(), &descriptorPoolInfo,
-            nullptr, &descriptorPool) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create descriptor pool!");
-    }
+  if (vkCreateDescriptorPool(lveDevice.device(), &descriptorPoolInfo, nullptr, &descriptorPool) !=
+      VK_SUCCESS) {
+    throw zappy::DescriptorPoolCreationFailedException();
+  }
 }
 
 ZappyDescriptorPool::~ZappyDescriptorPool()

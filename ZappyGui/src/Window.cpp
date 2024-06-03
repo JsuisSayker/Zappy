@@ -6,6 +6,7 @@
 */
 
 #include "Window.hpp"
+#include "ErrorHandling.hpp"
 
 // std
 #include <stdexcept>
@@ -36,13 +37,10 @@ void ZappyWindow::initWindow()
     glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 }
 
-void ZappyWindow::createWindowSurface(
-    VkInstance instance, VkSurfaceKHR *surface)
-{
-    if (glfwCreateWindowSurface(instance, window, nullptr, surface) !=
-        VK_SUCCESS) {
-        throw std::runtime_error("failed to craete window surface");
-    }
+void ZappyWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface) {
+  if (glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS) {
+    throw zappy::WindowSurfaceCreationFailedException();
+  }
 }
 
 void ZappyWindow::framebufferResizeCallback(

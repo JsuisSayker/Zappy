@@ -6,7 +6,7 @@
 */
 
 #include "Pipeline.hpp"
-
+#include "ErrorHandling.hpp"
 #include "Model.hpp"
 
 // std
@@ -41,9 +41,9 @@ std::vector<char> ZappyPipeline::readFile(const std::string &filepath)
     std::string enginePath = ENGINE_DIR + filepath;
     std::ifstream file{enginePath, std::ios::ate | std::ios::binary};
 
-    if (!file.is_open()) {
-        throw std::runtime_error("failed to open file: " + enginePath);
-    }
+  if (!file.is_open()) {
+    throw zappy::OpenFileFailedException();
+  }
 
     size_t fileSize = static_cast<size_t>(file.tellg());
     std::vector<char> buffer(fileSize);
@@ -122,10 +122,15 @@ void ZappyPipeline::createGraphicsPipeline(const std::string &vertFilepath,
     pipelineInfo.basePipelineIndex = -1;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-    if (vkCreateGraphicsPipelines(lveDevice.device(), VK_NULL_HANDLE, 1,
-            &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create graphics pipeline");
-    }
+  if (vkCreateGraphicsPipelines(
+          lveDevice.device(),
+          VK_NULL_HANDLE,
+          1,
+          &pipelineInfo,
+          nullptr,
+          &graphicsPipeline) != VK_SUCCESS) {
+    throw zappy::GraphicsPipelineCreationFailedException();
+  }
 }
 
 void ZappyPipeline::createShaderModule(
@@ -136,10 +141,9 @@ void ZappyPipeline::createShaderModule(
     createInfo.codeSize = code.size();
     createInfo.pCode = reinterpret_cast<const uint32_t *>(code.data());
 
-    if (vkCreateShaderModule(lveDevice.device(), &createInfo, nullptr,
-            shaderModule) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create shader module");
-    }
+  if (vkCreateShaderModule(lveDevice.device(), &createInfo, nullptr, shaderModule) != VK_SUCCESS) {
+    throw zappy::ShaderModuleCreationFailedException();
+  }
 }
 
 void ZappyPipeline::bind(VkCommandBuffer commandBuffer)

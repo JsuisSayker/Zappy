@@ -15,6 +15,7 @@ static int check_direction_sub(zappy_server_t *zappy, client_t *client)
         else
             client->pos.x = client->pos.x + 1;
         dprintf(zappy->actual_sockfd, "ok\n");
+        send_ppo_command_to_all_gui(zappy, client);
         return OK;
     }
     if (client->pos.direction == WEST){
@@ -23,6 +24,7 @@ static int check_direction_sub(zappy_server_t *zappy, client_t *client)
         else
             client->pos.x = client->pos.x - 1;
         dprintf(zappy->actual_sockfd, "ok\n");
+        send_ppo_command_to_all_gui(zappy, client);
         return OK;
     }
     return ERROR;

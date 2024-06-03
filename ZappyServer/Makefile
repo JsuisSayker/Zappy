@@ -17,6 +17,7 @@ SRC			=	zappy_server.c						\
 				generate_ressourse_list.c			\
 				map_tile_function.c					\
 				map_tile_function_sub.c				\
+				map_tile_function_ter.c				\
 				int_array_function.c				\
 				close_server.c						\
 				fd_is_set.c							\
@@ -45,6 +46,11 @@ COMMAND_IA		=	handle_ai_command.c		\
 					ai_command_left.c		\
 					ai_command_right.c		\
 					ai_command_inventory.c	\
+					ai_command_take_object.c		\
+					ai_command_look.c				\
+					ai_command_connect_nbr.c		\
+					send_ppo_command_to_all_gui.c	\
+					send_pin_command_to_all_gui.c	\
 
 COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_msz.c				\
@@ -69,10 +75,11 @@ COMMAND_SERVER	=	handle_server_command.c			\
 					server_command_set_tile.c		\
 					server_command_set_inventory.c	\
 					server_command_set_freq.c		\
+					server_command_set_level.c		\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 
-DIR_COMMAND_IA	=	$(addprefix CommandsIa/, $(COMMAND_IA))
+DIR_COMMAND_IA	=	$(addprefix CommandsAi/, $(COMMAND_AI))
 
 DIR_COMMAND_GUI	=	$(addprefix CommandsGui/, $(COMMAND_GUI))
 
@@ -80,7 +87,7 @@ DIR_COMMAND_SERVER	=	$(addprefix CommandsServer/, $(COMMAND_SERVER))
 
 DIR_TOOLS	=	$(addprefix tools/, $(TOOLS))
 
-MAIN		=	main.c						\
+MAIN		=	main.c								\
 
 DIR_MAIN		=	$(addprefix src/, $(MAIN))
 
@@ -93,6 +100,16 @@ TEST		=	test_splitter.c						\
 				test_server_command_set_freq.c		\
 				test_server_command_tile.c			\
 				test_handle_server_command.c		\
+				test_gui_command_bct.c				\
+				test_gui_command_mct.c				\
+				test_gui_command_msz.c				\
+				test_gui_command_pin.c				\
+				test_gui_command_plv.c				\
+				test_gui_command_ppo.c				\
+				test_gui_command_sgt.c				\
+				test_gui_command_sst.c				\
+				test_gui_command_suc.c				\
+				test_gui_command_tna.c				\
 				test_fill_args_conf.c				\
 				test_zappy_server.c					\
 

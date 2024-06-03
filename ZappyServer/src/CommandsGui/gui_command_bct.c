@@ -11,7 +11,7 @@ static int error_command_bct(char **command_args)
 {
     if (command_args == NULL || command_args[0] == NULL ||
         command_args[1] == NULL || command_args[2] != NULL) {
-        error_command_argument("/bct", get_len_char_tab(command_args), 2);
+        error_command_argument("bct", get_len_char_tab(command_args), 2);
         free_array(command_args);
         return KO;
     }
