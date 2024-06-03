@@ -202,13 +202,13 @@ std::string FirstApp::getExecutablePath()
 
 void FirstApp::loadGameObjects()
 {
-    std::shared_ptr<ZappyModel> lveModel = ZappyModel::createModelFromFile(
-        lveDevice, executablePath + "/ZappyGui/models/flat_vase.obj");
-    auto flatVase = ZappyGameObject::createGameObject();
-    flatVase.model = lveModel;
-    flatVase.transform.translation = {-.5f, .5f, 0.f};
-    flatVase.transform.scale = {3.f, 1.5f, 3.f};
-    gameObjects.emplace(flatVase.getId(), std::move(flatVase));
+    // std::shared_ptr<ZappyModel> lveModel = ZappyModel::createModelFromFile(
+    //     lveDevice, executablePath + "/ZappyGui/models/flat_vase.obj");
+    // auto flatVase = ZappyGameObject::createGameObject();
+    // flatVase.model = lveModel;
+    // flatVase.transform.translation = {-.5f, .5f, 0.f};
+    // flatVase.transform.scale = {3.f, 1.5f, 3.f};
+    // gameObjects.emplace(flatVase.getId(), std::move(flatVase));
 
     // lveModel = ZappyModel::createModelFromFile(
     //     lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj");
