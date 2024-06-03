@@ -37,13 +37,14 @@ TOOLS		=	splitter.c							\
 				free_list.c							\
 
 COMMAND_IA		=	handle_ai_command.c		\
-					ai_function.c					\
+					ai_function.c			\
 					ai_initialisation.c		\
 					ai_action.c				\
 					ai_command_help.c		\
 					ai_command_forward.c	\
 					ai_command_left.c		\
 					ai_command_right.c		\
+					ai_command_inventory.c	\
 
 COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_msz.c				\

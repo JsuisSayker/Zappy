@@ -47,6 +47,20 @@ static int init_value(client_t *ia, team_t *tmp_team, egg_t *new_egg,
     return OK;
 }
 
+static int init_inventaire(client_t *ia)
+{
+    if (ia == NULL)
+        return ERROR;
+    ia->inventory.food = 10;
+    ia->inventory.linemate = 0;
+    ia->inventory.deraumere = 0;
+    ia->inventory.sibur = 0;
+    ia->inventory.mendiane = 0;
+    ia->inventory.phiras = 0;
+    ia->inventory.thystame = 0;
+    return OK;
+}
+
 static int init_queue(client_t *client)
 {
     if (client == NULL)
@@ -72,6 +86,8 @@ int ai_initialisation(zappy_server_t *zappy_server, client_t *ia,
         new_egg = TAILQ_NEXT(new_egg, next);
     }
     if (init_value(ia, tmp_team, new_egg, zappy_server->args->freq) == ERROR)
+        return ERROR;
+    if (init_inventaire(ia) != OK)
         return ERROR;
     if (init_queue(ia) != OK)
         return ERROR;

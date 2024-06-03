@@ -8,7 +8,6 @@
 #ifndef ZAPPY_SERVER_H_
     #define ZAPPY_SERVER_H_
 
-    #include <zappy.h>
     #include <arpa/inet.h>
     #include <dirent.h>
     #include <limits.h>
@@ -106,7 +105,6 @@ void display_map_tile(map_tile_t **map_tile);
 int **generate_int_array(int x, int y);
 void free_int_array(int **possible_coordinate);
 void shuffle_int_array(int **array, int n);
-
 
 ////////////////////////////////////////
 
@@ -300,6 +298,7 @@ int ai_command_help(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_forward(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_right(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_left(zappy_server_t *zappy, client_t *client, char *cmd);
+int ai_command_inventory(zappy_server_t *zappy, client_t *client, char *cmd);
 bool is_alive(zappy_server_t *zappy, client_t *client);
 
 // GUI COMMANDS FUNCTIONS
