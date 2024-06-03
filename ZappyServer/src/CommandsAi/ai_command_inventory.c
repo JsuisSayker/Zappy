@@ -2,13 +2,14 @@
 ** EPITECH PROJECT, 2024
 ** Zappy
 ** File description:
-** ai_command_right
+** ai_command_inventory
 */
 
 #include <zappy_server.h>
 
 void send_inventory(inventory_t *inventory, int socket)
 {
+    printf("send_inventory\n");
     dprintf(socket,
         "[food %d, linemate %d, deraumere %d, sibur %d, mendiane %d, phiras "
         "%d, thystame %d]\n",
@@ -19,7 +20,7 @@ void send_inventory(inventory_t *inventory, int socket)
 
 int ai_command_inventory(zappy_server_t *zappy, client_t *client, char *cmd)
 {
-    if (client == NULL || zappy == NULL || cmd == NULL || cmd[0] != ' ')
+    if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
     if (cast_action(zappy, client, 1, cmd) == ERROR)
         return ERROR;

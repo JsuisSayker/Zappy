@@ -37,16 +37,16 @@ TOOLS		=	splitter.c							\
 				set_inventory_resource_quantite.c	\
 				free_list.c							\
 
-COMMAND_IA		=	handle_ai_command.c		\
-					ai_function.c			\
-					ai_initialisation.c		\
-					ai_action.c				\
-					ai_command_help.c		\
-					ai_command_forward.c	\
-					ai_command_left.c		\
-					ai_command_right.c		\
-					ai_command_inventory.c	\
+COMMAND_AI		=	handle_ai_command.c				\
+					ai_function.c					\
+					ai_initialisation.c				\
+					ai_action.c						\
+					ai_command_forward.c			\
+					ai_command_left.c				\
+					ai_command_right.c				\
 					ai_command_take_object.c		\
+					ai_command_fork.c				\
+					ai_command_inventory.c			\
 					ai_command_look.c				\
 					ai_command_connect_nbr.c		\
 					send_ppo_command_to_all_gui.c	\
