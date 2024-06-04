@@ -34,9 +34,7 @@ class ZappyGui {
     ZappyGui &operator=(const ZappyGui &) = delete;
 
     static std::string getExecutablePath();
-
-    void setClient(std::shared_ptr<Client> client) { this->client = client; }
-    std::shared_ptr<Client> getClient() { return this->client; }
+    std::unique_ptr<GameContent> &getGameContent();
 
     void run();
 
@@ -52,7 +50,6 @@ class ZappyGui {
     std::unique_ptr<Texture> texture{};
     ZappyGameObject::Map gameObjects;
 
-    std::shared_ptr<Client> client;
     std::string executablePath;
 
     std::unique_ptr<GameContent> gameContent;

@@ -45,7 +45,6 @@ void zappy::Client::connectToServer()
         perror("Error (connect)");
         close(this->_socketFd);
     }
-    write(this->_socketFd, "GRAPHIC\n", 8);
 }
 
 /**
@@ -121,8 +120,6 @@ void zappy::Client::receiveFromServer()
     if (!this->_buffer.empty() && this->_buffer.back() == END_STR) {
         this->_buffer.pop_back();
     }
-
-    std::cout << "Buffer :" << this->_buffer << std::endl;
 }
 
 /**

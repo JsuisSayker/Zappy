@@ -11,12 +11,12 @@
 
 #include "Buffer.hpp"
 #include "Camera.hpp"
+#include "ErrorHandling.hpp"
+#include "GameContent.hpp"
 #include "KeyboardMovementController.hpp"
+#include "Trantorian.hpp"
 #include "systems/PointLightSystem.hpp"
 #include "systems/SimpleRenderSystem.hpp"
-#include "ErrorHandling.hpp"
-#include "Trantorian.hpp"
-#include "GameContent.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -37,7 +37,6 @@ namespace zappy {
 
 ZappyGui::ZappyGui()
 {
-    this->client = std::make_shared<Client>();
     this->gameContent = std::make_unique<GameContent>();
     executablePath = getExecutablePath();
     globalPool = ZappyDescriptorPool::Builder(lveDevice)
@@ -54,7 +53,7 @@ ZappyGui::~ZappyGui() {}
 
 void ZappyGui::run()
 {
-    this->getClient()->connectToServer();
+    this->gameContent.get()->getClient()->connectToServer();
     fd_set readfds;
 
     std::vector<std::unique_ptr<ZappyBuffer>> uboBuffers(
@@ -83,15 +82,20 @@ void ZappyGui::run()
             .build();
 
     // Create descriptor pool with adequate size
-    auto globalPool = ZappyDescriptorPool::Builder(lveDevice)
-        .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 2)  // Adjusted to fit more sets
-        .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 2)
-        .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 2)
-        .build();
+    auto globalPool =
+        ZappyDescriptorPool::Builder(lveDevice)
+            .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT *
+                2) // Adjusted to fit more sets
+            .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 2)
+            .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 2)
+            .build();
 
     // Init viking_room
-    std::shared_ptr<ZappyModel> grassBlockModel = ZappyModel::createModelFromFile(
-        lveDevice, executablePath + "/ZappyGui/models/Grass_Block.obj");
+    std::shared_ptr<ZappyModel> grassBlockModel =
+        ZappyModel::createModelFromFile(
+            lveDevice, executablePath + "/ZappyGui/models/Grass_Block.obj");
     ZappyGameObject grassBlock = ZappyGameObject::createGameObject();
     grassBlock.model = grassBlockModel;
     grassBlock.transform.translation = {0.f, 0.f, 0.f};
@@ -145,7 +149,7 @@ void ZappyGui::run()
         // set all fd clients to read
         FD_ZERO(&readfds);
 
-        int socket_fd = this->client.get()->getSocketFd();
+        int socket_fd = this->gameContent.get()->getClient()->getSocketFd();
         FD_SET(socket_fd, &readfds);
         FD_SET(STDIN_FILENO, &readfds);
 
@@ -166,9 +170,28 @@ void ZappyGui::run()
 
         // Check if there is activity on the socket file descriptor
         if (activity > 0 && FD_ISSET(socket_fd, &readfds)) {
-            this->client.get()->receiveFromServer();
-            if (this->client.get()->getBuffer().find(END_STR) != std::string::npos)
-                this->gameContent.get()->getPointerToFunction()[this->getClient().get()->getBuffer()]();
+            this->gameContent.get()->getClient().get()->receiveFromServer();
+            this->gameContent.get()->setSplitedBuffer(
+                this->gameContent.get()->getClient().get()->getBuffer());
+            if (this->gameContent.get()->getPointerToFunction().find(
+                    this->gameContent.get()->getSplitedBuffer()[0]) !=
+                this->gameContent.get()->getPointerToFunction().end()) {
+                try {
+                    std::cout << "Command: "
+                              << this->gameContent.get()->getSplitedBuffer()[0]
+                              << std::endl;
+                    this->gameContent.get()->getPointerToFunction()
+                        [this->gameContent.get()->getSplitedBuffer()[0]]();
+                } catch (const std::exception &e) {
+                    std::cerr << e.what() << std::endl;
+                }
+            } else {
+                std::cerr << "Unknown command: "
+                          << this->gameContent.get()->getSplitedBuffer()[0]
+                          << std::endl;
+            }
+            this->gameContent.get()->getClient().get()->getBuffer().clear();
+            this->gameContent.get()->getSplitedBuffer().clear();
         }
 
         glfwPollEvents();
@@ -238,11 +261,15 @@ std::string ZappyGui::getExecutablePath()
 void ZappyGui::loadGameObjects()
 {
     // std::vector<std::vector<glm::vec3>> trantPositions = {
-    //     {{-0.1f, 0.0f, 0.0f}, {-0.4f, 0.0f, 0.0f}, {-0.8f, 0.0f, 0.0f}, {-1.2f, 0.0f, 0.0f}},
-    //     {{0.1f, 0.0f, 0.0f}, {0.4f, 0.0f, 0.0f}, {0.8f, 0.0f, 0.0f}, {1.2f, 0.0f, 0.0f}}
+    //     {{-0.1f, 0.0f, 0.0f}, {-0.4f, 0.0f, 0.0f}, {-0.8f, 0.0f, 0.0f},
+    //     {-1.2f, 0.0f, 0.0f}},
+    //     {{0.1f, 0.0f, 0.0f}, {0.4f, 0.0f, 0.0f}, {0.8f, 0.0f, 0.0f}, {1.2f,
+    //     0.0f, 0.0f}}
     // };
 
-    // std::shared_ptr<ZappyModel> lveModel = ZappyModel::createModelFromFile(lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj");
+    // std::shared_ptr<ZappyModel> lveModel =
+    // ZappyModel::createModelFromFile(lveDevice, executablePath +
+    // "/ZappyGui/models/smooth_vase.obj");
 
     // std::vector<std::string> teamNames = {"Team-A", "Team-B"};
 
@@ -285,10 +312,8 @@ void ZappyGui::loadGameObjects()
     // floor.transform.scale = {3.f, 1.f, 3.f};
     // gameObjects.emplace(floor.getId(), std::move(floor));
 
-    std::vector<glm::vec3> lightColors{
-        {1.f, .1f, .1f}, {.1f, .1f, 1.f}, {.1f, 1.f, .1f}, {1.f, 1.f, .1f},
-        {.1f, 1.f, 1.f}, {1.f, 1.f, 1.f}
-    };
+    std::vector<glm::vec3> lightColors{{1.f, .1f, .1f}, {.1f, .1f, 1.f},
+        {.1f, 1.f, .1f}, {1.f, 1.f, .1f}, {.1f, 1.f, 1.f}, {1.f, 1.f, 1.f}};
 
     for (int i = 0; i < lightColors.size(); i++) {
         auto pointLight = ZappyGameObject::makePointLight(0.2f);
@@ -299,6 +324,11 @@ void ZappyGui::loadGameObjects()
             glm::vec3(rotateLight * glm::vec4(-1.f, -1.f, -1.f, 1.f));
         gameObjects.emplace(pointLight.getId(), std::move(pointLight));
     }
+}
+
+std::unique_ptr<GameContent> &ZappyGui::getGameContent()
+{
+    return gameContent;
 }
 
 } // namespace zappy
