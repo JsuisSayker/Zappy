@@ -22,26 +22,26 @@ class Client {
     ~Client();
 
     void init(int argc, char **argv);
-    void connectToServer(); // connect
-    void sendToServer();
+    void connectToServer();
+    void sendToServer(std::string message);
     void receiveFromServer();
 
-    void setHostname(std::string hostname) { this->_hostname = hostname; }
-    void setPort(int port) { this->_port = port; }
+    void setHostname(std::string hostname);
+    void setPort(int port);
 
-    std::string getHostname() { return this->_hostname; }
-    int getPort() { return this->_port; }
+    std::string getHostname();
+    int getPort();
 
-    int getSocketFd() { return this->_socketFd; }
-    void setSocketFd(int socket_fd) { this->_socketFd = socket_fd; }
+    int getSocketFd();
+    void setSocketFd(int socket_fd);
 
-    std::string getBuffer() { return this->_buffer; }
-    void setBuffer(std::string buffer) { this->_buffer = buffer; }  
+    std::string getBuffer();
+    void setBuffer(std::string buffer);
 
   protected:
-    std::string _hostname;
-    int _port;
-    int _socketFd;
-    std::string _buffer;
+    std::string _hostname; // IP address
+    int _port; // Port number
+    int _socketFd; // Socket file descriptor
+    std::string _buffer; // Buffer to store data
 };
 } // namespace zappy
