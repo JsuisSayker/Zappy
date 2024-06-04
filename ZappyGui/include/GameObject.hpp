@@ -59,6 +59,9 @@ class ZappyGameObject {
     glm::vec3 color{};
     TransformComponent transform{};
 
+    std::vector<VkDescriptorSet> descriptorSets;
+    bool hasDescriptorSet{false};
+
     // Optional pointer components
     std::shared_ptr<ZappyModel> model{};
     std::unique_ptr<PointLightComponent> pointLight = nullptr;
