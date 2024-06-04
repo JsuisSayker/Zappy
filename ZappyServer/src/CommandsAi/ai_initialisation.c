@@ -33,7 +33,7 @@ static int init_inventaire(client_t *ia)
 {
     if (ia == NULL)
         return ERROR;
-    ia->inventory.food = 10;
+    ia->inventory.food = 0;
     ia->inventory.linemate = 0;
     ia->inventory.deraumere = 0;
     ia->inventory.sibur = 0;

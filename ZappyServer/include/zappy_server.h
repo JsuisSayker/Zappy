@@ -151,11 +151,17 @@ typedef struct fd_s {
     fd_set ouput;
 } fd_t;
 
+
 typedef struct ai_position_s {
     int x;
     int y;
     ai_direction_t direction;
 } ai_position_t;
+
+typedef struct look_struct_s {
+    ai_position_t pos;
+    char *message;
+} look_struct_t;
 
 typedef struct ai_command_data_s {
     char *execusion;

@@ -71,7 +71,6 @@ void display_inventory(inventory_t *inventory)
     printf("mendiane: %d\n", inventory->mendiane);
     printf("phiras: %d\n", inventory->phiras);
     printf("thystame: %d\n", inventory->thystame);
-
 }
 
 int ai_command_take_object(zappy_server_t *zappy, client_t *client, char *cmd)

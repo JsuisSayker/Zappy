@@ -36,6 +36,7 @@ TOOLS		=	splitter.c							\
 				is_valid_resource.c					\
 				set_inventory_resource_quantite.c	\
 				free_list.c							\
+				normalize_coordonate.c				\
 
 COMMAND_AI		=	handle_ai_command.c				\
 					ai_function.c					\
