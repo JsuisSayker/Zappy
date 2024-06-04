@@ -20,7 +20,6 @@
 namespace zappy {
 class Client {
   public:
-    using FunctionPtr = std::function<void(void)>;
     Client();
     ~Client();
 
@@ -34,23 +33,17 @@ class Client {
     void setPort(int port);
     void setBuffer(std::string buffer);
     void setSocketFd(int socket_fd);
-    void setPointerToFunction(std::unordered_map<std::string, FunctionPtr>& pointerToFunction);
 
     std::string getHostname();
     int getPort();
     int getSocketFd();
     std::string getBuffer();
-    std::unordered_map<std::string, FunctionPtr>& getPointerToFunction();
-
-    // Functions to handle commands
-    void msz();
 
   protected:
     std::string _hostname; // IP address
     int _port;             // Port number
     int _socketFd;         // Socket file descriptor
     std::string _buffer;   // Buffer to store data
-    std::unordered_map<std::string, FunctionPtr> _pointerToFunction; // Map of pointers to functions
 
 };
 } // namespace zappy

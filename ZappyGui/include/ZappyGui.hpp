@@ -22,16 +22,16 @@
 #include <signal.h>
 
 namespace zappy {
-class FirstApp {
+class ZappyGui {
   public:
     static constexpr int WIDTH = 800;
     static constexpr int HEIGHT = 600;
 
-    FirstApp();
-    ~FirstApp();
+    ZappyGui();
+    ~ZappyGui();
 
-    FirstApp(const FirstApp &) = delete;
-    FirstApp &operator=(const FirstApp &) = delete;
+    ZappyGui(const ZappyGui &) = delete;
+    ZappyGui &operator=(const ZappyGui &) = delete;
 
     static std::string getExecutablePath();
 
@@ -55,6 +55,6 @@ class FirstApp {
     std::shared_ptr<Client> client;
     std::string executablePath;
 
-    GameContent gameContent;
+    std::unique_ptr<GameContent> gameContent;
 };
 } // namespace zappy

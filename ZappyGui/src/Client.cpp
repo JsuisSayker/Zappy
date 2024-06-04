@@ -7,10 +7,7 @@
 
 #include "Client.hpp"
 
-zappy::Client::Client()
-{
-    this->_pointerToFunction["msz"] = std::bind(&Client::msz, this);
-}
+zappy::Client::Client() {}
 
 /**
  * @brief Destructor for the Client class.
@@ -48,6 +45,7 @@ void zappy::Client::connectToServer()
         perror("Error (connect)");
         close(this->_socketFd);
     }
+    write(this->_socketFd, "GRAPHIC\n", 8);
 }
 
 /**
@@ -69,7 +67,6 @@ void zappy::Client::sendToServer(std::string message)
             perror("send");
             return;
         }
-
         totalBytesSent += bytesSent;
     }
 }
@@ -220,37 +217,3 @@ std::string zappy::Client::getBuffer() { return this->_buffer; }
  * @param buffer The buffer to set.
  */
 void zappy::Client::setBuffer(std::string buffer) { this->_buffer = buffer; }
-
-/**
- * @brief Handles the msz command.
- *
- * This function handles the msz command received from the server.
- * The function parses the command and extracts the width and height of the
- * map. The function then prints the width and height of the map.
- */
-void zappy::Client::msz() { std::cout << "msz" << std::endl; }
-
-/**
- * @brief Sets the pointer to the function.
- *
- * This function sets the pointer to the function for the client.
- *
- * @param pointerToFunction The pointer to the function to set.
- */
-void zappy::Client::setPointerToFunction(
-    std::unordered_map<std::string, zappy::Client::FunctionPtr>
-        &pointerToFunction)
-{
-    this->_pointerToFunction = pointerToFunction;
-}
-
-/**
- * @brief Gets the pointer to the function.
- *
- * @return The pointer to the function.
- */
-std::unordered_map<std::string, zappy::Client::FunctionPtr> &
-zappy::Client::getPointerToFunction()
-{
-    return this->_pointerToFunction;
-}

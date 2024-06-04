@@ -35,9 +35,10 @@
 
 namespace zappy {
 
-FirstApp::FirstApp()
+ZappyGui::ZappyGui()
 {
-    this->client = std::make_unique<Client>();
+    this->client = std::make_shared<Client>();
+    this->gameContent = std::make_unique<GameContent>();
     executablePath = getExecutablePath();
     globalPool = ZappyDescriptorPool::Builder(lveDevice)
                      .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
@@ -49,9 +50,9 @@ FirstApp::FirstApp()
     loadGameObjects();
 }
 
-FirstApp::~FirstApp() {}
+ZappyGui::~ZappyGui() {}
 
-void FirstApp::run()
+void ZappyGui::run()
 {
     this->getClient()->connectToServer();
     fd_set readfds;
@@ -167,7 +168,7 @@ void FirstApp::run()
         if (activity > 0 && FD_ISSET(socket_fd, &readfds)) {
             this->client.get()->receiveFromServer();
             if (this->client.get()->getBuffer().find(END_STR) != std::string::npos)
-                this->client.get()->getPointerToFunction()[this->getClient().get()->getBuffer()]();
+                this->gameContent.get()->getPointerToFunction()[this->getClient().get()->getBuffer()]();
         }
 
         glfwPollEvents();
@@ -217,7 +218,7 @@ void FirstApp::run()
     vkDeviceWaitIdle(lveDevice.device());
 }
 
-std::string FirstApp::getExecutablePath()
+std::string ZappyGui::getExecutablePath()
 {
     char buffer[1024];
     ssize_t count = readlink("/proc/self/exe", buffer, sizeof(buffer));
@@ -234,7 +235,7 @@ std::string FirstApp::getExecutablePath()
     return std::string(buffer, (count > 0) ? count : 0);
 }
 
-void FirstApp::loadGameObjects()
+void ZappyGui::loadGameObjects()
 {
     // std::vector<std::vector<glm::vec3>> trantPositions = {
     //     {{-0.1f, 0.0f, 0.0f}, {-0.4f, 0.0f, 0.0f}, {-0.8f, 0.0f, 0.0f}, {-1.2f, 0.0f, 0.0f}},
