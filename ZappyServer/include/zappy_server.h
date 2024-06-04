@@ -8,7 +8,6 @@
 #ifndef ZAPPY_SERVER_H_
     #define ZAPPY_SERVER_H_
 
-    #include <zappy.h>
     #include <arpa/inet.h>
     #include <dirent.h>
     #include <limits.h>
@@ -22,6 +21,7 @@
     #include <sys/socket.h>
     #include <sys/types.h>
     #include <time.h>
+    #include <sys/time.h>
     #include <unistd.h>
     #include "macro_server.h"
 
@@ -108,7 +108,6 @@ int **generate_int_array(int x, int y);
 void free_int_array(int **possible_coordinate);
 void shuffle_int_array(int **array, int n);
 
-
 ////////////////////////////////////////
 
 typedef struct reply_s {
@@ -152,11 +151,17 @@ typedef struct fd_s {
     fd_set ouput;
 } fd_t;
 
+
 typedef struct ai_position_s {
     int x;
     int y;
     ai_direction_t direction;
 } ai_position_t;
+
+typedef struct look_struct_s {
+    ai_position_t pos;
+    char *message;
+} look_struct_t;
 
 typedef struct ai_command_data_s {
     char *execusion;
@@ -166,6 +171,12 @@ typedef struct ai_command_data_s {
     double time;
 } ai_command_data_t;
 
+typedef struct ai_health_s {
+    bool is_alive;
+    double last_meal;
+    double time_to_eat;
+} ai_health_t;
+
 typedef struct client_s {
     buffer_t buffer;
     client_type_t type;
@@ -173,6 +184,7 @@ typedef struct client_s {
     int level;
     char *team_name;
     struct sockaddr_in other_socket_addr;
+    ai_health_t health;
     ai_command_data_t command;
     ai_position_t pos;
     inventory_t inventory;
@@ -231,6 +243,7 @@ bool is_valid_resource(char *resource);
 void free_array(char **array);
 void set_inventory_resource_quantite(inventory_t *tile_inventory,
     char *resource, int resource_quantity);
+void normalize_coordinate(int *x, int *y, zappy_server_t *zappy);
 // Server functions
 int init_server(zappy_server_t *zappy_server, args_config_t *args);
 int close_server(zappy_server_t *zappy_server);
@@ -281,6 +294,7 @@ typedef struct command_ai_s {
     int (*func)(zappy_server_t *zappy_server, client_t *client, char *command);
 } command_ai_t;
 
+int ai_function(zappy_server_t *zappy, client_t *client, char *cmd);
 int queue_to_exec(client_t *client);
 int add_in_queue(client_t *client, char *cmd);
 int handle_ai_command(zappy_server_t *zappy, client_t *client, char *command);
@@ -295,8 +309,15 @@ int ai_command_forward(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_right(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_left(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_take_object(zappy_server_t *zappy, client_t *client, char *cmd);
+int ai_command_fork(zappy_server_t *zappy, client_t *client, char *cmd);
+int ai_command_inventory(zappy_server_t *zappy, client_t *client, char *cmd);
+int ai_command_look(zappy_server_t *zappy, client_t *client, char *cmd);
+int ai_command_connect_nbr(zappy_server_t *zappy, client_t *client,
+    char *cmd);
+bool is_alive(zappy_server_t *zappy, client_t *client);
 
 void send_ppo_command_to_all_gui(zappy_server_t *zappy, client_t *client);
+void send_pin_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 
 // GUI COMMANDS FUNCTIONS
 int handle_gui_command(zappy_server_t *zappy_server, char *command);

@@ -7,6 +7,7 @@
 
 #ifndef MACRO_SERVER_H_
     #define MACRO_SERVER_H_
+    #include <zappy.h>
     #define SAVE_FILE "myteams_save.txt"
     #define USERS_CHAR 'u'
     #define PRIVATE_MESSAGE_CHAR 'm'
