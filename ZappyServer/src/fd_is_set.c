@@ -39,7 +39,10 @@ int fd_is_set(zappy_server_t *zappy_server)
     }
     if (client->command.execusion != NULL || (client->command.queue
         != NULL && client->command.queue[0] != NULL))
-        if (handle_ai_command(zappy_server, client, NULL) != OK)
+        if (ai_function(zappy_server, client, NULL) != OK)
             return KO;
+    if (client->type == IA){
+        is_alive(zappy_server, client);
+    }
     return OK;
 }

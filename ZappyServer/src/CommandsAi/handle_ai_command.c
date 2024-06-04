@@ -6,11 +6,7 @@
 */
 
 #include <zappy_server.h>
-    // {"/avance", &avance},
-    // {"/droite", &droite},
-    // {"/gauche", &gauche},
     // {"/voir", &voir},
-    // {"/inventai_re", &inventai_re},
     // {"/prend", &prend},
     // {"/pose", &pose},
     // {"/expulse", &expulse},
@@ -24,6 +20,10 @@ static const struct command_ai_s COMMAND_FUNCS[] = {
     {"Right", &ai_command_right},
     {"Left", &ai_command_left},
     {"Take", &ai_command_take_object},
+    {"Fork", &ai_command_fork},
+    {"Inventory", &ai_command_inventory},
+    {"Look", &ai_command_look},
+    {"Connect_nbr", &ai_command_connect_nbr},
     {"NULL", NULL}
 };
 

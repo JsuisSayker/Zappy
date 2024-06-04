@@ -12,23 +12,21 @@ static void check_direction(zappy_server_t *zappy, client_t *client)
     switch (client->pos.direction) {
         case NORTH:
             client->pos.direction = EAST;
-            dprintf(zappy->actual_sockfd, "ok\n");
-            return;
+            break;
         case SOUTH:
             client->pos.direction = WEST;
-            dprintf(zappy->actual_sockfd, "ok\n");
-            return;
+            break;
         case EAST:
             client->pos.direction = SOUTH;
-            dprintf(zappy->actual_sockfd, "ok\n");
-            return;
+            break;
         case WEST:
             client->pos.direction = NORTH;
-            dprintf(zappy->actual_sockfd, "ok\n");
-            return;
+            break;
         default:
             return;
     }
+    dprintf(zappy->actual_sockfd, "ok\n");
+    send_ppo_command_to_all_gui(zappy, client);
 }
 
 int ai_command_right(zappy_server_t *zappy, client_t *client, char *cmd)

@@ -61,6 +61,18 @@ static int selector_object(zappy_server_t *zappy, client_t *client, char *cmd)
     return OK;
 }
 
+void display_inventory(inventory_t *inventory)
+{
+    printf("Inventory:\n");
+    printf("food: %d\n", inventory->food);
+    printf("linemate: %d\n", inventory->linemate);
+    printf("deraumere: %d\n", inventory->deraumere);
+    printf("sibur: %d\n", inventory->sibur);
+    printf("mendiane: %d\n", inventory->mendiane);
+    printf("phiras: %d\n", inventory->phiras);
+    printf("thystame: %d\n", inventory->thystame);
+}
+
 int ai_command_take_object(zappy_server_t *zappy, client_t *client, char *cmd)
 {
     if (client == NULL || zappy == NULL || cmd == NULL || cmd[0] != ' ')
@@ -75,5 +87,7 @@ int ai_command_take_object(zappy_server_t *zappy, client_t *client, char *cmd)
         return ERROR;
     if (selector_object(zappy, client, cmd) == ERROR)
         return ERROR;
+    display_inventory(&client->inventory);
+    send_pin_command_to_all_gui(zappy, client);
     return OK;
 }
