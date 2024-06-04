@@ -58,9 +58,10 @@ void Trantorian::updateTrantorianLevel(const std::string& team, std::shared_ptr<
     for (auto& trant : trantorians_) {
         if (trant.team == team && trant.gameObject == gameObject) {
             trant.level += 1;
-            break;
+            return;
         }
     }
+    throw TratorianNotFoundException();
 }
 
 void Trantorian::updateInventory(const std::string& team, std::shared_ptr<ZappyGameObject> gameObject, const std::string &item, bool operator_) {
@@ -109,9 +110,20 @@ void Trantorian::updateInventory(const std::string& team, std::shared_ptr<ZappyG
                 else
                     trant.thystame++;
             }
-            break;
+            return;
         }
     }
+    throw TratorianNotFoundException();
+}
+
+std::unordered_map<std::string, int> Trantorian::getInventory(const std::string &team, std::shared_ptr<ZappyGameObject> gameObject) const
+{
+    for (const auto &trant : trantorians_) {
+        if (trant.team == team && trant.gameObject == gameObject) {
+            return trant.getInventory();
+        }
+    }
+    throw TratorianNotFoundException();
 }
 
 ZappyGameObject::id_t Trantorian::getTrantorianGameObjectId(const std::string& team, std::shared_ptr<ZappyGameObject> gameObject) const
@@ -121,7 +133,7 @@ ZappyGameObject::id_t Trantorian::getTrantorianGameObjectId(const std::string& t
             return trant.gameObject->getId();
         }
     }
-    return 0;
+    throw TratorianNotFoundException();
 }
 
 } // namespace zappy
