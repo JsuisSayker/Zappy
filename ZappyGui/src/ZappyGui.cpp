@@ -166,6 +166,8 @@ void FirstApp::run()
         // Check if there is activity on the socket file descriptor
         if (activity > 0 && FD_ISSET(socket_fd, &readfds)) {
             this->client.get()->receiveFromServer();
+            if (this->client.get()->getBuffer().find(END_STR) != std::string::npos)
+                this->client.get()->getPointerToFunction()[this->getClient().get()->getBuffer()]();
         }
 
         glfwPollEvents();
