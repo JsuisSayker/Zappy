@@ -56,7 +56,7 @@ void ZappyGui::run()
     this->gameContent.get()->getClient()->connectToServer();
     fd_set readfds;
 
-    std::vector<std::unique_ptr<ZappyBuffer>> uboBuffers(
+    uboBuffers.resize(
         ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
     for (int i = 0; i < uboBuffers.size(); i++) {
         uboBuffers[i] = std::make_unique<ZappyBuffer>(lveDevice,
@@ -73,7 +73,7 @@ void ZappyGui::run()
     imageInfo.imageView = texture->getImageView();
     imageInfo.imageLayout = texture->getImageLayout();
 
-    auto globalSetLayout =
+    globalSetLayout =
         ZappyDescriptorSetLayout::Builder(lveDevice)
             .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
                 VK_SHADER_STAGE_ALL_GRAPHICS)
@@ -82,45 +82,19 @@ void ZappyGui::run()
             .build();
 
     // Create descriptor pool with adequate size
-    auto globalPool =
+    globalPool =
         ZappyDescriptorPool::Builder(lveDevice)
             .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT *
-                2) // Adjusted to fit more sets
+                5) // Adjusted to fit more sets
             .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 2)
+                ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 5)
             .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 2)
+                ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 5)
             .build();
 
-    // Init viking_room
-    std::shared_ptr<ZappyModel> grassBlockModel =
-        ZappyModel::createModelFromFile(
-            lveDevice, executablePath + "/ZappyGui/models/Grass_Block.obj");
-    ZappyGameObject grassBlock = ZappyGameObject::createGameObject();
-    grassBlock.model = grassBlockModel;
-    grassBlock.transform.translation = {0.f, 0.f, 0.f};
-    grassBlock.transform.scale = {1.f, 1.f, 1.f};
-    grassBlock.hasDescriptorSet = true;
-
-    std::unique_ptr<Texture> grassBlockTexture = std::make_unique<Texture>(
-        lveDevice, executablePath + "/ZappyGui/textures/Grass_Block.png");
-    VkDescriptorImageInfo grassBlockImageInfo = {};
-    grassBlockImageInfo.sampler = grassBlockTexture->getSampler();
-    grassBlockImageInfo.imageView = grassBlockTexture->getImageView();
-    grassBlockImageInfo.imageLayout = grassBlockTexture->getImageLayout();
-
-    // Initialize descriptor sets array for vikingRoom
-    grassBlock.descriptorSets.resize(ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
-
-    for (int i = 0; i < uboBuffers.size(); i++) {
-        auto bufferInfo = uboBuffers[i]->descriptorInfo();
-        ZappyDescriptorWriter(*globalSetLayout, *globalPool)
-            .writeBuffer(0, &bufferInfo)
-            .writeImage(1, &grassBlockImageInfo)
-            .build(grassBlock.descriptorSets[i]);
-    }
-
-    gameObjects.emplace(grassBlock.getId(), std::move(grassBlock));
+    createGameObject(executablePath + "/ZappyGui/models/Grass_Block.obj",
+        executablePath + "/ZappyGui/textures/Grass_Block.png", {0.f, 0.f, 0.f},
+        {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f});
 
     std::vector<VkDescriptorSet> globalDescriptorSets(
         ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -329,6 +303,40 @@ void ZappyGui::loadGameObjects()
 std::unique_ptr<GameContent> &ZappyGui::getGameContent()
 {
     return gameContent;
+}
+
+void ZappyGui::createGameObject(const std::string &modelPath,
+    const std::string &texturePath, const glm::vec3 &position,
+    const glm::vec3 &rotation, const glm::vec3 &scale)
+{
+    std::shared_ptr<ZappyModel> modelObject =
+        ZappyModel::createModelFromFile(lveDevice, modelPath);
+    ZappyGameObject object = ZappyGameObject::createGameObject();
+    object.model = modelObject;
+    object.transform.translation = position;
+    object.transform.rotation = rotation;
+    object.transform.scale = scale;
+
+    if (!texturePath.empty()) {
+        object.hasDescriptorSet = true;
+
+        object.texture = std::make_unique<Texture>(
+            lveDevice, texturePath);
+        object.imageInfo.sampler = object.texture->getSampler();
+        object.imageInfo.imageView = object.texture->getImageView();
+        object.imageInfo.imageLayout = object.texture->getImageLayout();
+
+        object.descriptorSets.resize(ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
+
+        for (int i = 0; i < uboBuffers.size(); i++) {
+            auto bufferInfo = uboBuffers[i]->descriptorInfo();
+            ZappyDescriptorWriter(*globalSetLayout, *globalPool)
+                .writeBuffer(0, &bufferInfo)
+                .writeImage(1, &object.imageInfo)
+                .build(object.descriptorSets[i]);
+        }
+    }
+    gameObjects.emplace(object.getId(), std::move(object));
 }
 
 } // namespace zappy

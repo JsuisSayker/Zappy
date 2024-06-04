@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "Texture.hpp"
 #include "Model.hpp"
 
 // libs
@@ -61,6 +62,9 @@ class ZappyGameObject {
 
     std::vector<VkDescriptorSet> descriptorSets;
     bool hasDescriptorSet{false};
+
+    std::unique_ptr<Texture> texture = nullptr;
+    VkDescriptorImageInfo imageInfo{};
 
     // Optional pointer components
     std::shared_ptr<ZappyModel> model{};

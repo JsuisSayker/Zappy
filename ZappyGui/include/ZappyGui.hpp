@@ -40,6 +40,9 @@ class ZappyGui {
 
   private:
     void loadGameObjects();
+    void createGameObject(const std::string &modelPath,
+    const std::string &texturePath, const glm::vec3 &position,
+    const glm::vec3 &rotation, const glm::vec3 &scale);
 
     ZappyWindow lveWindow{WIDTH, HEIGHT, "Vulkan Tutorial"};
     ZappyDevice lveDevice{lveWindow};
@@ -53,5 +56,7 @@ class ZappyGui {
     std::string executablePath;
 
     std::unique_ptr<GameContent> gameContent;
+    std::vector<std::unique_ptr<ZappyBuffer>> uboBuffers;
+    std::unique_ptr<ZappyDescriptorSetLayout> globalSetLayout;
 };
 } // namespace zappy
