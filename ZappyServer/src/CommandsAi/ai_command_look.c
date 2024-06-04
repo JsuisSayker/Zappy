@@ -58,8 +58,8 @@ static char *inventory_to_string(inventory_t *inventory)
 
 static void realloc_and_strcat(char **message, char *str)
 {
-    *message =
-        realloc(*message, sizeof(char) * (strlen(*message) + strlen(str)));
+    *message = realloc(*message, sizeof(char) * (strlen(*message) +
+        strlen(str)) + 1);
     *message = strcat(*message, str);
 }
 
@@ -70,19 +70,13 @@ static void get_players(zappy_server_t *zappy, look_struct_t *look,
         if (zappy->clients[i].type == IA &&
         (zappy->clients[i].pos.x == x &&
         zappy->clients[i].pos.y == y)
-        && look->message[strlen(look->message) - 1] != '[') {
-            look->message = realloc(look->message, sizeof(char) *
-            (strlen(look->message) + strlen(" player")));
-            look->message = strcat(look->message, " player");
-        }
+        && look->message[strlen(look->message) - 1] != '[')
+            realloc_and_strcat(&look->message, " player");
         if (zappy->clients[i].type == IA &&
         (zappy->clients[i].pos.x == x &&
         zappy->clients[i].pos.y == y)
-        && look->message[strlen(look->message) - 1] == '[') {
-            look->message = realloc(look->message, sizeof(char) *
-            (strlen(look->message) + strlen("player")));
-            look->message = strcat(look->message, "player");
-        }
+        && look->message[strlen(look->message) - 1] == '[')
+            realloc_and_strcat(&look->message, "player");
     }
 }
 
