@@ -35,3 +35,23 @@ void display_map_tile(map_tile_t **map_tile)
     }
     printf("<==============>\n");
 }
+
+int get_len_map_tile(map_tile_t **map_tile)
+{
+    int len = 0;
+
+    for (len = 0; map_tile[len] != NULL; len += 1) {
+        len += 1;
+    }
+    return len;
+}
+
+int get_len_line_map_tile(map_tile_t **map_tile)
+{
+    int len = 0;
+
+    for (len = 0; map_tile[0][len].x != -1; len += 1) {
+        len += 1;
+    }
+    return len;
+}

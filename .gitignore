@@ -14,6 +14,7 @@ vgcore*
 tmp
 
 ai_test_folder
+Server
 font.ttf
 __pycache__
 
@@ -74,3 +75,5 @@ dkms.conf
 
 *.spv
 notes.txt
+
+vulkan-sdk*

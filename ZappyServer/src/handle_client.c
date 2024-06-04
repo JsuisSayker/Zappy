@@ -18,12 +18,11 @@ static int handle_command(zappy_server_t *zappy_server, char *command)
         printf("Unknown client type\n");
         return handle_unknown_command(zappy_server, command);
     case IA:
-        printf("IA client\n");
-        return handle_ia_command(zappy_server,
+        return handle_ai_command(zappy_server,
             &zappy_server->clients[zappy_server->actual_sockfd], command);
     case GUI:
         printf("GUI client\n");
-        break;
+        return handle_gui_command(zappy_server, command);
     }
     return ERROR;
 }
@@ -39,7 +38,7 @@ static void last_split(
     }
 }
 
-int clean_string(char *buffer)
+static int clean_string(char *buffer)
 {
     for (int i = strlen(buffer); i > 0; i -= 1) {
         if (buffer[i] != *END_LINE)
@@ -53,8 +52,8 @@ int clean_string(char *buffer)
 void handle_client(zappy_server_t *zappy_server)
 {
     int j = 0;
-    char **lines = NULL;
     char buffer[BUFSIZ] = {0};
+    char **lines = NULL;
     ssize_t n = read(zappy_server->actual_sockfd, buffer, sizeof(buffer) - 1);
 
     if (n == -1 || n == 0)
@@ -65,9 +64,10 @@ void handle_client(zappy_server_t *zappy_server)
     lines = splitter(buffer, END_LINE);
     if (lines == NULL)
         return;
-    for (int j = 0; lines[1] != NULL && lines[j + 1]; j += 1) {
+    for (j = 0; lines[1] != NULL && lines[j + 1]; j += 1) {
         handle_command(zappy_server, lines[j]);
     }
     last_split(zappy_server, buffer, lines[j]);
     free_array(lines);
+    printf("Handle client end\n--\n");
 }

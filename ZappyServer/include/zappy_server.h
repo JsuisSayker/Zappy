@@ -31,14 +31,14 @@ typedef enum client_type_s {
     UNKNOWN,
 }client_type_t;
 
-typedef enum ia_direction_s {
+typedef enum ai_direction_s {
     NORTH,
     EAST,
     SOUTH,
     WEST,
-} ia_direction_t;
+} ai_direction_t;
 
-char *direction_string(ia_direction_t orientation);
+char *direction_string(ai_direction_t orientation);
 
 typedef struct char_tab_s {
     char *str;
@@ -71,7 +71,7 @@ typedef struct args_config_s {
     int width;
     int height;
     int clientsNb;
-    double freq;
+    int freq;
     struct char_tab_head names;
 } args_config_t;
 
@@ -100,6 +100,8 @@ map_tile_t **setup_map_tile(int x, int y);
 void display_tile(map_tile_t tile);
 void display_gui_tile(map_tile_t tile, int socket);
 void display_map_tile(map_tile_t **map_tile);
+int get_len_map_tile(map_tile_t **map_tile);
+int get_len_line_map_tile(map_tile_t **map_tile);
 
 // int array functions
 int **generate_int_array(int x, int y);
@@ -150,11 +152,19 @@ typedef struct fd_s {
     fd_set ouput;
 } fd_t;
 
-typedef struct ia_position_s {
+typedef struct ai_position_s {
     int x;
     int y;
-    ia_direction_t direction;
-} ia_position_t;
+    ai_direction_t direction;
+} ai_position_t;
+
+typedef struct ai_command_data_s {
+    char *execusion;
+    char **queue;
+    float cast_time;
+    bool is_contracted;
+    double time;
+} ai_command_data_t;
 
 typedef struct client_s {
     buffer_t buffer;
@@ -163,11 +173,9 @@ typedef struct client_s {
     int level;
     char *team_name;
     struct sockaddr_in other_socket_addr;
+    ai_command_data_t command;
+    ai_position_t pos;
     inventory_t inventory;
-    int freq;
-    struct timeval start;
-    ia_position_t pos;
-    bool is_contracted;
 } client_t;
 
 typedef struct egg_s {
@@ -251,12 +259,6 @@ typedef struct command_s {
     void (*func)(zappy_server_t *zappy_server, char *command);
 } command_t;
 
-// COMMANDS IA
-typedef struct command_ia_s {
-    char *command;
-    int (*func)(zappy_server_t *zappy_server, client_t *client, char *command);
-} command_ia_t;
-
 int handle_unknown_command(zappy_server_t *zappy_server, char *command);
 
 // SERVER COMMANDS FUNCTIONS
@@ -271,17 +273,33 @@ void server_command_tp(zappy_server_t *zappy, char *command);
 void server_command_set_tile(zappy_server_t *zappy, char *command);
 void server_command_set_inventory(zappy_server_t *zappy, char *command);
 void server_command_set_freq(zappy_server_t *zappy, char *command);
+void server_command_set_level(zappy_server_t *zappy, char *command);
+
+// AI FUNCTIONS
+typedef struct command_ai_s {
+    char *command;
+    int (*func)(zappy_server_t *zappy_server, client_t *client, char *command);
+} command_ai_t;
+
+int queue_to_exec(client_t *client);
+int add_in_queue(client_t *client, char *cmd);
+int handle_ai_command(zappy_server_t *zappy, client_t *client, char *command);
+int cast_action(zappy_server_t *zappy, client_t *client, int freq, char *cmd);
+bool check_action(zappy_server_t *zappy, client_t *client);
+int ai_initialisation(zappy_server_t *zappy_server, client_t *ia,
+    team_t *tmp_team);
 
 // AI COMMANDS FUNCTIONS
-int handle_ia_command(zappy_server_t *zappy, client_t *client, char *command);
-int cast_action(zappy_server_t *zappy, client_t *client, int freq);
-bool check_action(zappy_server_t *zappy, client_t *client);
+int ai_command_help(zappy_server_t *zappy, client_t *client, char *cmd);
+int ai_command_forward(zappy_server_t *zappy, client_t *client, char *cmd);
+int ai_command_right(zappy_server_t *zappy, client_t *client, char *cmd);
+int ai_command_left(zappy_server_t *zappy, client_t *client, char *cmd);
+int ai_command_take_object(zappy_server_t *zappy, client_t *client, char *cmd);
 
-int ia_command_help(zappy_server_t *zappy, client_t *client, char *cmd);
-int ia_command_forward(zappy_server_t *zappy, client_t *client, char *cmd);
+void send_ppo_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 
 // GUI COMMANDS FUNCTIONS
-int handle_server_command(zappy_server_t *zappy_server, char *command);
+int handle_gui_command(zappy_server_t *zappy_server, char *command);
 void gui_command_msz(zappy_server_t *zappy, UNUSED char *command);
 void gui_command_bct(zappy_server_t *zappy, char *command);
 void gui_command_mct(zappy_server_t *zappy, char *command);

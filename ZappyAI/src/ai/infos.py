@@ -11,6 +11,9 @@ class Activity(Enum):
     INVENTORY = 6
     FILLING = 7
     EXECUTE_COMMAND = 8
+    CHECK_INCANTATION = 9
+    PREPA_FOR_INCANTATION = 10
+    INCANTATING = 11
 
 
 LEVELS: dict[int, dict[str, int]] = {

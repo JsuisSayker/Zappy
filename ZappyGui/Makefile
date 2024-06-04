@@ -39,4 +39,4 @@ fclean: clean
 
 re: fclean $(TARGET)
 
-.PHONY: test clean fclean re
+.PHONY: test clean fclean re debug

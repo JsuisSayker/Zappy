@@ -16,7 +16,7 @@ args_config_t *init_args_config(void)
     args->width = 0;
     args->height = 0;
     args->clientsNb = 0;
-    args->freq = 0.0f;
+    args->freq = 100;
     TAILQ_INIT(&(args->names));
     return args;
 }
