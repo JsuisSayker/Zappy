@@ -16,6 +16,7 @@
 #include "systems/SimpleRenderSystem.hpp"
 #include "ErrorHandling.hpp"
 #include "Trantorian.hpp"
+#include "GameContent.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -167,30 +168,6 @@ std::string FirstApp::getExecutablePath()
 
 void FirstApp::loadGameObjects()
 {
-    // std::shared_ptr<ZappyModel> lveModel = ZappyModel::createModelFromFile(
-    //     lveDevice, executablePath + "/ZappyGui/models/flat_vase.obj");
-    // auto flatVase = ZappyGameObject::createGameObject();
-    // flatVase.model = lveModel;
-    // flatVase.transform.translation = {-.5f, .5f, 0.f};
-    // flatVase.transform.scale = {3.f, 1.5f, 3.f};
-    // gameObjects.emplace(flatVase.getId(), std::move(flatVase));
-
-    // lveModel = ZappyModel::createModelFromFile(
-    //     lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj");
-    // auto smoothVase = ZappyGameObject::createGameObject();
-    // smoothVase.model = lveModel;
-    // smoothVase.transform.translation = {.5f, .5f, 0.f};
-    // smoothVase.transform.scale = {3.f, 1.5f, 3.f};
-    // gameObjects.emplace(smoothVase.getId(), std::move(smoothVase));
-
-    // lveModel = ZappyModel::createModelFromFile(
-    //     lveDevice, executablePath + "/ZappyGui/models/quad.obj");
-    // auto floor = ZappyGameObject::createGameObject();
-    // floor.model = lveModel;
-    // floor.transform.translation = {0.f, .5f, 0.f};
-    // floor.transform.scale = {3.f, 1.f, 3.f};
-    // gameObjects.emplace(floor.getId(), std::move(floor));
-
     std::vector<std::vector<glm::vec3>> trantPositions = {
         {{-0.1f, 0.0f, 0.0f}, {-0.4f, 0.0f, 0.0f}, {-0.8f, 0.0f, 0.0f}, {-1.2f, 0.0f, 0.0f}},
         {{0.1f, 0.0f, 0.0f}, {0.4f, 0.0f, 0.0f}, {0.8f, 0.0f, 0.0f}, {1.2f, 0.0f, 0.0f}}
@@ -201,14 +178,16 @@ void FirstApp::loadGameObjects()
     std::vector<std::string> teamNames = {"Team-A", "Team-B"};
 
     for (int i = 0; i < 2; i++) { // Number of teams
+        gameContent.addTeam(teamNames[i]);
+
         for (int j = 0; j < 4; j++) { // Number of trantorians in each team
-            auto object = std::make_shared<zappy::ZappyGameObject>(zappy::ZappyGameObject::createGameObject());
+            auto object = std::make_shared<ZappyGameObject>(ZappyGameObject::createGameObject());
             object->model = lveModel;
             object->transform.translation = trantPositions[i][j];
             object->transform.scale = {3.f, 1.5f, 3.f};
-            gameObjects.emplace(object->getId(), std::move(*object));
+            gameObjects.emplace(object->getId(), *object);
 
-            Trantorian trant(object, teamNames[i], j);
+            gameContent.addTrantorian(teamNames[i], object, j);
         }
     }
 

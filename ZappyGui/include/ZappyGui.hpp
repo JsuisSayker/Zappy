@@ -13,6 +13,7 @@
 #include "Renderer.hpp"
 #include "Texture.hpp"
 #include "Window.hpp"
+#include "GameContent.hpp"
 
 // std
 #include <memory>
@@ -47,5 +48,7 @@ class FirstApp {
     ZappyGameObject::Map gameObjects;
 
     std::string executablePath;
+
+    GameContent gameContent;
 };
 } // namespace zappy

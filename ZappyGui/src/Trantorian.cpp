@@ -20,14 +20,14 @@ Trantorian::Trantorian(std::shared_ptr<ZappyGameObject> gameObject, std::string 
 //     trantorians_.push_back(trant);
 // }
 
-void Trantorian::removeTrantorian(const std::string& team, std::shared_ptr<ZappyGameObject> gameObject)
-{
-    auto iterator = std::remove_if(trantorians_.begin(), trantorians_.end(), [&team, gameObject](const trantorian &t) { return t.team == team && t.gameObject == gameObject; }); // Reorders the elements in the range so that the elements to be removed appear at the end of the range.
+// void Trantorian::removeTrantorian(const std::string& team, std::shared_ptr<ZappyGameObject> gameObject)
+// {
+//     auto iterator = std::remove_if(trantorians_.begin(), trantorians_.end(), [&team, gameObject](const trantorian &t) { return t.team == team && t.gameObject == gameObject; }); // Reorders the elements in the range so that the elements to be removed appear at the end of the range.
 
-    if (iterator != trantorians_.end()) {
-        trantorians_.erase(iterator, trantorians_.end());
-    }
-}
+//     if (iterator != trantorians_.end()) {
+//         trantorians_.erase(iterator, trantorians_.end());
+//     }
+// }
 
 void Trantorian::updateTrantorian(const trantorian &trant) // Updates an existing trantorian in the trantorians_ vector with new information
 {

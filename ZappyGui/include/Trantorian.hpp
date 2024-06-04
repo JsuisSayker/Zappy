@@ -41,7 +41,7 @@ namespace zappy {
 
         // void addTrantorian(const trantorian &trant);
 
-        void removeTrantorian(const std::string &team, std::shared_ptr<ZappyGameObject> gameObject);
+        // void removeTrantorian(const std::string &team, std::shared_ptr<ZappyGameObject> gameObject);
 
         void updateTrantorian(const trantorian &trant);
 
@@ -53,9 +53,9 @@ namespace zappy {
 
         void updateInventory(const std::string &team, std::shared_ptr<ZappyGameObject> gameObject, const std::string &item, bool operator_);
 
-        const std::vector<trantorian> &getTrantorians() const { return trantorians_; }
-
         ZappyGameObject::id_t getTrantorianGameObjectId(const std::string& team, std::shared_ptr<ZappyGameObject> gameObject) const;
+        
+        const std::vector<trantorian> &getTrantorians() const { return trantorians_; }
 
         private:
             std::vector<trantorian> trantorians_;
