@@ -243,6 +243,7 @@ bool is_valid_resource(char *resource);
 void free_array(char **array);
 void set_inventory_resource_quantite(inventory_t *tile_inventory,
     char *resource, int resource_quantity);
+void normalize_coordinate(int *x, int *y, zappy_server_t *zappy);
 // Server functions
 int init_server(zappy_server_t *zappy_server, args_config_t *args);
 int close_server(zappy_server_t *zappy_server);

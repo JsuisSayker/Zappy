@@ -110,8 +110,7 @@ static void look_on_x(zappy_server_t *zappy,
         realloc_and_strcat(&look->message, ",");
 }
 
-static void look_on_y(zappy_server_t *zappy,
-    look_struct_t *look, int lvl)
+static void look_on_y(zappy_server_t *zappy, look_struct_t *look, int lvl)
 {
     char *inventory_str;
     int x = 0;
@@ -134,8 +133,8 @@ static void look_on_y(zappy_server_t *zappy,
     realloc_and_strcat(&look->message, ",");
 }
 
-static void look_direction(client_t *client, zappy_server_t *zappy,
-    look_struct_t *look, int lvl)
+static void look_direction(zappy_server_t *zappy, look_struct_t *look,
+    int lvl)
 {
     if (look->pos.direction == NORTH){
         look->pos.y += 1;
@@ -166,7 +165,7 @@ static void send_look_command(zappy_server_t *zappy, client_t *client)
         if (look->message[strlen(look->message) - 1] == ',')
             realloc_and_strcat(&look->message, " \0");
         look->pos = client->pos;
-        look_direction(client, zappy, look, lvl);
+        look_direction(zappy, look, lvl);
     }
     realloc_and_strcat(&look->message, "]\n");
     dprintf(zappy->actual_sockfd, "%s", look->message);
