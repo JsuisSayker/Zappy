@@ -39,49 +39,6 @@ GameContent::GameContent()
 
 GameContent::~GameContent() {}
 
-// void GameContent::addTeam(const std::string &teamName)
-// {
-//     if (teams_.find(teamName) == teams_.end()) {
-//         teams_[teamName] = std::vector<Trantorian::trantorian>();
-//     }
-// }
-
-// void GameContent::addTrantorian(const std::string &teamName,
-// std::shared_ptr<ZappyGameObject> gameObject, int number)
-// {
-//     if (teams_.find(teamName) != teams_.end()) {
-//         teams_[teamName].emplace_back(gameObject, teamName, number);
-//     }
-// }
-
-// void GameContent::removeTrantorian(const std::string &teamName,
-// std::shared_ptr<ZappyGameObject> gameObject)
-// {
-//     if (teams_.find(teamName) != teams_.end()) {
-//         auto &trants = teams_[teamName];
-//         trants.erase(std::remove_if(trants.begin(), trants.end(),
-//         [&gameObject](const Trantorian::trantorian &t) { return t.gameObject
-//         == gameObject; }), trants.end()); updateNumbers(teamName);
-//     }
-// }
-
-// void GameContent::updateNumbers(const std::string &teamName)
-// {
-//     if (teams_.find(teamName) != teams_.end()) {
-//         auto &trants = teams_[teamName];
-//         for (size_t i = 0; i < trants.size(); ++i) {
-//             trants[i].number = i + 1;
-//         }
-//     }
-// }
-
-/**
- * @brief Sets the pointer to the function.
- *
- * This function sets the pointer to the function for the gameContents.
- *
- * @param pointerToFunction The pointer to the function to set.
- */
 void GameContent::setPointerToFunction(
     std::unordered_map<std::string, GameContent::FunctionPtr>
         &pointerToFunction)
@@ -161,6 +118,40 @@ void GameContent::setSplitedBuffer(std::string splitedBuffer)
 std::vector<std::string> &GameContent::getSplitedBuffer()
 {
     return this->splitedBuffer_;
+}
+
+void GameContent::createTeam(std::shared_ptr<ZappyModel> lveModel, const std::string &teamName, const glm::vec3 &position)
+{
+    auto object = std::make_shared<zappy::ZappyGameObject>(zappy::ZappyGameObject::createGameObject());
+    object->model = lveModel;
+    object->transform.translation = position;
+    object->transform.scale = {3.f, 1.5f, 3.f};
+    gameObjects.emplace(object->getId(), std::move(*object));
+
+    auto pointLight = std::make_shared<zappy::ZappyGameObject>(zappy::ZappyGameObject::makePointLight(0.2f));
+    pointLight->color = {1.0f, 1.0f, 1.0f}; //////////////////////////////////////////////////////////// dont forget to change to generate random color
+    gameObjects.emplace(pointLight->getId(), std::move(*pointLight));
+
+    this->teamsColors_[teamName] = pointLight->color;
+
+    Trantorian newTrantorian(object, pointLight, teamName, 0); /////////// change number
+    trantorians_.emplace_back(newTrantorian);
+}
+
+void GameContent::addTrantorian(std::shared_ptr<ZappyModel> lveModel, const std::string &teamName, const glm::vec3 &position)
+{
+    auto object = std::make_shared<zappy::ZappyGameObject>(zappy::ZappyGameObject::createGameObject());
+    object->model = lveModel;
+    object->transform.translation = position;
+    object->transform.scale = {3.f, 1.5f, 3.f};
+    gameObjects.emplace(object->getId(), std::move(*object));
+
+    auto pointLight = std::make_shared<zappy::ZappyGameObject>(zappy::ZappyGameObject::makePointLight(0.2f));
+    pointLight->color = this->teamsColors_[teamName];
+    gameObjects.emplace(pointLight->getId(), std::move(*pointLight));
+
+    Trantorian newTrantorian(object, pointLight, teamName, 0); /////////// change number
+    trantorians_.emplace_back(newTrantorian);
 }
 
 } // namespace zappy

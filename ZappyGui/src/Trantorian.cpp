@@ -9,27 +9,19 @@
 
 namespace zappy {
 
-// Trantorian::Trantorian(std::shared_ptr<ZappyGameObject> gameObject, std::string team, int number)
-// {
-//     // trantorian newTrantorian{gameObject, team, number};
-//     // trantorians_.push_back(newTrantorian);
-// }
+Trantorian::Trantorian(std::shared_ptr<ZappyGameObject> trantObject, std::shared_ptr<ZappyGameObject> lightObject, std::string team, int playerNumber)
+    : trantorianObject(std::move(trantObject)), pointLightObject(std::move(lightObject)), team(team), playerNumber(playerNumber), level(0)
+{
+    this->inventory.food = 0;
+    this->inventory.linemate = 0;
+    this->inventory.deraumere = 0;
+    this->inventory.sibur = 0;
+    this->inventory.mendiane = 0;
+    this->inventory.phiras = 0;
+    this->inventory.thystame = 0;
+}
 
-// void Trantorian::addTrantorian(const trantorian& trant)
-// {
-//     trantorians_.push_back(trant);
-// }
-
-// void Trantorian::removeTrantorian(const std::string& team, std::shared_ptr<ZappyGameObject> gameObject)
-// {
-//     auto iterator = std::remove_if(trantorians_.begin(), trantorians_.end(), [&team, gameObject](const trantorian &t) { return t.team == team && t.gameObject == gameObject; }); // Reorders the elements in the range so that the elements to be removed appear at the end of the range.
-
-//     if (iterator != trantorians_.end()) {
-//         trantorians_.erase(iterator, trantorians_.end());
-//     }
-// }
-
-// void Trantorian::updateTrantorian(const trantorian &trant) // Updates an existing trantorian in the trantorians_ vector with new information
+// void Trantorian::updateTrantorian(const Trantorian &trant) // Updates an existing trantorian in the trantorians_ vector with new information
 // {
 //     for (auto &t : trantorians_) { // Iterates through the trantorians_ vector
 //         if (t.team == trant.team && t.gameObject == trant.gameObject) { // if match found, replace the trantorian with the one with the updated info

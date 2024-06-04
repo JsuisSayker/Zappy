@@ -26,15 +26,14 @@ class GameContent {
   public:
     GameContent();
     ~GameContent();
-    void addTeam(const std::string &teamName);
+    
+    void createTeam(std::shared_ptr<ZappyModel> lveModel, const std::string &teamName, const glm::vec3 &position);
 
-    void addTrantorian(const std::string &teamName,
-        std::shared_ptr<ZappyGameObject> gameObject, int number);
+    void addTrantorian(std::shared_ptr<ZappyModel> lveModel, const std::string &teamName, const glm::vec3 &position);
 
-    void removeTrantorian(const std::string &teamName,
-        std::shared_ptr<ZappyGameObject> gameObject);
+    // void removeTrantorian(const std::string &teamName, std::shared_ptr<ZappyGameObject> gameObject);
 
-    void updateNumbers(const std::string &teamName);
+    // void updateNumbers(const std::string &teamName);
 
     // const std::unordered_map<std::string,
     //     std::vector<Trantorian::trantorian>> &
@@ -78,13 +77,13 @@ class GameContent {
     void welcome();
 
   private:
-    std::vector<std::string> splitedBuffer_;
     std::unique_ptr<Map> map_;
+    std::shared_ptr<Client> client;
+    ZappyGameObject::Map gameObjects;
     ZappyGameObject::Map ressources_;
     std::vector<Trantorian> trantorians_;
+    std::vector<std::string> splitedBuffer_;
     std::unordered_map<std::string, glm::vec3> teamsColors_;
-    std::unordered_map<std::string, FunctionPtr>
-        _pointerToFunction; // Map of pointers to functions
-    std::shared_ptr<Client> client;
+    std::unordered_map<std::string, FunctionPtr> _pointerToFunction; // Map of pointers to functions
 };
 } // namespace zappy

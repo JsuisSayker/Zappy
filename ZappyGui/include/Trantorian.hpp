@@ -20,37 +20,29 @@
 namespace zappy {
     class Trantorian {
         public:
-        Trantorian(std::shared_ptr<ZappyGameObject> gameObject, std::string team, int number);
+        Trantorian(std::shared_ptr<ZappyGameObject> trantorianObject, std::shared_ptr<ZappyGameObject> pointLightObject, std::string team, int playerNumber);
         ~Trantorian() = default;
 
-        // void addTrantorian(const trantorian &trant);
+        // void updateTrantorian(const Trantorian &trant);
 
-        // void removeTrantorian(const std::string &team, std::shared_ptr<ZappyGameObject> gameObject);
+        // void updateTrantorianTranslation(const Trantorian &trant, glm::vec3 translation);
 
-        // void updateTrantorian(const trantorian &trant);
+        // void updateTrantorianRotation(const Trantorian &trant, glm::vec3 rotation);
 
-        // void updateTrantorianTranslation(const trantorian &trant, glm::vec3 translation);
+        // void updateTrantorianLevel(const std::string &team, ZappyGameObject gameObject);
 
-        // void updateTrantorianRotation(const trantorian &trant, glm::vec3 rotation);
+        // void updateInventory(const std::string &team, ZappyGameObject gameObject, const std::string &item, bool operator_);
 
-        // void updateTrantorianLevel(const std::string &team, std::shared_ptr<ZappyGameObject> gameObject);
+        // std::unordered_map<std::string, int> getInventory(const std::string &team, ZappyGameObject gameObject) const;      
 
-        // void updateInventory(const std::string &team, std::shared_ptr<ZappyGameObject> gameObject, const std::string &item, bool operator_);
-
-        // std::unordered_map<std::string, int> getInventory(const std::string &team, std::shared_ptr<ZappyGameObject> gameObject) const;      
-
-        // ZappyGameObject::id_t getTrantorianGameObjectId(const std::string &team, std::shared_ptr<ZappyGameObject> gameObject) const;
+        // ZappyGameObject::id_t getTrantorianGameObjectId(const std::string &team, ZappyGameObject gameObject) const;
         
-        // const std::vector<trantorian> &getTrantorians() const { return trantorians_; }
+        // const std::vector<Trantorian> &getTrantorians() const { return Trantorians_; }
 
-        // std::unordered_map<std::string, int> getInventory() const
-        // {
-        //     return { {"food", food}, {"linemate", linemate}, {"deraumere", deraumere}, {"sibur", sibur}, {"mendiane", mendiane}, {"phiras", phiras}, {"thystame", thystame} };
-        // }
         private:
-            ZappyGameObject trantorianObject;
-            ZappyGameObject pointLightObject;
-            ressources inventory;
+            std::shared_ptr<ZappyGameObject> trantorianObject;
+            std::shared_ptr<ZappyGameObject> pointLightObject;
+            resources inventory;
             std::string team;
             int playerNumber;
             int level;

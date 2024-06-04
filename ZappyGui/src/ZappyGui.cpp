@@ -241,63 +241,13 @@ void ZappyGui::loadGameObjects()
     //     0.0f, 0.0f}}
     // };
 
-    // std::shared_ptr<ZappyModel> lveModel =
-    // ZappyModel::createModelFromFile(lveDevice, executablePath +
-    // "/ZappyGui/models/smooth_vase.obj");
+    std::shared_ptr<ZappyModel> lveModel = ZappyModel::createModelFromFile(lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj");
 
     // std::vector<std::string> teamNames = {"Team-A", "Team-B"};
 
-    // for (int i = 0; i < 2; i++) { // Number of teams
-    //     gameContent.addTeam(teamNames[i]);
+    this->gameContent.get()->createTeam(lveModel, "Team-A", {0.0f, 0.0f, 0.0f});
+    this->gameContent.get()->addTrantorian(lveModel, "Team-A", {8.0f, 8.0f, 8.0f});
 
-    //     for (int j = 0; j < 4; j++) { // Number of trantorians in each team
-    //         auto object = ZappyGameObject::createGameObject();
-    //         object.model = lveModel;
-    //         object.transform.translation = trantPositions[i][j];
-    //         object.transform.scale = {3.f, 1.5f, 3.f};
-    //         gameObjects.emplace(object.getId(), std::move(object));
-
-    //         // gameContent.addTrantorian(teamNames[i], object, j);
-    //     }
-    // }
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // std::shared_ptr<ZappyModel> lveModel = ZappyModel::createModelFromFile(
-    //     lveDevice, executablePath + "/ZappyGui/models/flat_vase.obj");
-    // auto flatVase = ZappyGameObject::createGameObject();
-    // flatVase.model = lveModel;
-    // flatVase.transform.translation = {-.5f, .5f, 0.f};
-    // flatVase.transform.scale = {3.f, 1.5f, 3.f};
-    // gameObjects.emplace(flatVase.getId(), std::move(flatVase));
-
-    // lveModel = ZappyModel::createModelFromFile(
-    //     lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj");
-    // auto smoothVase = ZappyGameObject::createGameObject();
-    // smoothVase.model = lveModel;
-    // smoothVase.transform.translation = {.5f, .5f, 0.f};
-    // smoothVase.transform.scale = {3.f, 1.5f, 3.f};
-    // gameObjects.emplace(smoothVase.getId(), std::move(smoothVase));
-
-    // lveModel = ZappyModel::createModelFromFile(
-    //     lveDevice, executablePath + "/ZappyGui/models/quad.obj");
-    // auto floor = ZappyGameObject::createGameObject();
-    // floor.model = lveModel;
-    // floor.transform.translation = {0.f, .5f, 0.f};
-    // floor.transform.scale = {3.f, 1.f, 3.f};
-    // gameObjects.emplace(floor.getId(), std::move(floor));
-
-    std::vector<glm::vec3> lightColors{{1.f, .1f, .1f}, {.1f, .1f, 1.f},
-        {.1f, 1.f, .1f}, {1.f, 1.f, .1f}, {.1f, 1.f, 1.f}, {1.f, 1.f, 1.f}};
-
-    for (int i = 0; i < lightColors.size(); i++) {
-        auto pointLight = ZappyGameObject::makePointLight(0.2f);
-        pointLight.color = lightColors[i];
-        auto rotateLight = glm::rotate(glm::mat4(1.f),
-            (i * glm::two_pi<float>()) / lightColors.size(), {0.f, -1.f, 0.f});
-        pointLight.transform.translation =
-            glm::vec3(rotateLight * glm::vec4(-1.f, -1.f, -1.f, 1.f));
-        gameObjects.emplace(pointLight.getId(), std::move(pointLight));
-    }
 }
 
 std::unique_ptr<GameContent> &ZappyGui::getGameContent()
