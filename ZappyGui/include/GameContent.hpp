@@ -10,6 +10,8 @@
     #include <string>
     #include <vector>
     #include <memory>
+    #include "GameObject.hpp"
+    #include "Map.hpp"
     #include "Trantorian.hpp"
 
 namespace zappy {
@@ -26,6 +28,9 @@ namespace zappy {
             const std::unordered_map<std::string, std::vector<Trantorian::trantorian>>& getTeams() const { return teams_; }
 
         private:
-            std::unordered_map<std::string, std::vector<Trantorian::trantorian>> teams_;
+            std::unique_ptr<Map> map_;
+            ZappyGameObject::Map ressources_;
+            std::vector<Trantorian> trantorians_;
+            std::unordered_map<std::string, glm::vec3> teamsColors_;
     };
 }

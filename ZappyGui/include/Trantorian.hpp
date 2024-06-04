@@ -13,35 +13,13 @@
     #include <algorithm>
     #include <glm/vec3.hpp>
     #include "Device.hpp"
+    #include "Map.hpp"
     #include "GameObject.hpp"
     #include "ErrorHandling.hpp"
 
 namespace zappy {
     class Trantorian {
         public:
-
-        struct trantorian {
-            std::shared_ptr<ZappyGameObject> gameObject;
-            std::string team;
-            int number;
-            int level;
-            int food;
-            int linemate;
-            int deraumere;
-            int sibur;
-            int mendiane;
-            int phiras;
-            int thystame;
-
-            trantorian(std::shared_ptr<ZappyGameObject> gameObject, const std::string &team, int number)
-                : gameObject(gameObject), team(team), number(number), level(0), food(food), linemate(0), deraumere(0), sibur(0), mendiane(0), phiras(0), thystame(0) {}
-            
-            std::unordered_map<std::string, int> getInventory() const
-            {
-                return { {"food", food}, {"linemate", linemate}, {"deraumere", deraumere}, {"sibur", sibur}, {"mendiane", mendiane}, {"phiras", phiras}, {"thystame", thystame} };
-            }
-        };
-
         Trantorian(std::shared_ptr<ZappyGameObject> gameObject, std::string team, int number);
         ~Trantorian() = default;
 
@@ -65,7 +43,16 @@ namespace zappy {
         
         const std::vector<trantorian> &getTrantorians() const { return trantorians_; }
 
+        std::unordered_map<std::string, int> getInventory() const
+        {
+            return { {"food", food}, {"linemate", linemate}, {"deraumere", deraumere}, {"sibur", sibur}, {"mendiane", mendiane}, {"phiras", phiras}, {"thystame", thystame} };
+        }
         private:
-            std::vector<trantorian> trantorians_;
+            ZappyGameObject trantorianObject;
+            ZappyGameObject pointLightObject;
+            ressources inventory;
+            std::string team;
+            int playerNumber;
+            int level;
     };
 }

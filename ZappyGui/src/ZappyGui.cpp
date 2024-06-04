@@ -234,28 +234,28 @@ std::string FirstApp::getExecutablePath()
 
 void FirstApp::loadGameObjects()
 {
-    std::vector<std::vector<glm::vec3>> trantPositions = {
-        {{-0.1f, 0.0f, 0.0f}, {-0.4f, 0.0f, 0.0f}, {-0.8f, 0.0f, 0.0f}, {-1.2f, 0.0f, 0.0f}},
-        {{0.1f, 0.0f, 0.0f}, {0.4f, 0.0f, 0.0f}, {0.8f, 0.0f, 0.0f}, {1.2f, 0.0f, 0.0f}}
-    };
+    // std::vector<std::vector<glm::vec3>> trantPositions = {
+    //     {{-0.1f, 0.0f, 0.0f}, {-0.4f, 0.0f, 0.0f}, {-0.8f, 0.0f, 0.0f}, {-1.2f, 0.0f, 0.0f}},
+    //     {{0.1f, 0.0f, 0.0f}, {0.4f, 0.0f, 0.0f}, {0.8f, 0.0f, 0.0f}, {1.2f, 0.0f, 0.0f}}
+    // };
 
-    std::shared_ptr<ZappyModel> lveModel = ZappyModel::createModelFromFile(lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj");
+    // std::shared_ptr<ZappyModel> lveModel = ZappyModel::createModelFromFile(lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj");
 
-    std::vector<std::string> teamNames = {"Team-A", "Team-B"};
+    // std::vector<std::string> teamNames = {"Team-A", "Team-B"};
 
-    for (int i = 0; i < 2; i++) { // Number of teams
-        gameContent.addTeam(teamNames[i]);
+    // for (int i = 0; i < 2; i++) { // Number of teams
+    //     gameContent.addTeam(teamNames[i]);
 
-        for (int j = 0; j < 4; j++) { // Number of trantorians in each team
-            auto object = ZappyGameObject::createGameObject();
-            object.model = lveModel;
-            object.transform.translation = trantPositions[i][j];
-            object.transform.scale = {3.f, 1.5f, 3.f};
-            gameObjects.emplace(object.getId(), std::move(object));
+    //     for (int j = 0; j < 4; j++) { // Number of trantorians in each team
+    //         auto object = ZappyGameObject::createGameObject();
+    //         object.model = lveModel;
+    //         object.transform.translation = trantPositions[i][j];
+    //         object.transform.scale = {3.f, 1.5f, 3.f};
+    //         gameObjects.emplace(object.getId(), std::move(object));
 
-            // gameContent.addTrantorian(teamNames[i], object, j);
-        }
-    }
+    //         // gameContent.addTrantorian(teamNames[i], object, j);
+    //     }
+    // }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // std::shared_ptr<ZappyModel> lveModel = ZappyModel::createModelFromFile(
