@@ -29,7 +29,7 @@ re:
 	make re -C ZappyGui
 
 server:
-	make -C ZappyServer
+	make -C ZappyZappyServer
 
 gui:
 	make -C ZappyGui

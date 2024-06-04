@@ -60,6 +60,7 @@ static int init_zappy_server(zappy_server_t *zappy_server, args_config_t *args)
 static int run_zappy_server(zappy_server_t *zappy_server)
 {
     struct timeval timeout;
+
     while (zappy_server->server_running) {
         zappy_server->fd.input = zappy_server->fd.save_input;
         timeout.tv_sec = 0;
@@ -80,6 +81,7 @@ static int run_zappy_server(zappy_server_t *zappy_server)
 int zappy_server(args_config_t *args)
 {
     zappy_server_t *zappy_server = calloc(sizeof(zappy_server_t), 1);
+
     if (init_zappy_server(zappy_server, args) == ERROR)
         return ERROR;
     return run_zappy_server(zappy_server);

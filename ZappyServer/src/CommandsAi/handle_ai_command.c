@@ -20,10 +20,10 @@
     // {"/connect_nbr", &connect_nbr},
 
 static const struct command_ai_s COMMAND_FUNCS[] = {
-    {"Help", &ai_command_help},
     {"Forward", &ai_command_forward},
     {"Right", &ai_command_right},
     {"Left", &ai_command_left},
+    {"Take", &ai_command_take_object},
     {"NULL", NULL}
 };
 
