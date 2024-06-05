@@ -98,12 +98,12 @@ void put_resource_on_map_tile(map_tile_t **map_tile,
     struct char_tab_head *head, int x, int y);
 map_tile_t **setup_map_tile(int x, int y);
 void display_tile(map_tile_t tile);
-void display_gui_tile(map_tile_t tile, int socket);
+void display_gui_tile(map_tile_t *tile, int socket);
 void display_map_tile(map_tile_t **map_tile);
 int get_len_map_tile(map_tile_t **map_tile);
 int get_len_line_map_tile(map_tile_t **map_tile);
 map_tile_t **copy_map_tile(map_tile_t **source);
-void refill_map_tile(map_tile_t **destination, map_tile_t **source);
+
 
 // int array functions
 int **generate_int_array(int x, int y);
@@ -237,6 +237,10 @@ typedef struct zappy_server_s {
     map_tile_t **map_tile_save;
     args_config_t *args;
 } zappy_server_t;
+
+
+void refill_map_tile(zappy_server_t *zappy_server, map_tile_t **destination,
+    map_tile_t **source);
 
 // Linked list functions
 void free_threads(struct threadhead *head);

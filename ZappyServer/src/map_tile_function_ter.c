@@ -25,30 +25,54 @@ map_tile_t **copy_map_tile(map_tile_t **source)
     return destination;
 }
 
-static void refill_inventory(inventory_t *destination, inventory_t *source)
+static bool refill_inventory(map_tile_t *destination, inventory_t *source)
 {
-    if (destination->food < source->food)
-        destination->food = source->food;
-    if (destination->linemate < source->linemate)
-        destination->linemate = source->linemate;
-    if (destination->deraumere < source->deraumere)
-        destination->deraumere = source->deraumere;
-    if (destination->sibur < source->sibur)
-        destination->sibur = source->sibur;
-    if (destination->mendiane < source->mendiane)
-        destination->mendiane = source->mendiane;
-    if (destination->phiras < source->phiras)
-        destination->phiras = source->phiras;
-    if (destination->thystame < source->thystame)
-        destination->thystame = source->thystame;
+    bool change = false;
+
+    if (destination->inventory.food < source->food) {
+        destination->inventory.food = source->food;
+        change = true;
+    }
+    if (destination->inventory.linemate < source->linemate) {
+        destination->inventory.linemate = source->linemate;
+        change = true;
+    }
+    if (destination->inventory.deraumere < source->deraumere) {
+        destination->inventory.deraumere = source->deraumere;
+        change = true;
+    }
+    if (destination->inventory.sibur < source->sibur) {
+        destination->inventory.sibur = source->sibur;
+        change = true;
+    }
+    if (destination->inventory.mendiane < source->mendiane) {
+        destination->inventory.mendiane = source->mendiane;
+        change = true;
+    }
+    if (destination->inventory.phiras < source->phiras) {
+        destination->inventory.phiras = source->phiras;
+        change = true;
+    }
+    if (destination->inventory.thystame < source->thystame) {
+        destination->inventory.thystame = source->thystame;
+        change = true;
+    }
+    return change;
 }
 
-void refill_map_tile(map_tile_t **destination, map_tile_t **source)
+void refill_map_tile(zappy_server_t *zappy_server, map_tile_t **destination,
+    map_tile_t **source)
 {
     for (int i = 0; source[i] != NULL; i += 1) {
         for (int j = 0; source[i][j].x != -1; j += 1) {
-            refill_inventory(&destination[i][j].inventory,
-                &source[i][j].inventory);
+            if (refill_inventory(&destination[i][j], &source[i][j].inventory)) {
+                for (int i = 0; i < FD_SETSIZE; i++) {
+                    if (zappy_server->clients[i].type == GUI) {
+                        display_gui_tile(&destination[i][j], i);
+                        return;
+                    }
+                }
+            }
         }
     }
 }

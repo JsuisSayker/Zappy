@@ -29,7 +29,7 @@ void send_gui_map_content(map_tile_t **map, int x, int y, int socket)
 {
     for (int i = 0; i < y; i++) {
         for (int j = 0; j < x; j++) {
-            display_gui_tile(map[i][j], socket);
+            display_gui_tile(&map[i][j], socket);
         }
     }
 }

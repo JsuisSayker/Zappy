@@ -75,12 +75,12 @@ void display_inventory(inventory_t *inventory)
 
 int ai_command_take_object(zappy_server_t *zappy, client_t *client, char *cmd)
 {
-    if (client == NULL || zappy == NULL || cmd == NULL || cmd[0] != ' ')
+    if (client == NULL || zappy == NULL || cmd == NULL ||  cmd[4] != ' ')
         return ERROR;
-    cmd = &cmd[1];
     if (cast_action(zappy, client, 7, cmd) == ERROR)
         return ERROR;
-    printf("Left\n");
+    cmd = &cmd[5];
+    printf("Take\n");
     if (check_action(zappy, client) == false)
         return OK;
     if (is_valid_resource(cmd) == false)

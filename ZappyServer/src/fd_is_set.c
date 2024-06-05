@@ -14,7 +14,7 @@ static int check_connection(zappy_server_t *zappy_server)
     if (zappy_server->actual_sockfd == zappy_server->my_socket) {
         client_fd = accept_new_connection(zappy_server->my_socket,
             &zappy_server->clients[zappy_server->actual_sockfd]
-                 .other_socket_addr);
+            .other_socket_addr);
         if (client_fd == ERROR)
             return ERROR;
         dprintf(client_fd, "WELCOME\n");
@@ -23,17 +23,6 @@ static int check_connection(zappy_server_t *zappy_server)
         handle_client(zappy_server);
     }
     return OK;
-}
-
-static void send_map_info_first_gui(zappy_server_t *zappy_server)
-{
-    for (int i = 0; i < FD_SETSIZE; i++) {
-        if (zappy_server->clients[i].type == GUI) {
-            send_gui_map_content(zappy_server->map_tile,
-            zappy_server->args->width, zappy_server->args->height, i);
-            return;
-        }
-    }
 }
 
 static void refill_map(zappy_server_t *zappy_server, client_t *client)
@@ -45,9 +34,9 @@ static void refill_map(zappy_server_t *zappy_server, client_t *client)
     gettimeofday(&tv, NULL);
     elapsed = (tv.tv_sec + tv.tv_usec / 1000000.0) - client->command.time;
     if (cast_time < elapsed) {
-        refill_map_tile(zappy_server->map_tile, zappy_server->map_tile_save);
+        refill_map_tile(zappy_server, zappy_server->map_tile,
+            zappy_server->map_tile_save);
         zappy_server->time_refill_map = time(NULL);
-        // send_map_info_first_gui(zappy_server);
     }
 }
 
