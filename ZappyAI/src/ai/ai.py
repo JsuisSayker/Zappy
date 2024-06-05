@@ -4,7 +4,6 @@ import random
 import re
 from collections import Counter
 from itertools import cycle
-from cryptography.fernet import Fernet
 from ZappyAI.src.ai.infos import LEVELS, Activity
 
 
@@ -30,49 +29,23 @@ class AI():
         self.widthValue: int = 0
         self.heightValue: int = 0
         self.newRessource: bool = False
-        self.key: bytes = Fernet.generate_key()
         self.actualActivity: Activity = Activity.STARTING
 
-    def encryption(self, data: str) -> bytes:
-        cipher_suite = Fernet(self.key)
-        ciphered_text = cipher_suite.encrypt(data.encode())
-        return ciphered_text
-
-    def decryption(self, data: bytes) -> str:
-        cipher_suite = Fernet(self.key)
-        unciphered_text = (cipher_suite.decrypt(data))
-        return unciphered_text.decode()
-
-    def size_look(self, array: list) -> int:
-        nb = 0
-        for elem in array:
-            if elem == []:
-                return nb
-            nb += 1
-        return nb
+    def lookingSize(self, array: list) -> int:
+        return next((i for i, elem in enumerate(array) if elem == []),
+                    len(array))
 
     def findObjectOnMap(self, map: list, object: str):
-        # for i, row in enumerate(map):
-        #     if object in row:
-        #         return {"x": row.index(object), "y": i}
-        # return None
         v = 8
         h = 0
-        while h < self.size_look(map[v]):
+        while h < self.lookingSize(map[v]):
             if map[v][h] != [] and object in map[v][h][0]:
                 return [v, h]
-            else:
-                h += 1
-            tv = v
-            while tv >= v - h:
-                if map[v][h] != [] and object in map[tv][h][0]:
-                    return [tv, h]
-                tv -= 1
-            tv = v
-            while tv <= v + h:
-                if map[v][h] != [] and object in map[tv][h][0]:
-                    return [tv, h]
-                tv += 1
+            for offset in range(1, h + 1):
+                if map[v - offset][h] != [] and object in map[v - offset][h][0]:
+                    return [v - offset, h]
+                if map[v + offset][h] != [] and object in map[v + offset][h][0]:
+                    return [v + offset, h]
             h += 1
         return None
 
@@ -100,20 +73,10 @@ class AI():
 
     def parse_broadcast(self, messageReceived: str):
         signalDirection = int(messageReceived[8])
-        print(f"messageReceived: {messageReceived}")
         messageReceived = self.sxor(self.teamName,
                                     bytes.fromhex(messageReceived[10:]
                                                   ).decode("utf-8"))
-        # exit(0)
-        # if len(str(messageReceived[10:])) > 100:
-        #     byteReceivedMessage = self.decryption(
-        #         bytes(messageReceived[1], "utf-8"))
-        # if len(messageReceived[]) > 100:
-        #     byteReceivedMessage = self.decryption(bytes(
-        #         messageReceived[1], "utf-8"))
-        # if byteReceivedMessage is not None:
-        #     print(f"byteReceivedMessage: {byteReceivedMessage}")
-        #     exit(0)
+        print(f"messageReceived: {messageReceived}")
         if "inventory" in messageReceived:
             print("parsing inventory")
             # self.parse_inventory()
@@ -130,29 +93,25 @@ class AI():
     def checkIncanationActivity(self):
         if self.newRessource is True:
             if self.newRessource is True:
-                possibility = self.isIncantationPossible()
-                print(f"possibility: {possibility}")
                 if not self.isIncantationPossible():
-                    # messageToSend = bytes(
-                    #     self.sxor(self.teamName,
-                    #               ("inventory" + str(
-                    #                   self.clientId) + ";" + str(
-                    #                       self.level) + ";" + str(
-                    #                           json.dumps(
-                    #                               self.inventory)))),
-                    #     "utf-8").hex()
-                    messageToSend = self.encryption(
-                        f"{str(self.teamName)};inventory{str(self.clientId)};"
-                        f"{str(self.level)};{str(json.dumps(self.inventory))}"
-                    ).hex()
+                    messageToSend = bytes(
+                        self.sxor(self.teamName,
+                                  ("inventory" + str(
+                                      self.clientId) + ";" + str(
+                                          self.level) + ";" + str(
+                                              json.dumps(
+                                                  self.inventory)))),
+                        "utf-8").hex()
+
                     print(f"messageToSend: {messageToSend}")
-                    exit(0)
                     self.dataToSend = "Broadcast " + messageToSend + "\n"
                     self.incantation = False
                 else:
                     messageToSend = bytes(self.sxor(self.teamName, (str(
                         self.clientId) + ";incantation;" + str(
                             self.level))), "utf-8").hex()
+
+                    print(f"messageToSend: {messageToSend}")
                     # messageToSend = messageToSend[2:-1]
                     self.dataToSend = "Broadcast " + messageToSend + "\n"
                     self.newRessource = False
@@ -167,6 +126,7 @@ class AI():
         if self.incantation is False and self.nbNeededPlayers >= self.level:
             messageToSend = bytes(self.sxor(self.teamName, str(
                 self.clientId) + " on my way"), "utf-8").hex()
+
             self.dataToSend = "Broadcast " + messageToSend + "\n"
 
         elif self.nbNeededPlayers >= self.level and self.incantation is True:
@@ -201,13 +161,7 @@ class AI():
         requiredRessources = LEVELS[self.level]
         if self.searchingRessource in self.inventory:
             self.inventory[self.searchingRessource] += 1
-        # print(f"requiredRessources: {requiredRessources}"
-        #       f" inventory: {self.inventory}"
-        #       f" searchingRessource: {self.searchingRessource}")
         for ressource in requiredRessources:
-            # print(f"ressource: {ressource}"
-            #       f" requiredRessources: {requiredRessources[ressource]}"
-            #       f" inventory: {self.inventory[ressource]}")
             if self.inventory[ressource] < requiredRessources[ressource]:
                 return False
         return True
@@ -279,18 +233,10 @@ class AI():
 
     def generateEmptyMap(self) -> list:
         return [[[] for i in range(9)] for j in range(17)]
-        # return [["" for _ in range(self.widthValue)
-        #          ] for _ in range(self.heightValue)]
+        return [["" for _ in range(self.widthValue)
+                 ] for _ in range(self.heightValue)]
 
     def fillMapWithObjects(self, map: list, dataList: list):
-        # data_iter = iter(dataList)
-        # for i, row in enumerate(map):
-        #     for j, _ in enumerate(row):
-        #         try:
-        #             map[i][j] = next(data_iter)
-        #         except StopIteration:
-        #             break
-        # return map
         nb = 1
         v = 8
         h = 0
@@ -354,7 +300,6 @@ class AI():
     def fillingActivity(self, data: str):
         if "food" in self.inventory and self.inventory["food"] < 50:
             self.commandList = self.fillingInventory(data, "food")
-            # self.actualActivity = Activity.EXECUTE_COMMAND
         else:
             self.searchingRessource = self.searchingActivity()
             self.commandList = self.fillingInventory(data,
@@ -380,7 +325,6 @@ class AI():
     #     self.dataToSend = "Inventory\n"
 
     def algorithm(self) -> None:
-        # self.switchCase(self.actualActivity)
         self.nbPlayers = int(self.clientId)
         match self.actualActivity:
             case Activity.STARTING:
