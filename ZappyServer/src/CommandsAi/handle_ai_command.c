@@ -6,11 +6,7 @@
 */
 
 #include <zappy_server.h>
-    // {"/avance", &avance},
-    // {"/droite", &droite},
-    // {"/gauche", &gauche},
     // {"/voir", &voir},
-    // {"/inventai_re", &inventai_re},
     // {"/prend", &prend},
     // {"/pose", &pose},
     // {"/expulse", &expulse},
@@ -24,6 +20,10 @@ static const struct command_ai_s COMMAND_FUNCS[] = {
     {"Right", &ai_command_right},
     {"Left", &ai_command_left},
     {"Take", &ai_command_take_object},
+    {"Fork", &ai_command_fork},
+    {"Inventory", &ai_command_inventory},
+    {"Look", &ai_command_look},
+    {"Connect_nbr", &ai_command_connect_nbr},
     {"NULL", NULL}
 };
 
@@ -40,9 +40,9 @@ static int handle_ai_command_sub(zappy_server_t *zappy, client_t *client,
         }
     }
     dprintf(zappy->actual_sockfd, "ko\n");
-    if (client->command.execusion != NULL){
-        free(client->command.execusion);
-        client->command.execusion = NULL;
+    if (client->command.execution != NULL){
+        free(client->command.execution);
+        client->command.execution = NULL;
     }
     return ERROR;
 }
@@ -53,10 +53,10 @@ int handle_ai_command(zappy_server_t *zappy, client_t *client, char *command)
         return ERROR;
     if (queue_to_exec(client) != OK)
         return ERROR;
-    if (client->command.execusion != NULL){
+    if (client->command.execution != NULL){
         if (command != NULL && add_in_queue(client, command) == ERROR)
             return ERROR;
-        if (handle_ai_command_sub(zappy, client, client->command.execusion)
+        if (handle_ai_command_sub(zappy, client, client->command.execution)
             != OK)
             return ERROR;
         return OK;

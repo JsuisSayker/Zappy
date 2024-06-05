@@ -36,15 +36,23 @@ TOOLS		=	splitter.c							\
 				is_valid_resource.c					\
 				set_inventory_resource_quantite.c	\
 				free_list.c							\
+				normalize_coordonate.c				\
 
 COMMAND_AI		=	handle_ai_command.c				\
+					ai_function.c					\
 					ai_initialisation.c				\
 					ai_action.c						\
 					ai_command_forward.c			\
 					ai_command_left.c				\
 					ai_command_right.c				\
 					ai_command_take_object.c		\
+					ai_command_fork.c				\
+					ai_command_inventory.c			\
+					ai_command_look.c				\
+					ai_command_connect_nbr.c		\
 					send_ppo_command_to_all_gui.c	\
+					send_pin_command_to_all_gui.c	\
+					send_pdi_command_to_all_gui.c	\
 
 COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_msz.c				\
@@ -81,7 +89,7 @@ DIR_COMMAND_SERVER	=	$(addprefix CommandsServer/, $(COMMAND_SERVER))
 
 DIR_TOOLS	=	$(addprefix tools/, $(TOOLS))
 
-MAIN		=	main.c						\
+MAIN		=	main.c								\
 
 DIR_MAIN		=	$(addprefix src/, $(MAIN))
 
