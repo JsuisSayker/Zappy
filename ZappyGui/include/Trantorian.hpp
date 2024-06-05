@@ -21,7 +21,7 @@
 namespace zappy {
     class Trantorian: public GameContent {
         public:
-        Trantorian(std::shared_ptr<ZappyGameObject> trantorianObject, std::shared_ptr<ZappyGameObject> pointLightObject, std::string team, int playerNumber);
+        Trantorian(std::shared_ptr<ZappyGameObject> trantorianObject, std::shared_ptr<ZappyGameObject> pointLightObject, std::string team, int playerNumber, std::shared_ptr<ZappyGui> zappyGui);
         ~Trantorian() = default;
 
         // void updateTrantorian(const Trantorian &trant);
@@ -45,6 +45,7 @@ namespace zappy {
             ZappyGameObject::id_t pointLightObject;
             resources inventory;
             std::string team;
+            std::shared_ptr<ZappyGui> zappyGui;
             int playerNumber;
             int level;
     };

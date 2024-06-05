@@ -9,6 +9,7 @@
 
 #include <vector>
 #include <vector>
+#include "ZappyGui.hpp"
 #include "GameContent.hpp"
 
 namespace zappy {
@@ -21,9 +22,9 @@ namespace zappy {
         std::vector<ZappyGameObject::id_t> phiras;
         std::vector<ZappyGameObject::id_t> thystame;
     };
-    class Map: public GameContent {
+    class Map {
         public:
-            Map();
+            Map(std::shared_ptr<ZappyGui> &zappyGui) : _zappyGui(zappyGui) {};
             ~Map();
 
             void createMap(int width, int height);
@@ -38,6 +39,7 @@ namespace zappy {
         private:
             int _width;
             int _height;
+            std::shared_ptr<ZappyGui> _zappyGui;
             std::vector<std::vector<resources>> _map;
     };
 }

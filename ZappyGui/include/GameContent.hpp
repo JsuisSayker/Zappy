@@ -25,7 +25,7 @@ class GameContent: public ZappyGui {
     using FunctionPtr = std::function<void(void)>;
 
   public:
-    GameContent();
+    GameContent(std::shared_ptr<ZappyGui> zappyGui) : zappyGui(zappyGui) {};
     ~GameContent();
     
     void createTeam(std::shared_ptr<ZappyModel> lveModel, const std::string &teamName, const glm::vec3 &position);
@@ -84,6 +84,7 @@ class GameContent: public ZappyGui {
     ZappyGameObject::Map ressources_;
     std::vector<Trantorian> trantorians_;
     std::vector<std::string> splitedBuffer_;
+    std::shared_ptr<ZappyGui> zappyGui;
     std::unordered_map<std::string, glm::vec3> teamsColors_;
     std::unordered_map<std::string, FunctionPtr> _pointerToFunction; // Map of pointers to functions
 };
