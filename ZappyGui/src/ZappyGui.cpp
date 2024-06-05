@@ -317,7 +317,7 @@ void ZappyGui::createGameObject(const std::string &modelPath,
     object.transform.rotation = rotation;
     object.transform.scale = scale;
 
-    if (!texturePath.empty()) {
+    if (texturePath.size() > 0){
         object.hasDescriptorSet = true;
 
         object.texture = std::make_unique<Texture>(
