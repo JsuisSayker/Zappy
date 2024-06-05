@@ -43,7 +43,7 @@ static int display_info_server(zappy_server_t *zappy_server)
         printf("nb_drones = [%d]\n", tmp->nb_drones);
         printf("nb_matures_eggs = [%d]\n", tmp->nb_matures_eggs);
     }
-    printf("=====================================\n");
+    printf("======================================\n");
     return OK;
 }
 
@@ -67,7 +67,7 @@ static int run_zappy_server(zappy_server_t *zappy_server)
         timeout.tv_usec = 10000;
         if (select(FD_SETSIZE, &(zappy_server->fd.input),
             &(zappy_server->fd.ouput), NULL, &timeout) == ERROR
-                && errno != EINTR && zappy_server->server_running)
+            && errno != EINTR && zappy_server->server_running)
             return ERROR;
         if (errno == EINTR)
             zappy_server->server_running = false;

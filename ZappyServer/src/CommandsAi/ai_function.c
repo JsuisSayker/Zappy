@@ -21,6 +21,7 @@ bool is_alive(zappy_server_t *zappy, client_t *client)
     if (current_time - client->health.last_meal > client->health.time_to_eat) {
         client->health.is_alive = false;
         dprintf(zappy->actual_sockfd, "dead\n");
+        send_pdi_command_to_all_gui(zappy, client);
         return false;
     }
     return true;

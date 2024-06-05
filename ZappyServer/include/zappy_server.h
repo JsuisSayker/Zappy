@@ -98,10 +98,12 @@ void put_resource_on_map_tile(map_tile_t **map_tile,
     struct char_tab_head *head, int x, int y);
 map_tile_t **setup_map_tile(int x, int y);
 void display_tile(map_tile_t tile);
-void display_gui_tile(map_tile_t tile, int socket);
+void display_gui_tile(map_tile_t *tile, int socket);
 void display_map_tile(map_tile_t **map_tile);
 int get_len_map_tile(map_tile_t **map_tile);
 int get_len_line_map_tile(map_tile_t **map_tile);
+map_tile_t **copy_map_tile(map_tile_t **source);
+
 
 // int array functions
 int **generate_int_array(int x, int y);
@@ -164,7 +166,7 @@ typedef struct look_struct_s {
 } look_struct_t;
 
 typedef struct ai_command_data_s {
-    char *execusion;
+    char *execution;
     char **queue;
     float cast_time;
     bool is_contracted;
@@ -226,13 +228,19 @@ typedef struct zappy_server_s {
     int index_eggs;
     int index_clients;
     bool server_running;
+    double time_refill_map;
     struct sockaddr_in server_addr;
     struct teamhead all_teams;
     struct threadhead all_threads;
     struct client_s clients[FD_SETSIZE];
     map_tile_t **map_tile;
+    map_tile_t **map_tile_save;
     args_config_t *args;
 } zappy_server_t;
+
+
+void refill_map_tile(zappy_server_t *zappy_server, map_tile_t **destination,
+    map_tile_t **source);
 
 // Linked list functions
 void free_threads(struct threadhead *head);
@@ -302,6 +310,7 @@ int cast_action(zappy_server_t *zappy, client_t *client, int freq, char *cmd);
 bool check_action(zappy_server_t *zappy, client_t *client);
 int ai_initialisation(zappy_server_t *zappy_server, client_t *ia,
     team_t *tmp_team);
+void send_gui_map_content(map_tile_t **map, int x, int y, int socket);
 
 // AI COMMANDS FUNCTIONS
 int ai_command_help(zappy_server_t *zappy, client_t *client, char *cmd);
@@ -318,6 +327,7 @@ bool is_alive(zappy_server_t *zappy, client_t *client);
 
 void send_ppo_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_pin_command_to_all_gui(zappy_server_t *zappy, client_t *client);
+void send_pdi_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 
 // GUI COMMANDS FUNCTIONS
 int handle_gui_command(zappy_server_t *zappy_server, char *command);

@@ -67,10 +67,12 @@ static void init_value(zappy_server_t *zappy_server)
     zappy_server->index_eggs = 0;
     zappy_server->index_clients = 0;
     zappy_server->server_running = true;
+    zappy_server->time_refill_map = time(NULL);
     init_list(zappy_server);
     create_teams(zappy_server);
     zappy_server->map_tile = setup_map_tile(zappy_server->args->width,
         zappy_server->args->height);
+    zappy_server->map_tile_save = copy_map_tile(zappy_server->map_tile);
     for (int i = 0; i < FD_SETSIZE; i += 1) {
         zappy_server->clients[i].type = UNKNOWN;
         zappy_server->clients[i].client_number = -1;

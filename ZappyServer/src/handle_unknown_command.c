@@ -12,13 +12,24 @@ static void send_egg_info(zappy_server_t *zappy_server)
     team_t *tmp_team = NULL;
     egg_t *tmp_egg = NULL;
 
-    TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next) {
-        TAILQ_FOREACH(tmp_egg, &tmp_team->eggs_head, next) {
+    TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next)
+    {
+        TAILQ_FOREACH(tmp_egg, &tmp_team->eggs_head, next)
+        {
             dprintf(zappy_server->actual_sockfd, "enw %d %d %d %d\n",
                 tmp_egg->egg_number, tmp_egg->client_number, tmp_egg->x,
                 tmp_egg->y);
-            dprintf(zappy_server->actual_sockfd, "eht %d\n",
-                tmp_egg->egg_number);
+            dprintf(
+                zappy_server->actual_sockfd, "eht %d\n", tmp_egg->egg_number);
+        }
+    }
+}
+
+void send_gui_map_content(map_tile_t **map, int x, int y, int socket)
+{
+    for (int i = 0; i < y; i++) {
+        for (int j = 0; j < x; j++) {
+            display_gui_tile(&map[i][j], socket);
         }
     }
 }
@@ -29,15 +40,11 @@ static void send_map_info(zappy_server_t *zappy_server)
 
     dprintf(zappy_server->actual_sockfd, "msz %d %d\n",
         zappy_server->args->width, zappy_server->args->height);
-    dprintf(zappy_server->actual_sockfd, "sgt %d\n",
-        zappy_server->args->freq);
-    for (int i = 0; i < zappy_server->args->height; i++) {
-        for (int j = 0; j < zappy_server->args->width; j++) {
-            display_gui_tile(zappy_server->map_tile[i][j],
-                zappy_server->actual_sockfd);
-        }
-    }
-    TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next) {
+    dprintf(zappy_server->actual_sockfd, "sgt %d\n", zappy_server->args->freq);
+    send_gui_map_content(zappy_server->map_tile, zappy_server->args->width,
+        zappy_server->args->height, zappy_server->actual_sockfd);
+    TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next)
+    {
         dprintf(zappy_server->actual_sockfd, "tna %s\n", tmp_team->name);
     }
 }
@@ -71,8 +78,8 @@ static void send_info_ai_to_gui(zappy_server_t *zappy_server, client_t *client)
     }
 }
 
-static int ai_client_find_team(zappy_server_t *zappy_server, team_t *tmp_team,
-    char *command)
+static int ai_client_find_team(
+    zappy_server_t *zappy_server, team_t *tmp_team, char *command)
 {
     client_t *tmp_client = NULL;
 
@@ -86,8 +93,8 @@ static int ai_client_find_team(zappy_server_t *zappy_server, team_t *tmp_team,
         tmp_client = &zappy_server->clients[zappy_server->actual_sockfd];
         if (ai_initialisation(zappy_server, tmp_client, tmp_team) == ERROR)
             return ERROR;
-        dprintf(zappy_server->actual_sockfd, "2\n%d %d\n",
-            tmp_client->pos.x, tmp_client->pos.y);
+        dprintf(zappy_server->actual_sockfd, "2\n%d %d\n", tmp_client->pos.x,
+            tmp_client->pos.y);
         send_info_ai_to_gui(zappy_server, tmp_client);
         return 1;
     }
@@ -99,7 +106,8 @@ static int ai_client(zappy_server_t *zappy_server, char *command)
     team_t *tmp_team = NULL;
     int team_find = 0;
 
-    TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next) {
+    TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next)
+    {
         team_find = ai_client_find_team(zappy_server, tmp_team, command);
         if (team_find == 1)
             return OK;
