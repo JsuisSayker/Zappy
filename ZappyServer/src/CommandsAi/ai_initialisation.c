@@ -25,7 +25,7 @@ static int init_value(client_t *ia, team_t *tmp_team, egg_t *new_egg,
     new_egg->client_number = ia->client_number;
     ia->type = IA;
     ia->level = 1;
-    ia->command.execusion = NULL;
+    ia->command.execution = NULL;
     return OK;
 }
 

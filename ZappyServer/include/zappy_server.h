@@ -166,7 +166,7 @@ typedef struct look_struct_s {
 } look_struct_t;
 
 typedef struct ai_command_data_s {
-    char *execusion;
+    char *execution;
     char **queue;
     float cast_time;
     bool is_contracted;
@@ -306,6 +306,7 @@ int cast_action(zappy_server_t *zappy, client_t *client, int freq, char *cmd);
 bool check_action(zappy_server_t *zappy, client_t *client);
 int ai_initialisation(zappy_server_t *zappy_server, client_t *ia,
     team_t *tmp_team);
+void send_gui_map_content(map_tile_t **map, int x, int y, int socket);
 
 // AI COMMANDS FUNCTIONS
 int ai_command_help(zappy_server_t *zappy, client_t *client, char *cmd);
