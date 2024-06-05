@@ -145,10 +145,10 @@ void ZappyGui::run()
         // Check if there is activity on the socket file descriptor
         if (activity > 0 && FD_ISSET(socket_fd, &readfds)) {
             this->gameContent.get()->getClient().get()->receiveFromServer();
-            this->gameContent.get()->bufferToSplitedBuffer(
+            this->gameContent.get()->bufferToSplitBuffer(
                 this->gameContent.get()->getClient().get()->getBuffer());
             for (auto &actualCommand :
-                this->gameContent.get()->getSplitedBuffer()) {
+                this->gameContent.get()->getSplitBuffer()) {
                 if (this->gameContent.get()->getPointerToFunction().find(
                         actualCommand[0]) !=
                     this->gameContent.get()->getPointerToFunction().end()) {
@@ -165,7 +165,7 @@ void ZappyGui::run()
                 }
             }
             this->gameContent.get()->getClient().get()->getBuffer().clear();
-            this->gameContent.get()->getSplitedBuffer().clear();
+            this->gameContent.get()->getSplitBuffer().clear();
         }
 
         glfwPollEvents();

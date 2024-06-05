@@ -21,7 +21,7 @@
 #include <vector>
 
 namespace zappy {
-class GameContent : public ZappyGui {
+class GameContent {
     using FunctionPtr = std::function<void(std::vector<std::string>)>;
 
   public:
@@ -50,8 +50,8 @@ class GameContent : public ZappyGui {
         std::unordered_map<std::string, FunctionPtr> &pointerToFunction);
     std::unordered_map<std::string, FunctionPtr> &getPointerToFunction();
 
-    std::vector<std::vector<std::string>> &getSplitedBuffer();
-    void bufferToSplitedBuffer(std::string buffer);
+    std::vector<std::vector<std::string>> &getSplitBuffer();
+    void bufferToSplitBuffer(std::string buffer);
 
     void setClient(std::shared_ptr<Client> client) { this->client = client; }
     std::shared_ptr<Client> getClient() { return this->client; }
@@ -81,13 +81,13 @@ class GameContent : public ZappyGui {
     void welcome(std::vector<std::string> actualCommand);
 
   private:
-    std::vector<std::vector<std::string>> splitedBuffer_;
+    std::vector<std::vector<std::string>> splitBuffer_;
     std::unique_ptr<Map> map_;
     std::shared_ptr<Client> client;
     ZappyGameObject::Map gameObjects;
     ZappyGameObject::Map ressources_;
     std::vector<Trantorian> trantorians_;
-    std::vector<std::string> splitedBuffer_;
+    std::vector<std::string> splitBuffer_;
     std::shared_ptr<ZappyGui> zappyGui;
     std::unordered_map<std::string, glm::vec3> teamsColors_;
     std::unordered_map<std::string, FunctionPtr>

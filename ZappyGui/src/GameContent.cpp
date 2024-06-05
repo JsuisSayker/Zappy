@@ -199,7 +199,7 @@ void GameContent::welcome(std::vector<std::string> actualCommand)
     dprintf(this->client.get()->getSocketFd(), "GRAPHIC\n");
 }
 
-void GameContent::bufferToSplitedBuffer(std::string buffer)
+void GameContent::bufferToSplitBuffer(std::string buffer)
 {
     // split the bufer by \n
     std::vector<std::string> bufferSplited;
@@ -216,13 +216,13 @@ void GameContent::bufferToSplitedBuffer(std::string buffer)
         while (std::getline(tokenStream, token, ' ')) {
             line.push_back(token);
         }
-        this->splitedBuffer_.push_back(line);
+        this->splitBuffer_.push_back(line);
     }
 }
 
-std::vector<std::vector<std::string>> &GameContent::getSplitedBuffer()
+std::vector<std::vector<std::string>> &GameContent::getSplitBuffer()
 {
-    return this->splitedBuffer_;
+    return this->splitBuffer_;
 }
 
 void GameContent::createTeam(std::shared_ptr<ZappyModel> lveModel, const std::string &teamName, const glm::vec3 &position)

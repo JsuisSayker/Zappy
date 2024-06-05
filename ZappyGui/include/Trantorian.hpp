@@ -19,7 +19,7 @@
     #include "ErrorHandling.hpp"
 
 namespace zappy {
-    class Trantorian: public GameContent {
+    class Trantorian {
         public:
         Trantorian(std::shared_ptr<ZappyGameObject> trantorianObject, std::shared_ptr<ZappyGameObject> pointLightObject, std::string team, int playerNumber, std::shared_ptr<ZappyGui> zappyGui);
         ~Trantorian() = default;
