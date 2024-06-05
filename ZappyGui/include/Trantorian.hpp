@@ -19,9 +19,18 @@
     #include "ErrorHandling.hpp"
 
 namespace zappy {
+    struct trantInventory {
+        int food;
+        int linemate;
+        int deraumere;
+        int sibur;
+        int mendiane;
+        int phiras;
+        int thystame;
+    };
     class Trantorian {
         public:
-        Trantorian(std::shared_ptr<ZappyGameObject> trantorianObject, std::shared_ptr<ZappyGameObject> pointLightObject, std::string team, int playerNumber, std::shared_ptr<ZappyGui> zappyGui);
+        Trantorian(ZappyGameObject::id_t trantObjectId, ZappyGameObject::id_t pointLightObjectId, const std::string &team);
         ~Trantorian() = default;
 
         // void updateTrantorian(const Trantorian &trant);
@@ -43,7 +52,7 @@ namespace zappy {
         private:
             ZappyGameObject::id_t trantorianObject;
             ZappyGameObject::id_t pointLightObject;
-            resources inventory;
+            trantInventory inventory;
             std::string team;
             std::shared_ptr<ZappyGui> zappyGui;
             int playerNumber;

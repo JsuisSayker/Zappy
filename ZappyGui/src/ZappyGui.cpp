@@ -166,6 +166,7 @@ void ZappyGui::run()
             }
             this->gameContent.get()->getClient().get()->getBuffer().clear();
             this->gameContent.get()->getSplitBuffer().clear();
+            this->gameContent.get()->getSplitBuffer().clear();
         }
 
         glfwPollEvents();

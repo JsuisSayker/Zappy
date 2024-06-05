@@ -14,11 +14,15 @@
 #include "ZappyGui.hpp"
 #include <functional>
 #include <iostream>
-#include <memory>
 #include <sstream>
 #include <string>
-#include <unordered_map>
+#include <memory>
 #include <vector>
+#include "Map.hpp"
+#include "Client.hpp"
+#include "ZappyGui.hpp"
+#include "Trantorian.hpp"
+#include "GameObject.hpp"
 
 namespace zappy {
 class GameContent {
@@ -46,8 +50,7 @@ class GameContent {
     //     return teams_;
     // }
 
-    void setPointerToFunction(
-        std::unordered_map<std::string, FunctionPtr> &pointerToFunction);
+    void setPointerToFunction(std::unordered_map<std::string, FunctionPtr> &pointerToFunction);
     std::unordered_map<std::string, FunctionPtr> &getPointerToFunction();
 
     std::vector<std::vector<std::string>> &getSplitBuffer();

@@ -9,8 +9,8 @@
 
 namespace zappy {
 
-Trantorian::Trantorian(std::shared_ptr<ZappyGameObject> trantObject, std::shared_ptr<ZappyGameObject> lightObject, std::string team, int playerNumber)
-    : trantorianObject(std::move(trantObject)), pointLightObject(std::move(lightObject)), team(team), playerNumber(playerNumber), level(0)
+Trantorian::Trantorian(ZappyGameObject::id_t trantObjectId, ZappyGameObject::id_t pointLightObjectId, const std::string &team)
+    : trantorianObject(trantObjectId), pointLightObject(pointLightObjectId), team(team), level(0)
 {
     this->inventory.food = 0;
     this->inventory.linemate = 0;

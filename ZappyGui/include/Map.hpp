@@ -23,6 +23,7 @@ namespace zappy {
         std::vector<ZappyGameObject::id_t> thystame;
     };
     class Map {
+    class Map {
         public:
             Map(std::shared_ptr<ZappyGui> &zappyGui) : _zappyGui(zappyGui) {};
             ~Map();
