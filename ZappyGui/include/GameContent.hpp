@@ -10,6 +10,7 @@
 #include "GameObject.hpp"
 #include "Map.hpp"
 #include "Trantorian.hpp"
+#include "ZappyGui.hpp"
 #include "Client.hpp"
 #include <functional>
 #include <iostream>
@@ -20,7 +21,7 @@
 #include <vector>
 
 namespace zappy {
-class GameContent {
+class GameContent: public ZappyGui {
     using FunctionPtr = std::function<void(void)>;
 
   public:

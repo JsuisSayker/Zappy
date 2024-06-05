@@ -13,12 +13,13 @@
     #include <algorithm>
     #include <glm/vec3.hpp>
     #include "Device.hpp"
+    #include "GameContent.hpp"
     #include "Map.hpp"
     #include "GameObject.hpp"
     #include "ErrorHandling.hpp"
 
 namespace zappy {
-    class Trantorian {
+    class Trantorian: public GameContent {
         public:
         Trantorian(std::shared_ptr<ZappyGameObject> trantorianObject, std::shared_ptr<ZappyGameObject> pointLightObject, std::string team, int playerNumber);
         ~Trantorian() = default;
@@ -40,8 +41,8 @@ namespace zappy {
         // const std::vector<Trantorian> &getTrantorians() const { return Trantorians_; }
 
         private:
-            std::shared_ptr<ZappyGameObject> trantorianObject;
-            std::shared_ptr<ZappyGameObject> pointLightObject;
+            ZappyGameObject::id_t trantorianObject;
+            ZappyGameObject::id_t pointLightObject;
             resources inventory;
             std::string team;
             int playerNumber;

@@ -8,18 +8,20 @@
 #pragma once
 
 #include <vector>
+#include <vector>
+#include "GameContent.hpp"
 
 namespace zappy {
     struct resources {
-        int food;
-        int linemate;
-        int deraumere;
-        int sibur;
-        int mendiane;
-        int phiras;
-        int thystame;
+        std::vector<ZappyGameObject::id_t> food;
+        std::vector<ZappyGameObject::id_t> linemate;
+        std::vector<ZappyGameObject::id_t> deraumere;
+        std::vector<ZappyGameObject::id_t> sibur;
+        std::vector<ZappyGameObject::id_t> mendiane;
+        std::vector<ZappyGameObject::id_t> phiras;
+        std::vector<ZappyGameObject::id_t> thystame;
     };
-    class Map {
+    class Map: public GameContent {
         public:
             Map();
             ~Map();
