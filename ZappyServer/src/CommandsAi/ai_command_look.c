@@ -131,19 +131,19 @@ static void look_direction(zappy_server_t *zappy, look_struct_t *look,
     int lvl)
 {
     if (look->pos.direction == NORTH){
-        look->pos.y += 1;
+        look->pos.y += lvl;
         look_on_x(zappy, look, lvl);
     }
     if (look->pos.direction == EAST){
-        look->pos.x += 1;
+        look->pos.x += lvl;
         look_on_y(zappy, look, lvl);
     }
     if (look->pos.direction == SOUTH){
-        look->pos.y -= 1;
+        look->pos.y -= lvl;
         look_on_x(zappy, look, lvl);
     }
     if (look->pos.direction == WEST){
-        look->pos.x -= 1;
+        look->pos.x -= lvl;
         look_on_y(zappy, look, lvl);
     }
 }
