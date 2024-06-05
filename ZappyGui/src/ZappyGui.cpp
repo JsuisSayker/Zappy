@@ -145,24 +145,24 @@ void ZappyGui::run()
         // Check if there is activity on the socket file descriptor
         if (activity > 0 && FD_ISSET(socket_fd, &readfds)) {
             this->gameContent.get()->getClient().get()->receiveFromServer();
-            this->gameContent.get()->setSplitedBuffer(
+            this->gameContent.get()->bufferToSplitedBuffer(
                 this->gameContent.get()->getClient().get()->getBuffer());
-            if (this->gameContent.get()->getPointerToFunction().find(
-                    this->gameContent.get()->getSplitedBuffer()[0]) !=
-                this->gameContent.get()->getPointerToFunction().end()) {
-                try {
-                    std::cout << "Command: "
-                              << this->gameContent.get()->getSplitedBuffer()[0]
+            for (auto &actualCommand :
+                this->gameContent.get()->getSplitedBuffer()) {
+                if (this->gameContent.get()->getPointerToFunction().find(
+                        actualCommand[0]) !=
+                    this->gameContent.get()->getPointerToFunction().end()) {
+                    try {
+                        this->gameContent.get()
+                            ->getPointerToFunction()[actualCommand[0]](
+                                actualCommand);
+                    } catch (const std::exception &e) {
+                        std::cerr << e.what() << std::endl;
+                    }
+                } else {
+                    std::cerr << "Unknown command: " << actualCommand[0]
                               << std::endl;
-                    this->gameContent.get()->getPointerToFunction()
-                        [this->gameContent.get()->getSplitedBuffer()[0]]();
-                } catch (const std::exception &e) {
-                    std::cerr << e.what() << std::endl;
                 }
-            } else {
-                std::cerr << "Unknown command: "
-                          << this->gameContent.get()->getSplitedBuffer()[0]
-                          << std::endl;
             }
             this->gameContent.get()->getClient().get()->getBuffer().clear();
             this->gameContent.get()->getSplitedBuffer().clear();

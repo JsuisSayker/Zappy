@@ -8,8 +8,17 @@
 #include "Map.hpp"
 
 namespace zappy {
-Map::Map()
+Map::Map() {}
+
+Map::~Map() {}
+
+void Map::setWidth(int width) { this->_width = width; }
+
+void Map::setHeight(int height) { this->_height = height; }
+
+void Map::setMap(std::vector<std::vector<ressources>> map)
 {
+    this->_map = map;
 }
 
 Map::~Map()
