@@ -26,6 +26,8 @@ namespace zappy {
             Map();
             ~Map();
 
+            void createMap(int width, int height);
+
             // void setWidth(int width) { _width = width; }
             // void setHeight(int height) { _height = height; }
             // void setMap(std::vector<std::vector<resources>> map) { _map = map; }

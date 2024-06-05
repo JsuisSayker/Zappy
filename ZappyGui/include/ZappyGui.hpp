@@ -38,7 +38,7 @@ class ZappyGui {
 
     void run();
 
-  private:
+  protected:
     void loadGameObjects();
     void createGameObject(const std::string &modelPath,
     const std::string &texturePath, const glm::vec3 &position,
