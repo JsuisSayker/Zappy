@@ -21,7 +21,7 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
     zappy::ZappyGui app{};
-    app.getGameContent().get()->getClient()->init(argc, argv);
+    app.getClient().get()->init(argc, argv);
     app.run();
     return EXIT_SUCCESS;
 }

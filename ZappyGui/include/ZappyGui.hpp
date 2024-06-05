@@ -14,16 +14,17 @@
 #include "Renderer.hpp"
 #include "Texture.hpp"
 #include "Window.hpp"
-#include "GameContent.hpp"
+#include "Trantorian.hpp"
 
 // std
 #include <memory>
-#include <vector>
 #include <signal.h>
+#include <vector>
 
 namespace zappy {
 class ZappyGui {
   public:
+    using FunctionPtr = std::function<void(std::vector<std::string>)>;
     static constexpr int WIDTH = 800;
     static constexpr int HEIGHT = 600;
 
@@ -34,15 +35,66 @@ class ZappyGui {
     ZappyGui &operator=(const ZappyGui &) = delete;
 
     static std::string getExecutablePath();
-    std::unique_ptr<GameContent> &getGameContent();
+
+    void createTeam(std::shared_ptr<ZappyModel> lveModel,
+        const std::string &teamName, const glm::vec3 &position);
+
+    void addTrantorian(std::shared_ptr<ZappyModel> lveModel,
+        const std::string &teamName, const glm::vec3 &position);
+
+    // void removeTrantorian(const std::string &teamName,
+    // std::shared_ptr<ZappyGameObject> gameObject);
+
+    // void updateNumbers(const std::string &teamName);
+
+    // const std::unordered_map<std::string,
+    //     std::vector<Trantorian::trantorian>> &
+    // getTeams() const
+    // {
+    //     return teams_;
+    // }
+
+    void setPointerToFunction(
+        std::unordered_map<std::string, FunctionPtr> &pointerToFunction);
+    std::unordered_map<std::string, FunctionPtr> &getPointerToFunction();
+
+    std::vector<std::vector<std::string>> &getSplitedBuffer();
+    void bufferToSplitedBuffer(std::string buffer);
+
+    void setClient(std::shared_ptr<Client> client) { this->client = client; }
+    std::shared_ptr<Client> getClient() { return this->client; }
+
+    // Functions to handle commands
+    void msz(std::vector<std::string> actualCommand);
+    void bct(std::vector<std::string> actualCommand);
+    void mct(std::vector<std::string> actualCommand);
+    void tna(std::vector<std::string> actualCommand);
+    void ppo(std::vector<std::string> actualCommand);
+    void plv(std::vector<std::string> actualCommand);
+    void pin(std::vector<std::string> actualCommand);
+    void sgt(std::vector<std::string> actualCommand);
+    void sst(std::vector<std::string> actualCommand);
+    void pex(std::vector<std::string> actualCommand);
+    void pbc(std::vector<std::string> actualCommand);
+    void pic(std::vector<std::string> actualCommand);
+    void pie(std::vector<std::string> actualCommand);
+    void pfk(std::vector<std::string> actualCommand);
+    void pdr(std::vector<std::string> actualCommand);
+    void pgt(std::vector<std::string> actualCommand);
+    void pdi(std::vector<std::string> actualCommand);
+    void enw(std::vector<std::string> actualCommand);
+    void eht(std::vector<std::string> actualCommand);
+    void ebo(std::vector<std::string> actualCommand);
+    void edi(std::vector<std::string> actualCommand);
+    void welcome(std::vector<std::string> actualCommand);
 
     void run();
 
   protected:
     void loadGameObjects();
     void createGameObject(const std::string &modelPath,
-    const std::string &texturePath, const glm::vec3 &position,
-    const glm::vec3 &rotation, const glm::vec3 &scale);
+        const std::string &texturePath, const glm::vec3 &position,
+        const glm::vec3 &rotation, const glm::vec3 &scale);
 
     ZappyWindow lveWindow{WIDTH, HEIGHT, "Vulkan Tutorial"};
     ZappyDevice lveDevice{lveWindow};
@@ -55,8 +107,15 @@ class ZappyGui {
 
     std::string executablePath;
 
-    std::unique_ptr<GameContent> gameContent;
     std::vector<std::unique_ptr<ZappyBuffer>> uboBuffers;
     std::unique_ptr<ZappyDescriptorSetLayout> globalSetLayout;
+    std::vector<std::vector<std::string>> splitedBuffer_;
+    std::unique_ptr<Map> map_;
+    std::shared_ptr<Client> client;
+    ZappyGameObject::Map ressources_;
+    std::vector<Trantorian> trantorians_;
+    std::unordered_map<std::string, glm::vec3> teamsColors_;
+    std::unordered_map<std::string, FunctionPtr>
+        _pointerToFunction; // Map of pointers to functions
 };
 } // namespace zappy

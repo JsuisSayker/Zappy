@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "Texture.hpp"
 #include "Model.hpp"
+#include "Texture.hpp"
 
 // libs
 #include <glm/gtc/matrix_transform.hpp>
