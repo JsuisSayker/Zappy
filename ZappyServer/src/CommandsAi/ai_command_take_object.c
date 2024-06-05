@@ -79,10 +79,10 @@ int ai_command_take_object(zappy_server_t *zappy, client_t *client, char *cmd)
         return ERROR;
     if (cast_action(zappy, client, 7, cmd) == ERROR)
         return ERROR;
-    cmd = &cmd[5];
     printf("Take\n");
     if (check_action(zappy, client) == false)
         return OK;
+    cmd = &cmd[5];
     if (is_valid_resource(cmd) == false)
         return ERROR;
     if (selector_object(zappy, client, cmd) == ERROR)
