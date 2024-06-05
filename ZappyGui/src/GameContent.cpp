@@ -12,29 +12,51 @@ namespace zappy {
 GameContent::GameContent()
 {
     this->client = std::make_shared<Client>();
-    this->_pointerToFunction["msz"] = std::bind(&GameContent::msz, this);
-    this->_pointerToFunction["bct"] = std::bind(&GameContent::bct, this);
-    this->_pointerToFunction["mct"] = std::bind(&GameContent::mct, this);
-    this->_pointerToFunction["tna"] = std::bind(&GameContent::tna, this);
-    this->_pointerToFunction["ppo"] = std::bind(&GameContent::ppo, this);
-    this->_pointerToFunction["plv"] = std::bind(&GameContent::plv, this);
-    this->_pointerToFunction["pin"] = std::bind(&GameContent::pin, this);
-    this->_pointerToFunction["sgt"] = std::bind(&GameContent::sgt, this);
-    this->_pointerToFunction["sst"] = std::bind(&GameContent::sst, this);
-    this->_pointerToFunction["pex"] = std::bind(&GameContent::pex, this);
-    this->_pointerToFunction["pbc"] = std::bind(&GameContent::pbc, this);
-    this->_pointerToFunction["pic"] = std::bind(&GameContent::pic, this);
-    this->_pointerToFunction["pie"] = std::bind(&GameContent::pie, this);
-    this->_pointerToFunction["pfk"] = std::bind(&GameContent::pfk, this);
-    this->_pointerToFunction["pdr"] = std::bind(&GameContent::pdr, this);
-    this->_pointerToFunction["pgt"] = std::bind(&GameContent::pgt, this);
-    this->_pointerToFunction["pdi"] = std::bind(&GameContent::pdi, this);
-    this->_pointerToFunction["enw"] = std::bind(&GameContent::enw, this);
-    this->_pointerToFunction["eht"] = std::bind(&GameContent::eht, this);
-    this->_pointerToFunction["ebo"] = std::bind(&GameContent::ebo, this);
-    this->_pointerToFunction["edi"] = std::bind(&GameContent::edi, this);
+    this->map_ = std::make_unique<Map>();
+    this->_pointerToFunction["msz"] =
+        std::bind(&GameContent::msz, this, std::placeholders::_1);
+    this->_pointerToFunction["bct"] =
+        std::bind(&GameContent::bct, this, std::placeholders::_1);
+    this->_pointerToFunction["mct"] =
+        std::bind(&GameContent::mct, this, std::placeholders::_1);
+    this->_pointerToFunction["tna"] =
+        std::bind(&GameContent::tna, this, std::placeholders::_1);
+    this->_pointerToFunction["ppo"] =
+        std::bind(&GameContent::ppo, this, std::placeholders::_1);
+    this->_pointerToFunction["plv"] =
+        std::bind(&GameContent::plv, this, std::placeholders::_1);
+    this->_pointerToFunction["pin"] =
+        std::bind(&GameContent::pin, this, std::placeholders::_1);
+    this->_pointerToFunction["sgt"] =
+        std::bind(&GameContent::sgt, this, std::placeholders::_1);
+    this->_pointerToFunction["sst"] =
+        std::bind(&GameContent::sst, this, std::placeholders::_1);
+    this->_pointerToFunction["pex"] =
+        std::bind(&GameContent::pex, this, std::placeholders::_1);
+    this->_pointerToFunction["pbc"] =
+        std::bind(&GameContent::pbc, this, std::placeholders::_1);
+    this->_pointerToFunction["pic"] =
+        std::bind(&GameContent::pic, this, std::placeholders::_1);
+    this->_pointerToFunction["pie"] =
+        std::bind(&GameContent::pie, this, std::placeholders::_1);
+    this->_pointerToFunction["pfk"] =
+        std::bind(&GameContent::pfk, this, std::placeholders::_1);
+    this->_pointerToFunction["pdr"] =
+        std::bind(&GameContent::pdr, this, std::placeholders::_1);
+    this->_pointerToFunction["pgt"] =
+        std::bind(&GameContent::pgt, this, std::placeholders::_1);
+    this->_pointerToFunction["pdi"] =
+        std::bind(&GameContent::pdi, this, std::placeholders::_1);
+    this->_pointerToFunction["enw"] =
+        std::bind(&GameContent::enw, this, std::placeholders::_1);
+    this->_pointerToFunction["eht"] =
+        std::bind(&GameContent::eht, this, std::placeholders::_1);
+    this->_pointerToFunction["ebo"] =
+        std::bind(&GameContent::ebo, this, std::placeholders::_1);
+    this->_pointerToFunction["edi"] =
+        std::bind(&GameContent::edi, this, std::placeholders::_1);
     this->_pointerToFunction["WELCOME"] =
-        std::bind(&GameContent::welcome, this);
+        std::bind(&GameContent::welcome, this, std::placeholders::_1);
 }
 
 GameContent::~GameContent() {}
@@ -57,65 +79,148 @@ GameContent::getPointerToFunction()
     return this->_pointerToFunction;
 }
 
-void GameContent::msz() { std::cout << "msz" << std::endl; }
+void GameContent::msz(std::vector<std::string> actualCommand)
+{
+    if (actualCommand.size() != 3) {
+        std::cerr << "msz: invalid number of arguments" << std::endl;
+        return;
+    }
 
-void GameContent::bct() { std::cout << "bct" << std::endl; }
+    int width = std::stoi(actualCommand[1]);
+    int height = std::stoi(actualCommand[2]);
 
-void GameContent::mct() { std::cout << "mct" << std::endl; }
+    this->map_.get()->setHeight(height);
+    this->map_.get()->setWidth(width);
+}
 
-void GameContent::tna() { std::cout << "tna" << std::endl; }
+void GameContent::bct(std::vector<std::string> actualCommand)
+{
+    std::cout << "bct" << std::endl;
+}
 
-void GameContent::ppo() { std::cout << "ppo" << std::endl; }
+void GameContent::mct(std::vector<std::string> actualCommand)
+{
+    std::cout << "mct" << std::endl;
+}
 
-void GameContent::plv() { std::cout << "plv" << std::endl; }
+void GameContent::tna(std::vector<std::string> actualCommand)
+{
+    std::cout << "tna" << std::endl;
+}
 
-void GameContent::pin() { std::cout << "pin" << std::endl; }
+void GameContent::ppo(std::vector<std::string> actualCommand)
+{
+    std::cout << "ppo" << std::endl;
+}
 
-void GameContent::sgt() { std::cout << "sgt" << std::endl; }
+void GameContent::plv(std::vector<std::string> actualCommand)
+{
+    std::cout << "plv" << std::endl;
+}
 
-void GameContent::sst() { std::cout << "sst" << std::endl; }
+void GameContent::pin(std::vector<std::string> actualCommand)
+{
+    std::cout << "pin" << std::endl;
+}
 
-void GameContent::pex() { std::cout << "pex" << std::endl; }
+void GameContent::sgt(std::vector<std::string> actualCommand)
+{
+    std::cout << "sgt" << std::endl;
+}
 
-void GameContent::pbc() { std::cout << "pbc" << std::endl; }
+void GameContent::sst(std::vector<std::string> actualCommand)
+{
+    std::cout << "sst" << std::endl;
+}
 
-void GameContent::pic() { std::cout << "pic" << std::endl; }
+void GameContent::pex(std::vector<std::string> actualCommand)
+{
+    std::cout << "pex" << std::endl;
+}
 
-void GameContent::pie() { std::cout << "pie" << std::endl; }
+void GameContent::pbc(std::vector<std::string> actualCommand)
+{
+    std::cout << "pbc" << std::endl;
+}
 
-void GameContent::pfk() { std::cout << "pfk" << std::endl; }
+void GameContent::pic(std::vector<std::string> actualCommand)
+{
+    std::cout << "pic" << std::endl;
+}
 
-void GameContent::pdr() { std::cout << "pdr" << std::endl; }
+void GameContent::pie(std::vector<std::string> actualCommand)
+{
+    std::cout << "pie" << std::endl;
+}
 
-void GameContent::pgt() { std::cout << "pgt" << std::endl; }
+void GameContent::pfk(std::vector<std::string> actualCommand)
+{
+    std::cout << "pfk" << std::endl;
+}
 
-void GameContent::pdi() { std::cout << "pdi" << std::endl; }
+void GameContent::pdr(std::vector<std::string> actualCommand)
+{
+    std::cout << "pdr" << std::endl;
+}
 
-void GameContent::enw() { std::cout << "enw" << std::endl; }
+void GameContent::pgt(std::vector<std::string> actualCommand)
+{
+    std::cout << "pgt" << std::endl;
+}
 
-void GameContent::eht() { std::cout << "eht" << std::endl; }
+void GameContent::pdi(std::vector<std::string> actualCommand)
+{
+    std::cout << "pdi" << std::endl;
+}
 
-void GameContent::ebo() { std::cout << "ebo" << std::endl; }
+void GameContent::enw(std::vector<std::string> actualCommand)
+{
+    std::cout << "enw" << std::endl;
+}
 
-void GameContent::edi() { std::cout << "edi" << std::endl; }
+void GameContent::eht(std::vector<std::string> actualCommand)
+{
+    std::cout << "eht" << std::endl;
+}
 
-void GameContent::welcome()
+void GameContent::ebo(std::vector<std::string> actualCommand)
+{
+    std::cout << "ebo" << std::endl;
+}
+
+void GameContent::edi(std::vector<std::string> actualCommand)
+{
+    std::cout << "edi" << std::endl;
+}
+
+void GameContent::welcome(std::vector<std::string> actualCommand)
 {
     std::cout << "WELCOME" << std::endl;
     dprintf(this->client.get()->getSocketFd(), "GRAPHIC\n");
 }
 
-void GameContent::setSplitedBuffer(std::string splitedBuffer)
+void GameContent::bufferToSplitedBuffer(std::string buffer)
 {
-    std::istringstream iss(splitedBuffer);
-    std::string word;
-
-    while (iss >> word) {
-        this->splitedBuffer_.push_back(word);
+    // split the bufer by \n
+    std::vector<std::string> bufferSplited;
+    std::string token;
+    std::istringstream tokenStream(buffer);
+    while (std::getline(tokenStream, token, '\n')) {
+        bufferSplited.push_back(token);
+    }
+    // split each line by space
+    for (auto &i : bufferSplited) {
+        std::vector<std::string> line;
+        std::string token;
+        std::istringstream tokenStream(i);
+        while (std::getline(tokenStream, token, ' ')) {
+            line.push_back(token);
+        }
+        this->splitedBuffer_.push_back(line);
     }
 }
 
-std::vector<std::string> &GameContent::getSplitedBuffer()
+std::vector<std::vector<std::string>> &GameContent::getSplitedBuffer()
 {
     return this->splitedBuffer_;
 }
