@@ -25,7 +25,7 @@ map_tile_t **copy_map_tile(map_tile_t **source)
     return destination;
 }
 
-void refill_inventory(inventory_t *destination, inventory_t *source)
+static void refill_inventory(inventory_t *destination, inventory_t *source)
 {
     if (destination->food < source->food)
         destination->food = source->food;

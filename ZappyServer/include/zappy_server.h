@@ -102,6 +102,8 @@ void display_gui_tile(map_tile_t tile, int socket);
 void display_map_tile(map_tile_t **map_tile);
 int get_len_map_tile(map_tile_t **map_tile);
 int get_len_line_map_tile(map_tile_t **map_tile);
+map_tile_t **copy_map_tile(map_tile_t **source);
+void refill_map_tile(map_tile_t **destination, map_tile_t **source);
 
 // int array functions
 int **generate_int_array(int x, int y);
@@ -226,11 +228,13 @@ typedef struct zappy_server_s {
     int index_eggs;
     int index_clients;
     bool server_running;
+    double time_refill_map;
     struct sockaddr_in server_addr;
     struct teamhead all_teams;
     struct threadhead all_threads;
     struct client_s clients[FD_SETSIZE];
     map_tile_t **map_tile;
+    map_tile_t **map_tile_save;
     args_config_t *args;
 } zappy_server_t;
 

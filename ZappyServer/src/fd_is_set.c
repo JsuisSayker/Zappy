@@ -25,6 +25,20 @@ static int check_connection(zappy_server_t *zappy_server)
     return OK;
 }
 
+static void refill_map(zappy_server_t *zappy_server, client_t *client)
+{
+    struct timeval tv;
+    double cast_time = 20 / (double)zappy_server->args->freq;
+    double elapsed = 0;
+
+    gettimeofday(&tv, NULL);
+    elapsed = (tv.tv_sec + tv.tv_usec / 1000000.0) - client->command.time;
+    if (cast_time < elapsed) {
+        refill_map_tile(zappy_server->map_tile, zappy_server->map_tile_save);
+        zappy_server->time_refill_map = time(NULL);
+    }
+}
+
 int fd_is_set(zappy_server_t *zappy_server)
 {
     client_t *client;
@@ -38,11 +52,12 @@ int fd_is_set(zappy_server_t *zappy_server)
         return OK;
     }
     if (client->command.execusion != NULL || (client->command.queue
-        != NULL && client->command.queue[0] != NULL))
+        != NULL && client->command.queue[0] != NULL)) {
         if (ai_function(zappy_server, client, NULL) != OK)
             return KO;
-    if (client->type == IA){
-        is_alive(zappy_server, client);
     }
+    if (client->type == IA)
+        is_alive(zappy_server, client);
+    refill_map(zappy_server, client);
     return OK;
 }
