@@ -20,8 +20,9 @@ void display_tile(map_tile_t tile)
 void display_gui_tile(map_tile_t *tile, int socket)
 {
     dprintf(socket, "bct %d %d %d %d %d %d %d %d %d\n", tile->x, tile->y,
-        tile->inventory.food, tile->inventory.linemate, tile->inventory.deraumere,
-        tile->inventory.sibur, tile->inventory.mendiane, tile->inventory.phiras,
+        tile->inventory.food, tile->inventory.linemate,
+        tile->inventory.deraumere, tile->inventory.sibur,
+        tile->inventory.mendiane, tile->inventory.phiras,
         tile->inventory.thystame);
 }
 
