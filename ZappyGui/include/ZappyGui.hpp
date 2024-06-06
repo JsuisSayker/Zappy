@@ -17,6 +17,7 @@
 #include "Texture.hpp"
 #include "Window.hpp"
 #include "Trantorian.hpp"
+#include "Camera.hpp"
 
 // std
 #include <memory>
@@ -109,7 +110,8 @@ class ZappyGui {
     ZappyGameObject::Map gameObjects;
 
     std::string executablePath;
-
+    ZappyCamera camera;
+    ZappyGameObject viewerObject{ZappyGameObject::createGameObject()};
     std::vector<std::unique_ptr<ZappyBuffer>> uboBuffers;
     std::unique_ptr<ZappyDescriptorSetLayout> globalSetLayout;
     std::vector<std::vector<std::string>> splitedBuffer_;

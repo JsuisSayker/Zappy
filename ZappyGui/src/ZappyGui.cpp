@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "Buffer.hpp"
-#include "Camera.hpp"
 #include "ErrorHandling.hpp"
 #include "KeyboardMovementController.hpp"
 #include "Trantorian.hpp"
@@ -149,10 +148,8 @@ void ZappyGui::run()
     PointLightSystem pointLightSystem{lveDevice,
         lveRenderer.getSwapChainRenderPass(),
         globalSetLayout->getDescriptorSetLayout(), executablePath};
-    ZappyCamera camera{};
 
-    auto viewerObject = ZappyGameObject::createGameObject();
-    viewerObject.transform.translation.z = -2.5f;
+    viewerObject = ZappyGameObject::createGameObject();
     KeyboardMovementController cameraController{};
 
     auto currentTime = std::chrono::high_resolution_clock::now();
@@ -364,6 +361,13 @@ void ZappyGui::msz(std::vector<std::string> actualCommand)
 
     this->map_.get()->setHeight(height);
     this->map_.get()->setWidth(width);
+    viewerObject.transform.translation.x = width / 2.f;
+    viewerObject.transform.translation.y = -width / 1.5f;
+    if (width < height) {
+        viewerObject.transform.translation.y = -height / 1.5f;
+    }
+    viewerObject.transform.translation.z = height / 2.f;
+    viewerObject.transform.rotation.x = -40.f;
     std::vector<std::vector<resources>> map;
     for (int i = 0; i < width; i++) {
         std::vector<resources> line;
