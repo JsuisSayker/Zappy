@@ -93,6 +93,7 @@ static int set_command(zappy_server_t *zappy, client_t *client, char *cmd)
         free(item);
         return OK;
     }
+    send_pin_command_to_all_gui(zappy, &zappy->clients[zappy->actual_sockfd]);
     dprintf(zappy->actual_sockfd, "ok\n");
     free(item);
     return OK;
