@@ -163,20 +163,23 @@ void ZappyGui::run()
         FD_SET(socket_fd, &readfds);
         FD_SET(STDIN_FILENO, &readfds);
 
+        // Calculate the maximum file descriptor
+        int max_fd = std::max(socket_fd, STDIN_FILENO) + 1;
+
         // Set timeout for select
         struct timeval timeout;
         timeout.tv_sec = 0;
         timeout.tv_usec = 0; // 16 ms timeout for roughly 60 FPS
 
         // Wait for an activity on one of the file descriptors
-        int nb_bytes = read(socket_fd, nullptr, 0);
-        if (nb_bytes < 0) {
+        int activity = select(max_fd, &readfds, NULL, NULL, &timeout);
+        if (activity < 0) {
             perror("select");
             exit(84);
         }
 
         // Check if there is activity on the socket file descriptor
-        if (nb_bytes > 0 && FD_ISSET(socket_fd, &readfds)) {
+        if (activity > 0 && FD_ISSET(socket_fd, &readfds)) {
             this->getClient().get()->receiveFromServer();
             this->bufferToSplitedBuffer(this->getClient().get()->getBuffer());
             for (auto &actualCommand : this->getSplitedBuffer()) {
@@ -406,42 +409,43 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
         map[x][y].linemate.push_back(
             createGameObject(executablePath + "/ZappyGui/models/linemate.obj",
                 executablePath + "/ZappyGui/textures/linemate.png",
-                {static_cast<float>(x) - 0.3f, -0.125f, static_cast<float>(y) - 0.3f},
+                {static_cast<float>(x) - 0.125f, -0.125f,
+                    static_cast<float>(y) - 0.125f},
                 {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
     }
     for (int i = 0; i < deraumere - map[x][y].deraumere.size(); i++) {
         map[x][y].deraumere.push_back(createGameObject(
             executablePath + "/ZappyGui/models/deraumere.obj",
             executablePath + "/ZappyGui/textures/deraumere.png",
-            {static_cast<float>(x) + 0.3f, -0.125f, static_cast<float>(y) + 0.3f},
+            {static_cast<float>(x) - 0.125f, -0.125f, static_cast<float>(y) - 0.125f},
             {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
     }
     for (int i = 0; i < sibur - map[x][y].sibur.size(); i++) {
         map[x][y].sibur.push_back(createGameObject(
             executablePath + "/ZappyGui/models/sibur.obj",
             executablePath + "/ZappyGui/textures/sibur.png",
-            {static_cast<float>(x) - 0.3f, -0.125f, static_cast<float>(y) + 0.3f},
+            {static_cast<float>(x) - 0.125f, -0.125f, static_cast<float>(y) - 0.125f},
             {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
     }
     for (int i = 0; i < mendiane - map[x][y].mendiane.size(); i++) {
         map[x][y].mendiane.push_back(createGameObject(
             executablePath + "/ZappyGui/models/mendiane.obj",
             executablePath + "/ZappyGui/textures/mendiane.png",
-            {static_cast<float>(x) + 0.3f, -0.125f, static_cast<float>(y) - 0.3f},
+            {static_cast<float>(x) - 0.125f, -0.125f, static_cast<float>(y) - 0.125f},
             {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
     }
     for (int i = 0; i < phiras - map[x][y].phiras.size(); i++) {
         map[x][y].phiras.push_back(createGameObject(
             executablePath + "/ZappyGui/models/phiras.obj",
             executablePath + "/ZappyGui/textures/phiras.png",
-            {static_cast<float>(x) - 0.3f, -0.125f, static_cast<float>(y)},
+            {static_cast<float>(x) - 0.125f, -0.125f, static_cast<float>(y) - 0.125f},
             {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
     }
     for (int i = 0; i < thystame - map[x][y].thystame.size(); i++) {
         map[x][y].thystame.push_back(createGameObject(
             executablePath + "/ZappyGui/models/thystame.obj",
             executablePath + "/ZappyGui/textures/thystame.png",
-            {static_cast<float>(x) + 0.3f, -0.125f, static_cast<float>(y)},
+            {static_cast<float>(x) - 0.125f, -0.125f, static_cast<float>(y) - 0.125f},
             {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
     }
     this->map_.get()->setMap(map);
