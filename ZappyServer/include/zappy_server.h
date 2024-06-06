@@ -174,7 +174,6 @@ typedef struct ai_command_data_s {
 } ai_command_data_t;
 
 typedef struct ai_health_s {
-    bool is_alive;
     double last_meal;
     double time_to_eat;
 } ai_health_t;
