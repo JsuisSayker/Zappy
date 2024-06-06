@@ -287,10 +287,17 @@ ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
     const std::string &texturePath, const glm::vec3 &position,
     const glm::vec3 &rotation, const glm::vec3 &scale, bool hasTexture)
 {
-    std::shared_ptr<ZappyModel> modelObject =
-        ZappyModel::createModelFromFile(lveDevice, modelPath);
     ZappyGameObject object = ZappyGameObject::createGameObject();
-    object.model = modelObject;
+    for (int i = 0; i < modelObjects.size(); i++) {
+        if (modelObjects[i].second == modelPath) {
+            object.model = modelObjects[i].first;
+        }
+    }
+    if (object.model == nullptr) {
+        std::shared_ptr<ZappyModel> modelObject =
+            ZappyModel::createModelFromFile(lveDevice, modelPath);
+        object.model = modelObject;
+    }
     object.transform.translation = position;
     object.transform.rotation = rotation;
     object.transform.scale = scale;

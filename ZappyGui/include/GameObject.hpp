@@ -67,7 +67,7 @@ class ZappyGameObject {
     VkDescriptorImageInfo imageInfo{};
 
     // Optional pointer components
-    std::shared_ptr<ZappyModel> model{};
+    std::shared_ptr<ZappyModel> model = nullptr;
     std::unique_ptr<PointLightComponent> pointLight = nullptr;
 
   private:
