@@ -39,11 +39,8 @@ class ZappyGui {
 
     static std::string getExecutablePath();
 
-    void createTeam(std::shared_ptr<ZappyModel> lveModel,
-        const std::string &teamName, const glm::vec3 &position);
-
     void addTrantorian(std::shared_ptr<ZappyModel> lveModel,
-        const std::string &teamName, const glm::vec3 &position);
+        const std::string &teamName, const glm::vec3 &position, int trantorianId);
 
     // void removeTrantorian(const std::string &teamName,
     // std::shared_ptr<ZappyGameObject> gameObject);
@@ -72,6 +69,7 @@ class ZappyGui {
     void bct(std::vector<std::string> actualCommand);
     void mct(std::vector<std::string> actualCommand);
     void tna(std::vector<std::string> actualCommand);
+    void pnw(std::vector<std::string> actualCommand);
     void ppo(std::vector<std::string> actualCommand);
     void plv(std::vector<std::string> actualCommand);
     void pin(std::vector<std::string> actualCommand);
