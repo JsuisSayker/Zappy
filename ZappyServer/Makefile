@@ -53,6 +53,7 @@ COMMAND_AI		=	handle_ai_command.c				\
 					send_ppo_command_to_all_gui.c	\
 					send_pin_command_to_all_gui.c	\
 					send_pdi_command_to_all_gui.c	\
+					send_pgt_command_to_all_gui.c	\
 
 COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_msz.c				\
