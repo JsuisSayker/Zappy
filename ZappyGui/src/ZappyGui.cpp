@@ -410,41 +410,40 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
                 {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
     }
     for (int i = 0; i < deraumere; i++) {
-        map[x][y].deraumere.push_back(
-            createGameObject(executablePath + "/ZappyGui/models/deraumere.obj",
-                executablePath + "/ZappyGui/textures/deraumere.png",
-                {static_cast<float>(x) + 0.125f, 1.f,
-                    static_cast<float>(y) + 0.125f},
-                {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+        map[x][y].deraumere.push_back(createGameObject(
+            executablePath + "/ZappyGui/models/deraumere.obj",
+            executablePath + "/ZappyGui/textures/deraumere.png",
+            {static_cast<float>(x) - 0.125f, -0.125f, static_cast<float>(y) - 0.125f},
+            {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
     }
-    // for (int i = 0; i < sibur; i++) {
-    //     map[x][y].sibur.push_back(createGameObject(
-    //         executablePath + "/ZappyGui/models/sibur.obj",
-    //         executablePath + "/ZappyGui/textures/sibur.png",
-    //         {static_cast<float>(x), 1.f, static_cast<float>(y)},
-    //         {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
-    // }
-    // for (int i = 0; i < mendiane; i++) {
-    //     map[x][y].mendiane.push_back(createGameObject(
-    //         executablePath + "/ZappyGui/models/mendiane.obj",
-    //         executablePath + "/ZappyGui/textures/mendiane.png",
-    //         {static_cast<float>(x), 1.f, static_cast<float>(y)},
-    //         {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
-    // }
-    // for (int i = 0; i < phiras; i++) {
-    //     map[x][y].phiras.push_back(createGameObject(
-    //         executablePath + "/ZappyGui/models/phiras.obj",
-    //         executablePath + "/ZappyGui/textures/phiras.png",
-    //         {static_cast<float>(x), 1.f, static_cast<float>(y)},
-    //         {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
-    // }
-    // for (int i = 0; i < thystame; i++) {
-    //     map[x][y].thystame.push_back(createGameObject(
-    //         executablePath + "/ZappyGui/models/thystame.obj",
-    //         executablePath + "/ZappyGui/textures/thystame.png",
-    //         {static_cast<float>(x), 1.f, static_cast<float>(y)},
-    //         {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
-    // }
+    for (int i = 0; i < sibur; i++) {
+        map[x][y].sibur.push_back(createGameObject(
+            executablePath + "/ZappyGui/models/sibur.obj",
+            executablePath + "/ZappyGui/textures/sibur.png",
+            {static_cast<float>(x) - 0.125f, -0.125f, static_cast<float>(y) - 0.125f},
+            {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+    }
+    for (int i = 0; i < mendiane; i++) {
+        map[x][y].mendiane.push_back(createGameObject(
+            executablePath + "/ZappyGui/models/mendiane.obj",
+            executablePath + "/ZappyGui/textures/mendiane.png",
+            {static_cast<float>(x) - 0.125f, -0.125f, static_cast<float>(y) - 0.125f},
+            {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+    }
+    for (int i = 0; i < phiras; i++) {
+        map[x][y].phiras.push_back(createGameObject(
+            executablePath + "/ZappyGui/models/phiras.obj",
+            executablePath + "/ZappyGui/textures/phiras.png",
+            {static_cast<float>(x) - 0.125f, -0.125f, static_cast<float>(y) - 0.125f},
+            {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+    }
+    for (int i = 0; i < thystame; i++) {
+        map[x][y].thystame.push_back(createGameObject(
+            executablePath + "/ZappyGui/models/thystame.obj",
+            executablePath + "/ZappyGui/textures/thystame.png",
+            {static_cast<float>(x), 1.f, static_cast<float>(y)},
+            {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+    }
     this->map_.get()->setMap(map);
 }
 
