@@ -44,7 +44,7 @@ ZappyGui::ZappyGui()
                      .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                          ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
                      .build();
-    loadGameObjects();
+    // loadGameObjects();
     this->client = std::make_shared<Client>();
     this->map_ = std::make_unique<Map>();
     this->_pointerToFunction["msz"] =
@@ -127,16 +127,12 @@ void ZappyGui::run()
     // Create descriptor pool with adequate size
     globalPool = ZappyDescriptorPool::Builder(lveDevice)
                      .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT *
-                         5) // Adjusted to fit more sets
+                         10000) // Adjusted to fit more sets
                      .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                         ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 5)
+                         ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 10000)
                      .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                         ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 5)
+                         ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 10000)
                      .build();
-
-    createGameObject(executablePath + "/ZappyGui/models/Grass_Block.obj",
-        executablePath + "/ZappyGui/textures/Grass_Block.png", {0.f, 0.f, 0.f},
-        {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f});
 
     std::vector<VkDescriptorSet> globalDescriptorSets(
         ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -350,6 +346,7 @@ void ZappyGui::msz(std::vector<std::string> actualCommand)
 
     this->map_.get()->setHeight(height);
     this->map_.get()->setWidth(width);
+    this->createMap(width, height);
 }
 
 void ZappyGui::bct(std::vector<std::string> actualCommand)
@@ -539,5 +536,17 @@ void ZappyGui::addTrantorian(std::shared_ptr<ZappyModel> lveModel,
     // Trantorian newTrantorian(
     //     object, pointLight, teamName, 0); /////////// change number
     // trantorians_.emplace_back(newTrantorian);
+}
+
+void ZappyGui::createMap(int width, int height)
+{
+    for (float i = 0.f; i < width; i++) {
+        for (float j = 0.f; j < height; j++) {
+            createGameObject(
+                executablePath + "/ZappyGui/models/Grass_Block.obj",
+                executablePath + "/ZappyGui/textures/Grass_Block.png",
+                {i, 0.f, j}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f});
+        }
+    }
 }
 } // namespace zappy
