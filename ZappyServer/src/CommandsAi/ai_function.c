@@ -7,6 +7,20 @@
 
 #include <zappy_server.h>
 
+bool can_i_eat(zappy_server_t *zappy, client_t *client)
+{
+    struct timeval tv;
+
+    if (zappy == NULL || client == NULL)
+        return false;
+    if (client->inventory.food == 0)
+        return false;
+    gettimeofday(&tv, NULL);
+    client->health.last_meal = tv.tv_sec + tv.tv_usec / 1000000.0;
+    client->inventory.food -= 1;
+    return true;
+}
+
 bool is_alive(zappy_server_t *zappy, client_t *client)
 {
     struct timeval tv;
@@ -19,10 +33,12 @@ bool is_alive(zappy_server_t *zappy, client_t *client)
     gettimeofday(&tv, NULL);
     current_time = tv.tv_sec + tv.tv_usec / 1000000.0;
     if (current_time - client->health.last_meal > client->health.time_to_eat) {
-        client->health.is_alive = false;
-        dprintf(zappy->actual_sockfd, "dead\n");
-        send_pdi_command_to_all_gui(zappy, client);
-        return false;
+        if (can_i_eat(zappy, client) == false){
+            client->health.is_alive = false;
+            dprintf(zappy->actual_sockfd, "dead\n");
+            send_pdi_command_to_all_gui(zappy, client);
+            return false;
+        }
     }
     return true;
 }
