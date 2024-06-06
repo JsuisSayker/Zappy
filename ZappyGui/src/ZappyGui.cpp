@@ -427,7 +427,7 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
     //         {static_cast<float>(x), 1.f, static_cast<float>(y)},
     //         {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
     // }
-    // this->map_.get()->setMap(map);
+    this->map_.get()->setMap(map);
 }
 
 void ZappyGui::mct(std::vector<std::string> actualCommand)
