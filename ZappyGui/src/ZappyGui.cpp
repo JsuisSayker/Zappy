@@ -396,25 +396,26 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
     std::vector<std::vector<resources>> map = this->map_.get()->getMap();
     for (int i = 0; i < food; i++) {
         map[x][y].food.push_back(
-        createGameObject(
-            executablePath + "/ZappyGui/models/food.obj",
-            executablePath + "/ZappyGui/textures/food.png",
-            {static_cast<float>(x), -0.125f, static_cast<float>(y)},
-            {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+            createGameObject(executablePath + "/ZappyGui/models/food.obj",
+                executablePath + "/ZappyGui/textures/food.png",
+                {static_cast<float>(x), -0.125f, static_cast<float>(y)},
+                {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
     }
     for (int i = 0; i < linemate; i++) {
-        map[x][y].linemate.push_back(createGameObject(
-            executablePath + "/ZappyGui/models/linemate.obj",
-            executablePath + "/ZappyGui/textures/linemate.png",
-            {static_cast<float>(x) - 0.125f, -0.125f, static_cast<float>(y) - 0.125f},
-            {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+        map[x][y].linemate.push_back(
+            createGameObject(executablePath + "/ZappyGui/models/linemate.obj",
+                executablePath + "/ZappyGui/textures/linemate.png",
+                {static_cast<float>(x) - 0.125f, -0.125f,
+                    static_cast<float>(y) - 0.125f},
+                {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
     }
     for (int i = 0; i < deraumere; i++) {
-        map[x][y].deraumere.push_back(createGameObject(
-            executablePath + "/ZappyGui/models/deraumere.obj",
-            executablePath + "/ZappyGui/textures/deraumere.png",
-            {static_cast<float>(x) + 0.125f, 1.f, static_cast<float>(y) + 0.125f},
-            {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+        map[x][y].deraumere.push_back(
+            createGameObject(executablePath + "/ZappyGui/models/deraumere.obj",
+                executablePath + "/ZappyGui/textures/deraumere.png",
+                {static_cast<float>(x) + 0.125f, 1.f,
+                    static_cast<float>(y) + 0.125f},
+                {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
     }
     // for (int i = 0; i < sibur; i++) {
     //     map[x][y].sibur.push_back(createGameObject(
@@ -454,7 +455,17 @@ void ZappyGui::mct(std::vector<std::string> actualCommand)
 
 void ZappyGui::tna(std::vector<std::string> actualCommand)
 {
-    std::cout << "tna" << std::endl;
+    if (actualCommand.size() != 2) {
+        std::cerr << "tna: invalid number of arguments" << std::endl;
+        return;
+    }
+
+    std::string teamName = actualCommand[1];
+
+    std::shared_ptr<ZappyModel> lveModel = ZappyModel::createModelFromFile(
+        lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj");
+
+    this->createTeam(lveModel, teamName, {0.0f, 0.0f, 0.0f});
 }
 
 void ZappyGui::ppo(std::vector<std::string> actualCommand)
@@ -474,7 +485,14 @@ void ZappyGui::pin(std::vector<std::string> actualCommand)
 
 void ZappyGui::sgt(std::vector<std::string> actualCommand)
 {
-    std::cout << "sgt" << std::endl;
+    if (actualCommand.size() != 2) {
+        std::cerr << "sgt: invalid number of arguments" << std::endl;
+        return;
+    }
+
+    int timeUnit = std::stoi(actualCommand[1]);
+
+    this->_timeUnit = timeUnit;
 }
 
 void ZappyGui::sst(std::vector<std::string> actualCommand)
@@ -524,7 +542,7 @@ void ZappyGui::pdi(std::vector<std::string> actualCommand)
 
 void ZappyGui::enw(std::vector<std::string> actualCommand)
 {
-    std::cout << "enw" << std::endl;
+    
 }
 
 void ZappyGui::eht(std::vector<std::string> actualCommand)
@@ -566,6 +584,13 @@ void ZappyGui::bufferToSplitedBuffer(std::string buffer)
             line.push_back(token);
         }
         this->splitedBuffer_.push_back(line);
+    }
+    // Print splited buffer
+    for (auto &i : this->splitedBuffer_) {
+        for (auto &j : i) {
+            std::cout << j << " ";
+        }
+        std::cout << std::endl;
     }
 }
 
