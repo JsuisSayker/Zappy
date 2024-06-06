@@ -25,8 +25,8 @@ namespace zappy {
 class ZappyGui {
   public:
     using FunctionPtr = std::function<void(std::vector<std::string>)>;
-    static constexpr int WIDTH = 800;
-    static constexpr int HEIGHT = 600;
+    static constexpr int WIDTH = 1920;
+    static constexpr int HEIGHT = 1080;
 
     ZappyGui();
     ~ZappyGui();
@@ -93,9 +93,9 @@ class ZappyGui {
   protected:
     void createMap(int width, int height);
     void loadGameObjects();
-    void createGameObject(const std::string &modelPath,
+    ZappyGameObject::id_t createGameObject(const std::string &modelPath,
         const std::string &texturePath, const glm::vec3 &position,
-        const glm::vec3 &rotation, const glm::vec3 &scale);
+        const glm::vec3 &rotation, const glm::vec3 &scale, bool hasTexture);
 
     ZappyWindow lveWindow{WIDTH, HEIGHT, "Vulkan Tutorial"};
     ZappyDevice lveDevice{lveWindow};

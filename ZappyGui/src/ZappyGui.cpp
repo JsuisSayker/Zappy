@@ -284,9 +284,9 @@ void ZappyGui::loadGameObjects()
     this->addTrantorian(lveModel, "Team-A", {8.0f, 8.0f, 8.0f});
 }
 
-void ZappyGui::createGameObject(const std::string &modelPath,
+ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
     const std::string &texturePath, const glm::vec3 &position,
-    const glm::vec3 &rotation, const glm::vec3 &scale)
+    const glm::vec3 &rotation, const glm::vec3 &scale, bool hasTexture)
 {
     std::shared_ptr<ZappyModel> modelObject =
         ZappyModel::createModelFromFile(lveDevice, modelPath);
@@ -296,7 +296,7 @@ void ZappyGui::createGameObject(const std::string &modelPath,
     object.transform.rotation = rotation;
     object.transform.scale = scale;
 
-    if (texturePath.size() > 0) {
+    if (hasTexture) {
         object.hasDescriptorSet = true;
 
         object.texture = std::make_unique<Texture>(lveDevice, texturePath);
@@ -315,6 +315,7 @@ void ZappyGui::createGameObject(const std::string &modelPath,
         }
     }
     gameObjects.emplace(object.getId(), std::move(object));
+    return object.getId();
 }
 
 void ZappyGui::setPointerToFunction(
@@ -346,6 +347,16 @@ void ZappyGui::msz(std::vector<std::string> actualCommand)
 
     this->map_.get()->setHeight(height);
     this->map_.get()->setWidth(width);
+    std::vector<std::vector<resources>> map;
+    for (int i = 0; i < width; i++) {
+        std::vector<resources> line;
+        for (int j = 0; j < height; j++) {
+            resources res;
+            line.push_back(res);
+        }
+        map.push_back(line);
+    }
+    this->map_.get()->setMap(map);
     this->createMap(width, height);
 }
 
@@ -365,6 +376,58 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
     int mendiane = std::stoi(actualCommand[7]);
     int phiras = std::stoi(actualCommand[8]);
     int thystame = std::stoi(actualCommand[9]);
+    std::vector<std::vector<resources>> map = this->map_.get()->getMap();
+    for (int i = 0; i < food; i++) {
+        map[x][y].food.push_back(
+        createGameObject(
+            executablePath + "/ZappyGui/models/food.obj",
+            executablePath + "/ZappyGui/textures/food.png",
+            {static_cast<float>(x), -0.125f, static_cast<float>(y)},
+            {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+    }
+    for (int i = 0; i < linemate; i++) {
+        map[x][y].linemate.push_back(createGameObject(
+            executablePath + "/ZappyGui/models/linemate.obj",
+            executablePath + "/ZappyGui/textures/linemate.png",
+            {static_cast<float>(x) - 0.125f, -0.125f, static_cast<float>(y) - 0.125f},
+            {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+    }
+    for (int i = 0; i < deraumere; i++) {
+        map[x][y].deraumere.push_back(createGameObject(
+            executablePath + "/ZappyGui/models/deraumere.obj",
+            executablePath + "/ZappyGui/textures/deraumere.png",
+            {static_cast<float>(x) + 0.125f, 1.f, static_cast<float>(y) + 0.125f},
+            {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+    }
+    // for (int i = 0; i < sibur; i++) {
+    //     map[x][y].sibur.push_back(createGameObject(
+    //         executablePath + "/ZappyGui/models/sibur.obj",
+    //         executablePath + "/ZappyGui/textures/sibur.png",
+    //         {static_cast<float>(x), 1.f, static_cast<float>(y)},
+    //         {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+    // }
+    // for (int i = 0; i < mendiane; i++) {
+    //     map[x][y].mendiane.push_back(createGameObject(
+    //         executablePath + "/ZappyGui/models/mendiane.obj",
+    //         executablePath + "/ZappyGui/textures/mendiane.png",
+    //         {static_cast<float>(x), 1.f, static_cast<float>(y)},
+    //         {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+    // }
+    // for (int i = 0; i < phiras; i++) {
+    //     map[x][y].phiras.push_back(createGameObject(
+    //         executablePath + "/ZappyGui/models/phiras.obj",
+    //         executablePath + "/ZappyGui/textures/phiras.png",
+    //         {static_cast<float>(x), 1.f, static_cast<float>(y)},
+    //         {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+    // }
+    // for (int i = 0; i < thystame; i++) {
+    //     map[x][y].thystame.push_back(createGameObject(
+    //         executablePath + "/ZappyGui/models/thystame.obj",
+    //         executablePath + "/ZappyGui/textures/thystame.png",
+    //         {static_cast<float>(x), 1.f, static_cast<float>(y)},
+    //         {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+    // }
+    // this->map_.get()->setMap(map);
 }
 
 void ZappyGui::mct(std::vector<std::string> actualCommand)
@@ -545,7 +608,7 @@ void ZappyGui::createMap(int width, int height)
             createGameObject(
                 executablePath + "/ZappyGui/models/Grass_Block.obj",
                 executablePath + "/ZappyGui/textures/Grass_Block.png",
-                {i, 0.f, j}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f});
+                {i, 0.f, j}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
         }
     }
 }
