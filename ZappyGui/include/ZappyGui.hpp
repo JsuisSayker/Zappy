@@ -122,5 +122,6 @@ class ZappyGui {
     std::unordered_map<std::string, glm::vec3> teamsColors_;
     std::unordered_map<std::string, FunctionPtr>
         _pointerToFunction; // Map of pointers to functions
+    int _timeUnit; // Time unit of the server
 };
 } // namespace zappy
