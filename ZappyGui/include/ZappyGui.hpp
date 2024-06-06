@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <vulkan/vulkan_core.h>
+
 #include "Client.hpp"
 #include "Descriptors.hpp"
 #include "Device.hpp"
@@ -111,6 +113,7 @@ class ZappyGui {
     std::vector<std::unique_ptr<ZappyBuffer>> uboBuffers;
     std::unique_ptr<ZappyDescriptorSetLayout> globalSetLayout;
     std::vector<std::vector<std::string>> splitedBuffer_;
+    std::vector<std::pair<std::vector<VkDescriptorSet>, std::pair<std::shared_ptr<Texture>, std::string>>> textureObjects;
     std::unique_ptr<Map> map_;
     std::shared_ptr<Client> client;
     ZappyGameObject::Map ressources_;

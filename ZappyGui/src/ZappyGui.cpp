@@ -7,7 +7,6 @@
 
 #include "ZappyGui.hpp"
 #include <memory>
-#include <vulkan/vulkan_core.h>
 
 #include "Buffer.hpp"
 #include "Camera.hpp"
@@ -223,7 +222,7 @@ void ZappyGui::run()
         if (auto commandBuffer = lveRenderer.beginFrame()) {
             int frameIndex = lveRenderer.getFrameIndex();
             FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera,
-                globalDescriptorSets[frameIndex], gameObjects};
+                globalDescriptorSets[frameIndex], textureObjects, gameObjects};
 
             // update
             GlobalUbo ubo{};
@@ -297,22 +296,33 @@ ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
     object.transform.scale = scale;
 
     if (hasTexture) {
+        int index = 0;
         object.hasDescriptorSet = true;
+        for (auto &textureObject : textureObjects) {
+            if (textureObject.second.second == texturePath) {
+                object.indexDescriptorSet = index;
+                gameObjects.emplace(object.getId(), std::move(object));
+                return object.getId();
+            }
+            index++;
+        }
 
-        object.texture = std::make_unique<Texture>(lveDevice, texturePath);
-        object.imageInfo.sampler = object.texture->getSampler();
-        object.imageInfo.imageView = object.texture->getImageView();
-        object.imageInfo.imageLayout = object.texture->getImageLayout();
+        std::shared_ptr<Texture> texture = std::make_shared<Texture>(lveDevice, texturePath);
+        object.imageInfo.sampler = texture->getSampler();
+        object.imageInfo.imageView = texture->getImageView();
+        object.imageInfo.imageLayout = texture->getImageLayout();
 
-        object.descriptorSets.resize(ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
-
+        std::vector<VkDescriptorSet> descriptorSets(
+            ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
         for (int i = 0; i < uboBuffers.size(); i++) {
             auto bufferInfo = uboBuffers[i]->descriptorInfo();
             ZappyDescriptorWriter(*globalSetLayout, *globalPool)
                 .writeBuffer(0, &bufferInfo)
                 .writeImage(1, &object.imageInfo)
-                .build(object.descriptorSets[i]);
+                .build(descriptorSets[i]);
         }
+        textureObjects.push_back(std::make_pair(descriptorSets, std::make_pair(texture, texturePath)));
+        object.indexDescriptorSet = textureObjects.size() - 1;
     }
     gameObjects.emplace(object.getId(), std::move(object));
     return object.getId();

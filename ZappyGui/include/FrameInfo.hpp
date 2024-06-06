@@ -9,9 +9,11 @@
 
 #include "Camera.hpp"
 #include "GameObject.hpp"
+#include "Texture.hpp"
 
 // lib
 #include <vulkan/vulkan.h>
+#include <memory>
 
 namespace zappy {
 
@@ -37,6 +39,7 @@ struct FrameInfo {
     VkCommandBuffer commandBuffer;
     ZappyCamera &camera;
     VkDescriptorSet globalDescriptorSet;
+    std::vector<std::pair<std::vector<VkDescriptorSet>, std::pair<std::shared_ptr<Texture>, std::string>>> textureObjects;
     ZappyGameObject::Map &gameObjects;
 };
 } // namespace zappy

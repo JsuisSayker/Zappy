@@ -61,9 +61,9 @@ class ZappyGameObject {
     TransformComponent transform{};
 
     std::vector<VkDescriptorSet> descriptorSets;
+    int indexDescriptorSet;
     bool hasDescriptorSet{false};
 
-    std::unique_ptr<Texture> texture = nullptr;
     VkDescriptorImageInfo imageInfo{};
 
     // Optional pointer components

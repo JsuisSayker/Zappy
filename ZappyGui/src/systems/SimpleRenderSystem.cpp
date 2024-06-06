@@ -83,7 +83,7 @@ void SimpleRenderSystem::renderGameObjects(FrameInfo &frameInfo)
 {
     lvePipeline->bind(frameInfo.commandBuffer);
 
-
+    int frameIndex = frameInfo.frameIndex;
     for (auto &kv : frameInfo.gameObjects) {
         auto &obj = kv.second;
         if (obj.model == nullptr)
@@ -92,7 +92,7 @@ void SimpleRenderSystem::renderGameObjects(FrameInfo &frameInfo)
         if (obj.hasDescriptorSet) {
             vkCmdBindDescriptorSets(frameInfo.commandBuffer,
                 VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1,
-                &obj.descriptorSets[frameInfo.frameIndex], 0, nullptr);
+                &frameInfo.textureObjects[obj.indexDescriptorSet].first[frameIndex], 0, nullptr);
         } else {
             vkCmdBindDescriptorSets(frameInfo.commandBuffer,
                 VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1,
