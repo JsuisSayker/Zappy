@@ -71,7 +71,7 @@ static int find_item(zappy_server_t *zappy, client_t *client, char *item)
         return drop_item(
             &zappy->map_tile[client->pos.y][client->pos.x].inventory.linemate,
             &client->inventory.linemate);
-    if (strncmp(item, "deraumere",strlen("deraumere\0")) == 0)
+    if (strncmp(item, "deraumere", strlen("deraumere\0")) == 0)
         return drop_item(
             &zappy->map_tile[client->pos.y][client->pos.x].inventory.deraumere,
             &client->inventory.deraumere);
