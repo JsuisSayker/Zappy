@@ -181,8 +181,8 @@ void ZappyGui::run()
         // Check if there is activity on the socket file descriptor
         if (activity > 0 && FD_ISSET(socket_fd, &readfds)) {
             this->getClient().get()->receiveFromServer();
-            this->bufferToSplitedBuffer(this->getClient().get()->getBuffer());
-            for (auto &actualCommand : this->getSplitedBuffer()) {
+            this->bufferToSplitBuffer(this->getClient().get()->getBuffer());
+            for (auto &actualCommand : this->getSplitBuffer()) {
                 if (this->getPointerToFunction().find(actualCommand[0]) !=
                     this->getPointerToFunction().end()) {
                     try {
@@ -197,7 +197,7 @@ void ZappyGui::run()
                 }
             }
             this->getClient().get()->getBuffer().clear();
-            this->getSplitedBuffer().clear();
+            this->getSplitBuffer().clear();
         }
 
         glfwPollEvents();
@@ -280,9 +280,7 @@ void ZappyGui::loadGameObjects()
 
 }
 
-ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
-    const std::string &texturePath, const glm::vec3 &position,
-    const glm::vec3 &rotation, const glm::vec3 &scale, bool hasTexture)
+ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath, const std::string &texturePath, const glm::vec3 &position, const glm::vec3 &rotation, const glm::vec3 &scale, bool hasTexture)
 {
     ZappyGameObject object = ZappyGameObject::createGameObject();
     for (int i = 0; i < modelObjects.size(); i++) {
@@ -489,9 +487,8 @@ void ZappyGui::pnw(std::vector<std::string> actualCommand)
     int orientation = std::stoi(actualCommand[5]);
     int level = std::stoi(actualCommand[6]);
 
-    this->addTrantorian(ZappyModel::createModelFromFile(
-        lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj"),
-        teamName, {static_cast<float>(x), 0.0f, static_cast<float>(y)}, trantorianId);
+    this->addTrantorian(ZappyModel::createModelFromFile(lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj"),
+                                teamName, {static_cast<float>(x), 0.0f, static_cast<float>(y)}, trantorianId, orientation);
 }
 
 void ZappyGui::ppo(std::vector<std::string> actualCommand)
@@ -592,27 +589,27 @@ void ZappyGui::welcome(std::vector<std::string> actualCommand)
     dprintf(this->client.get()->getSocketFd(), "GRAPHIC\n");
 }
 
-void ZappyGui::bufferToSplitedBuffer(std::string buffer)
+void ZappyGui::bufferToSplitBuffer(std::string buffer)
 {
     // split the bufer by \n
-    std::vector<std::string> bufferSplited;
+    std::vector<std::string> bufferSplit;
     std::string token;
     std::istringstream tokenStream(buffer);
     while (std::getline(tokenStream, token, '\n')) {
-        bufferSplited.push_back(token);
+        bufferSplit.push_back(token);
     }
     // split each line by space
-    for (auto &i : bufferSplited) {
+    for (auto &i : bufferSplit) {
         std::vector<std::string> line;
         std::string token;
         std::istringstream tokenStream(i);
         while (std::getline(tokenStream, token, ' ')) {
             line.push_back(token);
         }
-        this->splitedBuffer_.push_back(line);
+        this->splitBuffer_.push_back(line);
     }
-    // Print splited buffer
-    for (auto &i : this->splitedBuffer_) {
+    // Print split buffer
+    for (auto &i : this->splitBuffer_) {
         for (auto &j : i) {
             std::cout << j << " ";
         }
@@ -620,27 +617,34 @@ void ZappyGui::bufferToSplitedBuffer(std::string buffer)
     }
 }
 
-std::vector<std::vector<std::string>> &ZappyGui::getSplitedBuffer()
+std::vector<std::vector<std::string>> &ZappyGui::getSplitBuffer()
 {
-    return this->splitedBuffer_;
+    return this->splitBuffer_;
 }
 
-void ZappyGui::addTrantorian(std::shared_ptr<ZappyModel> lveModel,
-    const std::string &teamName, const glm::vec3 &position, int trantorianId)
+void ZappyGui::addTrantorian(std::shared_ptr<ZappyModel> lveModel, const std::string &teamName, const glm::vec3 &position, int playerNumber, int orientation)
 {
-    ZappyGameObject::id_t ObjectId = createGameObject(executablePath + "/ZappyGui/models/smooth_vase.obj",
-        executablePath + "", position,
-        {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, false);
+    glm::vec3 rotation = {1.f, 1.f, 1.f};
 
-    std::shared_ptr<ZappyGameObject> pointLight = std::make_shared<ZappyGameObject>(
-        zappy::ZappyGameObject::makePointLight(0.2f));
+    if (orientation == 1)
+        rotation = {0.f, 0.f, 0.f};
+    else if (orientation == 2)
+        rotation = {0.f, glm::pi<float>(), 0.f};
+    else if (orientation == 3)
+        rotation = {0.f, glm::half_pi<float>(), 0.f};
+    else if (orientation == 4)
+        rotation = {0.f, -glm::half_pi<float>(), 0.f};
+
+    ZappyGameObject::id_t ObjectId = createGameObject(executablePath + "/ZappyGui/models/cube.obj",
+                                        executablePath + "/ZappyGui/textures/Steve.png", position, rotation, {1.f, 1.f, 1.f}, false);
+
+    std::shared_ptr<ZappyGameObject> pointLight = std::make_shared<ZappyGameObject>(zappy::ZappyGameObject::makePointLight(0.2f));
     pointLight->color = this->teamsColors_[teamName];
     pointLight.get()->transform.translation = position;
     pointLight.get()->transform.translation.y -= 1.0f;
     gameObjects.emplace(pointLight->getId(), std::move(*pointLight));
 
-    Trantorian newTrantorian(
-        ObjectId, pointLight->getId(), teamName, trantorianId);
+    Trantorian newTrantorian(ObjectId, pointLight->getId(), teamName, playerNumber);
     trantorians_.emplace_back(newTrantorian);
 }
 
