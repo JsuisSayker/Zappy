@@ -346,6 +346,7 @@ void gui_command_pin(zappy_server_t *zappy, char *command);
 void gui_command_suc(zappy_server_t *zappy, char *command);
 void gui_command_sgt(zappy_server_t *zappy, char *command);
 void gui_command_sst(zappy_server_t *zappy, char *command);
+void send_sgt_command_to_all_gui(zappy_server_t *zappy);
 
 // ERROR FUNCTIONS
 void error_command_argument(char *command, int nb_argument, int nb_expected);

@@ -69,6 +69,7 @@ COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_suc.c				\
 					gui_command_sgt.c				\
 					gui_command_sst.c				\
+					send_sgt_command_to_all_gui.c	\
 
 COMMAND_SERVER	=	handle_server_command.c			\
 					server_command_help.c			\
