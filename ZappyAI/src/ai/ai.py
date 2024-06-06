@@ -67,9 +67,8 @@ class AI():
                 self.inventory[elem.split()[0]] = int(elem.split()[1])
 
     def sxor(self, s1: str, s2: str):
-        """Xor two strings"""
-        return ''.join(chr(ord(c) ^ ord(k)) for c, k in zip
-                       (s2, cycle(s1)))
+        return ''.join(map(lambda x: chr(ord(x[0]) ^ ord(
+            x[1])), zip(s1, cycle(s2))))
 
     def parse_broadcast(self, messageReceived: str):
         signalDirection = int(messageReceived[8])

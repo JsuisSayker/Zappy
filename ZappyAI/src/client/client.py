@@ -149,7 +149,6 @@ class Client():
                                     self.teamName + '\n'
                             ) and self.logged is False:
                                 self.actualStep = 1
-                            #     print("sending the teamName")
                             self.socket.send(self.ai.dataToSend.encode())
                             self.ai.run = False
         except KeyboardInterrupt:
@@ -157,5 +156,8 @@ class Client():
             self.socket.close()
 
     def closeConnection(self):
+        fd = self.socket.fileno()
+        if fd == -1:
+            return
         self.selector.unregister(self.socket)
         self.socket.close()
