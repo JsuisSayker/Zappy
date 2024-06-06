@@ -441,7 +441,7 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
         map[x][y].thystame.push_back(createGameObject(
             executablePath + "/ZappyGui/models/thystame.obj",
             executablePath + "/ZappyGui/textures/thystame.png",
-            {static_cast<float>(x), 1.f, static_cast<float>(y)},
+            {static_cast<float>(x) - 0.125f, -0.125f, static_cast<float>(y) - 0.125f},
             {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
     }
     this->map_.get()->setMap(map);
