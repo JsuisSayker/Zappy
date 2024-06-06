@@ -50,6 +50,7 @@ COMMAND_AI		=	handle_ai_command.c				\
 					ai_command_inventory.c			\
 					ai_command_look.c				\
 					ai_command_connect_nbr.c		\
+					ai_command_set.c				\
 					send_ppo_command_to_all_gui.c	\
 					send_pin_command_to_all_gui.c	\
 					send_pdi_command_to_all_gui.c	\
