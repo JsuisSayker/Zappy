@@ -17,12 +17,13 @@ void display_tile(map_tile_t tile)
         tile.inventory.phiras, tile.inventory.thystame);
 }
 
-void display_gui_tile(map_tile_t tile, int socket)
+void display_gui_tile(map_tile_t *tile, int socket)
 {
-    dprintf(socket, "bct %d %d %d %d %d %d %d %d %d\n", tile.x, tile.y,
-        tile.inventory.food, tile.inventory.linemate, tile.inventory.deraumere,
-        tile.inventory.sibur, tile.inventory.mendiane, tile.inventory.phiras,
-        tile.inventory.thystame);
+    dprintf(socket, "bct %d %d %d %d %d %d %d %d %d\n", tile->x, tile->y,
+        tile->inventory.food, tile->inventory.linemate,
+        tile->inventory.deraumere, tile->inventory.sibur,
+        tile->inventory.mendiane, tile->inventory.phiras,
+        tile->inventory.thystame);
 }
 
 void display_map_tile(map_tile_t **map_tile)

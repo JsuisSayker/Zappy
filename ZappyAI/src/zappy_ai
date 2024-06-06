@@ -8,14 +8,21 @@ def entrypoint() -> int:
         None, my_parser.OrderNamespace()
     )
     args.order = args.order[4:]
-    if (args.order[0][0] == "h" and ("elp" in args.order[0][1])):
-        print("USAGE: ./zappy_ai -p port -n name -h machine")
-        return 0
-    if (len(args.order) < 3):
+    if len(args.order) < 3:
+        if len(args.order) == 1 and args.order[0][0] == "h":
+            print("USAGE: ./zappy_ai -p port -n name -h machine")
+            return 0
         return 84
-    port = args.order[0][1][0]
-    name = args.order[1][1][0]
-    machine = args.order[2][1][0]
+
+    # if (args.order[0][0] == "h" and ("elp" in args.order[0][1])):
+    #     print("USAGE: ./zappy_ai -p port -n name -h machine")
+    #     return 0
+    try:
+        port = int(args.order[0][1][0])
+        name = args.order[1][1][0]
+        machine = args.order[2][1][0]
+    except ValueError:
+        return 84
     if (len(args.order) == 4):
         clientId = args.order[3][1][0]
     else:
@@ -29,4 +36,4 @@ def entrypoint() -> int:
 
 
 if __name__ == "__main__":
-    entrypoint()
+    exit(entrypoint())

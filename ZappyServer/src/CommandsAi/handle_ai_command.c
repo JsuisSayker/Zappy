@@ -40,9 +40,9 @@ static int handle_ai_command_sub(zappy_server_t *zappy, client_t *client,
         }
     }
     dprintf(zappy->actual_sockfd, "ko\n");
-    if (client->command.execusion != NULL){
-        free(client->command.execusion);
-        client->command.execusion = NULL;
+    if (client->command.execution != NULL){
+        free(client->command.execution);
+        client->command.execution = NULL;
     }
     return ERROR;
 }
@@ -53,10 +53,10 @@ int handle_ai_command(zappy_server_t *zappy, client_t *client, char *command)
         return ERROR;
     if (queue_to_exec(client) != OK)
         return ERROR;
-    if (client->command.execusion != NULL){
+    if (client->command.execution != NULL){
         if (command != NULL && add_in_queue(client, command) == ERROR)
             return ERROR;
-        if (handle_ai_command_sub(zappy, client, client->command.execusion)
+        if (handle_ai_command_sub(zappy, client, client->command.execution)
             != OK)
             return ERROR;
         return OK;
