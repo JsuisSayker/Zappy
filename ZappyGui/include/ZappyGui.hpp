@@ -57,9 +57,6 @@ class ZappyGui {
         std::unordered_map<std::string, FunctionPtr> &pointerToFunction);
     std::unordered_map<std::string, FunctionPtr> &getPointerToFunction();
 
-    std::vector<std::vector<std::string>> &getSplitBuffer();
-    void bufferToSplitBuffer(std::string buffer);
-
     void setClient(std::shared_ptr<Client> client) { this->client = client; }
     std::shared_ptr<Client> getClient() { return this->client; }
 
@@ -111,7 +108,6 @@ class ZappyGui {
     ZappyGameObject viewerObject{ZappyGameObject::createGameObject()};
     std::vector<std::unique_ptr<ZappyBuffer>> uboBuffers;
     std::unique_ptr<ZappyDescriptorSetLayout> globalSetLayout;
-    std::vector<std::vector<std::string>> splitBuffer_;
     std::vector<std::pair<std::shared_ptr<ZappyModel>, std::string>> modelObjects;
     std::vector<std::pair<std::vector<VkDescriptorSet>, std::pair<std::shared_ptr<Texture>, std::string>>> textureObjects;
     std::unique_ptr<Map> map_;
