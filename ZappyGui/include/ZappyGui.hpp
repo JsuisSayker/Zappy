@@ -41,26 +41,21 @@ class ZappyGui {
 
     void addTrantorian(std::shared_ptr<ZappyModel> lveModel, const std::string &teamName, const glm::vec3 &position, int playerNumber, int orientation);
 
-    // void removeTrantorian(const std::string &teamName,
-    // std::shared_ptr<ZappyGameObject> gameObject);
+    void updateTrantorianPosition(int trantorianId, const glm::vec3 &position, int orientation);
 
-    // void updateNumbers(const std::string &teamName);
+    // void setTrantorians(std::vector<Trantorian> trantorians) { this->trantorians_ = trantorians; }
+    // std::vector<Trantorian> &getTrantorians() { return this->trantorians_; }
 
-    // const std::unordered_map<std::string,
-    //     std::vector<Trantorian::trantorian>> &
-    // getTeams() const
-    // {
-    //     return teams_;
-    // }
+    void setPointerToFunction(std::unordered_map<std::string, FunctionPtr> &pointerToFunction);
 
-    void setPointerToFunction(
-        std::unordered_map<std::string, FunctionPtr> &pointerToFunction);
     std::unordered_map<std::string, FunctionPtr> &getPointerToFunction();
 
     std::vector<std::vector<std::string>> &getSplitBuffer();
+
     void bufferToSplitBuffer(std::string buffer);
 
     void setClient(std::shared_ptr<Client> client) { this->client = client; }
+
     std::shared_ptr<Client> getClient() { return this->client; }
 
     // Functions to handle commands

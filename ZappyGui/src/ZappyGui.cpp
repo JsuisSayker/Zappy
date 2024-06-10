@@ -42,7 +42,7 @@ ZappyGui::ZappyGui()
                      .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                          ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
                      .build();
-    // loadGameObjects();
+    loadGameObjects();
     this->client = std::make_shared<Client>();
     this->map_ = std::make_unique<Map>();
     this->_pointerToFunction["msz"] =
@@ -144,10 +144,7 @@ void ZappyGui::run()
             .build(globalDescriptorSets[i]);
     }
 
-    // position, rotation, scale
-    // rotation: {up/down, right/left, tilt}
-    ZappyGameObject::id_t ObjectId = createGameObject(executablePath + "/ZappyGui/models/cube.obj", executablePath + "/ZappyGui/textures/Steve.png",
-                                                    {0.f, 0.f, 0.f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, false); //////////////////////////////////////////////////////////////////////////
+    
 
     SimpleRenderSystem simpleRenderSystem{lveDevice,
         lveRenderer.getSwapChainRenderPass(),
@@ -271,18 +268,9 @@ std::string ZappyGui::getExecutablePath()
 
 void ZappyGui::loadGameObjects()
 {
-    // std::vector<std::vector<glm::vec3>> trantPositions = {
-    //     {{-0.1f, 0.0f, 0.0f}, {-0.4f, 0.0f, 0.0f}, {-0.8f, 0.0f, 0.0f},
-    //     {-1.2f, 0.0f, 0.0f}},
-    //     {{0.1f, 0.0f, 0.0f}, {0.4f, 0.0f, 0.0f}, {0.8f, 0.0f, 0.0f}, {1.2f,
-    //     0.0f, 0.0f}}
-    // };
-
-    std::shared_ptr<ZappyModel> lveModel = ZappyModel::createModelFromFile(
-        lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj");
-
-    // std::vector<std::string> teamNames = {"Team-A", "Team-B"};
-
+    std::shared_ptr<ZappyModel> lveModel = ZappyModel::createModelFromFile(lveDevice, executablePath + "/ZappyGui/models/cube.obj");
+    addTrantorian(lveModel, "Team-A", {0.f, 0.f, 0.f}, 1, 2); //////////////////////////////////////////////////////////////////////////
+    updateTrantorianPosition(1, {1.f, 0.f, 1.f}, 3);
 }
 
 ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath, const std::string &texturePath, const glm::vec3 &position, const glm::vec3 &rotation, const glm::vec3 &scale, bool hasTexture)
@@ -506,6 +494,8 @@ void ZappyGui::ppo(std::vector<std::string> actualCommand)
     int x = std::stoi(actualCommand[2]);
     int y = std::stoi(actualCommand[3]);
     int orientation = std::stoi(actualCommand[4]);
+
+    this->updateTrantorianPosition(trantorianId, {static_cast<float>(x), 0.0f, static_cast<float>(y)}, orientation);
 }
 
 void ZappyGui::plv(std::vector<std::string> actualCommand)
@@ -641,7 +631,7 @@ void ZappyGui::addTrantorian(std::shared_ptr<ZappyModel> lveModel, const std::st
     if (orientation == 1)
         rotation = {0.f, 0.f, 0.f};
     else if (orientation == 2)
-        rotation = {0.f, 1.57f, 0.f};
+        rotation = {0.f, 1.55f, 0.f};
     else if (orientation == 3)
         rotation = {0.f, 3.14f, 0.f};
     else if (orientation == 4)
@@ -657,7 +647,25 @@ void ZappyGui::addTrantorian(std::shared_ptr<ZappyModel> lveModel, const std::st
     gameObjects.emplace(pointLight->getId(), std::move(*pointLight));
 
     Trantorian newTrantorian(ObjectId, pointLight->getId(), teamName, playerNumber);
-    trantorians_.emplace_back(newTrantorian);
+
+    this->trantorians_.emplace_back(newTrantorian);
+}
+
+void ZappyGui::updateTrantorianPosition(int trantorianId, const glm::vec3 &position, int orientation)
+{
+    for (auto &i : gameObjects) {
+        if (i.first == trantorianId) {
+            i.second.transform.translation = position;
+            if (orientation == 1)
+                i.second.transform.rotation = {0.f, 0.f, 0.f};
+            else if (orientation == 2)
+                i.second.transform.rotation = {0.f, 1.55f, 0.f};
+            else if (orientation == 3)
+                i.second.transform.rotation = {0.f, 3.14f, 0.f};
+            else if (orientation == 4)
+                i.second.transform.rotation = {0.f, -1.57f, 0.f};
+        }
+    }
 }
 
 void ZappyGui::createMap(int width, int height)
