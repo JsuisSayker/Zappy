@@ -163,8 +163,6 @@ void ZappyGui::run()
         std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
         auto commandTime = std::chrono::high_resolution_clock::now();
         auto endTime = commandTime + std::chrono::milliseconds(16);
-        std::cout << "Queue size: " << this->getClient().get()->getQueue().size()
-                  << std::endl;
         while (!this->getClient().get()->getQueue().empty() && commandTime < endTime) {
             
             std::vector<std::string> command =
