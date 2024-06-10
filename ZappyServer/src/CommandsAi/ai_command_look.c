@@ -13,12 +13,12 @@ static void object_to_string(char **str, int nb, char *object)
     int len = 0;
 
     for (int i = 0; i < nb; i += 1) {
-        len = strlen((*str)) + strlen(object) + 1;
+        len = (strlen((*str)) + strlen(object) + 1);
         (*str) = realloc((*str), sizeof(char) * len);
         (*str) = strcat((*str), object);
         if (i + 1 < nb){
-            (*str) = realloc((*str), sizeof(char) * 2);
-            (*str) = strcat((*str), " \0");
+            (*str) = realloc((*str), sizeof(char) * len + 2);
+            (*str) = strcat((*str), " ");
         }
     }
 }

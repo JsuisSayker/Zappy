@@ -15,6 +15,7 @@ int ai_command_fork(zappy_server_t *zappy, client_t *client, char *cmd)
         return ERROR;
     if (check_action(zappy, client) == false)
         return OK;
+    send_pfk_command_to_all_gui(zappy, client);
     dprintf(zappy->actual_sockfd, "ok\n");
     return OK;
 }

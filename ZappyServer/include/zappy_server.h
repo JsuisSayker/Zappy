@@ -313,7 +313,7 @@ int ai_initialisation(zappy_server_t *zappy_server, client_t *ia,
 void send_gui_map_content(map_tile_t **map, int x, int y, int socket);
 
 // AI COMMANDS FUNCTIONS
-int ai_command_help(zappy_server_t *zappy, client_t *client, char *cmd);
+int ai_command_set(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_forward(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_right(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_left(zappy_server_t *zappy, client_t *client, char *cmd);
@@ -328,6 +328,12 @@ bool is_alive(zappy_server_t *zappy, client_t *client);
 void send_ppo_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_pin_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_pdi_command_to_all_gui(zappy_server_t *zappy, client_t *client);
+void send_pgt_command_to_all_gui(zappy_server_t *zappy, client_t *client,
+    int nb_resource);
+void send_pfk_command_to_all_gui(zappy_server_t *zappy, client_t *client);
+void send_pdr_command_to_all_gui(zappy_server_t *zappy, client_t *client,
+    int nb_resource);
+
 
 // GUI COMMANDS FUNCTIONS
 int handle_gui_command(zappy_server_t *zappy_server, char *command);
