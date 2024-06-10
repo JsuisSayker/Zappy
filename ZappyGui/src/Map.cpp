@@ -8,7 +8,11 @@
 #include "Map.hpp"
 
 namespace zappy {
-Map::Map() {}
+Map::Map() {
+    this->_width = 0;
+    this->_height = 0;
+    this->_map = {};
+}
 
 Map::~Map() {}
 

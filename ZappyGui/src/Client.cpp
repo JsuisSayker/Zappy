@@ -108,7 +108,6 @@ void zappy::Client::receiveFromServer()
             std::vector<std::string> messages =
                 splitMessages(this->_buffer, END_STR);
             for (std::string message : messages) {
-                std::lock_guard<std::mutex> lock(this->_mutex);
                 this->pushToQueue(splitMessages(message, ' '));
                 this->_buffer.clear();
             }

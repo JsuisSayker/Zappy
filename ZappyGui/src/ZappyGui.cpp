@@ -156,10 +156,10 @@ void ZappyGui::run()
     std::thread reader(&Client::receiveFromServer, this->client.get());
 
     auto currentTime = std::chrono::high_resolution_clock::now();
+    int socket_fd = this->getClient().get()->getSocketFd();
     while (!lveWindow.shouldClose()) {
-        int socket_fd = this->getClient().get()->getSocketFd();
 
-        std::lock_guard<std::mutex> lock(this->getClient().get()->_mutex);
+        std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
         while (!this->getClient().get()->getQueue().empty()) {
             std::vector<std::string> command =
                 this->getClient().get()->popFromQueue();
@@ -175,6 +175,7 @@ void ZappyGui::run()
                 std::cerr << "Unknown command: " << command[0] << std::endl;
             }
         }
+        lock.unlock();
 
         glfwPollEvents();
 
@@ -338,6 +339,9 @@ void ZappyGui::msz(std::vector<std::string> actualCommand)
     int width = std::stoi(actualCommand[1]);
     int height = std::stoi(actualCommand[2]);
 
+    if (width == this->map_.get()->getWidth() &&
+        height == this->map_.get()->getHeight())
+        return;
     this->map_.get()->setHeight(height);
     this->map_.get()->setWidth(width);
     viewerObject.transform.translation.x = width / 2.f;
