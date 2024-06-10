@@ -159,8 +159,12 @@ void ZappyGui::run()
     int socket_fd = this->getClient().get()->getSocketFd();
     while (!lveWindow.shouldClose()) {
 
+        glfwPollEvents();
         std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
-        while (!this->getClient().get()->getQueue().empty()) {
+        auto commandTime = std::chrono::high_resolution_clock::now();
+        auto endTime = commandTime + std::chrono::milliseconds(16);
+        while (!this->getClient().get()->getQueue().empty() && commandTime < endTime) {
+            
             std::vector<std::string> command =
                 this->getClient().get()->popFromQueue();
             if (this->getPointerToFunction().find(command[0]) !=
@@ -174,10 +178,10 @@ void ZappyGui::run()
             } else {
                 std::cerr << "Unknown command: " << command[0] << std::endl;
             }
+            commandTime = std::chrono::high_resolution_clock::now();
         }
         lock.unlock();
 
-        glfwPollEvents();
 
         auto newTime = std::chrono::high_resolution_clock::now();
         float frameTime =
@@ -220,6 +224,7 @@ void ZappyGui::run()
             lveRenderer.endFrame();
         }
     }
+    std::cout << "Closing connection" << std::endl;
     this->getClient().get()->running = false;
     reader.join();
 
