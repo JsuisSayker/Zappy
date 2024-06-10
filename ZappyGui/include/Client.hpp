@@ -15,6 +15,7 @@
 #include <queue>
 #include <sstream>
 #include <sys/socket.h>
+#include "Map.hpp"
 #include <thread>
 #include <unistd.h>
 #include <unordered_map>
@@ -51,6 +52,7 @@ class Client {
 
     bool running = true; // Boolean to check if the client is running
     std::mutex _mutex;   // Mutex to lock the queue
+    Map map;                                    // Map object
 
   protected:
     std::string _hostname;                       // IP address

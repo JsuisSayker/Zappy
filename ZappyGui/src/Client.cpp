@@ -108,7 +108,28 @@ void zappy::Client::receiveFromServer()
             std::vector<std::string> messages =
                 splitMessages(this->_buffer, END_STR);
             for (std::string message : messages) {
-                this->pushToQueue(splitMessages(message, ' '));
+                std::vector<std::string> command = splitMessages(message, ' ');
+                if (command.size() == 0)
+                    break;
+                if (command[0] == "bct" && this->map.getMap().size() != 0) {
+                    std::vector<std::vector<resources>> map = this->map.getMap();
+                    if (command.size() != 10)
+                        break;
+                    int x = std::stoi(command[1]);
+                    int y = std::stoi(command[2]);
+                    int food = std::stoi(command[3]);
+                    int linemate = std::stoi(command[4]);
+                    int deraumere = std::stoi(command[5]);
+                    int sibur = std::stoi(command[6]);
+                    int mendiane = std::stoi(command[7]);
+                    int phiras = std::stoi(command[8]);
+                    int thystame = std::stoi(command[9]);
+
+                    if (map[x][y].food.size() ==  food && map[x][y].linemate.size() == linemate && map[x][y].deraumere.size() == deraumere && map[x][y].sibur.size() == sibur && map[x][y].mendiane.size() == mendiane && map[x][y].phiras.size() == phiras && map[x][y].thystame.size() == thystame) {
+                        break;
+                    }
+                }
+                this->pushToQueue(command);
                 this->_buffer.clear();
             }
         }

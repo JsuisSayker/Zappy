@@ -163,6 +163,8 @@ void ZappyGui::run()
         std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
         auto commandTime = std::chrono::high_resolution_clock::now();
         auto endTime = commandTime + std::chrono::milliseconds(16);
+        std::cout << "Queue size: " << this->getClient().get()->getQueue().size()
+                  << std::endl;
         while (!this->getClient().get()->getQueue().empty() && commandTime < endTime) {
             
             std::vector<std::string> command =
@@ -366,6 +368,7 @@ void ZappyGui::msz(std::vector<std::string> actualCommand)
         map.push_back(line);
     }
     this->map_.get()->setMap(map);
+    this->getClient().get()->map = *this->map_.get();
     this->createMap(width, height);
 }
 
@@ -440,6 +443,7 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
                 {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
     }
     this->map_.get()->setMap(map);
+    this->getClient().get()->map = *this->map_.get();
 }
 
 void ZappyGui::mct(std::vector<std::string> actualCommand)
