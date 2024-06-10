@@ -159,7 +159,7 @@ void ZappyGui::run()
     int socket_fd = this->getClient().get()->getSocketFd();
     while (!lveWindow.shouldClose()) {
 
-        std::lock_guard<std::mutex> lock(this->getClient().get()->_mutex);
+        std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
         while (!this->getClient().get()->getQueue().empty()) {
             std::vector<std::string> command =
                 this->getClient().get()->popFromQueue();
@@ -175,6 +175,7 @@ void ZappyGui::run()
                 std::cerr << "Unknown command: " << command[0] << std::endl;
             }
         }
+        lock.unlock();
 
         glfwPollEvents();
 
