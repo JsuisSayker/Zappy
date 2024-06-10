@@ -119,8 +119,7 @@ class ZappyGui {
     ZappyGameObject::Map ressources_;
     std::vector<Trantorian> trantorians_;
     std::unordered_map<std::string, glm::vec3> teamsColors_;
-    std::unordered_map<std::string, FunctionPtr>
-        _pointerToFunction; // Map of pointers to functions
+    std::unordered_map<std::string, FunctionPtr> _pointerToFunction; // Map of pointers to functions
     int _timeUnit; // Time unit of the server
 };
 } // namespace zappy

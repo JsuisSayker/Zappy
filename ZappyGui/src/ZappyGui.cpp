@@ -144,6 +144,11 @@ void ZappyGui::run()
             .build(globalDescriptorSets[i]);
     }
 
+    // position, rotation, scale
+    // rotation: {up/down, right/left, tilt}
+    ZappyGameObject::id_t ObjectId = createGameObject(executablePath + "/ZappyGui/models/cube.obj", executablePath + "/ZappyGui/textures/Steve.png",
+                                                    {0.f, 0.f, 0.f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, false); //////////////////////////////////////////////////////////////////////////
+
     SimpleRenderSystem simpleRenderSystem{lveDevice,
         lveRenderer.getSwapChainRenderPass(),
         globalSetLayout->getDescriptorSetLayout(), executablePath};
@@ -481,11 +486,11 @@ void ZappyGui::pnw(std::vector<std::string> actualCommand)
     }
 
     int trantorianId = std::stoi(actualCommand[1]);
-    std::string teamName = actualCommand[2];
-    int x = std::stoi(actualCommand[3]);
-    int y = std::stoi(actualCommand[4]);
-    int orientation = std::stoi(actualCommand[5]);
-    int level = std::stoi(actualCommand[6]);
+    int x = std::stoi(actualCommand[2]);
+    int y = std::stoi(actualCommand[3]);
+    int orientation = std::stoi(actualCommand[4]);
+    int level = std::stoi(actualCommand[5]);
+    std::string teamName = actualCommand[6];
 
     this->addTrantorian(ZappyModel::createModelFromFile(lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj"),
                                 teamName, {static_cast<float>(x), 0.0f, static_cast<float>(y)}, trantorianId, orientation);
@@ -493,7 +498,14 @@ void ZappyGui::pnw(std::vector<std::string> actualCommand)
 
 void ZappyGui::ppo(std::vector<std::string> actualCommand)
 {
-    std::cout << "ppo" << std::endl;
+    if (actualCommand.size() != 5) {
+        std::cerr << "ppo: invalid number of arguments" << std::endl;
+        return;
+    }
+    int trantorianId = std::stoi(actualCommand[1]);
+    int x = std::stoi(actualCommand[2]);
+    int y = std::stoi(actualCommand[3]);
+    int orientation = std::stoi(actualCommand[4]);
 }
 
 void ZappyGui::plv(std::vector<std::string> actualCommand)
@@ -624,16 +636,16 @@ std::vector<std::vector<std::string>> &ZappyGui::getSplitBuffer()
 
 void ZappyGui::addTrantorian(std::shared_ptr<ZappyModel> lveModel, const std::string &teamName, const glm::vec3 &position, int playerNumber, int orientation)
 {
-    glm::vec3 rotation = {1.f, 1.f, 1.f};
+    glm::vec3 rotation;
 
     if (orientation == 1)
         rotation = {0.f, 0.f, 0.f};
     else if (orientation == 2)
-        rotation = {0.f, glm::pi<float>(), 0.f};
+        rotation = {0.f, 1.57f, 0.f};
     else if (orientation == 3)
-        rotation = {0.f, glm::half_pi<float>(), 0.f};
+        rotation = {0.f, 3.14f, 0.f};
     else if (orientation == 4)
-        rotation = {0.f, -glm::half_pi<float>(), 0.f};
+        rotation = {0.f, -1.57f, 0.f};
 
     ZappyGameObject::id_t ObjectId = createGameObject(executablePath + "/ZappyGui/models/cube.obj",
                                         executablePath + "/ZappyGui/textures/Steve.png", position, rotation, {1.f, 1.f, 1.f}, false);
