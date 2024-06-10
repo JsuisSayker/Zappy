@@ -29,8 +29,7 @@ struct trantInventory {
 };
 class Trantorian {
   public:
-    Trantorian(ZappyGameObject::id_t trantObjectId,
-        ZappyGameObject::id_t pointLightObjectId, const std::string &team);
+    Trantorian(ZappyGameObject::id_t trantObjectId, ZappyGameObject::id_t pointLightObjectId, const std::string &team, int playerNumber);
     ~Trantorian() = default;
 
     // void updateTrantorian(const Trantorian &trant);
