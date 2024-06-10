@@ -110,6 +110,7 @@ void zappy::Client::receiveFromServer()
             for (std::string message : messages) {
                 std::lock_guard<std::mutex> lock(this->_mutex);
                 this->pushToQueue(splitMessages(message, ' '));
+                this->_buffer.clear();
             }
         }
     }
