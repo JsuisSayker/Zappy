@@ -82,6 +82,10 @@ class ZappyGui {
 
     void run();
 
+    // ImGUI Functions
+    void initImGui();
+    void drawGui();
+
   protected:
     void createMap(int width, int height);
     void loadGameObjects();

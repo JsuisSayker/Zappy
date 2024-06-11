@@ -86,6 +86,8 @@ class ZappyDevice {
 
     VkPhysicalDeviceProperties properties;
 
+    VkInstance getInstance() { return instance; }
+
   private:
     void createInstance();
     void setupDebugMessenger();

@@ -21,6 +21,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_vulkan.h"
+#include "imgui.h"
+
 // std
 #include <array>
 #include <cassert>
@@ -31,6 +35,42 @@
 #include <unistd.h>
 
 namespace zappy {
+
+void ZappyGui::initImGui()
+{
+    // Initialize ImGui
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui_ImplGlfw_InitForVulkan(this->lveWindow.getGLFWwindow(), true);
+    ImGui_ImplVulkan_InitInfo init_info = {};
+    init_info.MinImageCount = 2;
+    init_info.ImageCount = ZappySwapChain::MAX_FRAMES_IN_FLIGHT;
+    init_info.RenderPass = this->lveRenderer.getSwapChainRenderPass();
+    init_info.Instance = this->lveDevice.getInstance();
+    init_info.PhysicalDevice = this->lveDevice.getPhysicalDevice();
+    init_info.Device = this->lveDevice.device();
+    // init_info.QueueFamily = queueFamilyIndex;
+    init_info.Queue = this->lveDevice.graphicsQueue();
+    init_info.DescriptorPool = this->globalPool.get()->descriptorPool;
+    ImGui_ImplVulkan_Init(&init_info);
+}
+
+void ZappyGui::drawGui()
+{
+    // Start ImGui frame
+    ImGui_ImplVulkan_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    // Render ImGui widgets
+    ImGui::Begin("Hello, ImGui!");
+    ImGui::Text("This is ImGui running with GLFW and Vulkan!");
+    ImGui::End();
+
+    // Rendering ImGui
+    ImGui::Render();
+    ImGui::GetDrawData();
+}
 
 ZappyGui::ZappyGui()
 {
@@ -99,6 +139,8 @@ void ZappyGui::run()
 {
     this->getClient().get()->connectToServer();
 
+    this->initImGui();
+
     uboBuffers.resize(ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
     for (int i = 0; i < uboBuffers.size(); i++) {
         uboBuffers[i] = std::make_unique<ZappyBuffer>(lveDevice,
@@ -158,6 +200,8 @@ void ZappyGui::run()
     auto currentTime = std::chrono::high_resolution_clock::now();
     int socket_fd = this->getClient().get()->getSocketFd();
     while (!lveWindow.shouldClose()) {
+
+        this->drawGui();
 
         glfwPollEvents();
         std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
@@ -224,6 +268,12 @@ void ZappyGui::run()
             lveRenderer.endFrame();
         }
     }
+
+    // Cleanup
+    ImGui_ImplVulkan_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
     std::cout << "Closing connection" << std::endl;
     this->getClient().get()->running = false;
     reader.join();
@@ -253,7 +303,7 @@ void ZappyGui::loadGameObjects()
     addTrantorian("Team-A", {0.f, 0.f, 0.f}, 1, 2);
     addTrantorian("Team-A", {1.f, 0.f, 0.f}, 2, 2);
     removeTrantorian(2);
-    //updateTrantorianPosition(1, {1.f, 0.f, 1.f}, 3);
+    // updateTrantorianPosition(1, {1.f, 0.f, 1.f}, 3);
 }
 
 ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
@@ -423,12 +473,12 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
     }
     if (linemate >= actualLinemate) {
         for (int i = 0; i < linemate - actualLinemate; i++) {
-            map[x][y].linemate.push_back(
-                createGameObject(executablePath + "/ZappyGui/models/linemate.obj",
-                    executablePath + "/ZappyGui/textures/linemate.png",
-                    {static_cast<float>(x) - 0.3f, -0.125f,
-                        static_cast<float>(y) - 0.3f},
-                    {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+            map[x][y].linemate.push_back(createGameObject(
+                executablePath + "/ZappyGui/models/linemate.obj",
+                executablePath + "/ZappyGui/textures/linemate.png",
+                {static_cast<float>(x) - 0.3f, -0.125f,
+                    static_cast<float>(y) - 0.3f},
+                {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
         }
     } else {
         for (int i = actualLinemate; i > linemate; i--) {
@@ -438,12 +488,12 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
     }
     if (deraumere >= actualDeraumere) {
         for (int i = 0; i < deraumere - actualDeraumere; i++) {
-            map[x][y].deraumere.push_back(
-                createGameObject(executablePath + "/ZappyGui/models/deraumere.obj",
-                    executablePath + "/ZappyGui/textures/deraumere.png",
-                    {static_cast<float>(x) + 0.3f, -0.125f,
-                        static_cast<float>(y) + 0.3f},
-                    {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+            map[x][y].deraumere.push_back(createGameObject(
+                executablePath + "/ZappyGui/models/deraumere.obj",
+                executablePath + "/ZappyGui/textures/deraumere.png",
+                {static_cast<float>(x) + 0.3f, -0.125f,
+                    static_cast<float>(y) + 0.3f},
+                {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
         }
     } else {
         for (int i = actualDeraumere; i > deraumere; i--) {
@@ -468,12 +518,12 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
     }
     if (mendiane >= actualMendiane) {
         for (int i = 0; i < mendiane - actualMendiane; i++) {
-            map[x][y].mendiane.push_back(
-                createGameObject(executablePath + "/ZappyGui/models/mendiane.obj",
-                    executablePath + "/ZappyGui/textures/mendiane.png",
-                    {static_cast<float>(x) + 0.3f, -0.125f,
-                        static_cast<float>(y) - 0.3f},
-                    {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+            map[x][y].mendiane.push_back(createGameObject(
+                executablePath + "/ZappyGui/models/mendiane.obj",
+                executablePath + "/ZappyGui/textures/mendiane.png",
+                {static_cast<float>(x) + 0.3f, -0.125f,
+                    static_cast<float>(y) - 0.3f},
+                {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
         }
     } else {
         for (int i = actualMendiane; i > mendiane; i--) {
@@ -483,12 +533,11 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
     }
     if (phiras >= actualPhiras) {
         for (int i = 0; i < phiras - actualPhiras; i++) {
-            map[x][y].phiras.push_back(
-                createGameObject(executablePath + "/ZappyGui/models/phiras.obj",
-                    executablePath + "/ZappyGui/textures/phiras.png",
-                    {static_cast<float>(x) - 0.3f, -0.125f,
-                        static_cast<float>(y)},
-                    {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+            map[x][y].phiras.push_back(createGameObject(
+                executablePath + "/ZappyGui/models/phiras.obj",
+                executablePath + "/ZappyGui/textures/phiras.png",
+                {static_cast<float>(x) - 0.3f, -0.125f, static_cast<float>(y)},
+                {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
         }
     } else {
         for (int i = actualPhiras; i > phiras; i--) {
@@ -498,12 +547,11 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
     }
     if (thystame >= actualThystame) {
         for (int i = 0; i < thystame - actualThystame; i++) {
-            map[x][y].thystame.push_back(
-                createGameObject(executablePath + "/ZappyGui/models/thystame.obj",
-                    executablePath + "/ZappyGui/textures/thystame.png",
-                    {static_cast<float>(x) + 0.3f, -0.125f,
-                        static_cast<float>(y)},
-                    {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+            map[x][y].thystame.push_back(createGameObject(
+                executablePath + "/ZappyGui/models/thystame.obj",
+                executablePath + "/ZappyGui/textures/thystame.png",
+                {static_cast<float>(x) + 0.3f, -0.125f, static_cast<float>(y)},
+                {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
         }
     } else {
         for (int i = actualThystame; i > thystame; i--) {
