@@ -39,9 +39,9 @@ class ZappyGui {
 
     static std::string getExecutablePath();
 
-    void addTrantorian(std::shared_ptr<ZappyModel> lveModel, const std::string &teamName, const glm::vec3 &position, int playerNumber, int orientation);
+    void addTrantorian(const std::string &teamName, const glm::vec3 &position, int playerNumber, int orientation);
 
-    void updateTrantorianPosition(int trantorianId, const glm::vec3 &position, int orientation);
+    void updateTrantorianPosition(int playerNumber, const glm::vec3 &position, int orientation);
 
     // void setTrantorians(std::vector<Trantorian> trantorians) { this->trantorians_ = trantorians; }
     // std::vector<Trantorian> &getTrantorians() { return this->trantorians_; }
@@ -106,7 +106,6 @@ class ZappyGui {
     ZappyGameObject viewerObject{ZappyGameObject::createGameObject()};
     std::vector<std::unique_ptr<ZappyBuffer>> uboBuffers;
     std::unique_ptr<ZappyDescriptorSetLayout> globalSetLayout;
-    std::vector<std::vector<std::string>> splitBuffer_;
     std::vector<std::pair<std::shared_ptr<ZappyModel>, std::string>> modelObjects;
     std::vector<std::pair<std::vector<VkDescriptorSet>, std::pair<std::shared_ptr<Texture>, std::string>>> textureObjects;
     std::unique_ptr<Map> map_;

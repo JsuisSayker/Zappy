@@ -55,7 +55,7 @@ class Trantorian {
     // const std::vector<Trantorian> &getTrantorians() const { return
     // Trantorians_; }
 
-  private:
+  public:
     ZappyGameObject::id_t trantorianObject;
     ZappyGameObject::id_t pointLightObject;
     trantInventory inventory;
