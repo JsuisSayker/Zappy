@@ -490,8 +490,7 @@ void ZappyGui::ppo(std::vector<std::string> actualCommand)
     int x = std::stoi(actualCommand[2]);
     int y = std::stoi(actualCommand[3]);
     int orientation = std::stoi(actualCommand[4]);
-    this->updateTrantorianPosition(playerNumber,
-        {static_cast<float>(x), 0.0f, static_cast<float>(y)}, orientation);
+    this->updateTrantorianPosition(playerNumber, {static_cast<float>(x), 0.0f, static_cast<float>(y)}, orientation);
 }
 
 void ZappyGui::plv(std::vector<std::string> actualCommand)
@@ -558,7 +557,14 @@ void ZappyGui::pgt(std::vector<std::string> actualCommand)
 
 void ZappyGui::pdi(std::vector<std::string> actualCommand)
 {
-    std::cout << "pdi" << std::endl;
+    if (actualCommand.size() != 2) {
+        std::cerr << "pdi: invalid number of arguments" << std::endl;
+        return;
+    }
+
+    int playerNumber = std::stoi(actualCommand[1]);
+
+    this->removeTrantorian(playerNumber);
 }
 
 void ZappyGui::enw(std::vector<std::string> actualCommand) {}
@@ -603,18 +609,29 @@ void ZappyGui::addTrantorian(const std::string &teamName,
             executablePath + "/ZappyGui/textures/Steve.png", position,
             rotation, {2.f, 2.f, 2.f}, false);
 
-    std::shared_ptr<ZappyGameObject> pointLight =
-        std::make_shared<ZappyGameObject>(
-            zappy::ZappyGameObject::makePointLight(0.2f));
+    glm::vec3 lightPos = {position.x - 1.f, position.z - 1.5f, position.y};
+
+    std::shared_ptr<ZappyGameObject> pointLight = std::make_shared<ZappyGameObject>(zappy::ZappyGameObject::makePointLight(0.2f));
     pointLight->color = this->teamsColors_[teamName];
-    pointLight.get()->transform.translation = position;
-    pointLight.get()->transform.translation.y -= 1.0f;
+    pointLight.get()->transform.translation = lightPos;
     gameObjects.emplace(pointLight->getId(), std::move(*pointLight));
 
     Trantorian newTrantorian(
         ObjectId, pointLight->getId(), teamName, playerNumber);
 
     this->trantorians_.emplace_back(newTrantorian);
+}
+
+void ZappyGui::removeTrantorian(int playerNumber)
+{
+    for (Trantorian &trantorian : trantorians_) {
+        if (trantorian.playerNumber == playerNumber) {
+            gameObjects.erase(trantorian.pointLightObject);
+            gameObjects.erase(trantorian.trantorianObject);
+            trantorians_.erase(std::remove(trantorians_.begin(), trantorians_.end(), trantorian), trantorians_.end());
+            break;
+        }
+    }
 }
 
 void ZappyGui::updateTrantorianPosition(

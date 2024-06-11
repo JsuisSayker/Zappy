@@ -48,7 +48,7 @@ class ZappyGameObject {
     }
 
     static ZappyGameObject makePointLight(float intensity = 10.f,
-        float radius = 0.1f, glm::vec3 color = glm::vec3(1.f));
+        float radius = 0.3f, glm::vec3 color = glm::vec3(1.f));
 
     ZappyGameObject(const ZappyGameObject &) = delete;
     ZappyGameObject &operator=(const ZappyGameObject &) = delete;

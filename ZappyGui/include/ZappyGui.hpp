@@ -40,11 +40,8 @@ class ZappyGui {
     static std::string getExecutablePath();
 
     void addTrantorian(const std::string &teamName, const glm::vec3 &position, int playerNumber, int orientation);
-
+    void removeTrantorian(int playerNumber);
     void updateTrantorianPosition(int playerNumber, const glm::vec3 &position, int orientation);
-
-    // void setTrantorians(std::vector<Trantorian> trantorians) { this->trantorians_ = trantorians; }
-    // std::vector<Trantorian> &getTrantorians() { return this->trantorians_; }
 
     void setPointerToFunction(std::unordered_map<std::string, FunctionPtr> &pointerToFunction);
 
