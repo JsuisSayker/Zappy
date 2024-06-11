@@ -76,16 +76,17 @@ static bool check_incantation(zappy_server_t *zappy, client_t *client)
 
     if (client == NULL || zappy == NULL)
         return false;
-    if (client->incantation == false) {
-        dprintf(zappy->actual_sockfd, "Elevation underway\n");
-        send_pic_command_to_all_gui(zappy, client);
-        client->incantation = true;
-    }
     map = &zappy->map_tile[client->pos.y][client->pos.x].inventory;
     nb_players = get_players(zappy, client->pos.x, client->pos.y);
     if (check_resources(map, client->level)
-        && check_player(nb_players, client->level))
+        && check_player(nb_players, client->level)) {
+        if (client->incantation == false) {
+            dprintf(zappy->actual_sockfd, "Elevation underway\n");
+            send_pic_command_to_all_gui(zappy, client);
+            client->incantation = true;
+        }
             return true;
+    }
     return false;
 }
 
