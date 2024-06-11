@@ -29,8 +29,7 @@ struct trantInventory {
 };
 class Trantorian {
   public:
-    Trantorian(ZappyGameObject::id_t trantObjectId,
-        ZappyGameObject::id_t pointLightObjectId, const std::string &team);
+    Trantorian(ZappyGameObject::id_t trantObjectId, ZappyGameObject::id_t pointLightObjectId, const std::string &team, int playerNumber);
     ~Trantorian() = default;
 
     // void updateTrantorian(const Trantorian &trant);
@@ -56,7 +55,7 @@ class Trantorian {
     // const std::vector<Trantorian> &getTrantorians() const { return
     // Trantorians_; }
 
-  private:
+  public:
     ZappyGameObject::id_t trantorianObject;
     ZappyGameObject::id_t pointLightObject;
     trantInventory inventory;
