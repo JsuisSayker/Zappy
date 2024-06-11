@@ -72,9 +72,6 @@ int queue_to_exec(client_t *client)
     if (client == NULL)
         return ERROR;
     if (client->command.queue[0] != NULL) {
-        printf(" add in exec\n");
-        printf(" client.cmd: %s\n--\n", client->command.queue[0]);
-        printf(" client.cmd: %s\n--\n", client->command.execution);
         if (client->command.execution != NULL)
             return OK;
         if (queue_to_exec_sub(client) == ERROR)
@@ -89,11 +86,9 @@ int add_in_queue(client_t *client, char *cmd)
 
     if (client == NULL || cmd == NULL)
         return ERROR;
-    printf("Add in queue\n cmd: %s\n", cmd);
     for (i = 0; i < 10; i += 1){
         if (client->command.queue[i] == NULL){
             client->command.queue[i] = strdup(cmd);
-            printf(" client.cmd: %s\n--\n", client->command.queue[i]);
             break;
         }
     }

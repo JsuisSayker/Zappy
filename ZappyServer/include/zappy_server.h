@@ -171,6 +171,7 @@ typedef struct ai_command_data_s {
     float cast_time;
     bool is_contracted;
     double time;
+    bool incantation;
 } ai_command_data_t;
 
 typedef struct ai_health_s {
@@ -323,6 +324,7 @@ int ai_command_inventory(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_look(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_connect_nbr(zappy_server_t *zappy, client_t *client,
     char *cmd);
+int ai_command_incantation(zappy_server_t *zappy, client_t *client, char *cmd);
 bool is_alive(zappy_server_t *zappy, client_t *client);
 
 void send_ppo_command_to_all_gui(zappy_server_t *zappy, client_t *client);

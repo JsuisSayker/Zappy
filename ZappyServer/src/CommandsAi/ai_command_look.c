@@ -87,7 +87,6 @@ static void look_on_x(zappy_server_t *zappy,
     int x = 0;
     int y = 0;
 
-    printf("X = %d\n", look->pos.x);
     for (int look_x = look->pos.x - lvl; look_x <= look->pos.x + lvl;
         look_x += 1) {
         x = look_x;
@@ -110,7 +109,6 @@ static void look_on_y(zappy_server_t *zappy, look_struct_t *look, int lvl)
     int x = 0;
     int y = 0;
 
-    printf("Y = %d\n", look->pos.y);
     for (int look_y = look->pos.y - lvl; look_y <= look->pos.y + lvl;
         look_y += 1) {
         x = look->pos.x;
