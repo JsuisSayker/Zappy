@@ -39,25 +39,23 @@ class ZappyGui {
 
     static std::string getExecutablePath();
 
-    void addTrantorian(std::shared_ptr<ZappyModel> lveModel, const std::string &teamName, const glm::vec3 &position, int playerNumber, int orientation);
+    void addTrantorian(const std::string &teamName, const glm::vec3 &position, int playerNumber, int orientation);
 
-    // void removeTrantorian(const std::string &teamName,
-    // std::shared_ptr<ZappyGameObject> gameObject);
+    void updateTrantorianPosition(int playerNumber, const glm::vec3 &position, int orientation);
 
-    // void updateNumbers(const std::string &teamName);
+    // void setTrantorians(std::vector<Trantorian> trantorians) { this->trantorians_ = trantorians; }
+    // std::vector<Trantorian> &getTrantorians() { return this->trantorians_; }
 
-    // const std::unordered_map<std::string,
-    //     std::vector<Trantorian::trantorian>> &
-    // getTeams() const
-    // {
-    //     return teams_;
-    // }
+    void setPointerToFunction(std::unordered_map<std::string, FunctionPtr> &pointerToFunction);
 
-    void setPointerToFunction(
-        std::unordered_map<std::string, FunctionPtr> &pointerToFunction);
     std::unordered_map<std::string, FunctionPtr> &getPointerToFunction();
 
+    std::vector<std::vector<std::string>> &getSplitBuffer();
+
+    void bufferToSplitBuffer(std::string buffer);
+
     void setClient(std::shared_ptr<Client> client) { this->client = client; }
+
     std::shared_ptr<Client> getClient() { return this->client; }
 
     // Functions to handle commands
@@ -115,8 +113,7 @@ class ZappyGui {
     ZappyGameObject::Map ressources_;
     std::vector<Trantorian> trantorians_;
     std::unordered_map<std::string, glm::vec3> teamsColors_;
-    std::unordered_map<std::string, FunctionPtr>
-        _pointerToFunction; // Map of pointers to functions
+    std::unordered_map<std::string, FunctionPtr> _pointerToFunction; // Map of pointers to functions
     int _timeUnit; // Time unit of the server
 };
 } // namespace zappy
