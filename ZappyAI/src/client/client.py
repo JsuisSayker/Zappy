@@ -2,10 +2,11 @@ import socket
 import selectors
 import subprocess
 
-from numpy import divide
 from ZappyAI.src.ai.ai import AI
 import select
 import errno
+
+from ZappyAI.src.ai.infos import Activity
 
 
 class Client():
@@ -134,7 +135,7 @@ class Client():
                                     print("ValueError", element)
                                     pass
                             elif "Elevation underway" in element:
-                                self.ai.dataToSend = ""
+                                self.ai.actualActivity = Activity.CLEARING_DATA
                             elif "Current level" in element:
                                 self.ai.level = int(''.join(filter(
                                     str.isdigit, element)))
@@ -147,7 +148,8 @@ class Client():
                                 self.ai.searchingRessource = ""
                                 self.ai.incantation = False
                                 self.ai.nbReadyPlayers = 1
-                                self.ai.actualActivity = 12
+                                self.ai.actualActivity = \
+                                    Activity.FINISHING_INCANTATION
 
                             elif "message" in element:
                                 self.ai.parse_broadcast(element)

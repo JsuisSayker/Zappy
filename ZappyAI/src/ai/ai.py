@@ -54,6 +54,9 @@ class AI():
             #     return
             if elem:
                 print(f"While parsing inventory: |{elem}|")
+                print(f"Inventory: |{self.inventory}|")
+                print(f"elem.split()[0]: |{elem.split()[0]}|")
+                # print(f"My own Inventory: |{self.inventory[elem.split()[0]]}|")
                 self.inventory[elem.split()[0]] = int(elem.split()[1])
 
     def sxor(self, s1: str, s2: str):
@@ -73,7 +76,7 @@ class AI():
         if "inventory" in parsedReceivedMessage:
             print("parsing inventory")
             print(f"yay of inventory: {parsedReceivedMessage[9:]}")
-            self.parse_inventory(parsedReceivedMessage[9:])
+            self.parse_shared_inventory(parsedReceivedMessage[9:])
         if "incantation" in parsedReceivedMessage:
             if self.incantation is True:
                 self.goToBroadcastSignal(signalDirection)
@@ -90,8 +93,8 @@ class AI():
                     messageToSend = bytes(
                         self.sxor(self.teamName,
                                   ("inventory" + str(
-                                      self.clientId) + ";" + str(
-                                          self.level) + ";" + str(
+                                      self.clientId) + "|" + str(
+                                          self.level) + "|" + str(
                                               json.dumps(
                                                   self.inventory)))),
                         "utf-8").hex()
@@ -101,7 +104,7 @@ class AI():
                     self.incantation = False
                 else:
                     messageToSend = bytes(self.sxor(self.teamName, (str(
-                        self.clientId) + ";incantation;" + str(
+                        self.clientId) + "|incantation|" + str(
                             self.level))), "utf-8").hex()
                     print("SENDING INCANTATION AND OTHER THINGS")
                     print(f"messageToSend: {messageToSend}")
@@ -147,6 +150,14 @@ class AI():
             self.dataToSend = "Inventory\n"
             self.actualActivity = Activity.CHECK_INCANTATION
         return
+
+    def parse_shared_inventory(self, data: str):
+        receivedClientId, receivedMessage, receivedInventory = data.split("|")
+        self.sharedInventory[self.clientId] = self.inventory
+        self.sharedInventory[receivedClientId] = json.loads(receivedInventory)
+        updateCounter: Counter = Counter()
+        for key in self.sharedInventory:
+            updateCounter.update(self.sharedInventory[key])
 
     def updateSharedInventory(self):
         self.sharedInventory[self.clientId] = self.inventory
@@ -425,8 +436,8 @@ class AI():
     def writeLastMessage(self):
         print("I'm writing the last message")
         messageToSend = bytes(self.sxor(self.teamName, (
-            "inventory" + str(self.clientId) + ";" + str(
-                self.level) + ";" + str(
+            "inventory" + str(self.clientId) + "|" + str(
+                self.level) + "|" + str(
                     json.dumps(self.inventory)))
         ), "utf-8").hex()
         self.dataToSend = "Broadcast " + messageToSend + "\n"
