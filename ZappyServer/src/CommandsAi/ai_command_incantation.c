@@ -78,6 +78,7 @@ static bool check_incantation(zappy_server_t *zappy, client_t *client)
         return false;
     if (client->incantation == false) {
         dprintf(zappy->actual_sockfd, "Elevation underway\n");
+        send_pic_command_to_all_gui(zappy, client);
         client->incantation = true;
     }
     map = &zappy->map_tile[client->pos.y][client->pos.x].inventory;
@@ -100,6 +101,7 @@ static int complet_incantation(zappy_server_t *zappy, client_t *client,
         return ERROR;
     client->level += 1;
     client->incantation = false;
+    send_pie_command_to_all_gui(zappy, client);
     dprintf(zappy->actual_sockfd, "Current level: %d\n", client->level);
     return OK;
 }

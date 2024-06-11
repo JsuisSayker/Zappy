@@ -38,6 +38,7 @@ TOOLS		=	splitter.c							\
 				free_list.c							\
 				normalize_coordonate.c				\
 				free_string.c						\
+				realloc_and_strcat.c				\
 
 COMMAND_AI		=	handle_ai_command.c				\
 					ai_function.c					\
@@ -59,6 +60,8 @@ COMMAND_AI		=	handle_ai_command.c				\
 					send_pgt_command_to_all_gui.c	\
 					send_pfk_command_to_all_gui.c	\
 					send_pdr_command_to_all_gui.c	\
+					send_pie_command_to_all_gui.c	\
+					send_pic_command_to_all_gui.c	\
 
 COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_msz.c				\

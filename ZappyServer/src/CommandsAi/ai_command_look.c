@@ -56,13 +56,6 @@ static char *inventory_to_string(inventory_t *inventory)
     return str;
 }
 
-static void realloc_and_strcat(char **message, char *str)
-{
-    *message = realloc(*message, sizeof(char) * (strlen(*message) +
-        strlen(str)) + 1);
-    *message = strcat(*message, str);
-}
-
 static void get_players(zappy_server_t *zappy, look_struct_t *look,
     int x, int y)
 {
