@@ -185,6 +185,7 @@ typedef struct client_s {
     client_type_t type;
     int client_number;
     int level;
+    bool incantation;
     char *team_name;
     struct sockaddr_in other_socket_addr;
     ai_health_t health;
@@ -253,6 +254,8 @@ void free_array(char **array);
 void set_inventory_resource_quantite(inventory_t *tile_inventory,
     char *resource, int resource_quantity);
 void normalize_coordinate(int *x, int *y, zappy_server_t *zappy);
+void free_string(char **str);
+
 // Server functions
 int init_server(zappy_server_t *zappy_server, args_config_t *args);
 int close_server(zappy_server_t *zappy_server);

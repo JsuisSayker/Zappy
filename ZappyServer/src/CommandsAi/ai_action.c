@@ -39,10 +39,7 @@ bool check_action(zappy_server_t *zappy, client_t *client)
         client->command.is_contracted = false;
         client->command.cast_time = 0;
         client->command.time = 0.0;
-        if (client->command.execution != NULL){
-            free(client->command.execution);
-            client->command.execution = NULL;
-        }
+        free_string(&client->command.execution);
         return true;
     }
     return false;
@@ -56,10 +53,7 @@ static int queue_to_exec_sub(client_t *client)
     if (client->command.execution == NULL)
         return ERROR;
     for (int i = 0; i < 10; i += 1){
-        if (client->command.queue[i] != NULL){
-            free(client->command.queue[i]);
-            client->command.queue[i] = NULL;
-        }
+        free_string(&client->command.queue[i]);
         if (client->command.queue[i + 1] != NULL)
             client->command.queue[i] = strdup(client->command.queue[i + 1]);
     }

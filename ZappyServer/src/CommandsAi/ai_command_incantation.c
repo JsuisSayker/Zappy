@@ -76,7 +76,11 @@ static bool check_incantation(zappy_server_t *zappy, client_t *client)
 
     if (client == NULL || zappy == NULL)
         return false;
-    map = &zappy->map_tile[client->pos.x][client->pos.y].inventory;
+    if (client->incantation == false) {
+        dprintf(zappy->actual_sockfd, "Elevation underway\n");
+        client->incantation = true;
+    }
+    map = &zappy->map_tile[client->pos.y][client->pos.x].inventory;
     nb_players = get_players(zappy, client->pos.x, client->pos.y);
     if (check_resources(map, client->level)
         && check_player(nb_players, client->level))
@@ -95,8 +99,8 @@ static int complet_incantation(zappy_server_t *zappy, client_t *client,
     if (remove_ressource(map, lvl) == ERROR)
         return ERROR;
     client->level += 1;
-    dprintf(zappy->actual_sockfd, "Elevation underway\nCurrent level: %d\n",
-    client->level);
+    client->incantation = false;
+    dprintf(zappy->actual_sockfd, "Current level: %d\n", client->level);
     return OK;
 }
 
@@ -105,7 +109,8 @@ int ai_command_incantation(zappy_server_t *zappy, client_t *client, char *cmd)
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
     if (check_incantation(zappy, client) == false){
-        dprintf(zappy->actual_sockfd, "ko\n");
+        dprintf(zappy->actual_sockfd, "ko bit\n");
+        free_string(&client->command.execution);
         return OK;
     }
     if (cast_action(zappy, client, 300, cmd) == ERROR)
