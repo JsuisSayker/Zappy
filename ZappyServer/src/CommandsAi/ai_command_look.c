@@ -175,7 +175,6 @@ int ai_command_look(zappy_server_t *zappy, client_t *client, char *cmd)
         return ERROR;
     if (check_action(zappy, client) == false)
         return OK;
-    printf("Look\n Linemate %d\n posX: %d\n posY: %d\n--\n", zappy->map_tile[client->pos.y][client->pos.x].inventory.linemate, client->pos.x, client->pos.y);
     send_look_command(zappy, client);
     return OK;
 }
