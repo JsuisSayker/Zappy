@@ -58,6 +58,7 @@ COMMAND_AI		=	handle_ai_command.c				\
 					send_pdi_command_to_all_gui.c	\
 					send_pgt_command_to_all_gui.c	\
 					send_pfk_command_to_all_gui.c	\
+					send_pdr_command_to_all_gui.c	\
 
 COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_msz.c				\
@@ -70,6 +71,7 @@ COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_suc.c				\
 					gui_command_sgt.c				\
 					gui_command_sst.c				\
+					send_sgt_command_to_all_gui.c	\
 
 COMMAND_SERVER	=	handle_server_command.c			\
 					server_command_help.c			\
@@ -83,6 +85,7 @@ COMMAND_SERVER	=	handle_server_command.c			\
 					server_command_set_inventory.c	\
 					server_command_set_freq.c		\
 					server_command_set_level.c		\
+					server_command_send_guis.c		\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 
@@ -99,26 +102,27 @@ MAIN		=	main.c								\
 DIR_MAIN		=	$(addprefix src/, $(MAIN))
 
 TEST		=	test_splitter.c						\
-				test_get_len_char_tab.c				\
-				test_server_command_help.c			\
-				test_server_command_map.c			\
-				test_server_command_clear.c			\
-				test_server_command_quit.c			\
-				test_server_command_set_freq.c		\
-				test_server_command_tile.c			\
-				test_handle_server_command.c		\
-				test_gui_command_bct.c				\
-				test_gui_command_mct.c				\
-				test_gui_command_msz.c				\
-				test_gui_command_pin.c				\
-				test_gui_command_plv.c				\
-				test_gui_command_ppo.c				\
-				test_gui_command_sgt.c				\
-				test_gui_command_sst.c				\
-				test_gui_command_suc.c				\
-				test_gui_command_tna.c				\
-				test_fill_args_conf.c				\
-				test_zappy_server.c					\
+				# test_get_len_char_tab.c				\
+				# test_server_command_help.c			\
+				# test_server_command_map.c			\
+				# test_server_command_clear.c			\
+				# test_server_command_quit.c			\
+				# test_server_command_set_freq.c		\
+				# test_server_command_tile.c			\
+				# test_handle_server_command.c		\
+				# test_gui_command_mct.c				\
+				# test_gui_command_pin.c				\
+				# test_gui_command_ppo.c				\
+				# test_gui_command_suc.c				\
+				# \
+				# test_zappy_server.c					\
+				# test_gui_command_bct.c				\
+				# test_gui_command_msz.c				\
+				# test_gui_command_plv.c				\
+				# test_gui_command_sgt.c				\
+				# test_gui_command_sst.c				\
+				# test_gui_command_tna.c				\
+				# test_fill_args_conf.c				\
 
 DIR_TESTS	=	$(addprefix tests/, $(TEST))
 

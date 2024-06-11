@@ -17,7 +17,6 @@ static int init_value(client_t *ia, team_t *tmp_team, egg_t *new_egg,
     gettimeofday(&tv, NULL);
     ia->health.time_to_eat = 126.0 / (double)freq;
     ia->health.last_meal = tv.tv_sec + tv.tv_usec / 1000000.0;
-    ia->health.is_alive = true;
     ia->pos.x = new_egg->x;
     ia->pos.y = new_egg->y;
     ia->team_name = strdup(tmp_team->name);

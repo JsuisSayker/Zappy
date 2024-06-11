@@ -25,13 +25,15 @@ static int get_item(char *cmd, char **item)
     return OK;
 }
 
-static int drop_item(int *map_item, int *item)
+static int drop_item(zappy_server_t *zappy, client_t *client, int *map_item,
+    int *item)
 {
     if (map_item == NULL || item == NULL)
         return ERROR;
     if (*item == 0)
         return ERROR;
     *map_item = *item;
+    send_pdr_command_to_all_gui(zappy, client, *item);
     *item = 0;
     return OK;
 }
@@ -41,19 +43,19 @@ static int find_item_sub(zappy_server_t *zappy, client_t *client, char *item)
     if (zappy == NULL || client == NULL || item == NULL)
         return ERROR;
     if (strncmp(item, "sibur", strlen("sibur\0")) == 0)
-        return drop_item(
+        return drop_item(zappy, client,
             &zappy->map_tile[client->pos.y][client->pos.x].inventory.sibur,
             &client->inventory.sibur);
     if (strncmp(item, "mendiane", strlen("mendiane\0")) == 0)
-        return drop_item(
+        return drop_item(zappy, client,
             &zappy->map_tile[client->pos.y][client->pos.x].inventory.mendiane,
             &client->inventory.mendiane);
     if (strncmp(item, "phiras", strlen("phiras\0")) == 0)
-        return drop_item(
+        return drop_item(zappy, client,
             &zappy->map_tile[client->pos.y][client->pos.x].inventory.phiras,
             &client->inventory.phiras);
     if (strncmp(item, "thystame", strlen("thystame\0")) == 0)
-        return drop_item(
+        return drop_item(zappy, client,
             &zappy->map_tile[client->pos.y][client->pos.x].inventory.thystame,
             &client->inventory.thystame);
     return ERROR;
@@ -64,15 +66,15 @@ static int find_item(zappy_server_t *zappy, client_t *client, char *item)
     if (zappy == NULL || client == NULL || item == NULL)
         return ERROR;
     if (strncmp(item, "food", strlen("food\0")) == 0)
-        return drop_item(
+        return drop_item(zappy, client,
             &zappy->map_tile[client->pos.y][client->pos.x].inventory.food,
             &client->inventory.food);
     if (strncmp(item, "linemate", strlen("linemate\0")) == 0)
-        return drop_item(
+        return drop_item(zappy, client,
             &zappy->map_tile[client->pos.y][client->pos.x].inventory.linemate,
             &client->inventory.linemate);
     if (strncmp(item, "deraumere", strlen("deraumere\0")) == 0)
-        return drop_item(
+        return drop_item(zappy, client,
             &zappy->map_tile[client->pos.y][client->pos.x].inventory.deraumere,
             &client->inventory.deraumere);
     if (find_item_sub(zappy, client, item) == ERROR)
@@ -93,7 +95,7 @@ static int set_command(zappy_server_t *zappy, client_t *client, char *cmd)
         free(item);
         return OK;
     }
-    send_pin_command_to_all_gui(zappy, &zappy->clients[zappy->actual_sockfd]);
+    send_pin_command_to_all_gui(zappy, client);
     dprintf(zappy->actual_sockfd, "ok\n");
     free(item);
     return OK;
