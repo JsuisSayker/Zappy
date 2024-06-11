@@ -163,8 +163,9 @@ void ZappyGui::run()
         std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
         auto commandTime = std::chrono::high_resolution_clock::now();
         auto endTime = commandTime + std::chrono::milliseconds(16);
-        while (!this->getClient().get()->getQueue().empty() && commandTime < endTime) {
-            
+        while (!this->getClient().get()->getQueue().empty() &&
+            commandTime < endTime) {
+
             std::vector<std::string> command =
                 this->getClient().get()->popFromQueue();
             if (this->getPointerToFunction().find(command[0]) !=
@@ -181,7 +182,6 @@ void ZappyGui::run()
             commandTime = std::chrono::high_resolution_clock::now();
         }
         lock.unlock();
-
 
         auto newTime = std::chrono::high_resolution_clock::now();
         float frameTime =
@@ -250,17 +250,9 @@ std::string ZappyGui::getExecutablePath()
 
 void ZappyGui::loadGameObjects()
 {
-    // std::vector<std::vector<glm::vec3>> trantPositions = {
-    //     {{-0.1f, 0.0f, 0.0f}, {-0.4f, 0.0f, 0.0f}, {-0.8f, 0.0f, 0.0f},
-    //     {-1.2f, 0.0f, 0.0f}},
-    //     {{0.1f, 0.0f, 0.0f}, {0.4f, 0.0f, 0.0f}, {0.8f, 0.0f, 0.0f}, {1.2f,
-    //     0.0f, 0.0f}}
-    // };
-
-    std::shared_ptr<ZappyModel> lveModel = ZappyModel::createModelFromFile(
-        lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj");
-
-    // std::vector<std::string> teamNames = {"Team-A", "Team-B"};
+    addTrantorian("Team-A", {0.f, 0.f, 0.f}, 1,
+        2); //////////////////////////////////////////////////////////////////////////
+    updateTrantorianPosition(1, {1.f, 0.f, 1.f}, 3);
 }
 
 ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
@@ -477,22 +469,29 @@ void ZappyGui::pnw(std::vector<std::string> actualCommand)
     }
 
     int trantorianId = std::stoi(actualCommand[1]);
-    std::string teamName = actualCommand[2];
-    int x = std::stoi(actualCommand[3]);
-    int y = std::stoi(actualCommand[4]);
-    int orientation = std::stoi(actualCommand[5]);
-    int level = std::stoi(actualCommand[6]);
+    int x = std::stoi(actualCommand[2]);
+    int y = std::stoi(actualCommand[3]);
+    int orientation = std::stoi(actualCommand[4]);
+    int level = std::stoi(actualCommand[5]);
+    std::string teamName = actualCommand[6];
 
-    this->addTrantorian(
-        ZappyModel::createModelFromFile(
-            lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj"),
-        teamName, {static_cast<float>(x), 0.0f, static_cast<float>(y)},
-        trantorianId, orientation);
+    this->addTrantorian(teamName,
+        {static_cast<float>(x), 0.0f, static_cast<float>(y)}, trantorianId,
+        orientation);
 }
 
 void ZappyGui::ppo(std::vector<std::string> actualCommand)
 {
-    std::cout << "ppo" << std::endl;
+    if (actualCommand.size() != 5) {
+        std::cerr << "ppo: invalid number of arguments" << std::endl;
+        return;
+    }
+    int playerNumber = std::stoi(actualCommand[1]);
+    int x = std::stoi(actualCommand[2]);
+    int y = std::stoi(actualCommand[3]);
+    int orientation = std::stoi(actualCommand[4]);
+    this->updateTrantorianPosition(playerNumber,
+        {static_cast<float>(x), 0.0f, static_cast<float>(y)}, orientation);
 }
 
 void ZappyGui::plv(std::vector<std::string> actualCommand)
@@ -585,25 +584,24 @@ void ZappyGui::welcome(std::vector<std::string> actualCommand)
     dprintf(this->client.get()->getSocketFd(), "GRAPHIC\n");
 }
 
-void ZappyGui::addTrantorian(std::shared_ptr<ZappyModel> lveModel,
-    const std::string &teamName, const glm::vec3 &position, int playerNumber,
-    int orientation)
+void ZappyGui::addTrantorian(const std::string &teamName,
+    const glm::vec3 &position, int playerNumber, int orientation)
 {
-    glm::vec3 rotation = {1.f, 1.f, 1.f};
+    glm::vec3 rotation;
 
     if (orientation == 1)
         rotation = {0.f, 0.f, 0.f};
     else if (orientation == 2)
-        rotation = {0.f, glm::pi<float>(), 0.f};
+        rotation = {0.f, 1.55f, 0.f};
     else if (orientation == 3)
-        rotation = {0.f, glm::half_pi<float>(), 0.f};
+        rotation = {0.f, 3.14f, 0.f};
     else if (orientation == 4)
-        rotation = {0.f, -glm::half_pi<float>(), 0.f};
+        rotation = {0.f, -1.57f, 0.f};
 
     ZappyGameObject::id_t ObjectId =
-        createGameObject(executablePath + "/ZappyGui/models/cube.obj",
+        createGameObject(executablePath + "/ZappyGui/models/smooth_vase.obj",
             executablePath + "/ZappyGui/textures/Steve.png", position,
-            rotation, {1.f, 1.f, 1.f}, false);
+            rotation, {2.f, 2.f, 2.f}, false);
 
     std::shared_ptr<ZappyGameObject> pointLight =
         std::make_shared<ZappyGameObject>(
@@ -615,7 +613,34 @@ void ZappyGui::addTrantorian(std::shared_ptr<ZappyModel> lveModel,
 
     Trantorian newTrantorian(
         ObjectId, pointLight->getId(), teamName, playerNumber);
-    trantorians_.emplace_back(newTrantorian);
+
+    this->trantorians_.emplace_back(newTrantorian);
+}
+
+void ZappyGui::updateTrantorianPosition(
+    int playerNumber, const glm::vec3 &position, int orientation)
+{
+    for (Trantorian &trantorian : trantorians_) {
+        if (trantorian.playerNumber == playerNumber) {
+            for (auto &object : gameObjects) {
+                if (object.first == trantorian.pointLightObject) {
+                    object.second.transform.translation = position;
+                    object.second.transform.translation.y -= 1.0f;
+                }
+                if (object.first == trantorian.trantorianObject) {
+                    object.second.transform.translation = position;
+                    if (orientation == 1)
+                        object.second.transform.rotation = {0.f, 0.f, 0.f};
+                    else if (orientation == 2)
+                        object.second.transform.rotation = {0.f, 1.55f, 0.f};
+                    else if (orientation == 3)
+                        object.second.transform.rotation = {0.f, 3.14f, 0.f};
+                    else if (orientation == 4)
+                        object.second.transform.rotation = {0.f, -1.57f, 0.f};
+                }
+            }
+        }
+    }
 }
 
 void ZappyGui::createMap(int width, int height)
