@@ -58,16 +58,17 @@ class AI():
 
     def sxor(self, s1: str, s2: str):
         """Xor two strings"""
-        return ''.join(chr(ord(c)^ord(k)) for c,k in zip(s2, cycle(s1)))
+        return ''.join(chr(ord(c) ^ ord(k)) for c, k in zip(s2, cycle(s1)))
 
     def parse_broadcast(self, messageReceived: str):
         signalDirection = int(messageReceived[8])
         print(f"signalDirection: {signalDirection}")
         print(f"messageReceived before: {messageReceived}")
-        print(f"the second part of the message received: [{messageReceived[11:]}]")
+        print(
+            f"the second part of the message received: [{messageReceived[11:]}]")
         parsedReceivedMessage = self.sxor(self.teamName,
-                                    bytes.fromhex(messageReceived[11:]
-                                                  ).decode("utf-8"))
+                                          bytes.fromhex(messageReceived[11:]
+                                                        ).decode("utf-8"))
         print(f"parsedReceivedMessage value: {parsedReceivedMessage}")
         if "inventory" in parsedReceivedMessage:
             print("parsing inventory")
@@ -427,7 +428,7 @@ class AI():
             "inventory" + str(self.clientId) + ";" + str(
                 self.level) + ";" + str(
                     json.dumps(self.inventory)))
-                                        ), "utf-8").hex()
+        ), "utf-8").hex()
         self.dataToSend = "Broadcast " + messageToSend + "\n"
         self.actualActivity = Activity.EXECUTE_COMMAND
 

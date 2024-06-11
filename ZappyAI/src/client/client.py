@@ -137,11 +137,12 @@ class Client():
                                 self.ai.dataToSend = ""
                             elif "Current level" in element:
                                 self.ai.level = int(''.join(filter(
-                                    str.isdigit,  element)))
+                                    str.isdigit, element)))
                                 if self.ai.level == 8:
                                     print("VICTORY")
                                     exit(0)
-                                print(f"Current element in current elem: {element}")
+                                print(
+                                    f"Current element in current elem: {element}")
                                 self.ai.newRessource = False
                                 self.ai.searchingRessource = ""
                                 self.ai.incantation = False
