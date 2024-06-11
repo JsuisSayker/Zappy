@@ -69,7 +69,6 @@ static int queue_to_exec_sub(client_t *client)
 
 int queue_to_exec(client_t *client)
 {
-    printf("Queue to exec\n");
     if (client == NULL)
         return ERROR;
     if (client->command.queue[0] != NULL) {
@@ -81,7 +80,6 @@ int queue_to_exec(client_t *client)
         if (queue_to_exec_sub(client) == ERROR)
             return ERROR;
     }
-    printf("Queue to exec end\n--\n");
     return OK;
 }
 

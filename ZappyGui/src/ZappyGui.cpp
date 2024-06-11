@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "Buffer.hpp"
-#include "Camera.hpp"
 #include "ErrorHandling.hpp"
 #include "KeyboardMovementController.hpp"
 #include "Trantorian.hpp"
@@ -43,7 +42,7 @@ ZappyGui::ZappyGui()
                      .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                          ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
                      .build();
-    // loadGameObjects();
+    loadGameObjects();
     this->client = std::make_shared<Client>();
     this->map_ = std::make_unique<Map>();
     this->_pointerToFunction["msz"] =
@@ -54,6 +53,8 @@ ZappyGui::ZappyGui()
         std::bind(&ZappyGui::mct, this, std::placeholders::_1);
     this->_pointerToFunction["tna"] =
         std::bind(&ZappyGui::tna, this, std::placeholders::_1);
+    this->_pointerToFunction["pnw"] =
+        std::bind(&ZappyGui::pnw, this, std::placeholders::_1);
     this->_pointerToFunction["ppo"] =
         std::bind(&ZappyGui::ppo, this, std::placeholders::_1);
     this->_pointerToFunction["plv"] =
@@ -97,7 +98,6 @@ ZappyGui::~ZappyGui() {}
 void ZappyGui::run()
 {
     this->getClient().get()->connectToServer();
-    fd_set readfds;
 
     uboBuffers.resize(ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
     for (int i = 0; i < uboBuffers.size(); i++) {
@@ -126,11 +126,11 @@ void ZappyGui::run()
     // Create descriptor pool with adequate size
     globalPool = ZappyDescriptorPool::Builder(lveDevice)
                      .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT *
-                         10000) // Adjusted to fit more sets
+                         100) // Adjusted to fit more sets
                      .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                         ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 10000)
+                         ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 100)
                      .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                         ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 10000)
+                         ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 100)
                      .build();
 
     std::vector<VkDescriptorSet> globalDescriptorSets(
@@ -149,59 +149,39 @@ void ZappyGui::run()
     PointLightSystem pointLightSystem{lveDevice,
         lveRenderer.getSwapChainRenderPass(),
         globalSetLayout->getDescriptorSetLayout(), executablePath};
-    ZappyCamera camera{};
 
-    auto viewerObject = ZappyGameObject::createGameObject();
-    viewerObject.transform.translation.z = -2.5f;
+    viewerObject = ZappyGameObject::createGameObject();
     KeyboardMovementController cameraController{};
 
+    std::thread reader(&Client::receiveFromServer, this->client.get());
+
     auto currentTime = std::chrono::high_resolution_clock::now();
+    int socket_fd = this->getClient().get()->getSocketFd();
     while (!lveWindow.shouldClose()) {
-        // set all fd clients to read
-        FD_ZERO(&readfds);
-
-        int socket_fd = this->getClient().get()->getSocketFd();
-        FD_SET(socket_fd, &readfds);
-        FD_SET(STDIN_FILENO, &readfds);
-
-        // Calculate the maximum file descriptor
-        int max_fd = std::max(socket_fd, STDIN_FILENO) + 1;
-
-        // Set timeout for select
-        struct timeval timeout;
-        timeout.tv_sec = 0;
-        timeout.tv_usec = 16000; // 16 ms timeout for roughly 60 FPS
-
-        // Wait for an activity on one of the file descriptors
-        int activity = select(max_fd, &readfds, NULL, NULL, &timeout);
-        if (activity < 0) {
-            perror("select");
-            exit(84);
-        }
-
-        // Check if there is activity on the socket file descriptor
-        if (activity > 0 && FD_ISSET(socket_fd, &readfds)) {
-            this->getClient().get()->receiveFromServer();
-            this->bufferToSplitedBuffer(this->getClient().get()->getBuffer());
-            for (auto &actualCommand : this->getSplitedBuffer()) {
-                if (this->getPointerToFunction().find(actualCommand[0]) !=
-                    this->getPointerToFunction().end()) {
-                    try {
-                        this->getPointerToFunction()[actualCommand[0]](
-                            actualCommand);
-                    } catch (const std::exception &e) {
-                        std::cerr << e.what() << std::endl;
-                    }
-                } else {
-                    std::cerr << "Unknown command: " << actualCommand[0]
-                              << std::endl;
-                }
-            }
-            this->getClient().get()->getBuffer().clear();
-            this->getSplitedBuffer().clear();
-        }
 
         glfwPollEvents();
+        std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
+        auto commandTime = std::chrono::high_resolution_clock::now();
+        auto endTime = commandTime + std::chrono::milliseconds(16);
+        while (!this->getClient().get()->getQueue().empty() &&
+            commandTime < endTime) {
+
+            std::vector<std::string> command =
+                this->getClient().get()->popFromQueue();
+            if (this->getPointerToFunction().find(command[0]) !=
+                this->getPointerToFunction().end()) {
+                try {
+                    // Wrap actualCommand in a vector and call the function
+                    this->getPointerToFunction()[command[0]](command);
+                } catch (const std::exception &e) {
+                    std::cerr << e.what() << std::endl;
+                }
+            } else {
+                std::cerr << "Unknown command: " << command[0] << std::endl;
+            }
+            commandTime = std::chrono::high_resolution_clock::now();
+        }
+        lock.unlock();
 
         auto newTime = std::chrono::high_resolution_clock::now();
         float frameTime =
@@ -244,6 +224,9 @@ void ZappyGui::run()
             lveRenderer.endFrame();
         }
     }
+    std::cout << "Closing connection" << std::endl;
+    this->getClient().get()->running = false;
+    reader.join();
 
     vkDeviceWaitIdle(lveDevice.device());
 }
@@ -267,20 +250,10 @@ std::string ZappyGui::getExecutablePath()
 
 void ZappyGui::loadGameObjects()
 {
-    // std::vector<std::vector<glm::vec3>> trantPositions = {
-    //     {{-0.1f, 0.0f, 0.0f}, {-0.4f, 0.0f, 0.0f}, {-0.8f, 0.0f, 0.0f},
-    //     {-1.2f, 0.0f, 0.0f}},
-    //     {{0.1f, 0.0f, 0.0f}, {0.4f, 0.0f, 0.0f}, {0.8f, 0.0f, 0.0f}, {1.2f,
-    //     0.0f, 0.0f}}
-    // };
-
-    std::shared_ptr<ZappyModel> lveModel = ZappyModel::createModelFromFile(
-        lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj");
-
-    // std::vector<std::string> teamNames = {"Team-A", "Team-B"};
-
-    this->createTeam(lveModel, "Team-A", {0.0f, 0.0f, 0.0f});
-    this->addTrantorian(lveModel, "Team-A", {8.0f, 8.0f, 8.0f});
+    addTrantorian("Team-A", {0.f, 0.f, 0.f}, 1, 2);
+    addTrantorian("Team-A", {1.f, 0.f, 0.f}, 2, 2);
+    removeTrantorian(2);
+    //updateTrantorianPosition(1, {1.f, 0.f, 1.f}, 3);
 }
 
 ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
@@ -314,7 +287,8 @@ ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
             index++;
         }
 
-        std::shared_ptr<Texture> texture = std::make_shared<Texture>(lveDevice, texturePath);
+        std::shared_ptr<Texture> texture =
+            std::make_shared<Texture>(lveDevice, texturePath);
         object.imageInfo.sampler = texture->getSampler();
         object.imageInfo.imageView = texture->getImageView();
         object.imageInfo.imageLayout = texture->getImageLayout();
@@ -328,7 +302,8 @@ ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
                 .writeImage(1, &object.imageInfo)
                 .build(descriptorSets[i]);
         }
-        textureObjects.push_back(std::make_pair(descriptorSets, std::make_pair(texture, texturePath)));
+        textureObjects.push_back(std::make_pair(
+            descriptorSets, std::make_pair(texture, texturePath)));
         object.indexDescriptorSet = textureObjects.size() - 1;
     }
     gameObjects.emplace(object.getId(), std::move(object));
@@ -359,11 +334,27 @@ void ZappyGui::msz(std::vector<std::string> actualCommand)
         return;
     }
 
-    int width = std::stoi(actualCommand[1]);
-    int height = std::stoi(actualCommand[2]);
+    int width;
+    int height;
+    try {
+        width = std::stoi(actualCommand[1]);
+        height = std::stoi(actualCommand[2]);
+    } catch (const std::exception &e) {
+        return;
+    }
 
+    if (width == this->map_.get()->getWidth() &&
+        height == this->map_.get()->getHeight())
+        return;
     this->map_.get()->setHeight(height);
     this->map_.get()->setWidth(width);
+    viewerObject.transform.translation.x = width / 2.f;
+    viewerObject.transform.translation.y = -width / 1.5f;
+    if (width < height) {
+        viewerObject.transform.translation.y = -height / 1.5f;
+    }
+    viewerObject.transform.translation.z = height / 2.f;
+    viewerObject.transform.rotation.x = -40.f;
     std::vector<std::vector<resources>> map;
     for (int i = 0; i < width; i++) {
         std::vector<resources> line;
@@ -374,6 +365,7 @@ void ZappyGui::msz(std::vector<std::string> actualCommand)
         map.push_back(line);
     }
     this->map_.get()->setMap(map);
+    this->getClient().get()->map = *this->map_.get();
     this->createMap(width, height);
 }
 
@@ -384,68 +376,143 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
         return;
     }
 
-    int x = std::stoi(actualCommand[1]);
-    int y = std::stoi(actualCommand[2]);
-    int food = std::stoi(actualCommand[3]);
-    int linemate = std::stoi(actualCommand[4]);
-    int deraumere = std::stoi(actualCommand[5]);
-    int sibur = std::stoi(actualCommand[6]);
-    int mendiane = std::stoi(actualCommand[7]);
-    int phiras = std::stoi(actualCommand[8]);
-    int thystame = std::stoi(actualCommand[9]);
+    int x;
+    int y;
+    int food;
+    int linemate;
+    int deraumere;
+    int sibur;
+    int mendiane;
+    int phiras;
+    int thystame;
+    try {
+        x = std::stoi(actualCommand[1]);
+        y = std::stoi(actualCommand[2]);
+        food = std::stoi(actualCommand[3]);
+        linemate = std::stoi(actualCommand[4]);
+        deraumere = std::stoi(actualCommand[5]);
+        sibur = std::stoi(actualCommand[6]);
+        mendiane = std::stoi(actualCommand[7]);
+        phiras = std::stoi(actualCommand[8]);
+        thystame = std::stoi(actualCommand[9]);
+    } catch (const std::exception &e) {
+        return;
+    }
     std::vector<std::vector<resources>> map = this->map_.get()->getMap();
-    for (int i = 0; i < food; i++) {
-        map[x][y].food.push_back(
-            createGameObject(executablePath + "/ZappyGui/models/food.obj",
-                executablePath + "/ZappyGui/textures/food.png",
-                {static_cast<float>(x), -0.125f, static_cast<float>(y)},
-                {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+    int actualFood = map[x][y].food.size();
+    int actualLinemate = map[x][y].linemate.size();
+    int actualDeraumere = map[x][y].deraumere.size();
+    int actualSibur = map[x][y].sibur.size();
+    int actualMendiane = map[x][y].mendiane.size();
+    int actualPhiras = map[x][y].phiras.size();
+    int actualThystame = map[x][y].thystame.size();
+
+    if (food >= actualFood) {
+        for (int i = 0; i < food - actualFood; i++) {
+            map[x][y].food.push_back(
+                createGameObject(executablePath + "/ZappyGui/models/food.obj",
+                    executablePath + "/ZappyGui/textures/food.png",
+                    {static_cast<float>(x), -0.125f, static_cast<float>(y)},
+                    {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+        }
+    } else {
+        for (int i = actualFood; i > food; i--) {
+            removeGameObject(map[x][y].food.back());
+            map[x][y].food.pop_back();
+        }
     }
-    for (int i = 0; i < linemate; i++) {
-        map[x][y].linemate.push_back(
-            createGameObject(executablePath + "/ZappyGui/models/linemate.obj",
-                executablePath + "/ZappyGui/textures/linemate.png",
-                {static_cast<float>(x) - 0.125f, -0.125f,
-                    static_cast<float>(y) - 0.125f},
-                {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+    if (linemate >= actualLinemate) {
+        for (int i = 0; i < linemate - actualLinemate; i++) {
+            map[x][y].linemate.push_back(
+                createGameObject(executablePath + "/ZappyGui/models/linemate.obj",
+                    executablePath + "/ZappyGui/textures/linemate.png",
+                    {static_cast<float>(x) - 0.3f, -0.125f,
+                        static_cast<float>(y) - 0.3f},
+                    {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+        }
+    } else {
+        for (int i = actualLinemate; i > linemate; i--) {
+            removeGameObject(map[x][y].linemate.back());
+            map[x][y].linemate.pop_back();
+        }
     }
-    for (int i = 0; i < deraumere; i++) {
-        map[x][y].deraumere.push_back(
-            createGameObject(executablePath + "/ZappyGui/models/deraumere.obj",
-                executablePath + "/ZappyGui/textures/deraumere.png",
-                {static_cast<float>(x) + 0.125f, 1.f,
-                    static_cast<float>(y) + 0.125f},
-                {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+    if (deraumere >= actualDeraumere) {
+        for (int i = 0; i < deraumere - actualDeraumere; i++) {
+            map[x][y].deraumere.push_back(
+                createGameObject(executablePath + "/ZappyGui/models/deraumere.obj",
+                    executablePath + "/ZappyGui/textures/deraumere.png",
+                    {static_cast<float>(x) + 0.3f, -0.125f,
+                        static_cast<float>(y) + 0.3f},
+                    {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+        }
+    } else {
+        for (int i = actualDeraumere; i > deraumere; i--) {
+            removeGameObject(map[x][y].deraumere.back());
+            map[x][y].deraumere.pop_back();
+        }
     }
-    // for (int i = 0; i < sibur; i++) {
-    //     map[x][y].sibur.push_back(createGameObject(
-    //         executablePath + "/ZappyGui/models/sibur.obj",
-    //         executablePath + "/ZappyGui/textures/sibur.png",
-    //         {static_cast<float>(x), 1.f, static_cast<float>(y)},
-    //         {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
-    // }
-    // for (int i = 0; i < mendiane; i++) {
-    //     map[x][y].mendiane.push_back(createGameObject(
-    //         executablePath + "/ZappyGui/models/mendiane.obj",
-    //         executablePath + "/ZappyGui/textures/mendiane.png",
-    //         {static_cast<float>(x), 1.f, static_cast<float>(y)},
-    //         {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
-    // }
-    // for (int i = 0; i < phiras; i++) {
-    //     map[x][y].phiras.push_back(createGameObject(
-    //         executablePath + "/ZappyGui/models/phiras.obj",
-    //         executablePath + "/ZappyGui/textures/phiras.png",
-    //         {static_cast<float>(x), 1.f, static_cast<float>(y)},
-    //         {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
-    // }
-    // for (int i = 0; i < thystame; i++) {
-    //     map[x][y].thystame.push_back(createGameObject(
-    //         executablePath + "/ZappyGui/models/thystame.obj",
-    //         executablePath + "/ZappyGui/textures/thystame.png",
-    //         {static_cast<float>(x), 1.f, static_cast<float>(y)},
-    //         {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
-    // }
+    if (sibur >= actualSibur) {
+        for (int i = 0; i < sibur - actualSibur; i++) {
+            map[x][y].sibur.push_back(
+                createGameObject(executablePath + "/ZappyGui/models/sibur.obj",
+                    executablePath + "/ZappyGui/textures/sibur.png",
+                    {static_cast<float>(x) - 0.3f, -0.125f,
+                        static_cast<float>(y) + 0.3f},
+                    {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+        }
+    } else {
+        for (int i = actualSibur; i > sibur; i--) {
+            removeGameObject(map[x][y].sibur.back());
+            map[x][y].sibur.pop_back();
+        }
+    }
+    if (mendiane >= actualMendiane) {
+        for (int i = 0; i < mendiane - actualMendiane; i++) {
+            map[x][y].mendiane.push_back(
+                createGameObject(executablePath + "/ZappyGui/models/mendiane.obj",
+                    executablePath + "/ZappyGui/textures/mendiane.png",
+                    {static_cast<float>(x) + 0.3f, -0.125f,
+                        static_cast<float>(y) - 0.3f},
+                    {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+        }
+    } else {
+        for (int i = actualMendiane; i > mendiane; i--) {
+            removeGameObject(map[x][y].mendiane.back());
+            map[x][y].mendiane.pop_back();
+        }
+    }
+    if (phiras >= actualPhiras) {
+        for (int i = 0; i < phiras - actualPhiras; i++) {
+            map[x][y].phiras.push_back(
+                createGameObject(executablePath + "/ZappyGui/models/phiras.obj",
+                    executablePath + "/ZappyGui/textures/phiras.png",
+                    {static_cast<float>(x) - 0.3f, -0.125f,
+                        static_cast<float>(y)},
+                    {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+        }
+    } else {
+        for (int i = actualPhiras; i > phiras; i--) {
+            removeGameObject(map[x][y].phiras.back());
+            map[x][y].phiras.pop_back();
+        }
+    }
+    if (thystame >= actualThystame) {
+        for (int i = 0; i < thystame - actualThystame; i++) {
+            map[x][y].thystame.push_back(
+                createGameObject(executablePath + "/ZappyGui/models/thystame.obj",
+                    executablePath + "/ZappyGui/textures/thystame.png",
+                    {static_cast<float>(x) + 0.3f, -0.125f,
+                        static_cast<float>(y)},
+                    {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+        }
+    } else {
+        for (int i = actualThystame; i > thystame; i--) {
+            removeGameObject(map[x][y].thystame.back());
+            map[x][y].thystame.pop_back();
+        }
+    }
     this->map_.get()->setMap(map);
+    this->getClient().get()->map = *this->map_.get();
 }
 
 void ZappyGui::mct(std::vector<std::string> actualCommand)
@@ -460,17 +527,67 @@ void ZappyGui::tna(std::vector<std::string> actualCommand)
         return;
     }
 
+    for (auto &i : this->teamsColors_) {
+        if (i.first == actualCommand[1]) {
+            std::cerr << "tna: team already exists" << std::endl;
+            return;
+        }
+    }
     std::string teamName = actualCommand[1];
+    this->teamsColors_.emplace(teamName,
+        glm::vec3(static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
+            static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
+            static_cast<float>(rand()) / static_cast<float>(RAND_MAX)));
+}
 
-    std::shared_ptr<ZappyModel> lveModel = ZappyModel::createModelFromFile(
-        lveDevice, executablePath + "/ZappyGui/models/smooth_vase.obj");
+void ZappyGui::pnw(std::vector<std::string> actualCommand)
+{
+    if (actualCommand.size() != 7) {
+        std::cerr << "pnw: invalid number of arguments" << std::endl;
+        return;
+    }
+    int trantorianId;
+    int x;
+    int y;
+    int orientation;
+    int level;
+    std::string teamName;
+    try {
+        trantorianId = std::stoi(actualCommand[1]);
+        x = std::stoi(actualCommand[2]);
+        y = std::stoi(actualCommand[3]);
+        orientation = std::stoi(actualCommand[4]);
+        level = std::stoi(actualCommand[5]);
+        teamName = actualCommand[6];
+    } catch (const std::exception &e) {
+        return;
+    }
 
-    this->createTeam(lveModel, teamName, {0.0f, 0.0f, 0.0f});
+    this->addTrantorian(teamName,
+        {static_cast<float>(x), 0.0f, static_cast<float>(y)}, trantorianId,
+        orientation);
 }
 
 void ZappyGui::ppo(std::vector<std::string> actualCommand)
 {
-    std::cout << "ppo" << std::endl;
+    if (actualCommand.size() != 5) {
+        std::cerr << "ppo: invalid number of arguments" << std::endl;
+        return;
+    }
+    int playerNumber;
+    int x;
+    int y;
+    int orientation;
+    try {
+        playerNumber = std::stoi(actualCommand[1]);
+        x = std::stoi(actualCommand[2]);
+        y = std::stoi(actualCommand[3]);
+        orientation = std::stoi(actualCommand[4]);
+    } catch (const std::exception &e) {
+        return;
+    }
+    this->updateTrantorianPosition(playerNumber,
+        {static_cast<float>(x), 0.0f, static_cast<float>(y)}, orientation);
 }
 
 void ZappyGui::plv(std::vector<std::string> actualCommand)
@@ -537,13 +654,17 @@ void ZappyGui::pgt(std::vector<std::string> actualCommand)
 
 void ZappyGui::pdi(std::vector<std::string> actualCommand)
 {
-    std::cout << "pdi" << std::endl;
+    if (actualCommand.size() != 2) {
+        std::cerr << "pdi: invalid number of arguments" << std::endl;
+        return;
+    }
+
+    int playerNumber = std::stoi(actualCommand[1]);
+
+    this->removeTrantorian(playerNumber);
 }
 
-void ZappyGui::enw(std::vector<std::string> actualCommand)
-{
-    
-}
+void ZappyGui::enw(std::vector<std::string> actualCommand) {}
 
 void ZappyGui::eht(std::vector<std::string> actualCommand)
 {
@@ -566,81 +687,75 @@ void ZappyGui::welcome(std::vector<std::string> actualCommand)
     dprintf(this->client.get()->getSocketFd(), "GRAPHIC\n");
 }
 
-void ZappyGui::bufferToSplitedBuffer(std::string buffer)
+void ZappyGui::addTrantorian(const std::string &teamName,
+    const glm::vec3 &position, int playerNumber, int orientation)
 {
-    // split the bufer by \n
-    std::vector<std::string> bufferSplited;
-    std::string token;
-    std::istringstream tokenStream(buffer);
-    while (std::getline(tokenStream, token, '\n')) {
-        bufferSplited.push_back(token);
-    }
-    // split each line by space
-    for (auto &i : bufferSplited) {
-        std::vector<std::string> line;
-        std::string token;
-        std::istringstream tokenStream(i);
-        while (std::getline(tokenStream, token, ' ')) {
-            line.push_back(token);
-        }
-        this->splitedBuffer_.push_back(line);
-    }
-    // Print splited buffer
-    for (auto &i : this->splitedBuffer_) {
-        for (auto &j : i) {
-            std::cout << j << " ";
-        }
-        std::cout << std::endl;
-    }
-}
+    glm::vec3 rotation;
 
-std::vector<std::vector<std::string>> &ZappyGui::getSplitedBuffer()
-{
-    return this->splitedBuffer_;
-}
+    if (orientation == 1)
+        rotation = {0.f, 0.f, 0.f};
+    else if (orientation == 2)
+        rotation = {0.f, 1.55f, 0.f};
+    else if (orientation == 3)
+        rotation = {0.f, 3.14f, 0.f};
+    else if (orientation == 4)
+        rotation = {0.f, -1.57f, 0.f};
 
-void ZappyGui::createTeam(std::shared_ptr<ZappyModel> lveModel,
-    const std::string &teamName, const glm::vec3 &position)
-{
-    auto object = std::make_shared<zappy::ZappyGameObject>(
-        zappy::ZappyGameObject::createGameObject());
-    object->model = lveModel;
-    object->transform.translation = position;
-    object->transform.scale = {3.f, 1.5f, 3.f};
-    gameObjects.emplace(object->getId(), std::move(*object));
+    ZappyGameObject::id_t ObjectId =
+        createGameObject(executablePath + "/ZappyGui/models/smooth_vase.obj",
+            executablePath + "/ZappyGui/textures/Steve.png", position,
+            rotation, {2.f, 2.f, 2.f}, false);
 
-    auto pointLight = std::make_shared<zappy::ZappyGameObject>(
-        zappy::ZappyGameObject::makePointLight(0.2f));
-    pointLight->color = {1.0f, 1.0f,
-        1.0f}; ////////////////////////////////////////////////////////////
-               /// dont forget to change to generate random color
-    gameObjects.emplace(pointLight->getId(), std::move(*pointLight));
-
-    this->teamsColors_[teamName] = pointLight->color;
-
-    // Trantorian newTrantorian(
-    //     object, pointLight, teamName, 0); /////////// change number
-    // trantorians_.emplace_back(newTrantorian);
-}
-
-void ZappyGui::addTrantorian(std::shared_ptr<ZappyModel> lveModel,
-    const std::string &teamName, const glm::vec3 &position)
-{
-    auto object = std::make_shared<zappy::ZappyGameObject>(
-        zappy::ZappyGameObject::createGameObject());
-    object->model = lveModel;
-    object->transform.translation = position;
-    object->transform.scale = {3.f, 1.5f, 3.f};
-    gameObjects.emplace(object->getId(), std::move(*object));
-
-    auto pointLight = std::make_shared<zappy::ZappyGameObject>(
-        zappy::ZappyGameObject::makePointLight(0.2f));
+    std::shared_ptr<ZappyGameObject> pointLight =
+        std::make_shared<ZappyGameObject>(
+            zappy::ZappyGameObject::makePointLight(0.2f));
     pointLight->color = this->teamsColors_[teamName];
+    pointLight.get()->transform.translation = position;
+    pointLight.get()->transform.translation.y -= 1.0f;
     gameObjects.emplace(pointLight->getId(), std::move(*pointLight));
 
-    // Trantorian newTrantorian(
-    //     object, pointLight, teamName, 0); /////////// change number
-    // trantorians_.emplace_back(newTrantorian);
+    Trantorian newTrantorian(
+        ObjectId, pointLight->getId(), teamName, playerNumber);
+
+    this->trantorians_.emplace_back(newTrantorian);
+}
+
+void ZappyGui::removeTrantorian(int playerNumber)
+{
+    for (auto i = trantorians_.begin(); i != trantorians_.end(); i++) {
+        if (i->playerNumber == playerNumber) {
+            removeGameObject(i->pointLightObject);
+            removeGameObject(i->trantorianObject);
+            trantorians_.erase(i);
+            return;
+        }
+    }
+}
+
+void ZappyGui::updateTrantorianPosition(
+    int playerNumber, const glm::vec3 &position, int orientation)
+{
+    for (Trantorian &trantorian : trantorians_) {
+        if (trantorian.playerNumber == playerNumber) {
+            for (auto &object : gameObjects) {
+                if (object.first == trantorian.pointLightObject) {
+                    object.second.transform.translation = position;
+                    object.second.transform.translation.y -= 1.0f;
+                }
+                if (object.first == trantorian.trantorianObject) {
+                    object.second.transform.translation = position;
+                    if (orientation == 1)
+                        object.second.transform.rotation = {0.f, 0.f, 0.f};
+                    else if (orientation == 2)
+                        object.second.transform.rotation = {0.f, 1.55f, 0.f};
+                    else if (orientation == 3)
+                        object.second.transform.rotation = {0.f, 3.14f, 0.f};
+                    else if (orientation == 4)
+                        object.second.transform.rotation = {0.f, -1.57f, 0.f};
+                }
+            }
+        }
+    }
 }
 
 void ZappyGui::createMap(int width, int height)
@@ -654,4 +769,11 @@ void ZappyGui::createMap(int width, int height)
         }
     }
 }
+
+void ZappyGui::removeGameObject(ZappyGameObject::id_t gameObjectId)
+{
+    vkDeviceWaitIdle(lveDevice.device());
+    gameObjects.erase(gameObjectId);
+}
+
 } // namespace zappy

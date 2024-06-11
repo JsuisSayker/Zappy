@@ -10,16 +10,18 @@
 int take_object(zappy_server_t *zappy, int *tile_object, int *client_object,
     int socket)
 {
-        if ((*tile_object) == 0) {
-            dprintf(socket, "ko\n");
-            return ERROR;
-        }
-        (*tile_object) -= 1;
-        (*client_object) += 1;
-        send_pin_command_to_all_gui(zappy, &zappy->clients
-            [zappy->actual_sockfd]);
-        dprintf(socket, "ok\n");
-        return OK;
+    if ((*tile_object) == 0) {
+        dprintf(socket, "ko\n");
+        return ERROR;
+    }
+    (*client_object) += (*tile_object);
+    send_pin_command_to_all_gui(zappy, &zappy->clients
+        [zappy->actual_sockfd]);
+    send_pgt_command_to_all_gui(zappy, &zappy->clients
+        [zappy->actual_sockfd], (*tile_object));
+    (*tile_object) = 0;
+    dprintf(socket, "ok\n");
+    return OK;
 }
 
 static int selector_object_sub(zappy_server_t *zappy, client_t *client,
