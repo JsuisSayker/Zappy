@@ -94,6 +94,7 @@ std::vector<std::string> splitMessages(std::string message, char splitChar)
 
 void zappy::Client::receiveFromServer()
 {
+    bool skiped = false;
     char buffer[BUFSIZ];
     ssize_t bytesRead;
 
@@ -110,27 +111,44 @@ void zappy::Client::receiveFromServer()
             for (std::string message : messages) {
                 std::vector<std::string> command = splitMessages(message, ' ');
                 if (command.size() == 0)
-                    break;
+                    skiped = true;
                 if (command[0] == "bct" && this->map.getMap().size() != 0) {
                     std::vector<std::vector<resources>> map = this->map.getMap();
                     if (command.size() != 10)
-                        break;
-                    int x = std::stoi(command[1]);
-                    int y = std::stoi(command[2]);
-                    int food = std::stoi(command[3]);
-                    int linemate = std::stoi(command[4]);
-                    int deraumere = std::stoi(command[5]);
-                    int sibur = std::stoi(command[6]);
-                    int mendiane = std::stoi(command[7]);
-                    int phiras = std::stoi(command[8]);
-                    int thystame = std::stoi(command[9]);
+                        skiped = true;
+                    int x;
+                    int y;
+                    int food;
+                    int linemate;
+                    int deraumere;
+                    int sibur;
+                    int mendiane;
+                    int phiras;
+                    int thystame;
+                    try {
+                        x = std::stoi(command[1]);
+                        y = std::stoi(command[2]);
+                        food = std::stoi(command[3]);
+                        linemate = std::stoi(command[4]);
+                        deraumere = std::stoi(command[5]);
+                        sibur = std::stoi(command[6]);
+                        mendiane = std::stoi(command[7]);
+                        phiras = std::stoi(command[8]);
+                        thystame = std::stoi(command[9]);
+                    } catch (std::exception &e) {
+                        skiped = true;
+                        continue;
+                    }
 
-                    if (map[x][y].food.size() ==  food && map[x][y].linemate.size() == linemate && map[x][y].deraumere.size() == deraumere && map[x][y].sibur.size() == sibur && map[x][y].mendiane.size() == mendiane && map[x][y].phiras.size() == phiras && map[x][y].thystame.size() == thystame) {
-                        break;
+                    if (map[x][y].food.size() == food && map[x][y].linemate.size() == linemate && map[x][y].deraumere.size() == deraumere && map[x][y].sibur.size() == sibur && map[x][y].mendiane.size() == mendiane && map[x][y].phiras.size() == phiras && map[x][y].thystame.size() == thystame) {
+                        skiped = true;
                     }
                 }
-                this->pushToQueue(command);
-                this->_buffer.clear();
+                if (skiped == false) {
+                    this->pushToQueue(command);
+                    this->_buffer.clear();
+                }
+                skiped = false;
             }
         }
     }

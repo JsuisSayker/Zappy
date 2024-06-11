@@ -91,6 +91,7 @@ class ZappyGui {
     ZappyGameObject::id_t createGameObject(const std::string &modelPath,
         const std::string &texturePath, const glm::vec3 &position,
         const glm::vec3 &rotation, const glm::vec3 &scale, bool hasTexture);
+    void removeGameObject(ZappyGameObject::id_t gameObjectId);
 
     ZappyWindow lveWindow{WIDTH, HEIGHT, "Vulkan Tutorial"};
     ZappyDevice lveDevice{lveWindow};
