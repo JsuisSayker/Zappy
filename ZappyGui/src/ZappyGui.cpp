@@ -42,7 +42,7 @@ ZappyGui::ZappyGui()
                      .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                          ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
                      .build();
-    // loadGameObjects();
+    loadGameObjects();
     this->client = std::make_shared<Client>();
     this->map_ = std::make_unique<Map>();
     this->_pointerToFunction["msz"] =
@@ -250,9 +250,10 @@ std::string ZappyGui::getExecutablePath()
 
 void ZappyGui::loadGameObjects()
 {
-    addTrantorian("Team-A", {0.f, 0.f, 0.f}, 1,
-        2); //////////////////////////////////////////////////////////////////////////
-    updateTrantorianPosition(1, {1.f, 0.f, 1.f}, 3);
+    addTrantorian("Team-A", {0.f, 0.f, 0.f}, 1, 2);
+    addTrantorian("Team-A", {1.f, 0.f, 0.f}, 2, 2);
+    removeTrantorian(2);
+    //updateTrantorianPosition(1, {1.f, 0.f, 1.f}, 3);
 }
 
 ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
@@ -653,7 +654,14 @@ void ZappyGui::pgt(std::vector<std::string> actualCommand)
 
 void ZappyGui::pdi(std::vector<std::string> actualCommand)
 {
-    std::cout << "pdi" << std::endl;
+    if (actualCommand.size() != 2) {
+        std::cerr << "pdi: invalid number of arguments" << std::endl;
+        return;
+    }
+
+    int playerNumber = std::stoi(actualCommand[1]);
+
+    this->removeTrantorian(playerNumber);
 }
 
 void ZappyGui::enw(std::vector<std::string> actualCommand) {}
@@ -710,6 +718,18 @@ void ZappyGui::addTrantorian(const std::string &teamName,
         ObjectId, pointLight->getId(), teamName, playerNumber);
 
     this->trantorians_.emplace_back(newTrantorian);
+}
+
+void ZappyGui::removeTrantorian(int playerNumber)
+{
+    for (auto i = trantorians_.begin(); i != trantorians_.end(); i++) {
+        if (i->playerNumber == playerNumber) {
+            removeGameObject(i->pointLightObject);
+            removeGameObject(i->trantorianObject);
+            trantorians_.erase(i);
+            return;
+        }
+    }
 }
 
 void ZappyGui::updateTrantorianPosition(
