@@ -17,7 +17,9 @@ class AI():
         self.sharedInventory: dict = {}
         self.level: int = 1
         self.incantation: bool = False
-        self.nbNeededPlayers: int = 1
+        # self.nbNeededPlayers: int = 1
+        self.nbReadyPlayers: int = 1
+        self.playerIsReady: bool = False
         self.searchingRessource: str = ""
         self.look: str = ""
         self.commandList: list[str] = []
@@ -28,26 +30,14 @@ class AI():
         self.clientId: int = 1
         self.widthValue: int = 0
         self.heightValue: int = 0
+        # self.minWidthValue: int = 0
+        # self.minHeightValue: int = 0
         self.newRessource: bool = False
         self.actualActivity: Activity = Activity.STARTING
 
     def lookingSize(self, array: list) -> int:
         return next((i for i, elem in enumerate(array) if elem == []),
                     len(array))
-
-    def findObjectOnMap(self, map: list, object: str):
-        v = 8
-        h = 0
-        while h < self.lookingSize(map[v]):
-            if map[v][h] != [] and object in map[v][h][0]:
-                return [v, h]
-            for offset in range(1, h + 1):
-                if map[v - offset][h] != [] and object in map[v - offset][h][0]:
-                    return [v - offset, h]
-                if map[v + offset][h] != [] and object in map[v + offset][h][0]:
-                    return [v + offset, h]
-            h += 1
-        return None
 
     def parse_inventory(self, data):
         for char in "[]":
@@ -67,27 +57,30 @@ class AI():
                 self.inventory[elem.split()[0]] = int(elem.split()[1])
 
     def sxor(self, s1: str, s2: str):
-        return ''.join(map(lambda x: chr(ord(x[0]) ^ ord(
-            x[1])), zip(s1, cycle(s2))))
+        """Xor two strings"""
+        return ''.join(chr(ord(c)^ord(k)) for c,k in zip(s2, cycle(s1)))
 
     def parse_broadcast(self, messageReceived: str):
         signalDirection = int(messageReceived[8])
-        messageReceived = self.sxor(self.teamName,
-                                    bytes.fromhex(messageReceived[10:]
+        print(f"signalDirection: {signalDirection}")
+        print(f"messageReceived before: {messageReceived}")
+        print(f"the second part of the message received: [{messageReceived[11:]}]")
+        parsedReceivedMessage = self.sxor(self.teamName,
+                                    bytes.fromhex(messageReceived[11:]
                                                   ).decode("utf-8"))
-        print(f"messageReceived: {messageReceived}")
-        if "inventory" in messageReceived:
+        print(f"parsedReceivedMessage value: {parsedReceivedMessage}")
+        if "inventory" in parsedReceivedMessage:
             print("parsing inventory")
-            # self.parse_inventory()
-        if "incantation" in messageReceived:
+            print(f"yay of inventory: {parsedReceivedMessage[9:]}")
+            self.parse_inventory(parsedReceivedMessage[9:])
+        if "incantation" in parsedReceivedMessage:
             if self.incantation is True:
                 self.goToBroadcastSignal(signalDirection)
+        if "on my way" in parsedReceivedMessage:
             return
-        if "on my way" in messageReceived:
-            self.nbNeededPlayers += 1
-            print("on my way")
-        if "ready" in messageReceived:
+        if "ready" in parsedReceivedMessage:
             print("ready")
+            self.nbReadyPlayers += 1
 
     def checkIncanationActivity(self):
         if self.newRessource is True:
@@ -101,7 +94,7 @@ class AI():
                                               json.dumps(
                                                   self.inventory)))),
                         "utf-8").hex()
-
+                    print("SENDING INVENTORY AND OTHER THINGS")
                     print(f"messageToSend: {messageToSend}")
                     self.dataToSend = "Broadcast " + messageToSend + "\n"
                     self.incantation = False
@@ -109,7 +102,7 @@ class AI():
                     messageToSend = bytes(self.sxor(self.teamName, (str(
                         self.clientId) + ";incantation;" + str(
                             self.level))), "utf-8").hex()
-
+                    print("SENDING INCANTATION AND OTHER THINGS")
                     print(f"messageToSend: {messageToSend}")
                     # messageToSend = messageToSend[2:-1]
                     self.dataToSend = "Broadcast " + messageToSend + "\n"
@@ -122,14 +115,19 @@ class AI():
         return
 
     def prepareForIncantationActivity(self):
-        if self.incantation is False and self.nbNeededPlayers >= self.level:
+        if self.incantation is False:
             messageToSend = bytes(self.sxor(self.teamName, str(
                 self.clientId) + " on my way"), "utf-8").hex()
-
+            print("SENDING ON MY WAY")
             self.dataToSend = "Broadcast " + messageToSend + "\n"
-
-        elif self.nbNeededPlayers >= self.level and self.incantation is True:
+        elif self.commandList and not self.playerIsReady:
+            self.dataToSend = self.commandList.pop(0)
+        elif (self.nbReadyPlayers >= self.level and self.incantation is True)\
+                or (self.playerIsReady is True and
+                    "Broadcast" in self.dataToSend):
             self.actualActivity = Activity.INCANTATING
+        else:
+            self.dataToSend = ""
         return
 
     def incantatingActivity(self):
@@ -139,7 +137,6 @@ class AI():
             self.dataToSend = self.commandList.pop(0)
         else:
             self.dataToSend = "Inventory\n"
-        # self.actualActivity = Activity.LOOKING
         return
 
     def executeCommand(self):
@@ -166,11 +163,15 @@ class AI():
         return True
 
     def goToBroadcastSignal(self, signalDirection: int):
+        if self.playerIsReady is True or self.commandList != []:
+            return
         match signalDirection:
             case 0:
                 messageToSend = bytes(self.sxor(
                     self.teamName, ("ready")), "utf-8").hex()
+                print("SENDING READY")
                 self.dataToSend = "Broadcast " + messageToSend + "\n"
+                self.playerIsReady = True
                 self.commandList = []
             case 1 | 2 | 8:
                 self.commandList.append("Forward\n")
@@ -209,7 +210,11 @@ class AI():
                 if ressource == elem:
                     requiredRessources[ressource] -= 1
         for ressource in requiredRessources:
-            if requiredRessources[ressource] > 0 and\
+            if requiredRessources[ressource] < 1:
+                continue
+            print(f"requiredRessources[{ressource}]: {requiredRessources[
+                ressource]}")
+            if requiredRessources[ressource] != 0 and\
                     ressource in self.inventory:
                 self.commandList.append("Set " + ressource + "\n")
                 self.commandList.append("Look\n")
@@ -231,26 +236,75 @@ class AI():
         self.actualActivity = Activity.EXECUTE_COMMAND
 
     def generateEmptyMap(self) -> list:
+        # return [[[] for _ in range(self.widthValue)] for _ in range(
+        #     self.heightValue)]
         return [[[] for i in range(9)] for j in range(17)]
-        return [["" for _ in range(self.widthValue)
-                 ] for _ in range(self.heightValue)]
+        # return [["" for _ in range(self.widthValue)
+        #          ] for _ in range(self.heightValue)]
 
     def fillMapWithObjects(self, map: list, dataList: list):
+        # nb = 1
+        # v = 8
+        # h = 0
+        # i = 0
+
+        # line = int(math.sqrt(len(dataList)))
+        # for j in range(line):
+        #     tv = v - h
+        #     for a in range(nb):
+        #         map[tv][h].append(dataList[i])
+        #         tv += 1
+        #         i += 1
+        #     nb = (nb + 2)
+        #     h += 1
+        # return map
         nb = 1
+        # v = self.minHeightValue - 1
         v = 8
         h = 0
         i = 0
 
         line = int(math.sqrt(len(dataList)))
-        for j in range(line):
+        for _ in range(line):
             tv = v - h
-            for a in range(nb):
+            for _ in range(nb):
                 map[tv][h].append(dataList[i])
                 tv += 1
                 i += 1
             nb = (nb + 2)
             h += 1
         return map
+
+    def findObjectOnMap(self, map: list, object: str):
+        # v = 8
+        # h = 0
+        # while h < self.lookingSize(map[v]):
+        #     if map[v][h] != [] and object in map[v][h][0]:
+        #         return [v, h]
+        #     for offset in range(1, h + 1):
+        #         if map[v - offset][h] != [] and object in map[
+        #                 v - offset][h][0]:
+        #             return [v - offset, h]
+        #         if map[v + offset][h] != [] and object in map[
+        #                 v + offset][h][0]:
+        #             return [v + offset, h]
+        #     h += 1
+        # return None
+        # v = self.heightValue
+        v = 8
+        h = 0
+        while h < self.lookingSize(map[v]):
+            if map[v][h] != [] and object in map[v][h][0]:
+                return [v, h]
+            for offset in range(1, h + 1):
+                if map[v - offset][h] != [] and object in map[
+                        v - offset][h][0]:
+                    return [v - offset, h]
+                if map[v + offset][h] != [] and object in map[
+                        v + offset][h][0]:
+                    return [v + offset, h]
+            h += 1
+        return None
 
     def fillingInventory(self, data: str, objectToSearch: str):
         tmpList = []
@@ -295,6 +349,48 @@ class AI():
                 finalResult.append("Take " + objectToSearch + "\n")
                 finalResult.append("Inventory\n")
         return finalResult
+        # tmpList = []
+        # finalResult = []
+        # print(f"data: {data}")
+        # tmpData = data.split(",")
+        # for i in range(len(tmpData)):
+        #     tmpList.append(' '.join(re.split(r'\W+', tmpData[i])[1:]))
+        # print(f"tmpList: {tmpList}")
+        # generatedMap = self.generateEmptyMap()
+        # self.fillMapWithObjects(generatedMap, tmpList)
+        # objectPosition = self.findObjectOnMap(generatedMap, objectToSearch)
+        # print(f"coordinates: {objectPosition}")
+        # if objectPosition is None:
+        #     for _ in range(3):
+        #         finalResult.append(random.choice(["Forward\n", "Right\n",
+        #                                           "Left\n"]))
+        #     return finalResult
+        # elif (objectPosition[0] == self.heightValue and
+        #       objectPosition[1] == 0):
+        #     return ["Take " + objectToSearch + "\n"]
+        # else:
+        #     for _ in range(int(objectPosition[0]) - self.heightValue):
+        #         finalResult.append("Forward\n")
+        #     if (objectPosition[0] == self.heightValue):
+        #         for _ in range(int(objectPosition[1])):
+        #             finalResult.append("Forward\n")
+        #         finalResult.append("Take " + objectToSearch + "\n")
+        #         finalResult.append("Inventory\n")
+        #     if (objectPosition[1] == 0):
+        #         finalResult.append("Take " + objectToSearch + "\n")
+        #     if (int(objectPosition[0]) < self.heightValue):
+        #         finalResult.append("Left\n")
+        #         for _ in range(self.heightValue - int(objectPosition[0])):
+        #             finalResult.append("Forward\n")
+        #         finalResult.append("Take " + objectToSearch + "\n")
+        #         finalResult.append("Inventory\n")
+        #     if (int(objectPosition[0]) > self.heightValue):
+        #         finalResult.append("Right\n")
+        #         for _ in range(int(objectPosition[0]) - self.heightValue):
+        #             finalResult.append("Forward\n")
+        #         finalResult.append("Take " + objectToSearch + "\n")
+        #         finalResult.append("Inventory\n")
+        # return finalResult
 
     def fillingActivity(self, data: str):
         if "food" in self.inventory and self.inventory["food"] < 50:
@@ -320,8 +416,20 @@ class AI():
             return "food"
         return random.choice(tmpList)
 
-    # def inventoryActivity(self):
-    #     self.dataToSend = "Inventory\n"
+    def finishingIncantation(self):
+        self.dataToSend = "Inventory\n"
+        print("I'm finishing the incantation")
+        self.actualActivity = Activity.WRITING_LAST_MESSAGE
+
+    def writeLastMessage(self):
+        print("I'm writing the last message")
+        messageToSend = bytes(self.sxor(self.teamName, (
+            "inventory" + str(self.clientId) + ";" + str(
+                self.level) + ";" + str(
+                    json.dumps(self.inventory)))
+                                        ), "utf-8").hex()
+        self.dataToSend = "Broadcast " + messageToSend + "\n"
+        self.actualActivity = Activity.EXECUTE_COMMAND
 
     def algorithm(self) -> None:
         self.nbPlayers = int(self.clientId)
@@ -342,4 +450,7 @@ class AI():
                 self.prepareForIncantationActivity()
             case Activity.INCANTATING:
                 self.incantatingActivity()
-        return
+            case Activity.FINISHING_INCANTATION:
+                self.finishingIncantation()
+            case Activity.WRITING_LAST_MESSAGE:
+                self.writeLastMessage()
