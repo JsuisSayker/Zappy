@@ -180,14 +180,14 @@ The server accepts command in its standard input.
 |     /clear     |       clear the shell      |
 |     /pause     |   pause the AI's actions   |
 |     /start     |      start the server      |
-| /setTile ressource quantity x y | set the given ressource quantity of a tile |
+| /setTile resource quantity x y | set the given resource quantity of a tile |
 | /tile x y | get the inventory of a tile |
 | /tp id x y | tp an AI by it's id |
 | /kill id | kill an AI by it's id |
 | /noFood true or false | deactivate the food management |
 | /broadcast "message" x y | simulate a broadcast |
 | /setLevel id level | set the level of an AI by it's id |
-| /setInventory id ressource quantity | set the given ressource quantity inside an AI inventory by it's id |
+| /setInventory id resource quantity | set the given resource quantity inside an AI inventory by it's id |
 | /setClientsNb nb | set the minimum number of AI per team |
 | /setFreq freq | set the frequency of the server |
 | /noRefill true or false | deactivate the map refill |

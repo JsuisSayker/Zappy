@@ -74,5 +74,6 @@ Mkfile.old
 dkms.conf
 
 *.spv
+notes.txt
 
 vulkan-sdk*

@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Model.hpp"
+#include "Texture.hpp"
 
 // libs
 #include <glm/gtc/matrix_transform.hpp>
@@ -59,8 +60,14 @@ class ZappyGameObject {
     glm::vec3 color{};
     TransformComponent transform{};
 
+    std::vector<VkDescriptorSet> descriptorSets;
+    int indexDescriptorSet;
+    bool hasDescriptorSet{false};
+
+    VkDescriptorImageInfo imageInfo{};
+
     // Optional pointer components
-    std::shared_ptr<ZappyModel> model{};
+    std::shared_ptr<ZappyModel> model = nullptr;
     std::unique_ptr<PointLightComponent> pointLight = nullptr;
 
   private:

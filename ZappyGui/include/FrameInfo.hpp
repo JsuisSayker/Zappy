@@ -9,9 +9,11 @@
 
 #include "Camera.hpp"
 #include "GameObject.hpp"
+#include "Texture.hpp"
 
 // lib
 #include <vulkan/vulkan.h>
+#include <memory>
 
 namespace zappy {
 
@@ -26,7 +28,7 @@ struct GlobalUbo {
     glm::mat4 projection{1.f};
     glm::mat4 view{1.f};
     glm::mat4 inverseView{1.f};
-    glm::vec4 ambientLightColor{1.f, 1.f, 1.f, .02f}; // w is intensity
+    glm::vec4 ambientLightColor{1.f, 1.f, 1.f, .2f}; // w is intensity
     PointLight pointLights[MAX_LIGHTS];
     int numLights;
 };
@@ -37,6 +39,7 @@ struct FrameInfo {
     VkCommandBuffer commandBuffer;
     ZappyCamera &camera;
     VkDescriptorSet globalDescriptorSet;
+    std::vector<std::pair<std::vector<VkDescriptorSet>, std::pair<std::shared_ptr<Texture>, std::string>>> textureObjects;
     ZappyGameObject::Map &gameObjects;
 };
 } // namespace zappy

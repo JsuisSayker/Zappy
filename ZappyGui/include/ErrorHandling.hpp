@@ -255,4 +255,12 @@ namespace zappy {
                 return ("Failed to read the symbolic link.");
             }
     };
+
+    class TratorianNotFoundException : public std::exception {
+        public:
+            const char *what() const noexcept override
+            {
+                return ("Trantorian not found.");
+            }
+    };
 }

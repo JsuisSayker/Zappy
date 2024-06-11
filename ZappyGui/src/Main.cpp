@@ -20,8 +20,8 @@ int main(int argc, char **argv)
         std::cerr << "Usage: " << argv[0] << " <path_to_model>" << std::endl;
         return EXIT_FAILURE;
     }
-    zappy::FirstApp app{};
-    app.getClient()->init(argc, argv);
+    zappy::ZappyGui app{};
+    app.getClient().get()->init(argc, argv);
     app.run();
     return EXIT_SUCCESS;
 }

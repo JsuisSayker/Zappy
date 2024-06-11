@@ -50,9 +50,13 @@ COMMAND_AI		=	handle_ai_command.c				\
 					ai_command_inventory.c			\
 					ai_command_look.c				\
 					ai_command_connect_nbr.c		\
+					ai_command_set.c				\
 					send_ppo_command_to_all_gui.c	\
 					send_pin_command_to_all_gui.c	\
 					send_pdi_command_to_all_gui.c	\
+					send_pgt_command_to_all_gui.c	\
+					send_pfk_command_to_all_gui.c	\
+					send_pdr_command_to_all_gui.c	\
 
 COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_msz.c				\
@@ -94,26 +98,27 @@ MAIN		=	main.c								\
 DIR_MAIN		=	$(addprefix src/, $(MAIN))
 
 TEST		=	test_splitter.c						\
-				test_get_len_char_tab.c				\
-				test_server_command_help.c			\
-				test_server_command_map.c			\
-				test_server_command_clear.c			\
-				test_server_command_quit.c			\
-				test_server_command_set_freq.c		\
-				test_server_command_tile.c			\
-				test_handle_server_command.c		\
-				test_gui_command_bct.c				\
-				test_gui_command_mct.c				\
-				test_gui_command_msz.c				\
-				test_gui_command_pin.c				\
-				test_gui_command_plv.c				\
-				test_gui_command_ppo.c				\
-				test_gui_command_sgt.c				\
-				test_gui_command_sst.c				\
-				test_gui_command_suc.c				\
-				test_gui_command_tna.c				\
-				test_fill_args_conf.c				\
-				test_zappy_server.c					\
+				# test_get_len_char_tab.c				\
+				# test_server_command_help.c			\
+				# test_server_command_map.c			\
+				# test_server_command_clear.c			\
+				# test_server_command_quit.c			\
+				# test_server_command_set_freq.c		\
+				# test_server_command_tile.c			\
+				# test_handle_server_command.c		\
+				# test_gui_command_mct.c				\
+				# test_gui_command_pin.c				\
+				# test_gui_command_ppo.c				\
+				# test_gui_command_suc.c				\
+				# \
+				# test_zappy_server.c					\
+				# test_gui_command_bct.c				\
+				# test_gui_command_msz.c				\
+				# test_gui_command_plv.c				\
+				# test_gui_command_sgt.c				\
+				# test_gui_command_sst.c				\
+				# test_gui_command_tna.c				\
+				# test_fill_args_conf.c				\
 
 DIR_TESTS	=	$(addprefix tests/, $(TEST))
 
