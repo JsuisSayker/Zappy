@@ -9,8 +9,10 @@
 
 void gui_command_sst(zappy_server_t *zappy, char *command)
 {
-    if (command == NULL || command[0] != ' ')
+    if (command == NULL || command[0] != ' ') {
+        send_sbp_command_to_all_gui(zappy);
         return;
+    }
     dprintf(zappy->actual_sockfd, "sst %d\n", zappy->args->freq);
     send_sgt_command_to_all_gui(zappy);
 }

@@ -85,7 +85,7 @@ static bool check_incantation(zappy_server_t *zappy, client_t *client)
             send_pic_command_to_all_gui(zappy, client);
             client->incantation = true;
         }
-            return true;
+        return true;
     }
     return false;
 }

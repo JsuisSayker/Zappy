@@ -18,6 +18,7 @@ bool can_i_eat(zappy_server_t *zappy, client_t *client)
     gettimeofday(&tv, NULL);
     client->health.last_meal = tv.tv_sec + tv.tv_usec / 1000000.0;
     client->inventory.food -= 1;
+    send_pin_command_to_all_gui(zappy, client);
     return true;
 }
 

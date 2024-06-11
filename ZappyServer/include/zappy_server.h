@@ -341,7 +341,7 @@ void send_pdr_command_to_all_gui(zappy_server_t *zappy, client_t *client,
     int nb_resource);
 void send_pie_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_pic_command_to_all_gui(zappy_server_t *zappy, client_t *client);
-
+void send_plv_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 
 // GUI COMMANDS FUNCTIONS
 int handle_gui_command(zappy_server_t *zappy_server, char *command);
@@ -356,6 +356,7 @@ void gui_command_suc(zappy_server_t *zappy, char *command);
 void gui_command_sgt(zappy_server_t *zappy, char *command);
 void gui_command_sst(zappy_server_t *zappy, char *command);
 void send_sgt_command_to_all_gui(zappy_server_t *zappy);
+void send_sbp_command_to_all_gui(zappy_server_t *zappy);
 
 // ERROR FUNCTIONS
 void error_command_argument(char *command, int nb_argument, int nb_expected);

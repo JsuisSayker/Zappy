@@ -11,6 +11,7 @@ void send_pie_command_to_all_gui(zappy_server_t *zappy, client_t *client)
 {
     char *buffer = calloc(sizeof(char), 1);
     char tmb_buffer[1000] = {0};
+
     for (int i = 3; i < FD_SETSIZE; i += 1) {
         if (zappy->clients[i].type == IA){
             sprintf(tmb_buffer, " %d", client->client_number);
