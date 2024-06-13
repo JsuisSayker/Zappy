@@ -37,6 +37,8 @@ TOOLS		=	splitter.c							\
 				set_inventory_resource_quantite.c	\
 				free_list.c							\
 				normalize_coordonate.c				\
+				free_string.c						\
+				realloc_and_strcat.c				\
 
 COMMAND_AI		=	handle_ai_command.c				\
 					ai_function.c					\
@@ -51,12 +53,16 @@ COMMAND_AI		=	handle_ai_command.c				\
 					ai_command_look.c				\
 					ai_command_connect_nbr.c		\
 					ai_command_set.c				\
+					ai_command_incantation.c		\
 					send_ppo_command_to_all_gui.c	\
 					send_pin_command_to_all_gui.c	\
 					send_pdi_command_to_all_gui.c	\
 					send_pgt_command_to_all_gui.c	\
 					send_pfk_command_to_all_gui.c	\
 					send_pdr_command_to_all_gui.c	\
+					send_pie_command_to_all_gui.c	\
+					send_pic_command_to_all_gui.c	\
+					send_plv_command_to_all_gui.c	\
 
 COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_msz.c				\
@@ -69,6 +75,8 @@ COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_suc.c				\
 					gui_command_sgt.c				\
 					gui_command_sst.c				\
+					send_sgt_command_to_all_gui.c	\
+					send_sbp_command_to_all_gui.c	\
 
 COMMAND_SERVER	=	handle_server_command.c			\
 					server_command_help.c			\
@@ -82,6 +90,8 @@ COMMAND_SERVER	=	handle_server_command.c			\
 					server_command_set_inventory.c	\
 					server_command_set_freq.c		\
 					server_command_set_level.c		\
+					server_command_send_guis.c		\
+					server_command_kill.c			\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 

@@ -11,7 +11,6 @@
     // {"/pose", &pose},
     // {"/expulse", &expulse},
     // {"/broadcast", &broadcast},
-    // {"/incantation", &incantation},
     // {"/fork", &fork_command},
     // {"/connect_nbr", &connect_nbr},
 
@@ -25,6 +24,7 @@ static const struct command_ai_s COMMAND_FUNCS[] = {
     {"Inventory", &ai_command_inventory},
     {"Look", &ai_command_look},
     {"Connect_nbr", &ai_command_connect_nbr},
+    {"Incantation", &ai_command_incantation},
     {"NULL", NULL}
 };
 

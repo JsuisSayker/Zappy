@@ -27,8 +27,10 @@ void gui_command_bct(zappy_server_t *zappy, char *command)
     if (command[0] != ' ')
         return;
     command_args = splitter(command, " ");
-    if (error_command_bct(command_args) == KO)
+    if (error_command_bct(command_args) == KO){
+        send_sbp_command_to_all_gui(zappy);
         return;
+    }
     x = atoi(command_args[0]);
     y = atoi(command_args[1]);
     if (x >= 0 && x < zappy->args->width && y >= 0 && y <

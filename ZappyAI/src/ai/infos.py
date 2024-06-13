@@ -14,6 +14,8 @@ class Activity(Enum):
     CHECK_INCANTATION = 9
     PREPA_FOR_INCANTATION = 10
     INCANTATING = 11
+    FINISHING_INCANTATION = 12
+    WRITING_LAST_MESSAGE = 13
 
 
 LEVELS: dict[int, dict[str, int]] = {
