@@ -71,54 +71,68 @@ void zappy::Client::sendToServer(std::string message)
 }
 
 /**
- * @brief Receives data from the server.
+ * @brief Splits the messages in the buffer.
  *
- * This function reads data from the socket connected to the server and stores
- * it in the internal buffer of the client. The function reads data in chunks
- * and dynamically resizes the buffer if necessary. The received data is stored
- * as a string in the buffer, and the function adjusts the size of the string
- * to the actual data size. If the received data ends with the END_STR
- * character, it is removed from the buffer.
+ * This function splits the messages in the buffer based on the specified
+ * split character.
  *
- * @note This function assumes that the socket is already connected to the
- * server.
- *
- * @note This function does not handle any errors that may occur during the
- * read operation.
- *
- * @note The buffer size is defined by the BUFSIZ constant.
- *
- * @note The buffer is a member variable of the Client class.
- *
- * @note This function does not return any value.
+ * @param splitChar The character to split the messages on.
+ * @return std::vector<std::string> A vector of strings containing the
+ * messages.
  */
+std::vector<std::string> splitMessages(std::string message, char splitChar)
+{
+    std::vector<std::string> messages;
+    std::stringstream ss(message);
+    std::string token;
+
+    while (std::getline(ss, token, splitChar)) {
+        messages.push_back(token);
+    }
+    return messages;
+}
+
 void zappy::Client::receiveFromServer()
 {
-    int size = 0;
-    int nBytesRead = 0;
-    this->_buffer.resize(BUFSIZ);
+    char buffer[BUFSIZ];
+    ssize_t bytesRead;
 
-    nBytesRead = read(this->_socketFd, &this->_buffer[size],
-        this->_buffer.size() - size - 1);
-    if (nBytesRead == -1) {
-        return;
-    }
-
-    while (nBytesRead > 0) {
-        size += nBytesRead;
-        if (size > BUFSIZ - 1 || this->_buffer[size - 1] == END_STR) {
-            break;
+    while (this->running) {
+        bytesRead = read(this->_socketFd, buffer, BUFSIZ);
+        if (bytesRead == -1) {
+            perror("read");
+            return;
         }
-        this->_buffer.resize(this->_buffer.size() +
-            BUFSIZ); // Increase buffer size if necessary
-        nBytesRead = read(this->_socketFd, &this->_buffer[size],
-            this->_buffer.size() - size - 1);
-    }
+        this->_buffer.append(buffer, bytesRead);
+        if (this->_buffer.find(END_STR) != std::string::npos) {
+            std::vector<std::string> messages =
+                splitMessages(this->_buffer, END_STR);
+            for (std::string message : messages) {
+                std::vector<std::string> command = splitMessages(message, ' ');
+                if (command.size() == 0)
+                    break;
+                if (command[0] == "bct" && this->map.getMap().size() != 0) {
+                    std::vector<std::vector<resources>> map = this->map.getMap();
+                    if (command.size() != 10)
+                        break;
+                    int x = std::stoi(command[1]);
+                    int y = std::stoi(command[2]);
+                    int food = std::stoi(command[3]);
+                    int linemate = std::stoi(command[4]);
+                    int deraumere = std::stoi(command[5]);
+                    int sibur = std::stoi(command[6]);
+                    int mendiane = std::stoi(command[7]);
+                    int phiras = std::stoi(command[8]);
+                    int thystame = std::stoi(command[9]);
 
-    this->_buffer.resize(
-        size); // Adjust the size of the string to the actual data size
-    if (!this->_buffer.empty() && this->_buffer.back() == END_STR) {
-        this->_buffer.pop_back();
+                    if (map[x][y].food.size() ==  food && map[x][y].linemate.size() == linemate && map[x][y].deraumere.size() == deraumere && map[x][y].sibur.size() == sibur && map[x][y].mendiane.size() == mendiane && map[x][y].phiras.size() == phiras && map[x][y].thystame.size() == thystame) {
+                        break;
+                    }
+                }
+                this->pushToQueue(command);
+                this->_buffer.clear();
+            }
+        }
     }
 }
 
@@ -214,3 +228,39 @@ std::string zappy::Client::getBuffer() { return this->_buffer; }
  * @param buffer The buffer to set.
  */
 void zappy::Client::setBuffer(std::string buffer) { this->_buffer = buffer; }
+
+/**
+ * @brief Gets the queue of the client.
+ *
+ * @return The queue of the client.
+ */
+std::queue<std::vector<std::string>> zappy::Client::getQueue()
+{
+    return this->_queue;
+}
+
+/**
+ * @brief Pushes a message to the queue.
+ *
+ * This function pushes a message to the queue of the client.
+ *
+ * @param message The message to push.
+ */
+void zappy::Client::pushToQueue(std::vector<std::string> message)
+{
+    this->_queue.push(message);
+}
+
+/**
+ * @brief Pops a message from the queue.
+ *
+ * This function pops a message from the queue of the client.
+ *
+ * @return The message that was popped.
+ */
+std::vector<std::string> zappy::Client::popFromQueue()
+{
+    std::vector<std::string> message = this->_queue.front();
+    this->_queue.pop();
+    return message;
+}
