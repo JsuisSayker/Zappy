@@ -12,7 +12,7 @@ void add_egg(zappy_server_t *zappy, client_t *client, team_t *team)
     egg_t *new_egg = calloc(sizeof(egg_t), 1);
 
     if (new_egg == NULL)
-        return KO;
+        return;
     new_egg->egg_number = zappy->index_eggs;
     new_egg->client_number = -1;
     new_egg->x = client->pos.x;

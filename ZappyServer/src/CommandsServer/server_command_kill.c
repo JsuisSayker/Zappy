@@ -16,11 +16,11 @@ void server_command_kill(zappy_server_t *zappy, char *command)
     command = &command[1];
     if (atoi(command) < 0)
         return;
-    dprintf(zappy->actual_sockfd, "dead\n");
-    send_pdi_command_to_all_gui(zappy, atoi(command));
-    FD_CLR(zappy->actual_sockfd, &zappy->fd.save_input);
-    for (int i = 0; zappy->clients[i] != NULL; i++) {
+    for (int i = 0; i < FD_SETSIZE; i++) {
         if (zappy->clients[i].client_number == atoi(command)) {
+            dprintf(i, "dead\n");
+            send_pdi_command_to_all_gui(zappy, &zappy->clients[i]);
+            FD_CLR(i, &zappy->fd.save_input);
             zappy->clients[i].type = UNKNOWN;
             return;
         }
