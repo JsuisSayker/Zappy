@@ -91,6 +91,7 @@ COMMAND_SERVER	=	handle_server_command.c			\
 					server_command_set_freq.c		\
 					server_command_set_level.c		\
 					server_command_send_guis.c		\
+					server_command_kill.c			\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 

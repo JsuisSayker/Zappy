@@ -300,6 +300,7 @@ void server_command_set_inventory(zappy_server_t *zappy, char *command);
 void server_command_set_freq(zappy_server_t *zappy, char *command);
 void server_command_set_level(zappy_server_t *zappy, char *command);
 void server_command_send_guis(zappy_server_t *zappy, char *command);
+void server_command_kill(zappy_server_t *zappy, char *command);
 
 // AI FUNCTIONS
 typedef struct command_ai_s {
