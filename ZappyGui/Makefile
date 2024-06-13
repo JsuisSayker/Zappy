@@ -40,6 +40,6 @@ fclean: clean
 re: fclean $(TARGET)
 
 debug: $(vertObjFiles) $(fragObjFiles)
-	g++ $(CFLAGS) -o $(TARGET) src/*.cpp src/systems/*.cpp $(LDFLAGS) -ggdb3
+	g++ $(CFLAGS) -o $(TARGET) src/*.cpp src/systems/*.cpp $(LDFLAGS) imgui/*.cpp imgui/backends/*.cpp -ggdb3
 
 .PHONY: test clean fclean re debug

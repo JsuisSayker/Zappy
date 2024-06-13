@@ -41,18 +41,34 @@ void ZappyGui::initImGui()
     // Initialize ImGui
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+
     ImGui_ImplGlfw_InitForVulkan(this->lveWindow.getGLFWwindow(), true);
+
+    // Initialize ImGui for Vulkan
     ImGui_ImplVulkan_InitInfo init_info = {};
-    init_info.MinImageCount = 2;
-    init_info.ImageCount = ZappySwapChain::MAX_FRAMES_IN_FLIGHT;
-    init_info.RenderPass = this->lveRenderer.getSwapChainRenderPass();
     init_info.Instance = this->lveDevice.getInstance();
     init_info.PhysicalDevice = this->lveDevice.getPhysicalDevice();
     init_info.Device = this->lveDevice.device();
-    // init_info.QueueFamily = queueFamilyIndex;
+    // init_info.QueueFamily = this->lveDevice.getGraphicsQueueFamily();
     init_info.Queue = this->lveDevice.graphicsQueue();
+    init_info.PipelineCache = VK_NULL_HANDLE;
     init_info.DescriptorPool = this->globalPool.get()->descriptorPool;
+    init_info.Subpass = 0;
+    init_info.MinImageCount = 2;
+    init_info.ImageCount = ZappySwapChain::MAX_FRAMES_IN_FLIGHT;
+    init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+    init_info.Allocator = nullptr;
+    init_info.CheckVkResultFn = nullptr;
+    init_info.RenderPass = this->lveRenderer.getSwapChainRenderPass();
+
     ImGui_ImplVulkan_Init(&init_info);
+
+    // Upload Fonts
+    VkCommandBuffer command_buffer = this->lveDevice.beginSingleTimeCommands();
+    ImGui_ImplVulkan_CreateFontsTexture();
+    this->lveDevice.endSingleTimeCommands(command_buffer);
 }
 
 void ZappyGui::drawGui()
@@ -139,7 +155,6 @@ void ZappyGui::run()
 {
     this->getClient().get()->connectToServer();
 
-    this->initImGui();
 
     uboBuffers.resize(ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
     for (int i = 0; i < uboBuffers.size(); i++) {
@@ -199,11 +214,12 @@ void ZappyGui::run()
 
     auto currentTime = std::chrono::high_resolution_clock::now();
     int socket_fd = this->getClient().get()->getSocketFd();
+    this->initImGui();
     while (!lveWindow.shouldClose()) {
 
-        this->drawGui();
-
         glfwPollEvents();
+
+        this->drawGui();
         std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
         auto commandTime = std::chrono::high_resolution_clock::now();
         auto endTime = commandTime + std::chrono::milliseconds(16);
