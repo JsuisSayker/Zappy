@@ -42,7 +42,6 @@ ZappyGui::ZappyGui()
                      .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                          ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
                      .build();
-    loadGameObjects();
     this->client = std::make_shared<Client>();
     this->map_ = std::make_unique<Map>();
     this->_pointerToFunction["msz"] =
@@ -156,13 +155,16 @@ void ZappyGui::run()
     std::thread reader(&Client::receiveFromServer, this->client.get());
 
     auto currentTime = std::chrono::high_resolution_clock::now();
+    std::chrono::_V2::system_clock::time_point smoothTime = std::chrono::high_resolution_clock::now();
+    std::chrono::_V2::system_clock::time_point endTimeSmooth = smoothTime + std::chrono::milliseconds(7000 / _timeUnit / 30);
     int socket_fd = this->getClient().get()->getSocketFd();
     while (!lveWindow.shouldClose()) {
-
         glfwPollEvents();
+        updateTrantoriansPosition();
         std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
         auto commandTime = std::chrono::high_resolution_clock::now();
         auto endTime = commandTime + std::chrono::milliseconds(16);
+
         while (!this->getClient().get()->getQueue().empty() &&
             commandTime < endTime) {
 
@@ -586,8 +588,13 @@ void ZappyGui::ppo(std::vector<std::string> actualCommand)
     } catch (const std::exception &e) {
         return;
     }
-    this->updateTrantorianPosition(playerNumber,
-        {static_cast<float>(x), 0.0f, static_cast<float>(y)}, orientation);
+    for (Trantorian &trantorian : trantorians_) {
+        if (trantorian.playerNumber == playerNumber)
+            trantorian.newPosition = {static_cast<float>(x), 0.0f,
+                static_cast<float>(y)};
+    }
+    // this->updateTrantorianPosition(playerNumber,
+        // {static_cast<float>(x), 0.0f, static_cast<float>(y)}, orientation);
 }
 
 void ZappyGui::plv(std::vector<std::string> actualCommand)
@@ -597,7 +604,41 @@ void ZappyGui::plv(std::vector<std::string> actualCommand)
 
 void ZappyGui::pin(std::vector<std::string> actualCommand)
 {
-    std::cout << "pin" << std::endl;
+    int playerNumber;
+    int x;
+    int y;
+    int food;
+    int linemate;
+    int deraumere;
+    int sibur;
+    int mendiane;
+    int phiras;
+    int thystame;
+    try {
+        playerNumber = std::stoi(actualCommand[1]);
+        x = std::stoi(actualCommand[2]);
+        y = std::stoi(actualCommand[3]);
+        food = std::stoi(actualCommand[4]);
+        linemate = std::stoi(actualCommand[5]);
+        deraumere = std::stoi(actualCommand[6]);
+        sibur = std::stoi(actualCommand[7]);
+        mendiane = std::stoi(actualCommand[8]);
+        phiras = std::stoi(actualCommand[9]);
+        thystame = std::stoi(actualCommand[10]);
+    } catch (const std::exception &e) {
+        return;
+    }
+    for (Trantorian &trantorian : trantorians_) {
+        if (trantorian.playerNumber == playerNumber) {
+            trantorian.inventory.food = food;
+            trantorian.inventory.linemate = linemate;
+            trantorian.inventory.deraumere = deraumere;
+            trantorian.inventory.sibur = sibur;
+            trantorian.inventory.mendiane = mendiane;
+            trantorian.inventory.phiras = phiras;
+            trantorian.inventory.thystame = thystame;
+        }
+    }
 }
 
 void ZappyGui::sgt(std::vector<std::string> actualCommand)
@@ -607,14 +648,31 @@ void ZappyGui::sgt(std::vector<std::string> actualCommand)
         return;
     }
 
-    int timeUnit = std::stoi(actualCommand[1]);
+    int timeUnit;
+    try {
+        timeUnit = std::stoi(actualCommand[1]);
+    } catch (const std::exception &e) {
+        return;
+    }
 
     this->_timeUnit = timeUnit;
 }
 
 void ZappyGui::sst(std::vector<std::string> actualCommand)
 {
-    std::cout << "sst" << std::endl;
+    if (actualCommand.size() != 2) {
+        std::cerr << "sst: invalid number of arguments" << std::endl;
+        return;
+    }
+
+    int timeUnit;
+    try {
+        timeUnit = std::stoi(actualCommand[1]);
+    } catch (const std::exception &e) {
+        return;
+    }
+
+    this->_timeUnit = timeUnit;
 }
 
 void ZappyGui::pex(std::vector<std::string> actualCommand)
@@ -634,7 +692,13 @@ void ZappyGui::pic(std::vector<std::string> actualCommand)
 
 void ZappyGui::pie(std::vector<std::string> actualCommand)
 {
+    //print actualCommand
+    for (std::string &str: actualCommand) {
+        std::cout << str << " ";
+    }
+    std:: cout << std::endl;
     std::cout << "pie" << std::endl;
+    exit(0);
 }
 
 void ZappyGui::pfk(std::vector<std::string> actualCommand)
@@ -658,8 +722,12 @@ void ZappyGui::pdi(std::vector<std::string> actualCommand)
         std::cerr << "pdi: invalid number of arguments" << std::endl;
         return;
     }
-
-    int playerNumber = std::stoi(actualCommand[1]);
+    int playerNumber;
+    try {
+        playerNumber = std::stoi(actualCommand[1]);
+    } catch (const std::exception &e) {
+        return;
+    }
 
     this->removeTrantorian(playerNumber);
 }
@@ -683,7 +751,6 @@ void ZappyGui::edi(std::vector<std::string> actualCommand)
 
 void ZappyGui::welcome(std::vector<std::string> actualCommand)
 {
-    std::cout << "WELCOME" << std::endl;
     dprintf(this->client.get()->getSocketFd(), "GRAPHIC\n");
 }
 
@@ -715,7 +782,7 @@ void ZappyGui::addTrantorian(const std::string &teamName,
     gameObjects.emplace(pointLight->getId(), std::move(*pointLight));
 
     Trantorian newTrantorian(
-        ObjectId, pointLight->getId(), teamName, playerNumber);
+        ObjectId, pointLight->getId(), teamName, playerNumber, position);
 
     this->trantorians_.emplace_back(newTrantorian);
 }
@@ -774,6 +841,31 @@ void ZappyGui::removeGameObject(ZappyGameObject::id_t gameObjectId)
 {
     vkDeviceWaitIdle(lveDevice.device());
     gameObjects.erase(gameObjectId);
+}
+
+void ZappyGui::updateTrantoriansPosition()
+{
+    this->smoothTime = std::chrono::high_resolution_clock::now();
+    if (this->smoothTime > this->endTimeSmooth) {
+        std::cout << "Updating trantorians position" << std::endl;
+        for (Trantorian &trantorian : trantorians_) {
+            if (trantorian.newPosition != trantorian.position) {
+                std::cout << "Moving trantorian" << std::endl;
+                glm::vec3 direction = trantorian.newPosition - trantorian.position;
+                glm::vec3 step = direction / 30.f;
+                trantorian.position += step;
+                for (auto &object : gameObjects) {
+                    if (object.first == trantorian.pointLightObject) {
+                        object.second.transform.translation = trantorian.position;
+                        object.second.transform.translation.y -= 1.0f;
+                    }
+                    if (object.first == trantorian.trantorianObject) {
+                        object.second.transform.translation = trantorian.position;
+                    }
+                }
+            }
+        }
+    }
 }
 
 } // namespace zappy

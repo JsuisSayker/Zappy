@@ -42,6 +42,7 @@ class ZappyGui {
     void addTrantorian(const std::string &teamName, const glm::vec3 &position, int playerNumber, int orientation);
     void removeTrantorian(int playerNumber);
     void updateTrantorianPosition(int playerNumber, const glm::vec3 &position, int orientation);
+    void updateTrantoriansPosition();
 
     void setPointerToFunction(std::unordered_map<std::string, FunctionPtr> &pointerToFunction);
 
@@ -111,6 +112,8 @@ class ZappyGui {
     ZappyGameObject::Map ressources_;
     std::vector<Trantorian> trantorians_;
     std::unordered_map<std::string, glm::vec3> teamsColors_;
+    std::chrono::_V2::system_clock::time_point smoothTime = std::chrono::high_resolution_clock::now();
+    std::chrono::_V2::system_clock::time_point endTimeSmooth = smoothTime + std::chrono::milliseconds(7000 / _timeUnit / 30);
     std::unordered_map<std::string, FunctionPtr> _pointerToFunction; // Map of pointers to functions
     int _timeUnit; // Time unit of the server
 };

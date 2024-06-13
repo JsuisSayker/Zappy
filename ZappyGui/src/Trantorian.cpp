@@ -9,10 +9,11 @@
 
 namespace zappy {
 
-Trantorian::Trantorian(ZappyGameObject::id_t trantObjectId, ZappyGameObject::id_t pointLightObjectId, const std::string &team, int playerNumber)
-    : trantorianObject(trantObjectId), pointLightObject(pointLightObjectId), team(team), playerNumber(playerNumber), level(0)
+Trantorian::Trantorian(ZappyGameObject::id_t trantObjectId, ZappyGameObject::id_t pointLightObjectId, const std::string &team, int playerNumber, glm::vec3 position)
+    : trantorianObject(trantObjectId), pointLightObject(pointLightObjectId), team(team), playerNumber(playerNumber), level(0), position(position)
 {
     this->inventory = {0, 0, 0, 0, 0, 0, 0};
+    this->newPosition = position;
 }
 
 // void Trantorian::updateTrantorian(const Trantorian &trant) // Updates an existing trantorian in the trantorians_ vector with new information
