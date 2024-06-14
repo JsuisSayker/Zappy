@@ -13,10 +13,6 @@ def entrypoint() -> int:
             print("USAGE: ./zappy_ai -p port -n name -h machine")
             return 0
         return 84
-
-    # if (args.order[0][0] == "h" and ("elp" in args.order[0][1])):
-    #     print("USAGE: ./zappy_ai -p port -n name -h machine")
-    #     return 0
     try:
         port = int(args.order[0][1][0])
         name = args.order[1][1][0]

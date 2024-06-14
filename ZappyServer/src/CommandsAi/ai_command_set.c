@@ -33,7 +33,7 @@ static int drop_item(zappy_server_t *zappy, client_t *client, int *map_item,
     if (*item == 0)
         return ERROR;
     *map_item = *item;
-    send_pdr_command_to_all_gui(zappy, &client, *item);
+    send_pdr_command_to_all_gui(zappy, client, *item);
     *item = 0;
     return OK;
 }
@@ -95,7 +95,7 @@ static int set_command(zappy_server_t *zappy, client_t *client, char *cmd)
         free(item);
         return OK;
     }
-    send_pin_command_to_all_gui(zappy, &client);
+    send_pin_command_to_all_gui(zappy, client);
     dprintf(zappy->actual_sockfd, "ok\n");
     free(item);
     return OK;
