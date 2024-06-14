@@ -32,6 +32,7 @@ typedef struct zappy_server_s {
     int actual_sockfd;
     int index_eggs;
     int index_clients;
+    int nb_connected_clients;
     bool server_running;
     double time_refill_map;
     struct sockaddr_in server_addr;

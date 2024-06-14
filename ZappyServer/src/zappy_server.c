@@ -65,7 +65,7 @@ static int run_zappy_server(zappy_server_t *zappy)
         zappy->fd.input = zappy->fd.save_input;
         timeout.tv_sec = 0;
         timeout.tv_usec = 10000;
-        if (select(FD_SETSIZE, &(zappy->fd.input),
+        if (select(zappy->nb_connected_clients, &(zappy->fd.input),
             &(zappy->fd.ouput), NULL, &timeout) == ERROR
             && errno != EINTR && zappy->server_running)
             return ERROR;

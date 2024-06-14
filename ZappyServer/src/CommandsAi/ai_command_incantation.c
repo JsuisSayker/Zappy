@@ -11,8 +11,8 @@ static int get_players(zappy_server_t *zappy, int x, int y)
 {
     int nb_players = 0;
 
-    for (int i = 0; i < FD_SETSIZE; i ++) {
-        if (zappy->clients[i].pos.x == x
+    for (int i = 3; i < zappy->nb_connected_clients; i ++) {
+        if (zappy->clients[i].type == IA && zappy->clients[i].pos.x == x
         && zappy->clients[i].pos.y == y)
             nb_players += 1;
     }
@@ -100,9 +100,9 @@ static int complet_incantation(zappy_server_t *zappy, client_t *client,
     tile_inventory = &zappy->map_tile[client->pos.x][client->pos.y].inventory;
     if (remove_ressource(tile_inventory, lvl) == ERROR)
         return ERROR;
-    for (int i = 3; i < FD_SETSIZE; i++) {
-        if (zappy->clients[i].pos.x == client->pos.x
-        && zappy->clients[i].pos.y == client->pos.y
+    for (int i = 3; i < zappy->nb_connected_clients; i++) {
+        if ( zappy->clients[i].type == IA && zappy->clients[i].pos.x ==
+        client->pos.x && zappy->clients[i].pos.y == client->pos.y
         && zappy->clients[i].level == lvl) {
             zappy->clients[i].level += 1;
             zappy->clients[i].incantation = false;

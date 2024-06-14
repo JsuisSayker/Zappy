@@ -62,7 +62,7 @@ static int graphic_client(zappy_server_t *zappy)
 // and command pnw don't have '#'
 static void send_info_ai_to_gui(zappy_server_t *zappy, client_t *client)
 {
-    for (int i = 3; i < FD_SETSIZE; i++) {
+    for (int i = 3; i < zappy->nb_connected_clients; i++) {
         if (zappy->clients[i].type == GUI) {
             dprintf(i, "pnw %d %d %d %d %d %s\n", client->client_number,
                 client->pos.x, client->pos.y, client->pos.direction,
