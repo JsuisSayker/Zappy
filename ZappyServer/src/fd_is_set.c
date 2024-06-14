@@ -52,8 +52,8 @@ int fd_is_set(zappy_server_t *zappy)
             return ERROR;
         return OK;
     }
-    if (client->command.execution != NULL ||
-        (client->command.queue != NULL && client->command.queue[0] != NULL)) {
+    if (client->command.execution != NULL || (client->command.queue != NULL &&
+        client->command.queue[0] != NULL)) {
         if (ai_function(zappy, client, NULL) != OK)
             return KO;
     }

@@ -264,7 +264,6 @@ void init_buffer_struct(buffer_t *buffer, int *my_socket);
 int scan_fd(zappy_server_t *zappy);
 void handle_client(zappy_server_t *zappy);
 int setup_server(int port, int max_clients);
-void handle_client(zappy_server_t *zappy);
 char **splitter(char const *const str, char *separator);
 void generate_random_uuid(char *buffer);
 int accept_new_connection(int my_socket,
@@ -277,6 +276,8 @@ team_t *search_in_teams(struct teamhead *team_head, char *uuid);
 int get_len_char_tab(char **command);
 time_t get_actual_time(void);
 int count_str_char(char *str, char c);
+void generate_egg_by_team(zappy_server_t *zappy,
+    team_t *new_team, int x, int y);
 
 // COMMANDS
 typedef struct command_s {

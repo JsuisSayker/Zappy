@@ -22,24 +22,6 @@ static void init_list(zappy_server_t *zappy)
     zappy->all_teams.tqh_first = NULL;
 }
 
-static void generate_egg_by_team(zappy_server_t *zappy,
-    team_t *new_team)
-{
-    egg_t *new_egg = NULL;
-
-    for (int i = 0; i < zappy->args->clientsNb; i += 1) {
-        new_egg = calloc(sizeof(egg_t), 1);
-        if (new_egg == NULL)
-            return;
-        new_egg->egg_number = zappy->index_eggs;
-        new_egg->client_number = -1;
-        new_egg->x = rand() % zappy->args->width;
-        new_egg->y = rand() % zappy->args->height;
-        TAILQ_INSERT_TAIL(&(new_team->eggs_head), new_egg, next);
-        zappy->index_eggs += 1;
-    }
-}
-
 static void create_teams(zappy_server_t *zappy)
 {
     team_t *new_team = NULL;
@@ -56,7 +38,8 @@ static void create_teams(zappy_server_t *zappy)
         new_team->nb_drones = 0;
         new_team->nb_matures_eggs = zappy->args->clientsNb;
         TAILQ_INIT(&(new_team->eggs_head));
-        generate_egg_by_team(zappy, new_team);
+        generate_egg_by_team(zappy, new_team, rand() % zappy->args->width,
+            rand() % zappy->args->height);
         TAILQ_INSERT_TAIL(&(zappy->all_teams), new_team, next);
         team_name = TAILQ_NEXT(team_name, next);
     }

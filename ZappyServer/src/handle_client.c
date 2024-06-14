@@ -59,6 +59,7 @@ void handle_client(zappy_server_t *zappy)
     strcat(zappy->clients[zappy->actual_sockfd].buffer.
         input_buffer, buffer);
     clean_string(buffer);
+    printf("Received: %s\n--\n", buffer);
     lines = splitter(buffer, END_LINE);
     if (lines == NULL)
         return;
@@ -67,5 +68,4 @@ void handle_client(zappy_server_t *zappy)
     }
     last_split(zappy, buffer, lines[j]);
     free_array(lines);
-    printf("Handle client end\n--\n");
 }
