@@ -93,9 +93,9 @@ class AI():
                 messageToSend = bytes(
                     self.sxor(self.teamName,
                               ("inventory" + str(
-                                    self.clientId) + "|" + str(
-                                        self.level) + "|" + str(
-                                            json.dumps(
+                                  self.clientId) + "|" + str(
+                                  self.level) + "|" + str(
+                                  json.dumps(
                                                 self.inventory)))),
                     "utf-8").hex()
                 print("SENDING INVENTORY AND OTHER THINGS")
