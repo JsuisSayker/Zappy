@@ -1,0 +1,44 @@
+# Vertex positions
+v 0.5 0 -0.5    # Vertex 1
+v 0.5 0 0.5     # Vertex 2
+v -0.5 0 0.5    # Vertex 3
+v -0.5 0 -0.5   # Vertex 4
+v 0.5 1 -0.5    # Vertex 5
+v 0.5 1 0.5     # Vertex 6
+v -0.5 1 0.5    # Vertex 7
+v -0.5 1 -0.5   # Vertex 8
+
+# Texture coordinates
+vt 0.666657 0.250023    # Texture coordinate 1
+vt 0.333343 0.250023    # Texture coordinate 2
+vt 0.333343 0.000038    # Texture coordinate 3
+vt 0.666657 0.000038    # Texture coordinate 4
+vt 0.666657 0.500009    # Texture coordinate 5
+vt 0.666657 0.749994    # Texture coordinate 6
+vt 0.333343 0.749994    # Texture coordinate 7
+vt 0.333343 0.500009    # Texture coordinate 8
+vt 0.000029 0.500009    # Texture coordinate 9
+vt 0.000029 0.749994    # Texture coordinate 10
+vt 0.333343 0.999980    # Texture coordinate 11
+vt 0.666657 0.999980    # Texture coordinate 12
+vt 0.999971 0.500009    # Texture coordinate 13
+vt 0.999971 0.749994    # Texture coordinate 14
+
+# Vertex normals
+vn 0.0000 -1.0000 -0.0000    # Normal 1
+vn 0.0000 1.0000 0.0000      # Normal 2
+vn 1.0000 0.0000 0.0000      # Normal 3
+vn -0.0000 -0.0000 1.0000    # Normal 4
+vn -1.0000 -0.0000 -0.0000   # Normal 5
+vn 0.0000 0.0000 -1.0000     # Normal 6
+
+# Smoothing group
+s off    # Turn off smoothing groups
+
+# Faces with vertices, texture coordinates, and normals
+f 1/5/1 2/6/1 3/7/1 4/8/1
+f 5/1/2 8/2/2 7/3/2 6/4/2
+f 1/1/3 5/5/3 6/8/3 2/2/3
+f 2/9/4 6/8/4 7/7/4 3/10/4
+f 3/11/5 7/7/5 8/6/5 4/12/5
+f 5/5/6 1/13/6 4/14/6 8/6/6

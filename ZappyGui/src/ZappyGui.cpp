@@ -42,7 +42,7 @@ ZappyGui::ZappyGui()
                      .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                          ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
                      .build();
-    loadGameObjects();
+    // loadGameObjects();
     this->client = std::make_shared<Client>();
     this->map_ = std::make_unique<Map>();
     this->_pointerToFunction["msz"] =
@@ -564,7 +564,7 @@ void ZappyGui::pnw(std::vector<std::string> actualCommand)
     }
 
     this->addTrantorian(teamName,
-        {static_cast<float>(x), 0.0f, static_cast<float>(y)}, trantorianId,
+        {static_cast<float>(x), -.25f, static_cast<float>(y)}, trantorianId,
         orientation);
 }
 
@@ -587,7 +587,7 @@ void ZappyGui::ppo(std::vector<std::string> actualCommand)
         return;
     }
     this->updateTrantorianPosition(playerNumber,
-        {static_cast<float>(x), 0.0f, static_cast<float>(y)}, orientation);
+        {static_cast<float>(x), 0.f, static_cast<float>(y)}, orientation);
 }
 
 void ZappyGui::plv(std::vector<std::string> actualCommand)
@@ -702,9 +702,9 @@ void ZappyGui::addTrantorian(const std::string &teamName,
         rotation = {0.f, -1.57f, 0.f};
 
     ZappyGameObject::id_t ObjectId =
-        createGameObject(executablePath + "/ZappyGui/models/smooth_vase.obj",
-            executablePath + "/ZappyGui/textures/Steve.png", position,
-            rotation, {2.f, 2.f, 2.f}, false);
+        createGameObject(executablePath + "/ZappyGui/models/Slime.obj",
+            executablePath + "/ZappyGui/textures/Slime.png", position,
+            rotation, {0.25f, 0.25f, 0.25f}, true);
 
     std::shared_ptr<ZappyGameObject> pointLight =
         std::make_shared<ZappyGameObject>(
@@ -744,6 +744,7 @@ void ZappyGui::updateTrantorianPosition(
                 }
                 if (object.first == trantorian.trantorianObject) {
                     object.second.transform.translation = position;
+                    object.second.transform.translation.y = object.second.transform.scale.y * -1;
                     if (orientation == 1)
                         object.second.transform.rotation = {0.f, 0.f, 0.f};
                     else if (orientation == 2)
