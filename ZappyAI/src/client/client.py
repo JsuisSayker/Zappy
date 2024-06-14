@@ -48,6 +48,10 @@ class Client():
             print("Ctrl+C pressed, closing connection...")
             self.socket.close()
             return 0
+        except ConnectionRefusedError:
+            self.socket.close()
+            print("Connection refused")
+            exit(0)
 
         possibleEvents = selectors.EVENT_READ | selectors.EVENT_WRITE
         self.selector.register(self.socket, possibleEvents)
@@ -91,6 +95,19 @@ class Client():
             self.logged = True
             self.ai.run = True
 
+    def forkingProcess(self):
+        newClientId = int(self.clientId) + 1
+        subprocess.Popen(["python3",
+                          "zappy_ai",
+                          "-p",
+                          str(self.port),
+                          "-n",
+                          self.teamName,
+                          "-h",
+                          self.host,
+                          "-i",
+                          str(newClientId)])
+
     def launch_client(self):
         try:
             while True:
@@ -103,7 +120,7 @@ class Client():
                             print("Connection reset by peer")
                             self.closeConnection()
                             exit(0)
-                        print(f"data: {data}")
+                        print(f"DATA: {data}")
                         print(f"self.ai.dataToSend: {self.ai.dataToSend}")
                         if not data:
                             print("closing the connection")
@@ -156,17 +173,7 @@ class Client():
                                 # continue
                                 # return
                             elif self.ai.dataToSend == "Fork\n":
-                                newClientId = int(self.clientId) + 1
-                                subprocess.Popen(["python3",
-                                                  "zappy_ai",
-                                                  "-p",
-                                                  str(self.port),
-                                                  "-n",
-                                                  self.teamName,
-                                                  "-h",
-                                                  self.host,
-                                                  "-i",
-                                                  str(newClientId)])
+                                self.forkingProcess()
                                 print("forking")
                                 self.ai.canFork = False
                             self.ai.run = True

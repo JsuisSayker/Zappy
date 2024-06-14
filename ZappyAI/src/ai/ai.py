@@ -30,8 +30,6 @@ class AI():
         self.clientId: int = 1
         self.widthValue: int = 0
         self.heightValue: int = 0
-        # self.minWidthValue: int = 0
-        # self.minHeightValue: int = 0
         self.newRessource: bool = False
         self.actualActivity: Activity = Activity.STARTING
 
@@ -49,14 +47,10 @@ class AI():
         # data[len(data) - 1] = data[len(data) - 1][:-1]
         print(f"data in parse inventory: {data}")
         for elem in data:
-            # Uncomment the following lines to avoid the killing of the AI while incantating
-            # if "ok" or "ko" in elem:
-            #     return
             if elem:
                 print(f"While parsing inventory: |{elem}|")
                 print(f"Inventory: |{self.inventory}|")
                 print(f"elem.split()[0]: |{elem.split()[0]}|")
-                # print(f"My own Inventory: |{self.inventory[elem.split()[0]]}|")
                 self.inventory[elem.split()[0]] = int(elem.split()[1])
 
     def sxor(self, s1: str, s2: str):
@@ -68,7 +62,8 @@ class AI():
         print(f"signalDirection: {signalDirection}")
         print(f"messageReceived before: {messageReceived}")
         print(
-            f"the second part of the message received: [{messageReceived[11:]}]")
+            f"the second part of the message received: [{messageReceived[
+                11:]}]")
         parsedReceivedMessage = self.sxor(self.teamName,
                                           bytes.fromhex(messageReceived[11:]
                                                         ).decode("utf-8"))
@@ -81,6 +76,7 @@ class AI():
             if self.incantation is True:
                 self.goToBroadcastSignal(signalDirection)
         if "on my way" in parsedReceivedMessage:
+            print("ON MY WAY")
             return
         if "ready" in parsedReceivedMessage:
             print("ready")
@@ -88,32 +84,30 @@ class AI():
 
     def checkIncanationActivity(self):
         if self.newRessource is True:
-            if self.newRessource is True:
-                if not self.isIncantationPossible():
-                    messageToSend = bytes(
-                        self.sxor(self.teamName,
-                                  ("inventory" + str(
-                                      self.clientId) + "|" + str(
-                                          self.level) + "|" + str(
-                                              json.dumps(
-                                                  self.inventory)))),
-                        "utf-8").hex()
-                    print("SENDING INVENTORY AND OTHER THINGS")
-                    print(f"messageToSend: {messageToSend}")
-                    self.dataToSend = "Broadcast " + messageToSend + "\n"
-                    self.incantation = False
-                else:
-                    messageToSend = bytes(self.sxor(self.teamName, (str(
-                        self.clientId) + "|incantation|" + str(
-                            self.level))), "utf-8").hex()
-                    print("SENDING INCANTATION AND OTHER THINGS")
-                    print(f"messageToSend: {messageToSend}")
-                    # messageToSend = messageToSend[2:-1]
-                    self.dataToSend = "Broadcast " + messageToSend + "\n"
-                    self.newRessource = False
-                    self.incantation = True
-                    self.actualActivity = Activity.PREPA_FOR_INCANTATION
-                    return
+            if not self.isIncantationPossible():
+                messageToSend = bytes(
+                    self.sxor(self.teamName,
+                              ("inventory" + str(
+                                    self.clientId) + "|" + str(
+                                        self.level) + "|" + str(
+                                            json.dumps(
+                                                self.inventory)))),
+                    "utf-8").hex()
+                print("SENDING INVENTORY AND OTHER THINGS")
+                print(f"messageToSend: {messageToSend}")
+                self.dataToSend = "Broadcast " + messageToSend + "\n"
+                # self.newRessource = False
+            else:
+                messageToSend = bytes(self.sxor(self.teamName, (str(
+                    self.clientId) + "|incantation|" + str(
+                        self.level))), "utf-8").hex()
+                print("SENDING INCANTATION AND OTHER THINGS")
+                print(f"messageToSend: {messageToSend}")
+                self.dataToSend = "Broadcast " + messageToSend + "\n"
+                self.newRessource = False
+                self.incantation = True
+                self.actualActivity = Activity.PREPA_FOR_INCANTATION
+                return
         else:
             self.actualActivity = Activity.LOOKING
         return
@@ -207,7 +201,7 @@ class AI():
         for ressource in requiredRessources:
             if requiredRessources[ressource] > 0:
                 return
-        self.commandList.append("Incantation\n")
+        self.commandList.insert(0, "Incantation\n")
 
     def dropRessourcesWhileIncantating(self):
         ressourcesData = self.look.split(",")[0]
@@ -222,11 +216,9 @@ class AI():
                 if ressource == elem:
                     requiredRessources[ressource] -= 1
         for ressource in requiredRessources:
-            if requiredRessources[ressource] < 1:
-                continue
             print(f"requiredRessources[{ressource}]: {requiredRessources[
                 ressource]}")
-            if requiredRessources[ressource] != 0 and\
+            if requiredRessources[ressource] >= 0 and\
                     ressource in self.inventory:
                 self.commandList.append("Set " + ressource + "\n")
                 self.commandList.append("Look\n")
