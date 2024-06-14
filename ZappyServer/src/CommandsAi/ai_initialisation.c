@@ -56,18 +56,18 @@ static int init_queue(client_t *client)
     return OK;
 }
 
-int ai_initialisation(zappy_server_t *zappy_server, client_t *ia,
+int ai_initialisation(zappy_server_t *zappy, client_t *ia,
     team_t *tmp_team)
 {
     egg_t *new_egg = NULL;
 
-    if (zappy_server == NULL || ia == NULL || tmp_team == NULL)
+    if (zappy == NULL || ia == NULL || tmp_team == NULL)
         return ERROR;
     new_egg = TAILQ_FIRST(&tmp_team->eggs_head);
     for (int i = 0; i < tmp_team->nb_drones; i += 1) {
         new_egg = TAILQ_NEXT(new_egg, next);
     }
-    if (init_value(ia, tmp_team, new_egg, zappy_server->args->freq) == ERROR)
+    if (init_value(ia, tmp_team, new_egg, zappy->args->freq) == ERROR)
         return ERROR;
     if (init_inventaire(ia) != OK)
         return ERROR;

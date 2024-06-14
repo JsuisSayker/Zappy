@@ -53,8 +53,7 @@ static int selector_object(zappy_server_t *zappy, client_t *client, char *cmd)
         return ERROR;
     if (strcmp(cmd, "linemate") == OK && take_object(zappy, &zappy->map_tile
     [client->pos.y][client->pos.x].inventory.linemate,
-    &client->inventory.linemate, 1)
-        == ERROR)
+    &client->inventory.linemate, 1) == ERROR)
         return ERROR;
     if (strcmp(cmd, "deraumere") == OK && take_object(zappy, &zappy->map_tile
     [client->pos.y][client->pos.x].inventory.deraumere,
