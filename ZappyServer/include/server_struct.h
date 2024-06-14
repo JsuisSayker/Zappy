@@ -30,8 +30,6 @@ typedef enum client_type_s {
     UNKNOWN,
 }client_type_t;
 
-
-
 typedef struct char_tab_s {
     char *str;
     TAILQ_ENTRY(char_tab_s) next;
