@@ -55,13 +55,11 @@ ZappyDescriptorSetLayout::ZappyDescriptorSetLayout(ZappyDevice &lveDevice,
         static_cast<uint32_t>(setLayoutBindings.size());
     descriptorSetLayoutInfo.pBindings = setLayoutBindings.data();
 
-  if (vkCreateDescriptorSetLayout(
-          lveDevice.device(),
-          &descriptorSetLayoutInfo,
-          nullptr,
-          &descriptorSetLayout) != VK_SUCCESS) {
-    throw zappy::DescriptorSetLayoutCreationFailedException();
-  }
+    if (vkCreateDescriptorSetLayout(lveDevice.device(),
+            &descriptorSetLayoutInfo, nullptr,
+            &descriptorSetLayout) != VK_SUCCESS) {
+        throw zappy::DescriptorSetLayoutCreationFailedException();
+    }
 }
 
 ZappyDescriptorSetLayout::~ZappyDescriptorSetLayout()
@@ -99,13 +97,12 @@ ZappyDescriptorPool::Builder::build() const
         lveDevice, maxSets, poolFlags, poolSizes);
 }
 
-// *************** Descriptor Pool *********************
-
 ZappyDescriptorPool::ZappyDescriptorPool(ZappyDevice &lveDevice,
     uint32_t maxSets, VkDescriptorPoolCreateFlags poolFlags,
     const std::vector<VkDescriptorPoolSize> &poolSizes)
     : lveDevice{lveDevice}
 {
+    // Définir les tailles de pool de descripteurs
     VkDescriptorPoolSize pool_sizes[] = {{VK_DESCRIPTOR_TYPE_SAMPLER, 1000},
         {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000},
         {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000},
@@ -118,17 +115,20 @@ ZappyDescriptorPool::ZappyDescriptorPool(ZappyDevice &lveDevice,
         {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000},
         {VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000}};
 
+    // Créer les informations du pool de descripteurs
     VkDescriptorPoolCreateInfo descriptorPoolInfo{};
     descriptorPoolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     descriptorPoolInfo.poolSizeCount = std::size(pool_sizes);
     descriptorPoolInfo.pPoolSizes = pool_sizes;
     descriptorPoolInfo.maxSets = maxSets;
-    descriptorPoolInfo.flags = poolFlags;
+    descriptorPoolInfo.flags =
+        poolFlags | VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
-  if (vkCreateDescriptorPool(lveDevice.device(), &descriptorPoolInfo, nullptr, &descriptorPool) !=
-      VK_SUCCESS) {
-    throw zappy::DescriptorPoolCreationFailedException();
-  }
+    // Créer le pool de descripteurs
+    if (vkCreateDescriptorPool(lveDevice.device(), &descriptorPoolInfo,
+            nullptr, &descriptorPool) != VK_SUCCESS) {
+        throw zappy::DescriptorPoolCreationFailedException();
+    }
 }
 
 ZappyDescriptorPool::~ZappyDescriptorPool()
