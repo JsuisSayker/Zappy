@@ -13,12 +13,12 @@ static void object_to_string(char **str, int nb, char *object)
     int len = 0;
 
     for (int i = 0; i < nb; i += 1) {
-        len = strlen((*str)) + strlen(object) + 1;
+        len = (strlen((*str)) + strlen(object) + 1);
         (*str) = realloc((*str), sizeof(char) * len);
         (*str) = strcat((*str), object);
         if (i + 1 < nb){
-            (*str) = realloc((*str), sizeof(char) * 2);
-            (*str) = strcat((*str), " \0");
+            (*str) = realloc((*str), sizeof(char) * len + 2);
+            (*str) = strcat((*str), " ");
         }
     }
 }
@@ -56,13 +56,6 @@ static char *inventory_to_string(inventory_t *inventory)
     return str;
 }
 
-static void realloc_and_strcat(char **message, char *str)
-{
-    *message = realloc(*message, sizeof(char) * (strlen(*message) +
-        strlen(str)) + 1);
-    *message = strcat(*message, str);
-}
-
 static void get_players(zappy_server_t *zappy, look_struct_t *look,
     int x, int y)
 {
@@ -87,7 +80,6 @@ static void look_on_x(zappy_server_t *zappy,
     int x = 0;
     int y = 0;
 
-    printf("X = %d\n", look->pos.x);
     for (int look_x = look->pos.x - lvl; look_x <= look->pos.x + lvl;
         look_x += 1) {
         x = look_x;
@@ -110,7 +102,6 @@ static void look_on_y(zappy_server_t *zappy, look_struct_t *look, int lvl)
     int x = 0;
     int y = 0;
 
-    printf("Y = %d\n", look->pos.y);
     for (int look_y = look->pos.y - lvl; look_y <= look->pos.y + lvl;
         look_y += 1) {
         x = look->pos.x;

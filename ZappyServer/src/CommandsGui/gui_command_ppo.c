@@ -11,8 +11,10 @@ void gui_command_ppo(zappy_server_t *zappy, char *command)
 {
     int client_nb = 0;
 
-    if (command[0] != ' ' && command[1] != '#')
+    if (command[0] != ' ' && command[1] != '#') {
+        send_sbp_command_to_all_gui(zappy);
         return;
+    }
     command = &command[1];
     client_nb = atoi(command);
     if (client_nb < 3)

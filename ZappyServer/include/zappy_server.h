@@ -171,10 +171,10 @@ typedef struct ai_command_data_s {
     float cast_time;
     bool is_contracted;
     double time;
+    bool incantation;
 } ai_command_data_t;
 
 typedef struct ai_health_s {
-    bool is_alive;
     double last_meal;
     double time_to_eat;
 } ai_health_t;
@@ -184,6 +184,7 @@ typedef struct client_s {
     client_type_t type;
     int client_number;
     int level;
+    bool incantation;
     char *team_name;
     struct sockaddr_in other_socket_addr;
     ai_health_t health;
@@ -252,6 +253,9 @@ void free_array(char **array);
 void set_inventory_resource_quantite(inventory_t *tile_inventory,
     char *resource, int resource_quantity);
 void normalize_coordinate(int *x, int *y, zappy_server_t *zappy);
+void free_string(char **str);
+void realloc_and_strcat(char **message, char *str);
+
 // Server functions
 int init_server(zappy_server_t *zappy_server, args_config_t *args);
 int close_server(zappy_server_t *zappy_server);
@@ -295,6 +299,8 @@ void server_command_set_tile(zappy_server_t *zappy, char *command);
 void server_command_set_inventory(zappy_server_t *zappy, char *command);
 void server_command_set_freq(zappy_server_t *zappy, char *command);
 void server_command_set_level(zappy_server_t *zappy, char *command);
+void server_command_send_guis(zappy_server_t *zappy, char *command);
+void server_command_kill(zappy_server_t *zappy, char *command);
 
 // AI FUNCTIONS
 typedef struct command_ai_s {
@@ -313,7 +319,7 @@ int ai_initialisation(zappy_server_t *zappy_server, client_t *ia,
 void send_gui_map_content(map_tile_t **map, int x, int y, int socket);
 
 // AI COMMANDS FUNCTIONS
-int ai_command_help(zappy_server_t *zappy, client_t *client, char *cmd);
+int ai_command_set(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_forward(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_right(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_left(zappy_server_t *zappy, client_t *client, char *cmd);
@@ -323,11 +329,20 @@ int ai_command_inventory(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_look(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_connect_nbr(zappy_server_t *zappy, client_t *client,
     char *cmd);
+int ai_command_incantation(zappy_server_t *zappy, client_t *client, char *cmd);
 bool is_alive(zappy_server_t *zappy, client_t *client);
 
 void send_ppo_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_pin_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_pdi_command_to_all_gui(zappy_server_t *zappy, client_t *client);
+void send_pgt_command_to_all_gui(zappy_server_t *zappy, client_t *client,
+    int nb_resource);
+void send_pfk_command_to_all_gui(zappy_server_t *zappy, client_t *client);
+void send_pdr_command_to_all_gui(zappy_server_t *zappy, client_t *client,
+    int nb_resource);
+void send_pie_command_to_all_gui(zappy_server_t *zappy, client_t *client);
+void send_pic_command_to_all_gui(zappy_server_t *zappy, client_t *client);
+void send_plv_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 
 // GUI COMMANDS FUNCTIONS
 int handle_gui_command(zappy_server_t *zappy_server, char *command);
@@ -341,6 +356,8 @@ void gui_command_pin(zappy_server_t *zappy, char *command);
 void gui_command_suc(zappy_server_t *zappy, char *command);
 void gui_command_sgt(zappy_server_t *zappy, char *command);
 void gui_command_sst(zappy_server_t *zappy, char *command);
+void send_sgt_command_to_all_gui(zappy_server_t *zappy);
+void send_sbp_command_to_all_gui(zappy_server_t *zappy);
 
 // ERROR FUNCTIONS
 void error_command_argument(char *command, int nb_argument, int nb_expected);

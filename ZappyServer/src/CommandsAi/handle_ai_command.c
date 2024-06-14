@@ -11,7 +11,6 @@
     // {"/pose", &pose},
     // {"/expulse", &expulse},
     // {"/broadcast", &broadcast},
-    // {"/incantation", &incantation},
     // {"/fork", &fork_command},
     // {"/connect_nbr", &connect_nbr},
 
@@ -20,10 +19,12 @@ static const struct command_ai_s COMMAND_FUNCS[] = {
     {"Right", &ai_command_right},
     {"Left", &ai_command_left},
     {"Take", &ai_command_take_object},
+    {"Set", &ai_command_set},
     {"Fork", &ai_command_fork},
     {"Inventory", &ai_command_inventory},
     {"Look", &ai_command_look},
     {"Connect_nbr", &ai_command_connect_nbr},
+    {"Incantation", &ai_command_incantation},
     {"NULL", NULL}
 };
 
@@ -49,14 +50,17 @@ static int handle_ai_command_sub(zappy_server_t *zappy, client_t *client,
 
 int handle_ai_command(zappy_server_t *zappy, client_t *client, char *command)
 {
+    char *cmd;
+
     if (zappy == NULL || client == NULL)
         return ERROR;
     if (queue_to_exec(client) != OK)
         return ERROR;
     if (client->command.execution != NULL){
+        cmd = strdup(client->command.execution);
         if (command != NULL && add_in_queue(client, command) == ERROR)
             return ERROR;
-        if (handle_ai_command_sub(zappy, client, client->command.execution)
+        if (handle_ai_command_sub(zappy, client, cmd)
             != OK)
             return ERROR;
         return OK;

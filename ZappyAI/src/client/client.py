@@ -1,6 +1,8 @@
 import socket
 import selectors
 import subprocess
+
+from numpy import divide
 from ZappyAI.src.ai.ai import AI
 import select
 import errno
@@ -73,10 +75,16 @@ class Client():
             self.actualStep = 2
         else:
             data = data.split()
-            width = data[0:-3]
-            height = data[3:]
-            self.data_width = width
-            self.data_height = height
+            # width = data[0:-3]
+            width = int(data[0])
+            height = int(data[1])
+            # height = data[3:]
+            # self.data_width = width
+            # self.data_height = height
+            self.ai.heightValue = height
+            self.ai.widthValue = width
+            self.ai.minWidthValue = self.ai.widthValue // 2
+            self.ai.minHeightValue = self.ai.heightValue // 2
             self.ai.dataToSend = ""
             self.actualStep = 3
             self.logged = True
@@ -88,7 +96,12 @@ class Client():
                 event = self.selector.select(None)
                 for _, mask in event:
                     if mask & selectors.EVENT_READ:
-                        data = self.socket.recv(1024).decode("utf-8")
+                        try:
+                            data = self.socket.recv(1024).decode("utf-8")
+                        except ConnectionResetError:
+                            print("Connection reset by peer")
+                            self.closeConnection()
+                            exit(0)
                         print(f"data: {data}")
                         print(f"self.ai.dataToSend: {self.ai.dataToSend}")
                         if not data:
@@ -122,8 +135,23 @@ class Client():
                                     pass
                             elif "Elevation underway" in element:
                                 self.ai.dataToSend = ""
+                            elif "Current level" in element:
+                                self.ai.level = int(''.join(filter(
+                                    str.isdigit, element)))
+                                if self.ai.level == 8:
+                                    print("VICTORY")
+                                    exit(0)
+                                print(
+                                    f"Current element in current elem: {element}")
+                                self.ai.newRessource = False
+                                self.ai.searchingRessource = ""
+                                self.ai.incantation = False
+                                self.ai.nbReadyPlayers = 1
+                                self.ai.actualActivity = 12
+
                             elif "message" in element:
                                 self.ai.parse_broadcast(element)
+                                # continue
                                 # return
                             elif self.ai.dataToSend == "Fork\n":
                                 newClientId = int(self.clientId) + 1
@@ -149,7 +177,6 @@ class Client():
                                     self.teamName + '\n'
                             ) and self.logged is False:
                                 self.actualStep = 1
-                            #     print("sending the teamName")
                             self.socket.send(self.ai.dataToSend.encode())
                             self.ai.run = False
         except KeyboardInterrupt:
@@ -157,5 +184,8 @@ class Client():
             self.socket.close()
 
     def closeConnection(self):
+        fd = self.socket.fileno()
+        if fd == -1:
+            return
         self.selector.unregister(self.socket)
         self.socket.close()
