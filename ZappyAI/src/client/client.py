@@ -1,7 +1,6 @@
 import socket
 import selectors
 import subprocess
-
 from ZappyAI.src.ai.ai import AI
 import select
 import errno

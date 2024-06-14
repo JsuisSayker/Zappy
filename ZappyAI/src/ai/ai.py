@@ -73,7 +73,12 @@ class AI():
             print(f"yay of inventory: {parsedReceivedMessage[9:]}")
             self.parse_shared_inventory(parsedReceivedMessage[9:])
         if "incantation" in parsedReceivedMessage:
-            if self.incantation is True:
+            if self.nbReadyPlayers >= 1 and int(
+                    parsedReceivedMessage.split("|")[0]) > 6:
+                self.nbReadyPlayers = 0
+                self.incantation = False
+                self.actualActivity = Activity.EXECUTE_COMMAND
+            elif self.incantation is True:
                 self.goToBroadcastSignal(signalDirection)
         if "on my way" in parsedReceivedMessage:
             print("ON MY WAY")
@@ -107,7 +112,6 @@ class AI():
                 self.newRessource = False
                 self.incantation = True
                 self.actualActivity = Activity.PREPA_FOR_INCANTATION
-                return
         else:
             self.actualActivity = Activity.LOOKING
         return
@@ -152,19 +156,26 @@ class AI():
         updateCounter: Counter = Counter()
         for key in self.sharedInventory:
             updateCounter.update(self.sharedInventory[key])
+        self.sharedInventory["total"] = dict(updateCounter)
 
     def updateSharedInventory(self):
         self.sharedInventory[self.clientId] = self.inventory
         updateCounter = Counter()
         for key in self.sharedInventory:
             updateCounter.update(self.sharedInventory[key])
+        self.sharedInventory["total"] = dict(updateCounter)
 
     def isIncantationPossible(self) -> bool:
         requiredRessources = LEVELS[self.level]
+        print(f"requiredRessources TO LEVEL UP: {requiredRessources}")
+        print(f"self.sharedInventory: {self.sharedInventory}")
+        if "total" in self.sharedInventory:
+            tmpInventory = self.sharedInventory["total"]
+            print(f"tmpInventory: {tmpInventory}")
         if self.searchingRessource in self.inventory:
-            self.inventory[self.searchingRessource] += 1
+            tmpInventory[self.searchingRessource] += 1
         for ressource in requiredRessources:
-            if self.inventory[ressource] < requiredRessources[ressource]:
+            if tmpInventory[ressource] < requiredRessources[ressource]:
                 return False
         return True
 
@@ -189,10 +200,12 @@ class AI():
     def startingIncantation(self) -> None:
         data = self.look.split(",")[0]
         # self.look.split(",")
-        while True:
-            if len(data) == 0 or data[0].isalpha():
-                break
-            data = data[1:]
+        # print(f"data before the incantation process: {data}")
+        # while True:
+        #     if len(data) == 0 or data[0].isalpha():
+        #         break
+        data = data[1:]
+        # print(f"data while incantating: {data}")
         requiredRessources = LEVELS[self.level]
         for ressource in requiredRessources:
             for elem in data:
@@ -205,10 +218,10 @@ class AI():
 
     def dropRessourcesWhileIncantating(self):
         ressourcesData = self.look.split(",")[0]
-        while True:
-            if len(ressourcesData) == 0 or ressourcesData[0].isalpha():
-                break
-            ressourcesData = ressourcesData[1:]
+        # while True:
+        #     if len(ressourcesData) == 0 or ressourcesData[0].isalpha():
+        #         break
+        ressourcesData = ressourcesData[1:]
         ressourcesData = ressourcesData.split(" ")
         requiredRessources = LEVELS[self.level]
         for ressource in requiredRessources:
@@ -412,9 +425,13 @@ class AI():
     def searchingActivity(self) -> str:
         tmpList = []
         requiredRessources = LEVELS[self.level]
+        if "total" in self.sharedInventory:
+            tmpInventory = self.sharedInventory["total"]
+        else:
+            tmpInventory = self.inventory
         for ressource in requiredRessources:
-            if requiredRessources[ressource] > self.inventory[ressource] or (
-                    ressource not in self.inventory):
+            if requiredRessources[ressource] > tmpInventory[ressource] or (
+                    ressource not in tmpInventory):
                 tmpList.append(ressource)
         if len(tmpList) == 0:
             return "food"
