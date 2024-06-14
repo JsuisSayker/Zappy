@@ -7,25 +7,24 @@
 
 #include <zappy_server.h>
 
-static int send_logout_to_all_clients(zappy_server_t *zappy_server)
+static int send_logout_to_all_clients(zappy_server_t *zappy)
 {
-    for (zappy_server->actual_sockfd = 0;
-        zappy_server->actual_sockfd < __FD_SETSIZE;
-        zappy_server->actual_sockfd += 1) {
-        if (zappy_server->clients[zappy_server->actual_sockfd].team_name)
-            free(zappy_server->clients[zappy_server->actual_sockfd].team_name);
+    for (zappy->actual_sockfd = 0; zappy->actual_sockfd < FD_SETSIZE;
+        zappy->actual_sockfd += 1) {
+        if (zappy->clients[zappy->actual_sockfd].team_name)
+            free(zappy->clients[zappy->actual_sockfd].team_name);
     }
     return OK;
 }
 
-int close_server(zappy_server_t *zappy_server)
+int close_server(zappy_server_t *zappy)
 {
-    send_logout_to_all_clients(zappy_server);
-    close(zappy_server->my_socket);
-    free_teams(&zappy_server->all_teams);
-    free_map_tile(zappy_server->map_tile);
-    free_args_config(zappy_server->args);
-    free(zappy_server);
+    send_logout_to_all_clients(zappy);
+    close(zappy->my_socket);
+    free_teams(&zappy->all_teams);
+    free_map_tile(zappy->map_tile);
+    free_args_config(zappy->args);
+    free(zappy);
     printf("Server shutting down.\n");
     return OK;
 }
