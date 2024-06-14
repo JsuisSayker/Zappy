@@ -102,7 +102,6 @@ ZappyDescriptorPool::ZappyDescriptorPool(ZappyDevice &lveDevice,
     const std::vector<VkDescriptorPoolSize> &poolSizes)
     : lveDevice{lveDevice}
 {
-    // Définir les tailles de pool de descripteurs
     VkDescriptorPoolSize pool_sizes[] = {{VK_DESCRIPTOR_TYPE_SAMPLER, 1000},
         {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000},
         {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000},
@@ -115,7 +114,6 @@ ZappyDescriptorPool::ZappyDescriptorPool(ZappyDevice &lveDevice,
         {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000},
         {VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000}};
 
-    // Créer les informations du pool de descripteurs
     VkDescriptorPoolCreateInfo descriptorPoolInfo{};
     descriptorPoolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     descriptorPoolInfo.poolSizeCount = std::size(pool_sizes);
@@ -124,7 +122,6 @@ ZappyDescriptorPool::ZappyDescriptorPool(ZappyDevice &lveDevice,
     descriptorPoolInfo.flags =
         poolFlags | VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
-    // Créer le pool de descripteurs
     if (vkCreateDescriptorPool(lveDevice.device(), &descriptorPoolInfo,
             nullptr, &descriptorPool) != VK_SUCCESS) {
         throw zappy::DescriptorPoolCreationFailedException();

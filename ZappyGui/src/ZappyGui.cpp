@@ -51,13 +51,13 @@ void ZappyGui::initImGui()
     init_info.Instance = this->lveDevice.getInstance();
     init_info.PhysicalDevice = this->lveDevice.getPhysicalDevice();
     init_info.Device = this->lveDevice.device();
-    // init_info.QueueFamily = this->lveDevice.getGraphicsQueueFamily();
+    init_info.QueueFamily = this->lveDevice.findQueueFamilies(this->lveDevice.getPhysicalDevice()).graphicsFamily;
     init_info.Queue = this->lveDevice.graphicsQueue();
     init_info.PipelineCache = VK_NULL_HANDLE;
     init_info.DescriptorPool = this->globalPool.get()->descriptorPool;
     init_info.Subpass = 0;
-    init_info.MinImageCount = 2;
-    init_info.ImageCount = ZappySwapChain::MAX_FRAMES_IN_FLIGHT;
+    init_info.MinImageCount =  ZappySwapChain::MAX_FRAMES_IN_FLIGHT + 1;
+    init_info.ImageCount = ZappySwapChain::MAX_FRAMES_IN_FLIGHT + 1;
     init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
     init_info.Allocator = nullptr;
     init_info.CheckVkResultFn = nullptr;
@@ -79,13 +79,11 @@ void ZappyGui::drawGui()
     ImGui::NewFrame();
 
     // Render ImGui widgets
-    ImGui::Begin("Hello, ImGui!");
-    ImGui::Text("This is ImGui running with GLFW and Vulkan!");
-    ImGui::End();
+
+    ImGui::ShowDemoWindow();
 
     // Rendering ImGui
     ImGui::Render();
-    ImGui::GetDrawData();
 }
 
 ZappyGui::ZappyGui()
@@ -155,7 +153,6 @@ void ZappyGui::run()
 {
     this->getClient().get()->connectToServer();
 
-
     uboBuffers.resize(ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
     for (int i = 0; i < uboBuffers.size(); i++) {
         uboBuffers[i] = std::make_unique<ZappyBuffer>(lveDevice,
@@ -219,7 +216,6 @@ void ZappyGui::run()
 
         glfwPollEvents();
 
-        this->drawGui();
         std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
         auto commandTime = std::chrono::high_resolution_clock::now();
         auto endTime = commandTime + std::chrono::milliseconds(16);
@@ -276,9 +272,14 @@ void ZappyGui::run()
             // render
             lveRenderer.beginSwapChainRenderPass(commandBuffer);
 
+
+
             // order here matters
             simpleRenderSystem.renderGameObjects(frameInfo);
             pointLightSystem.render(frameInfo);
+
+            this->drawGui();
+            ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer);
 
             lveRenderer.endSwapChainRenderPass(commandBuffer);
             lveRenderer.endFrame();
@@ -286,6 +287,7 @@ void ZappyGui::run()
     }
 
     // Cleanup
+    vkDeviceWaitIdle(lveDevice.device());
     ImGui_ImplVulkan_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
