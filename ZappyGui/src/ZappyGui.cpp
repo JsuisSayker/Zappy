@@ -847,10 +847,8 @@ void ZappyGui::updateTrantoriansPosition()
 {
     this->smoothTime = std::chrono::high_resolution_clock::now();
     if (this->smoothTime > this->endTimeSmooth) {
-        std::cout << "Updating trantorians position" << std::endl;
         for (Trantorian &trantorian : trantorians_) {
             if (trantorian.newPosition != trantorian.position) {
-                std::cout << "Moving trantorian" << std::endl;
                 glm::vec3 direction = trantorian.newPosition - trantorian.position;
                 glm::vec3 step = direction / 30.f;
                 trantorian.position += step;
