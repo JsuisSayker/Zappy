@@ -51,12 +51,14 @@ void ZappyGui::initImGui()
     init_info.Instance = this->lveDevice.getInstance();
     init_info.PhysicalDevice = this->lveDevice.getPhysicalDevice();
     init_info.Device = this->lveDevice.device();
-    init_info.QueueFamily = this->lveDevice.findQueueFamilies(this->lveDevice.getPhysicalDevice()).graphicsFamily;
+    init_info.QueueFamily =
+        this->lveDevice.findQueueFamilies(this->lveDevice.getPhysicalDevice())
+            .graphicsFamily;
     init_info.Queue = this->lveDevice.graphicsQueue();
     init_info.PipelineCache = VK_NULL_HANDLE;
     init_info.DescriptorPool = this->globalPool.get()->descriptorPool;
     init_info.Subpass = 0;
-    init_info.MinImageCount =  ZappySwapChain::MAX_FRAMES_IN_FLIGHT + 1;
+    init_info.MinImageCount = ZappySwapChain::MAX_FRAMES_IN_FLIGHT + 1;
     init_info.ImageCount = ZappySwapChain::MAX_FRAMES_IN_FLIGHT + 1;
     init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
     init_info.Allocator = nullptr;
@@ -97,7 +99,8 @@ void ZappyGui::drawGui()
     ImGui::End();
 
     // Render ImGui wrap menu with teams colors in left side
-    // When click on a team, display all the trantorians of this team using e.g.Button()
+    // When click on a team, display all the trantorians of this team using
+    // e.g.Button()
     ImGui::SetNextWindowPos(ImVec2(10, 40));
     ImGui::SetNextWindowSize(ImVec2(150, ImGui::GetIO().DisplaySize.y - 50));
     ImGui::Begin("Teams", nullptr,
@@ -114,6 +117,26 @@ void ZappyGui::drawGui()
                 }
             }
         }
+    }
+    ImGui::End();
+
+    // Render a chat window in the bottom right corner
+
+    std::vector<std::string> chatMessages = {"Hello", "World", "!", "How",
+        "are", "you", "?", "I'm", "fine", "thanks", "for", "asking", "!", "I",
+        "hope", "you", "are", "too", "!", "Goodbye", "!", "See", "you", "soon",
+        "!", "Bye", "!"};
+
+    ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300,
+        ImGui::GetIO().DisplaySize.y - 200));
+    ImGui::SetNextWindowSize(ImVec2(300, 200));
+    ImGui::Begin("Chat", nullptr,
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+    ImGui::Text("Chat");
+    ImGui::Separator();
+    for (auto &i : chatMessages) {
+        ImGui::Text(i.c_str());
     }
     ImGui::End();
 
@@ -307,14 +330,13 @@ void ZappyGui::run()
             // render
             lveRenderer.beginSwapChainRenderPass(commandBuffer);
 
-
-
             // order here matters
             simpleRenderSystem.renderGameObjects(frameInfo);
             pointLightSystem.render(frameInfo);
 
             this->drawGui();
-            ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer);
+            ImGui_ImplVulkan_RenderDrawData(
+                ImGui::GetDrawData(), commandBuffer);
 
             lveRenderer.endSwapChainRenderPass(commandBuffer);
             lveRenderer.endFrame();
