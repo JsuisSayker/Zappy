@@ -78,9 +78,44 @@ void ZappyGui::drawGui()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    // Render ImGui widgets
+    // Render ImGui fps in top left corner
+    ImGui::SetNextWindowPos(ImVec2(10, 10));
+    ImGui::SetNextWindowSize(ImVec2(0, 0));
+    ImGui::Begin("FPS", nullptr,
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+    ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+    ImGui::End();
 
-    ImGui::ShowDemoWindow();
+    // Render ImGui time unit in top right corner
+    ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 150, 10));
+    ImGui::SetNextWindowSize(ImVec2(0, 0));
+    ImGui::Begin("Time Unit", nullptr,
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+    ImGui::Text("Time Unit: %d", this->_timeUnit);
+    ImGui::End();
+
+    // Render ImGui wrap menu with teams colors in left side
+    // When click on a team, display all the trantorians of this team using e.g.Button()
+    ImGui::SetNextWindowPos(ImVec2(10, 40));
+    ImGui::SetNextWindowSize(ImVec2(150, ImGui::GetIO().DisplaySize.y - 50));
+    ImGui::Begin("Teams", nullptr,
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+    for (auto &i : this->teamsColors_) {
+        if (ImGui::Button(i.first.c_str())) {
+            for (auto &j : this->trantorians_) {
+                if (j.team == i.first) {
+                    // New window with all the trantorians of this team
+                    ImGui::Begin(j.team.c_str());
+                    ImGui::Text("Trantorian %d", j.playerNumber);
+                    ImGui::End();
+                }
+            }
+        }
+    }
+    ImGui::End();
 
     // Rendering ImGui
     ImGui::Render();
