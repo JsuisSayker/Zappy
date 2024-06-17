@@ -34,10 +34,9 @@
 #include <random>
 #include <stdexcept>
 #include <unistd.h>
-
 namespace zappy {
 
-void ZappyGui::initImGui()
+void ZappyGui::initHud()
 {
     // Initialize ImGui
     IMGUI_CHECKVERSION();
@@ -74,7 +73,7 @@ void ZappyGui::initImGui()
     this->lveDevice.endSingleTimeCommands(command_buffer);
 }
 
-void ZappyGui::drawGui()
+void ZappyGui::drawHud()
 {
     // Start ImGui frame
     ImGui_ImplVulkan_NewFrame();
@@ -84,9 +83,8 @@ void ZappyGui::drawGui()
     // Render ImGui fps in top left corner
     ImGui::SetNextWindowPos(ImVec2(10, 10));
     ImGui::SetNextWindowSize(ImVec2(0, 0));
-    ImGui::Begin("FPS", nullptr,
-        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+    ImGui::Begin(
+        "FPS", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
     ImGui::End();
 
@@ -94,35 +92,52 @@ void ZappyGui::drawGui()
     ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 150, 10));
     ImGui::SetNextWindowSize(ImVec2(0, 0));
     ImGui::Begin("Time Unit", nullptr,
-        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
     ImGui::Text("Time Unit: %d", this->_timeUnit);
     ImGui::End();
 
     // Render ImGui wrap menu with teams colors in left side
-    // When click on a team, display all the trantorians of this team using
-    // e.g.Button()
-    ImGui::SetNextWindowPos(ImVec2(10, 40));
-    ImGui::SetNextWindowSize(ImVec2(150, ImGui::GetIO().DisplaySize.y - 50));
+    ImGui::SetNextWindowPos(ImVec2(10, 60));
+    ImGui::SetNextWindowSize(ImVec2(150, 160));
     ImGui::Begin("Teams", nullptr,
-        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-    for (auto &i : this->teamsColors_) {
-        if (ImGui::Button(i.first.c_str())) {
-            for (auto &j : this->trantorians_) {
-                if (j.team == i.first) {
-                    // New window with all the trantorians of this team
-                    ImGui::Begin(j.team.c_str());
-                    ImGui::Text("Trantorian %d", j.playerNumber);
-                    ImGui::End();
-                }
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
+    static std::string current_team = "";
+
+    if (ImGui::BeginCombo("Teams", current_team.c_str())) {
+        for (auto &team : this->teamsColors_) {
+            bool is_selected = (current_team == team.first);
+            if (ImGui::Selectable(team.first.c_str(), is_selected)) {
+                current_team = team.first;
+            }
+            if (is_selected) {
+                ImGui::SetItemDefaultFocus();
+            }
+        }
+        ImGui::EndCombo();
+    }
+
+    ImGui::Separator();
+
+    // Display trantorians for the selected team
+    if (!current_team.empty()) {
+        for (auto &trantorian : this->trantorians_) {
+            ImGui::Button(std::to_string(trantorian.playerNumber).c_str());
+            if (ImGui::IsItemClicked(0)) {
+                this->showChildWindow = !this->showChildWindow;
+                this->selectedPlayerNbr = trantorian.playerNumber;
             }
         }
     }
     ImGui::End();
 
-    // Render a chat window in the bottom right corner
+    if (this->showChildWindow) {
+        ImGui::Begin(
+            std::to_string(this->selectedPlayerNbr).c_str(), nullptr, 0);
+        ImGui::Text("This is a child window");
+        ImGui::End();
+    }
 
+    // Render a chat window in the bottom right corner
     std::vector<std::string> chatMessages = {"Hello", "World", "!", "How",
         "are", "you", "?", "I'm", "fine", "thanks", "for", "asking", "!", "I",
         "hope", "you", "are", "too", "!", "Goodbye", "!", "See", "you", "soon",
@@ -132,8 +147,7 @@ void ZappyGui::drawGui()
         ImGui::GetIO().DisplaySize.y - 200));
     ImGui::SetNextWindowSize(ImVec2(300, 200));
     ImGui::Begin("Chat", nullptr,
-        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
     ImGui::Text("Chat");
     ImGui::Separator();
     for (auto &i : chatMessages) {
@@ -147,8 +161,6 @@ void ZappyGui::drawGui()
 
 ZappyGui::ZappyGui()
 {
-    std::cout << "-----------------ZappyGui constructor-----------------"
-               << std::endl;
     executablePath = getExecutablePath();
     globalPool = ZappyDescriptorPool::Builder(lveDevice)
                      .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
@@ -272,7 +284,8 @@ void ZappyGui::run()
 
     auto currentTime = std::chrono::high_resolution_clock::now();
     int socket_fd = this->getClient().get()->getSocketFd();
-    this->initImGui();
+    this->initHud();
+
     while (!lveWindow.shouldClose()) {
 
         glfwPollEvents();
@@ -337,7 +350,7 @@ void ZappyGui::run()
             simpleRenderSystem.renderGameObjects(frameInfo);
             pointLightSystem.render(frameInfo);
 
-            this->drawGui();
+            this->drawHud();
             ImGui_ImplVulkan_RenderDrawData(
                 ImGui::GetDrawData(), commandBuffer);
 

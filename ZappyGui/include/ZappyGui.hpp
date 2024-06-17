@@ -84,8 +84,8 @@ class ZappyGui {
     void run();
 
     // ImGUI Functions
-    void initImGui();
-    void drawGui();
+    void initHud();
+    void drawHud();
 
     float getRandomFloat(float min, float max);
 
@@ -120,5 +120,9 @@ class ZappyGui {
     std::unordered_map<std::string, glm::vec3> teamsColors_;
     std::unordered_map<std::string, FunctionPtr> _pointerToFunction; // Map of pointers to functions
     int _timeUnit; // Time unit of the server
+
+    // ZappyHUD
+    int selectedPlayerNbr;
+    bool showChildWindow = false;
 };
 } // namespace zappy
