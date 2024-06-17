@@ -1,11 +1,11 @@
 import socket
 import selectors
 import subprocess
-
-from numpy import divide
 from ZappyAI.src.ai.ai import AI
 import select
 import errno
+
+from ZappyAI.src.ai.infos import Activity
 
 
 class Client():
@@ -47,6 +47,10 @@ class Client():
             print("Ctrl+C pressed, closing connection...")
             self.socket.close()
             return 0
+        except ConnectionRefusedError:
+            self.socket.close()
+            print("Connection refused")
+            exit(0)
 
         possibleEvents = selectors.EVENT_READ | selectors.EVENT_WRITE
         self.selector.register(self.socket, possibleEvents)
@@ -90,6 +94,19 @@ class Client():
             self.logged = True
             self.ai.run = True
 
+    def forkingProcess(self):
+        newClientId = int(self.clientId) + 1
+        subprocess.Popen(["python3",
+                          "zappy_ai",
+                          "-p",
+                          str(self.port),
+                          "-n",
+                          self.teamName,
+                          "-h",
+                          self.host,
+                          "-i",
+                          str(newClientId)])
+
     def launch_client(self):
         try:
             while True:
@@ -102,9 +119,9 @@ class Client():
                             print("Connection reset by peer")
                             self.closeConnection()
                             exit(0)
-                        print(f"data: {data}")
+                        print(f"DATA: {data}")
                         print(f"self.ai.dataToSend: {self.ai.dataToSend}")
-                        if not data:
+                        if not data or data == "":
                             print("closing the connection")
                             self.closeConnection()
                         tmpReceivedData = data.split("\n")
@@ -134,7 +151,7 @@ class Client():
                                     print("ValueError", element)
                                     pass
                             elif "Elevation underway" in element:
-                                self.ai.dataToSend = ""
+                                self.ai.actualActivity = Activity.CLEARING_DATA
                             elif "Current level" in element:
                                 self.ai.level = int(''.join(filter(
                                     str.isdigit, element)))
@@ -147,24 +164,15 @@ class Client():
                                 self.ai.searchingRessource = ""
                                 self.ai.incantation = False
                                 self.ai.nbReadyPlayers = 1
-                                self.ai.actualActivity = 12
+                                self.ai.actualActivity = \
+                                    Activity.FINISHING_INCANTATION
 
                             elif "message" in element:
                                 self.ai.parse_broadcast(element)
                                 # continue
                                 # return
                             elif self.ai.dataToSend == "Fork\n":
-                                newClientId = int(self.clientId) + 1
-                                subprocess.Popen(["python3",
-                                                  "zappy_ai",
-                                                  "-p",
-                                                  str(self.port),
-                                                  "-n",
-                                                  self.teamName,
-                                                  "-h",
-                                                  self.host,
-                                                  "-i",
-                                                  str(newClientId)])
+                                self.forkingProcess()
                                 print("forking")
                                 self.ai.canFork = False
                             self.ai.run = True
@@ -177,6 +185,7 @@ class Client():
                                     self.teamName + '\n'
                             ) and self.logged is False:
                                 self.actualStep = 1
+                            print(f"SENDING THIS : {self.ai.dataToSend}")
                             self.socket.send(self.ai.dataToSend.encode())
                             self.ai.run = False
         except KeyboardInterrupt:
