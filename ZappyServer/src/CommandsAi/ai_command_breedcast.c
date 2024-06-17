@@ -78,6 +78,71 @@ static ai_position_t relative_case(ai_position_t p2, ai_position_t vector,
     return relative;
 }
 
+static int relative_case(ai_position_t relactive, ai_position_t ai_pos,
+    ai_direction_t direction) {
+    ai_position_t vector;
+
+    vector.x = relactive.x - ai_pos.x;
+    vector.y = relactive.y - ai_pos.y;
+    if (direction == EAST) {
+        if (vector.x == 1 && vector.y == 0)
+            return 1;
+        if (vector.x == 1 && vector.y == 1)
+            return 2;
+        if (vector.x == 0 && vector.y == 1)
+            return 3;
+        if (vector.x == -1 && vector.y == 1)
+            return 4;
+        if (vector.x == -1 && vector.y == 0)
+            return 5;
+        if (vector.x == 1 && vector.y == -1)
+            return 6;
+    }
+    if (direction == NORTH) {
+        if (vector.x == 0 && vector.y == 1)
+            return 1;
+        if (vector.x == -1 && vector.y == 1)
+            return 2;
+        if (vector.x == -1 && vector.y == 0)
+            return 3;
+        if (vector.x == -1 && vector.y == -1)
+            return 4;
+        if (vector.x == 0 && vector.y == -1)
+            return 5;
+        if (vector.x == 1 && vector.y == -1)
+            return 6;
+    }
+    if (direction == SOUTH) {
+        if (vector.x == 0 && vector.y == -1)
+            return 1;
+        if (vector.x == 1 && vector.y == -1)
+            return 2;
+        if (vector.x == 1 && vector.y == 0)
+            return 3;
+        if (vector.x == 1 && vector.y == 1)
+            return 4;
+        if (vector.x == 0 && vector.y == 1)
+            return 5;
+        if (vector.x == -1 && vector.y == 1)
+            return 6;
+    }
+    if (direction == WEST) {
+        if (vector.x == -1 && vector.y == 0)
+            return 1;
+        if (vector.x == -1 && vector.y == -1)
+            return 2;
+        if (vector.x == 0 && vector.y == -1)
+            return 3;
+        if (vector.x == 1 && vector.y == -1)
+            return 4;
+        if (vector.x == 1 && vector.y == 0)
+            return 5;
+        if (vector.x == -1 && vector.y == 1)
+            return 6;
+    }
+    return 0;
+}
+
 int read_message_recieve(zappy_server_t *zappy, client_t *client,
     int actual_socket)
 {
