@@ -21,6 +21,7 @@ static int init_value(client_t *ia, team_t *tmp_team, egg_t *new_egg,
     ia->pos.y = new_egg->y;
     ia->team_name = strdup(tmp_team->name);
     ia->client_number = tmp_team->nb_drones;
+    tmp_team->nb_drones += 1;
     new_egg->client_number = ia->client_number;
     ia->type = IA;
     ia->level = 1;
