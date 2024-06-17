@@ -90,7 +90,7 @@ void refill_map_tile(zappy_server_t *zappy, map_tile_t **destination,
 void free_threads(struct threadhead *head);
 void free_teams(struct teamhead *head);
 
-// Tools functions
+//  TOOLS FUNCTION
 bool is_valid_resource(char *resource);
 void free_array(char **array);
 void set_inventory_resource_quantite(inventory_t *tile_inventory,
@@ -98,6 +98,13 @@ void set_inventory_resource_quantite(inventory_t *tile_inventory,
 void normalize_coordinate(int *x, int *y, zappy_server_t *zappy);
 void free_string(char **str);
 void realloc_and_strcat(char **message, char *str);
+
+// node
+void free_node(message_t *node);
+void free_list(message_t *list);
+int remove_first_node(message_t *list);
+message_t *create_node(char *cmd, ai_position_t pos);
+message_t *add_node_in_list(message_t *list, char *cmd, ai_position_t pos);
 
 // Server functions
 int init_server(zappy_server_t *zappy, args_config_t *args);
