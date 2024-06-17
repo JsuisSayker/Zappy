@@ -18,6 +18,7 @@
 #include "Window.hpp"
 #include "Trantorian.hpp"
 #include "Camera.hpp"
+#include "Egg.hpp"
 
 // std
 #include <memory>
@@ -43,6 +44,10 @@ class ZappyGui {
     void addTrantorian(const std::string &teamName, const glm::vec3 &position, int playerNumber, int orientation);
     void removeTrantorian(int playerNumber);
     void updateTrantorianPosition(int playerNumber, const glm::vec3 &position, int orientation);
+
+    void eggLayingPose(int playerNumber);
+
+    void addEgg(int eggNumber, int playerNumber, const glm::vec3 &position);
 
     void setPointerToFunction(std::unordered_map<std::string, FunctionPtr> &pointerToFunction);
 
@@ -117,6 +122,7 @@ class ZappyGui {
     std::shared_ptr<Client> client;
     ZappyGameObject::Map ressources_;
     std::vector<Trantorian> trantorians_;
+    std::vector<Egg> eggs_;
     std::unordered_map<std::string, glm::vec3> teamsColors_;
     std::unordered_map<std::string, FunctionPtr> _pointerToFunction; // Map of pointers to functions
     int _timeUnit; // Time unit of the server

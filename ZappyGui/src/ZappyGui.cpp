@@ -376,14 +376,6 @@ std::string ZappyGui::getExecutablePath()
     return std::string(buffer, (count > 0) ? count : 0);
 }
 
-void ZappyGui::loadGameObjects()
-{
-    addTrantorian("Team-A", {0.f, 0.f, 0.f}, 1, 2);
-    addTrantorian("Team-A", {1.f, 0.f, 0.f}, 2, 2);
-    removeTrantorian(2);
-    // updateTrantorianPosition(1, {1.f, 0.f, 1.f}, 3);
-}
-
 ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
     const std::string &texturePath, const glm::vec3 &position,
     const glm::vec3 &rotation, const glm::vec3 &scale, bool hasTexture)
@@ -805,7 +797,14 @@ void ZappyGui::pie(std::vector<std::string> actualCommand)
 
 void ZappyGui::pfk(std::vector<std::string> actualCommand)
 {
-    std::cout << "pfk" << std::endl;
+    if (actualCommand.size() != 2) {
+        std::cerr << "pfk: invalid number of arguments" << std::endl;
+        return;
+    }
+
+    int playerNumber = std::stoi(actualCommand[1]);
+
+    this->eggLayingPose(playerNumber);
 }
 
 void ZappyGui::pdr(std::vector<std::string> actualCommand)
@@ -830,7 +829,20 @@ void ZappyGui::pdi(std::vector<std::string> actualCommand)
     this->removeTrantorian(playerNumber);
 }
 
-void ZappyGui::enw(std::vector<std::string> actualCommand) {}
+void ZappyGui::enw(std::vector<std::string> actualCommand)
+{
+    if (actualCommand.size() != 5) {
+        std::cerr << "enw: invalid number of arguments" << std::endl;
+        return;
+    }
+
+    int eggNumber = std::stoi(actualCommand[1]);
+    int playerNumber = std::stoi(actualCommand[2]);
+    int x = std::stoi(actualCommand[2]);
+    int y = std::stoi(actualCommand[3]);
+
+    this->addEgg(eggNumber, playerNumber, {static_cast<float>(x), 0.0f, static_cast<float>(y)});
+}
 
 void ZappyGui::eht(std::vector<std::string> actualCommand)
 {
@@ -839,12 +851,44 @@ void ZappyGui::eht(std::vector<std::string> actualCommand)
 
 void ZappyGui::ebo(std::vector<std::string> actualCommand)
 {
-    std::cout << "ebo" << std::endl;
+    if (actualCommand.size() != 2) {
+        std::cerr << "ebo: invalid number of arguments" << std::endl;
+        return;
+    }
+
+    int eggNumber = std::stoi(actualCommand[1]);
+
+    for (auto i = eggs_.begin(); i != eggs_.end(); i++) {
+        if (i->eggNumber == eggNumber) {
+            for (auto j = trantorians_.begin(); j != trantorians_.end(); j++) {
+                if (j->playerNumber == i->playerNumber) {
+                    this->addTrantorian(j->team, i->position, trantorians_.size() + 1, 0);
+                    break;
+                }
+            }
+            removeGameObject(i->eggObjectId);
+            eggs_.erase(i);
+            return;
+        }
+    }
 }
 
 void ZappyGui::edi(std::vector<std::string> actualCommand)
 {
-    std::cout << "edi" << std::endl;
+    if (actualCommand.size() != 2) {
+        std::cerr << "edi: invalid number of arguments" << std::endl;
+        return;
+    }
+
+    int eggNumber = std::stoi(actualCommand[1]);
+
+    for (auto i = eggs_.begin(); i != eggs_.end(); i++) {
+        if (i->eggNumber == eggNumber) {
+            removeGameObject(i->eggObjectId);
+            eggs_.erase(i);
+            return;
+        }
+    }
 }
 
 void ZappyGui::welcome(std::vector<std::string> actualCommand)
@@ -853,8 +897,7 @@ void ZappyGui::welcome(std::vector<std::string> actualCommand)
     dprintf(this->client.get()->getSocketFd(), "GRAPHIC\n");
 }
 
-void ZappyGui::addTrantorian(const std::string &teamName,
-    const glm::vec3 &position, int playerNumber, int orientation)
+void ZappyGui::addTrantorian(const std::string &teamName, const glm::vec3 &position, int playerNumber, int orientation)
 {
     glm::vec3 rotation;
 
@@ -872,16 +915,13 @@ void ZappyGui::addTrantorian(const std::string &teamName,
             executablePath + "/ZappyGui/textures/Slime.png", position,
             rotation, {0.25f, 0.25f, 0.25f}, true);
 
-    std::shared_ptr<ZappyGameObject> pointLight =
-        std::make_shared<ZappyGameObject>(
-            zappy::ZappyGameObject::makePointLight(0.2f));
+    std::shared_ptr<ZappyGameObject> pointLight = std::make_shared<ZappyGameObject>(zappy::ZappyGameObject::makePointLight(0.2f));
     pointLight->color = this->teamsColors_[teamName];
     pointLight.get()->transform.translation = position;
     pointLight.get()->transform.translation.y -= 1.0f;
     gameObjects.emplace(pointLight->getId(), std::move(*pointLight));
 
-    Trantorian newTrantorian(
-        ObjectId, pointLight->getId(), teamName, playerNumber);
+    Trantorian newTrantorian(ObjectId, pointLight->getId(), teamName, playerNumber);
 
     this->trantorians_.emplace_back(newTrantorian);
 }
@@ -924,6 +964,19 @@ void ZappyGui::updateTrantorianPosition(
             }
         }
     }
+}
+
+void ZappyGui::eggLayingPose(int playerNumber)
+{
+    // change trantorians pose to show it is laying an egg
+    std::cout << "Egg laying pose" << std::endl;
+}
+
+void ZappyGui::addEgg(int eggNumber, int playerNumber, const glm::vec3 &position)
+{
+    ZappyGameObject::id_t EggId = createGameObject(executablePath + "/ZappyGui/models/cube.obj", executablePath + "/ZappyGui/textures/meme.png", position, {0.f, 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+    Egg newEgg(EggId, eggNumber, playerNumber, position);
+    this->eggs_.emplace_back(newEgg);
 }
 
 void ZappyGui::createMap(int width, int height)
