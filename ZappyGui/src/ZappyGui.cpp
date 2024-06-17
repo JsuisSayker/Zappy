@@ -20,6 +20,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_vulkan.h"
@@ -116,6 +117,24 @@ void ZappyGui::drawHud()
         ImGui::EndCombo();
     }
 
+    // Display a color selector for the selected team
+    if (!current_team.empty()) {
+        ImGui::Separator();
+
+        glm::vec3 glmColor1 = this->teamsColors_[current_team] / 255.0f;
+
+        float *color = glm::value_ptr(glmColor1);
+
+        if (ImGui::ColorEdit3("Color", color)) {
+            glmColor1 = glm::vec3(color[0], color[1], color[2]);
+            this->teamsColors_[current_team] = glmColor1 * 255.0f;
+
+            std::cout << "Color: " << this->teamsColors_[current_team].r << " "
+                      << this->teamsColors_[current_team].g << " "
+                      << this->teamsColors_[current_team].b << std::endl;
+        }
+    }
+
     ImGui::Separator();
 
     // Display trantorians for the selected team
@@ -133,7 +152,25 @@ void ZappyGui::drawHud()
     if (this->showChildWindow) {
         ImGui::Begin(
             std::to_string(this->selectedPlayerNbr).c_str(), nullptr, 0);
-        ImGui::Text("This is a child window");
+        // Display trantorian informations
+        for (auto &trantorian : this->trantorians_) {
+            if (trantorian.playerNumber == this->selectedPlayerNbr) {
+                ImGui::Button("View Camera");
+                ImGui::Text("Player number: %d", trantorian.playerNumber);
+                ImGui::Text("Level: %d", trantorian.level);
+                ImGui::Text("Team: %s", trantorian.team.c_str());
+                ImGui::Separator();
+                ImGui::Text("Inventory:");
+                ImGui::Text("Food: %d", trantorian.inventory.food);
+                ImGui::Text("Linemate: %d", trantorian.inventory.linemate);
+                ImGui::Text("Deraumere: %d", trantorian.inventory.deraumere);
+                ImGui::Text("Sibur: %d", trantorian.inventory.sibur);
+                ImGui::Text("Mendiane: %d", trantorian.inventory.mendiane);
+                ImGui::Text("Phiras: %d", trantorian.inventory.phiras);
+                ImGui::Text("Thystame: %d", trantorian.inventory.thystame);
+                ImGui::Separator();
+            }
+        }
         ImGui::End();
     }
 
@@ -285,6 +322,10 @@ void ZappyGui::run()
     auto currentTime = std::chrono::high_resolution_clock::now();
     int socket_fd = this->getClient().get()->getSocketFd();
     this->initHud();
+
+    this->addTrantorian("test", {0.f, 0.f, 0.f}, 1, 2);
+    this->addTrantorian("test", {1.f, 0.f, 0.f}, 2, 2);
+    this->addTrantorian("test", {0.f, 0.f, 1.f}, 3, 2);
 
     while (!lveWindow.shouldClose()) {
 
