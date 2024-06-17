@@ -84,10 +84,8 @@ void refill_map_tile_sub(zappy_server_t *zappy,
     map_tile_t **destination, map_tile_t **source, int i)
 {
     for (int j = 0; source[i][j].x != -1; j += 1) {
-        if (refill_inventory(&destination[i][j],
-        &source[i][j].inventory)) {
-            refill_map_tile_ter(zappy, destination, i, j);
-        }
+        refill_inventory(&destination[i][j], &source[i][j].inventory);
+        refill_map_tile_ter(zappy, destination, i, j);
     }
 }
 
