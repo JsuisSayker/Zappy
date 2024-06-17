@@ -23,6 +23,7 @@
 #include <memory>
 #include <signal.h>
 #include <vector>
+#include <random>
 
 namespace zappy {
 class ZappyGui {
@@ -85,6 +86,8 @@ class ZappyGui {
     // ImGUI Functions
     void initImGui();
     void drawGui();
+
+    float getRandomFloat(float min, float max);
 
   protected:
     void createMap(int width, int height);

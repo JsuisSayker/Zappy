@@ -31,6 +31,7 @@
 #include <chrono>
 #include <filesystem>
 #include <iostream>
+#include <random>
 #include <stdexcept>
 #include <unistd.h>
 
@@ -154,9 +155,9 @@ ZappyGui::ZappyGui()
                      .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                          ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
                      .build();
-    // loadGameObjects();
     this->client = std::make_shared<Client>();
     this->map_ = std::make_unique<Map>();
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
     this->_pointerToFunction["msz"] =
         std::bind(&ZappyGui::msz, this, std::placeholders::_1);
     this->_pointerToFunction["bct"] =
@@ -658,9 +659,8 @@ void ZappyGui::tna(std::vector<std::string> actualCommand)
     }
     std::string teamName = actualCommand[1];
     this->teamsColors_.emplace(teamName,
-        glm::vec3(static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX)));
+        glm::vec3(getRandomFloat(0.01, 1.0), getRandomFloat(0.01, 1.0),
+            getRandomFloat(0.01, 1.0)));
 }
 
 void ZappyGui::pnw(std::vector<std::string> actualCommand)
@@ -767,7 +767,7 @@ void ZappyGui::pic(std::vector<std::string> actualCommand)
         }
     } catch (const std::exception &e) {
         return;
-    }   
+    }
     for (Trantorian &Trantorian : trantorians_) {
         if (Trantorian.playerNumber = playerNumbers[0])
             Trantorian.incatationInProgess = true;
@@ -908,7 +908,8 @@ void ZappyGui::updateTrantorianPosition(
                 }
                 if (object.first == trantorian.trantorianObject) {
                     object.second.transform.translation = position;
-                    object.second.transform.translation.y = object.second.transform.scale.y * -1;
+                    object.second.transform.translation.y =
+                        object.second.transform.scale.y * -1;
                     if (orientation == 1)
                         object.second.transform.rotation = {0.f, 0.f, 0.f};
                     else if (orientation == 2)
@@ -939,6 +940,13 @@ void ZappyGui::removeGameObject(ZappyGameObject::id_t gameObjectId)
 {
     vkDeviceWaitIdle(lveDevice.device());
     gameObjects.erase(gameObjectId);
+}
+
+float ZappyGui::getRandomFloat(float min, float max)
+{
+    return min +
+        static_cast<float>(std::rand()) /
+        (static_cast<float>(RAND_MAX / (max - min)));
 }
 
 } // namespace zappy
