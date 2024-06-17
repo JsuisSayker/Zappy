@@ -147,6 +147,8 @@ void ZappyGui::drawGui()
 
 ZappyGui::ZappyGui()
 {
+    std::cout << "-----------------ZappyGui constructor-----------------"
+               << std::endl;
     executablePath = getExecutablePath();
     globalPool = ZappyDescriptorPool::Builder(lveDevice)
                      .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
