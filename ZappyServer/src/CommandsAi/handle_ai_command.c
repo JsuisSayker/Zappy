@@ -19,7 +19,7 @@ static const struct command_ai_s COMMAND_FUNCS[] = {
     {"Look", &ai_command_look},
     {"Connect_nbr", &ai_command_connect_nbr},
     {"Incantation", &ai_command_incantation},
-    {"Broadcast", &ai_command_breedcast},
+    {"Broadcast", &ai_command_breadcast},
     {"NULL", NULL}
 };
 
