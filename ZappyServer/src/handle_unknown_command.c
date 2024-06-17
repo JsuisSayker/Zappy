@@ -7,20 +7,17 @@
 
 #include <zappy_server.h>
 
-static void send_egg_info(zappy_server_t *zappy_server)
+static void send_egg_info(zappy_server_t *zappy)
 {
     team_t *tmp_team = NULL;
     egg_t *tmp_egg = NULL;
 
-    TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next)
-    {
-        TAILQ_FOREACH(tmp_egg, &tmp_team->eggs_head, next)
-        {
-            dprintf(zappy_server->actual_sockfd, "enw %d %d %d %d\n",
+    TAILQ_FOREACH(tmp_team, &zappy->all_teams, next) {
+        TAILQ_FOREACH(tmp_egg, &tmp_team->eggs_head, next) {
+            dprintf(zappy->actual_sockfd, "enw %d %d %d %d\n",
                 tmp_egg->egg_number, tmp_egg->client_number, tmp_egg->x,
                 tmp_egg->y);
-            dprintf(
-                zappy_server->actual_sockfd, "eht %d\n", tmp_egg->egg_number);
+            dprintf(zappy->actual_sockfd, "eht %d\n", tmp_egg->egg_number);
         }
     }
 }
@@ -34,36 +31,36 @@ void send_gui_map_content(map_tile_t **map, int x, int y, int socket)
     }
 }
 
-static void send_map_info(zappy_server_t *zappy_server)
+static void send_map_info(zappy_server_t *zappy)
 {
     team_t *tmp_team = NULL;
 
-    dprintf(zappy_server->actual_sockfd, "msz %d %d\n",
-        zappy_server->args->width, zappy_server->args->height);
-    dprintf(zappy_server->actual_sockfd, "sgt %d\n", zappy_server->args->freq);
-    send_gui_map_content(zappy_server->map_tile, zappy_server->args->width,
-        zappy_server->args->height, zappy_server->actual_sockfd);
-    TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next)
+    dprintf(zappy->actual_sockfd, "msz %d %d\n",
+        zappy->args->width, zappy->args->height);
+    dprintf(zappy->actual_sockfd, "sgt %d\n", zappy->args->freq);
+    send_gui_map_content(zappy->map_tile, zappy->args->width,
+        zappy->args->height, zappy->actual_sockfd);
+    TAILQ_FOREACH(tmp_team, &zappy->all_teams, next)
     {
-        dprintf(zappy_server->actual_sockfd, "tna %s\n", tmp_team->name);
+        dprintf(zappy->actual_sockfd, "tna %s\n", tmp_team->name);
     }
 }
 
-static int graphic_client(zappy_server_t *zappy_server)
+static int graphic_client(zappy_server_t *zappy)
 {
-    zappy_server->clients[zappy_server->actual_sockfd].type = GUI;
-    send_map_info(zappy_server);
-    send_egg_info(zappy_server);
+    zappy->clients[zappy->actual_sockfd].type = GUI;
+    send_map_info(zappy);
+    send_egg_info(zappy);
     return OK;
 }
 
 // official GUI don't accept N E W S as direction
 // so I put 1 2 3 4 instead
 // and command pnw don't have '#'
-static void send_info_ai_to_gui(zappy_server_t *zappy_server, client_t *client)
+static void send_info_ai_to_gui(zappy_server_t *zappy, client_t *client)
 {
-    for (int i = 3; i < FD_SETSIZE; i++) {
-        if (zappy_server->clients[i].type == GUI) {
+    for (int i = 3; i < zappy->nb_connected_clients; i++) {
+        if (zappy->clients[i].type == GUI) {
             dprintf(i, "pnw %d %d %d %d %d %s\n", client->client_number,
                 client->pos.x, client->pos.y, client->pos.direction,
                 client->level, client->team_name);
@@ -79,36 +76,36 @@ static void send_info_ai_to_gui(zappy_server_t *zappy_server, client_t *client)
 }
 
 static int ai_client_find_team(
-    zappy_server_t *zappy_server, team_t *tmp_team, char *command)
+    zappy_server_t *zappy, team_t *tmp_team, char *command)
 {
     client_t *tmp_client = NULL;
 
-    if (zappy_server == NULL || tmp_team == NULL || command == NULL)
+    if (zappy == NULL || tmp_team == NULL || command == NULL)
         return ERROR;
     if (strncmp(tmp_team->name, command, strlen(tmp_team->name)) == 0) {
         if (tmp_team->nb_matures_eggs == 0) {
             printf("no slot in the team %s left", tmp_team->name);
             return ERROR;
         }
-        tmp_client = &zappy_server->clients[zappy_server->actual_sockfd];
-        if (ai_initialisation(zappy_server, tmp_client, tmp_team) == ERROR)
+        tmp_client = &zappy->clients[zappy->actual_sockfd];
+        if (ai_initialisation(zappy, tmp_client, tmp_team) == ERROR)
             return ERROR;
-        dprintf(zappy_server->actual_sockfd, "2\n%d %d\n", tmp_client->pos.x,
+        dprintf(zappy->actual_sockfd, "2\n%d %d\n", tmp_client->pos.x,
             tmp_client->pos.y);
-        send_info_ai_to_gui(zappy_server, tmp_client);
+        send_info_ai_to_gui(zappy, tmp_client);
         return 1;
     }
     return OK;
 }
 
-static int ai_client(zappy_server_t *zappy_server, char *command)
+static int ai_client(zappy_server_t *zappy, char *command)
 {
     team_t *tmp_team = NULL;
     int team_find = 0;
 
-    TAILQ_FOREACH(tmp_team, &zappy_server->all_teams, next)
+    TAILQ_FOREACH(tmp_team, &zappy->all_teams, next)
     {
-        team_find = ai_client_find_team(zappy_server, tmp_team, command);
+        team_find = ai_client_find_team(zappy, tmp_team, command);
         if (team_find == 1)
             return OK;
         if (team_find == ERROR)
@@ -117,11 +114,11 @@ static int ai_client(zappy_server_t *zappy_server, char *command)
     return ERROR;
 }
 
-int handle_unknown_command(zappy_server_t *zappy_server, char *command)
+int handle_unknown_command(zappy_server_t *zappy, char *command)
 {
     if (strcmp("GRAPHIC", command) == 0)
-        return graphic_client(zappy_server);
+        return graphic_client(zappy);
     else
-        return ai_client(zappy_server, command);
+        return ai_client(zappy, command);
     return ERROR;
 }

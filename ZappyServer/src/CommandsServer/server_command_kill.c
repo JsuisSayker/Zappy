@@ -16,7 +16,7 @@ void server_command_kill(zappy_server_t *zappy, char *command)
     command = &command[1];
     if (atoi(command) < 0)
         return;
-    for (int i = 0; i < FD_SETSIZE; i++) {
+    for (int i = 3; i < zappy->nb_connected_clients; i++) {
         if (zappy->clients[i].client_number == atoi(command)) {
             dprintf(i, "dead\n");
             send_pdi_command_to_all_gui(zappy, &zappy->clients[i]);

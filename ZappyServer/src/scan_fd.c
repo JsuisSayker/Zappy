@@ -7,12 +7,11 @@
 
 #include "zappy_server.h"
 
-int scan_fd(zappy_server_t *zappy_server)
+int scan_fd(zappy_server_t *zappy)
 {
-    for (zappy_server->actual_sockfd = 0;
-        zappy_server->actual_sockfd < FD_SETSIZE;
-        zappy_server->actual_sockfd += 1) {
-        if (fd_is_set(zappy_server) == ERROR)
+    for (zappy->actual_sockfd = 0; zappy->actual_sockfd <
+        zappy->nb_connected_clients; zappy->actual_sockfd += 1) {
+        if (fd_is_set(zappy) == ERROR)
             return ERROR;
     }
     return OK;

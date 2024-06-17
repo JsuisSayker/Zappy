@@ -7,58 +7,59 @@
 
 #include <zappy_server.h>
 
-static int check_connection(zappy_server_t *zappy_server)
+static int check_connection(zappy_server_t *zappy)
 {
     int client_fd = 0;
 
-    if (zappy_server->actual_sockfd == zappy_server->my_socket) {
-        client_fd = accept_new_connection(zappy_server->my_socket,
-            &zappy_server->clients[zappy_server->actual_sockfd]
+    if (zappy->actual_sockfd == zappy->my_socket) {
+        client_fd = accept_new_connection(zappy->my_socket,
+            &zappy->clients[zappy->actual_sockfd]
             .other_socket_addr);
         if (client_fd == ERROR)
             return ERROR;
         dprintf(client_fd, "WELCOME\n");
-        FD_SET(client_fd, &zappy_server->fd.save_input);
+        FD_SET(client_fd, &zappy->fd.save_input);
+        zappy->nb_connected_clients += 1;
     } else {
-        handle_client(zappy_server);
+        handle_client(zappy);
     }
     return OK;
 }
 
-static void refill_map(zappy_server_t *zappy_server, client_t *client)
+static void refill_map(zappy_server_t *zappy, client_t *client)
 {
     struct timeval tv;
-    double cast_time = 20 / (double)zappy_server->args->freq;
+    double cast_time = 20 / (double)zappy->args->freq;
     double elapsed = 0;
 
     gettimeofday(&tv, NULL);
     elapsed = (tv.tv_sec + tv.tv_usec / 1000000.0) - client->command.time;
     if (cast_time < elapsed) {
-        refill_map_tile(zappy_server, zappy_server->map_tile,
-            zappy_server->map_tile_save);
-        zappy_server->time_refill_map = time(NULL);
+        refill_map_tile(zappy, zappy->map_tile,
+            zappy->map_tile_save);
+        zappy->time_refill_map = time(NULL);
     }
 }
 
-int fd_is_set(zappy_server_t *zappy_server)
+int fd_is_set(zappy_server_t *zappy)
 {
     client_t *client;
 
-    if (zappy_server == NULL)
+    if (zappy == NULL)
         return ERROR;
-    client = &zappy_server->clients[zappy_server->actual_sockfd];
-    if (FD_ISSET(zappy_server->actual_sockfd, &zappy_server->fd.input)) {
-        if (check_connection(zappy_server) == ERROR)
+    client = &zappy->clients[zappy->actual_sockfd];
+    if (FD_ISSET(zappy->actual_sockfd, &zappy->fd.input)) {
+        if (check_connection(zappy) == ERROR)
             return ERROR;
         return OK;
     }
-    if (client->command.execution != NULL ||
-        (client->command.queue != NULL && client->command.queue[0] != NULL)) {
-        if (ai_function(zappy_server, client, NULL) != OK)
+    if (client->command.execution != NULL || (client->command.queue != NULL &&
+        client->command.queue[0] != NULL)) {
+        if (ai_function(zappy, client, NULL) != OK)
             return KO;
     }
     if (client->type == IA)
-        is_alive(zappy_server, client);
-    refill_map(zappy_server, client);
+        is_alive(zappy, client);
+    refill_map(zappy, client);
     return OK;
 }

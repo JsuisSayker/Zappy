@@ -11,8 +11,8 @@ static int get_players(zappy_server_t *zappy, int x, int y)
 {
     int nb_players = 0;
 
-    for (int i = 0; i < FD_SETSIZE; i ++) {
-        if (zappy->clients[i].pos.x == x
+    for (int i = 3; i < zappy->nb_connected_clients; i ++) {
+        if (zappy->clients[i].type == IA && zappy->clients[i].pos.x == x
         && zappy->clients[i].pos.y == y)
             nb_players += 1;
     }
@@ -39,7 +39,7 @@ static bool check_resources(inventory_t *inventory, int lvl)
     inventory->thystame >= req[lvl - 1].thystame;
 }
 
-static int remove_ressource(inventory_t *map, int lvl)
+static int remove_ressource(inventory_t *tile_inventory, int lvl)
 {
     inventory_t req[] = {
         {0, 1, 0, 0, 0, 0, 0},
@@ -51,14 +51,14 @@ static int remove_ressource(inventory_t *map, int lvl)
         {0, 2, 2, 2, 2, 2, 1}
     };
 
-    if (map == NULL)
+    if (tile_inventory == NULL)
         return ERROR;
-    map->linemate -= req[lvl - 1].linemate;
-    map->deraumere -= req[lvl - 1].deraumere;
-    map->sibur -= req[lvl - 1].sibur;
-    map->mendiane -= req[lvl - 1].mendiane;
-    map->phiras -= req[lvl - 1].phiras;
-    map->thystame -= req[lvl - 1].thystame;
+    tile_inventory->linemate -= req[lvl - 1].linemate;
+    tile_inventory->deraumere -= req[lvl - 1].deraumere;
+    tile_inventory->sibur -= req[lvl - 1].sibur;
+    tile_inventory->mendiane -= req[lvl - 1].mendiane;
+    tile_inventory->phiras -= req[lvl - 1].phiras;
+    tile_inventory->thystame -= req[lvl - 1].thystame;
     return OK;
 }
 
@@ -93,18 +93,25 @@ static bool check_incantation(zappy_server_t *zappy, client_t *client)
 static int complet_incantation(zappy_server_t *zappy, client_t *client,
     int lvl)
 {
-    inventory_t *map;
+    inventory_t *tile_inventory;
 
     if (client == NULL || zappy == NULL)
         return ERROR;
-    map = &zappy->map_tile[client->pos.x][client->pos.y].inventory;
-    if (remove_ressource(map, lvl) == ERROR)
+    tile_inventory = &zappy->map_tile[client->pos.x][client->pos.y].inventory;
+    if (remove_ressource(tile_inventory, lvl) == ERROR)
         return ERROR;
-    client->level += 1;
-    client->incantation = false;
-    send_pie_command_to_all_gui(zappy, client);
-    send_plv_command_to_all_gui(zappy, client);
-    dprintf(zappy->actual_sockfd, "Current level: %d\n", client->level);
+    for (int i = 3; i < zappy->nb_connected_clients; i++) {
+        if (zappy->clients[i].type == IA && zappy->clients[i].pos.x ==
+        client->pos.x && zappy->clients[i].pos.y == client->pos.y
+        && zappy->clients[i].level == lvl) {
+            zappy->clients[i].level += 1;
+            zappy->clients[i].incantation = false;
+            send_pie_command_to_all_gui(zappy, &zappy->clients[i]);
+            send_plv_command_to_all_gui(zappy, &zappy->clients[i]);
+            dprintf(zappy->actual_sockfd, "Current level: %d\n",
+                zappy->clients[i].level);
+        }
+    }
     return OK;
 }
 

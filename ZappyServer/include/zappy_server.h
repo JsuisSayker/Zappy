@@ -24,62 +24,33 @@
     #include <sys/time.h>
     #include <unistd.h>
     #include "macro_server.h"
+    #include "server_struct.h"
 
-typedef enum client_type_s {
-    IA,
-    GUI,
-    UNKNOWN,
-}client_type_t;
-
-typedef enum ai_direction_s {
-    NORTH,
-    EAST,
-    SOUTH,
-    WEST,
-} ai_direction_t;
+typedef struct zappy_server_s {
+    fd_t fd;
+    int my_socket;
+    int actual_sockfd;
+    int index_eggs;
+    int index_clients;
+    int nb_connected_clients;
+    bool server_running;
+    double time_refill_map;
+    struct sockaddr_in server_addr;
+    struct teamhead all_teams;
+    struct threadhead all_threads;
+    struct client_s clients[FD_SETSIZE];
+    map_tile_t **map_tile;
+    map_tile_t **map_tile_save;
+    args_config_t *args;
+} zappy_server_t;
 
 char *direction_string(ai_direction_t orientation);
-
-typedef struct char_tab_s {
-    char *str;
-    TAILQ_ENTRY(char_tab_s) next;
-} char_tab_t;
-
-struct char_tab_head {
-    struct char_tab_s *tqh_first;
-    struct char_tab_s **tqh_last;
-};
-
-typedef struct inventory_s {
-    int food;
-    int linemate;
-    int deraumere;
-    int sibur;
-    int mendiane;
-    int phiras;
-    int thystame;
-} inventory_t;
 
 // char_tab functions
 void free_char_tab_list(struct char_tab_head *head);
 void display_char_tab_list(struct char_tab_head *head);
 int count_char_tab_list(struct char_tab_head *head);
 void random_char_tab_list(struct char_tab_head *head);
-
-typedef struct args_config_s {
-    int port;
-    int width;
-    int height;
-    int clientsNb;
-    int freq;
-    struct char_tab_head names;
-} args_config_t;
-
-typedef struct map_tile_s {
-    int x;
-    int y;
-    inventory_t inventory;
-} map_tile_t;
 
 // args_config functions
 args_config_t *init_args_config(void);
@@ -112,135 +83,8 @@ void shuffle_int_array(int **array, int n);
 
 ////////////////////////////////////////
 
-typedef struct reply_s {
-    char text[MAX_BODY_LENGTH];
-    char reply_uuid[MAX_UUID_LENGTH];
-    char sender_uuid[MAX_UUID_LENGTH];
-    char thread_uuid[MAX_UUID_LENGTH];
-    time_t timestamp;
-    TAILQ_ENTRY(reply_s) next;
-} reply_t;
 
-struct replyhead {
-    struct reply_s *tqh_first;
-    struct reply_s **tqh_last;
-};
-
-typedef struct thread_s {
-    char title[MAX_NAME_LENGTH];
-    char body[MAX_DESCRIPTION_LENGTH];
-    char thread_uuid[MAX_UUID_LENGTH];
-    char channel_uuid[MAX_UUID_LENGTH];
-    char sender_uuid[MAX_UUID_LENGTH];
-    time_t timestamp;
-    struct replyhead replys_head;
-    TAILQ_ENTRY(thread_s) next;
-} thread_t;
-
-struct threadhead {
-    struct thread_s *tqh_first;
-    struct thread_s **tqh_last;
-};
-
-typedef struct buffer_s {
-    char input_buffer[MAX_COMMAND_LENGTH];
-    char output_buffer[MAX_COMMAND_LENGTH];
-} buffer_t;
-
-typedef struct fd_s {
-    fd_set input;
-    fd_set save_input;
-    fd_set ouput;
-} fd_t;
-
-
-typedef struct ai_position_s {
-    int x;
-    int y;
-    ai_direction_t direction;
-} ai_position_t;
-
-typedef struct look_struct_s {
-    ai_position_t pos;
-    char *message;
-} look_struct_t;
-
-typedef struct ai_command_data_s {
-    char *execution;
-    char **queue;
-    float cast_time;
-    bool is_contracted;
-    double time;
-    bool incantation;
-} ai_command_data_t;
-
-typedef struct ai_health_s {
-    double last_meal;
-    double time_to_eat;
-} ai_health_t;
-
-typedef struct client_s {
-    buffer_t buffer;
-    client_type_t type;
-    int client_number;
-    int level;
-    bool incantation;
-    char *team_name;
-    struct sockaddr_in other_socket_addr;
-    ai_health_t health;
-    ai_command_data_t command;
-    ai_position_t pos;
-    inventory_t inventory;
-} client_t;
-
-typedef struct egg_s {
-    int egg_number;
-    int client_number;
-    int x;
-    int y;
-    TAILQ_ENTRY(egg_s) next;
-} egg_t;
-
-struct egghead {
-    struct egg_s *tqh_first;
-    struct egg_s **tqh_last;
-};
-
-typedef struct team_s {
-    char *name;
-    char team_uuid[MAX_UUID_LENGTH];
-    int nb_drones;
-    int nb_matures_eggs;
-    struct egghead eggs_head;
-    client_t *client;
-    TAILQ_ENTRY(team_s) next;
-} team_t;
-
-struct teamhead {
-    struct team_s *tqh_first;
-    struct team_s **tqh_last;
-};
-
-
-typedef struct zappy_server_s {
-    fd_t fd;
-    int my_socket;
-    int actual_sockfd;
-    int index_eggs;
-    int index_clients;
-    bool server_running;
-    double time_refill_map;
-    struct sockaddr_in server_addr;
-    struct teamhead all_teams;
-    struct threadhead all_threads;
-    struct client_s clients[FD_SETSIZE];
-    map_tile_t **map_tile;
-    map_tile_t **map_tile_save;
-    args_config_t *args;
-} zappy_server_t;
-
-
-void refill_map_tile(zappy_server_t *zappy_server, map_tile_t **destination,
+void refill_map_tile(zappy_server_t *zappy, map_tile_t **destination,
     map_tile_t **source);
 
 // Linked list functions
@@ -257,37 +101,38 @@ void free_string(char **str);
 void realloc_and_strcat(char **message, char *str);
 
 // Server functions
-int init_server(zappy_server_t *zappy_server, args_config_t *args);
-int close_server(zappy_server_t *zappy_server);
-int fd_is_set(zappy_server_t *zappy_server);
+int init_server(zappy_server_t *zappy, args_config_t *args);
+int close_server(zappy_server_t *zappy);
+int fd_is_set(zappy_server_t *zappy);
 void init_buffer_struct(buffer_t *buffer, int *my_socket);
-int scan_fd(zappy_server_t *zappy_server);
-void handle_client(zappy_server_t *zappy_server);
+int scan_fd(zappy_server_t *zappy);
+void handle_client(zappy_server_t *zappy);
 int setup_server(int port, int max_clients);
-void handle_client(zappy_server_t *zappy_server);
 char **splitter(char const *const str, char *separator);
 void generate_random_uuid(char *buffer);
 int accept_new_connection(int my_socket,
     struct sockaddr_in *client_socket_addr);
 int setup_server(int port, int max_clients);
-int save_info_to_file(zappy_server_t *zappy_server);
-int read_info_from_save_file(zappy_server_t *zappy_server);
+int save_info_to_file(zappy_server_t *zappy);
+int read_info_from_save_file(zappy_server_t *zappy);
 thread_t *search_in_threads(struct threadhead *thread_head, char *uuid);
 team_t *search_in_teams(struct teamhead *team_head, char *uuid);
 int get_len_char_tab(char **command);
 time_t get_actual_time(void);
 int count_str_char(char *str, char c);
+void generate_egg_by_team(zappy_server_t *zappy,
+    team_t *new_team, int x, int y);
 
 // COMMANDS
 typedef struct command_s {
     char *command;
-    void (*func)(zappy_server_t *zappy_server, char *command);
+    void (*func)(zappy_server_t *zappy, char *command);
 } command_t;
 
-int handle_unknown_command(zappy_server_t *zappy_server, char *command);
+int handle_unknown_command(zappy_server_t *zappy, char *command);
 
 // SERVER COMMANDS FUNCTIONS
-int handle_server_command(zappy_server_t *zappy_server, char *command);
+int handle_server_command(zappy_server_t *zappy, char *command);
 void server_command_help(zappy_server_t *zappy, char *command);
 void server_command_quit(zappy_server_t *zappy, char *command);
 void server_command_map(zappy_server_t *zappy, char *command);
@@ -301,11 +146,13 @@ void server_command_set_freq(zappy_server_t *zappy, char *command);
 void server_command_set_level(zappy_server_t *zappy, char *command);
 void server_command_send_guis(zappy_server_t *zappy, char *command);
 void server_command_kill(zappy_server_t *zappy, char *command);
+void server_command_fork(zappy_server_t *zappy, char *command);
 
 // AI FUNCTIONS
+
 typedef struct command_ai_s {
     char *command;
-    int (*func)(zappy_server_t *zappy_server, client_t *client, char *command);
+    int (*func)(zappy_server_t *zappy, client_t *client, char *command);
 } command_ai_t;
 
 int ai_function(zappy_server_t *zappy, client_t *client, char *cmd);
@@ -314,7 +161,7 @@ int add_in_queue(client_t *client, char *cmd);
 int handle_ai_command(zappy_server_t *zappy, client_t *client, char *command);
 int cast_action(zappy_server_t *zappy, client_t *client, int freq, char *cmd);
 bool check_action(zappy_server_t *zappy, client_t *client);
-int ai_initialisation(zappy_server_t *zappy_server, client_t *ia,
+int ai_initialisation(zappy_server_t *zappy, client_t *ia,
     team_t *tmp_team);
 void send_gui_map_content(map_tile_t **map, int x, int y, int socket);
 
@@ -343,9 +190,11 @@ void send_pdr_command_to_all_gui(zappy_server_t *zappy, client_t *client,
 void send_pie_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_pic_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_plv_command_to_all_gui(zappy_server_t *zappy, client_t *client);
+void send_enw_command_to_all_gui(zappy_server_t *zappy, egg_t *egg);
+void send_eht_command_to_all_gui(zappy_server_t *zappy, int egg_number);
 
 // GUI COMMANDS FUNCTIONS
-int handle_gui_command(zappy_server_t *zappy_server, char *command);
+int handle_gui_command(zappy_server_t *zappy, char *command);
 void gui_command_msz(zappy_server_t *zappy, UNUSED char *command);
 void gui_command_bct(zappy_server_t *zappy, char *command);
 void gui_command_mct(zappy_server_t *zappy, char *command);
