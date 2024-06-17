@@ -121,7 +121,7 @@ class Client():
                             exit(0)
                         print(f"DATA: {data}")
                         print(f"self.ai.dataToSend: {self.ai.dataToSend}")
-                        if not data:
+                        if not data or data == "":
                             print("closing the connection")
                             self.closeConnection()
                         tmpReceivedData = data.split("\n")
@@ -185,6 +185,7 @@ class Client():
                                     self.teamName + '\n'
                             ) and self.logged is False:
                                 self.actualStep = 1
+                            print(f"SENDING THIS : {self.ai.dataToSend}")
                             self.socket.send(self.ai.dataToSend.encode())
                             self.ai.run = False
         except KeyboardInterrupt:
