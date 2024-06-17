@@ -9,8 +9,8 @@
 
 static int send_logout_to_all_clients(zappy_server_t *zappy)
 {
-    for (zappy->actual_sockfd = 0; zappy->actual_sockfd < FD_SETSIZE;
-        zappy->actual_sockfd += 1) {
+    for (zappy->actual_sockfd = 0; zappy->actual_sockfd <
+    zappy->nb_connected_clients; zappy->actual_sockfd += 1) {
         if (zappy->clients[zappy->actual_sockfd].team_name)
             free(zappy->clients[zappy->actual_sockfd].team_name);
     }

@@ -78,6 +78,8 @@ COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_sst.c				\
 					send_sgt_command_to_all_gui.c	\
 					send_sbp_command_to_all_gui.c	\
+					send_enw_command_to_all_gui.c	\
+					send_eht_command_to_all_gui.c	\
 
 COMMAND_SERVER	=	handle_server_command.c			\
 					server_command_help.c			\

@@ -72,7 +72,7 @@ static bool refill_inventory(map_tile_t *destination, inventory_t *source)
 void refill_map_tile_ter(zappy_server_t *zappy,
     map_tile_t **destination, int i, int j)
 {
-    for (int k = 0; k < FD_SETSIZE; k++) {
+    for (int k = 0; k < zappy->nb_connected_clients; k++) {
         if (zappy->clients[k].type == GUI) {
             display_gui_tile(&destination[i][j], k);
             return;

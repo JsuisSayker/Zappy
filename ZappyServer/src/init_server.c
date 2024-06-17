@@ -51,6 +51,7 @@ static void init_value(zappy_server_t *zappy)
     zappy->index_clients = 0;
     zappy->server_running = true;
     zappy->time_refill_map = time(NULL);
+    zappy->nb_connected_clients = 5;
     init_list(zappy);
     create_teams(zappy);
     zappy->map_tile = setup_map_tile(zappy->args->width,
@@ -60,6 +61,7 @@ static void init_value(zappy_server_t *zappy)
         zappy->clients[i].type = UNKNOWN;
         zappy->clients[i].client_number = -1;
         zappy->clients[i].team_name = NULL;
+        zappy->clients[i].level = 1;
     }
 }
 

@@ -40,11 +40,8 @@ class ZappyGui {
     static std::string getExecutablePath();
 
     void addTrantorian(const std::string &teamName, const glm::vec3 &position, int playerNumber, int orientation);
-
+    void removeTrantorian(int playerNumber);
     void updateTrantorianPosition(int playerNumber, const glm::vec3 &position, int orientation);
-
-    // void setTrantorians(std::vector<Trantorian> trantorians) { this->trantorians_ = trantorians; }
-    // std::vector<Trantorian> &getTrantorians() { return this->trantorians_; }
 
     void setPointerToFunction(std::unordered_map<std::string, FunctionPtr> &pointerToFunction);
 
@@ -85,12 +82,17 @@ class ZappyGui {
 
     void run();
 
+    // ImGUI Functions
+    void initImGui();
+    void drawGui();
+
   protected:
     void createMap(int width, int height);
     void loadGameObjects();
     ZappyGameObject::id_t createGameObject(const std::string &modelPath,
         const std::string &texturePath, const glm::vec3 &position,
         const glm::vec3 &rotation, const glm::vec3 &scale, bool hasTexture);
+    void removeGameObject(ZappyGameObject::id_t gameObjectId);
 
     ZappyWindow lveWindow{WIDTH, HEIGHT, "Vulkan Tutorial"};
     ZappyDevice lveDevice{lveWindow};
@@ -113,6 +115,8 @@ class ZappyGui {
     ZappyGameObject::Map ressources_;
     std::vector<Trantorian> trantorians_;
     std::unordered_map<std::string, glm::vec3> teamsColors_;
+    std::chrono::_V2::system_clock::time_point smoothTime = std::chrono::high_resolution_clock::now();
+    std::chrono::_V2::system_clock::time_point endTimeSmooth = smoothTime + std::chrono::milliseconds(7000 / _timeUnit / 30);
     std::unordered_map<std::string, FunctionPtr> _pointerToFunction; // Map of pointers to functions
     int _timeUnit; // Time unit of the server
 };

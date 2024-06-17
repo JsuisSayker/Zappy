@@ -19,6 +19,7 @@ static int check_connection(zappy_server_t *zappy)
             return ERROR;
         dprintf(client_fd, "WELCOME\n");
         FD_SET(client_fd, &zappy->fd.save_input);
+        zappy->nb_connected_clients += 1;
     } else {
         handle_client(zappy);
     }

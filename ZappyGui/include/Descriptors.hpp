@@ -83,9 +83,9 @@ class ZappyDescriptorPool {
 
     void resetPool();
 
+    VkDescriptorPool descriptorPool;
   private:
     ZappyDevice &lveDevice;
-    VkDescriptorPool descriptorPool;
 
     friend class ZappyDescriptorWriter;
 };

@@ -26,7 +26,7 @@ void gui_command_pin(zappy_server_t *zappy, char *command)
         return;
     }
     client_nb = atoi(&command[1]);
-    for (int i = 0; i < FD_SETSIZE; i += 1) {
+    for (int i = 3; i < zappy->nb_connected_clients; i += 1) {
         if (zappy->clients[i].client_number == client_nb &&
             zappy->clients[i].type == IA) {
             display_player_inventory(&zappy->clients[i], zappy->actual_sockfd);

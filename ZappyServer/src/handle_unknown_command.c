@@ -12,15 +12,12 @@ static void send_egg_info(zappy_server_t *zappy)
     team_t *tmp_team = NULL;
     egg_t *tmp_egg = NULL;
 
-    TAILQ_FOREACH(tmp_team, &zappy->all_teams, next)
-    {
-        TAILQ_FOREACH(tmp_egg, &tmp_team->eggs_head, next)
-        {
+    TAILQ_FOREACH(tmp_team, &zappy->all_teams, next) {
+        TAILQ_FOREACH(tmp_egg, &tmp_team->eggs_head, next) {
             dprintf(zappy->actual_sockfd, "enw %d %d %d %d\n",
                 tmp_egg->egg_number, tmp_egg->client_number, tmp_egg->x,
                 tmp_egg->y);
-            dprintf(
-                zappy->actual_sockfd, "eht %d\n", tmp_egg->egg_number);
+            dprintf(zappy->actual_sockfd, "eht %d\n", tmp_egg->egg_number);
         }
     }
 }
@@ -62,7 +59,7 @@ static int graphic_client(zappy_server_t *zappy)
 // and command pnw don't have '#'
 static void send_info_ai_to_gui(zappy_server_t *zappy, client_t *client)
 {
-    for (int i = 3; i < FD_SETSIZE; i++) {
+    for (int i = 3; i < zappy->nb_connected_clients; i++) {
         if (zappy->clients[i].type == GUI) {
             dprintf(i, "pnw %d %d %d %d %d %s\n", client->client_number,
                 client->pos.x, client->pos.y, client->pos.direction,

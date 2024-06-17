@@ -9,7 +9,7 @@
 
 void ai_set_level(zappy_server_t *zappy, int id, int level)
 {
-    for (int i = 0; i < FD_SETSIZE; i += 1) {
+    for (int i = 3; i < zappy->nb_connected_clients; i += 1) {
         if (zappy->clients[i].client_number == id) {
             zappy->clients[i].level = level;
         }

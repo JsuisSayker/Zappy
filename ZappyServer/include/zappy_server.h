@@ -32,6 +32,7 @@ typedef struct zappy_server_s {
     int actual_sockfd;
     int index_eggs;
     int index_clients;
+    int nb_connected_clients;
     bool server_running;
     double time_refill_map;
     struct sockaddr_in server_addr;
@@ -196,6 +197,8 @@ void send_pdr_command_to_all_gui(zappy_server_t *zappy, client_t *client,
 void send_pie_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_pic_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_plv_command_to_all_gui(zappy_server_t *zappy, client_t *client);
+void send_enw_command_to_all_gui(zappy_server_t *zappy, egg_t *egg);
+void send_eht_command_to_all_gui(zappy_server_t *zappy, int egg_number);
 
 // GUI COMMANDS FUNCTIONS
 int handle_gui_command(zappy_server_t *zappy, char *command);
