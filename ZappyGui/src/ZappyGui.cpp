@@ -148,7 +148,7 @@ void ZappyGui::drawGui()
 ZappyGui::ZappyGui()
 {
     std::cout << "-----------------ZappyGui constructor-----------------"
-               << std::endl;
+              << std::endl;
     executablePath = getExecutablePath();
     globalPool = ZappyDescriptorPool::Builder(lveDevice)
                      .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
@@ -635,7 +635,7 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
 
 void ZappyGui::mct(std::vector<std::string> actualCommand)
 {
-    std::cout << "mct" << std::endl;
+    // std::cout << "mct" << std::endl;
 }
 
 void ZappyGui::tna(std::vector<std::string> actualCommand)
@@ -709,12 +709,36 @@ void ZappyGui::ppo(std::vector<std::string> actualCommand)
 
 void ZappyGui::plv(std::vector<std::string> actualCommand)
 {
-    std::cout << "plv" << std::endl;
+    if (actualCommand.size() != 3) {
+        std::cerr << "plv: invalid number of arguments" << std::endl;
+        return;
+    }
+
+    int playerNumber;
+    int level;
+    try {
+        playerNumber = std::stoi(actualCommand[1]);
+        level = std::stoi(actualCommand[2]);
+    } catch (const std::exception &e) {
+        return;
+    }
+    for (Trantorian &Trantorian : trantorians_) {
+        if (Trantorian.playerNumber == playerNumber) {
+            Trantorian.level = level;
+            for (auto &object : gameObjects) {
+                if (object.first == Trantorian.trantorianObject)
+                    object.second.transform.scale = {0.25f + 0.1f * level,
+                        0.25f + 0.1f * level, 0.25f + 0.1f * level};
+                object.second.transform.translation.y =
+                    -0.25f - (0.1f * level);
+            }
+        }
+    }
 }
 
 void ZappyGui::pin(std::vector<std::string> actualCommand)
 {
-    std::cout << "pin" << std::endl;
+    // std::cout << "pin" << std::endl;
 }
 
 void ZappyGui::sgt(std::vector<std::string> actualCommand)
@@ -731,17 +755,17 @@ void ZappyGui::sgt(std::vector<std::string> actualCommand)
 
 void ZappyGui::sst(std::vector<std::string> actualCommand)
 {
-    std::cout << "sst" << std::endl;
+    // std::cout << "  sst" << std::endl;
 }
 
 void ZappyGui::pex(std::vector<std::string> actualCommand)
 {
-    std::cout << "pex" << std::endl;
+    // std::cout << "pex" << std::endl;
 }
 
 void ZappyGui::pbc(std::vector<std::string> actualCommand)
 {
-    std::cout << "pbc" << std::endl;
+    // std::cout << "pbc" << std::endl;
 }
 
 void ZappyGui::pic(std::vector<std::string> actualCommand)
@@ -809,12 +833,12 @@ void ZappyGui::pfk(std::vector<std::string> actualCommand)
 
 void ZappyGui::pdr(std::vector<std::string> actualCommand)
 {
-    std::cout << "pdr" << std::endl;
+    // std::cout << "pdr" << std::endl;
 }
 
 void ZappyGui::pgt(std::vector<std::string> actualCommand)
 {
-    std::cout << "pgt" << std::endl;
+    // std::cout << "pgt" << std::endl;
 }
 
 void ZappyGui::pdi(std::vector<std::string> actualCommand)
@@ -831,6 +855,7 @@ void ZappyGui::pdi(std::vector<std::string> actualCommand)
 
 void ZappyGui::enw(std::vector<std::string> actualCommand)
 {
+    std::cout << "enw" << std::endl;
     if (actualCommand.size() != 5) {
         std::cerr << "enw: invalid number of arguments" << std::endl;
         return;
@@ -841,16 +866,18 @@ void ZappyGui::enw(std::vector<std::string> actualCommand)
     int x = std::stoi(actualCommand[2]);
     int y = std::stoi(actualCommand[3]);
 
-    this->addEgg(eggNumber, playerNumber, {static_cast<float>(x), 0.0f, static_cast<float>(y)});
+    this->addEgg(eggNumber, playerNumber,
+        {static_cast<float>(x), -0.15f, static_cast<float>(y)});
 }
 
 void ZappyGui::eht(std::vector<std::string> actualCommand)
 {
-    std::cout << "eht" << std::endl;
+    // std::cout << "eht" << std::endl;
 }
 
 void ZappyGui::ebo(std::vector<std::string> actualCommand)
 {
+    std::cout << "ebo" << std::endl;
     if (actualCommand.size() != 2) {
         std::cerr << "ebo: invalid number of arguments" << std::endl;
         return;
@@ -862,10 +889,12 @@ void ZappyGui::ebo(std::vector<std::string> actualCommand)
         if (i->eggNumber == eggNumber) {
             for (auto j = trantorians_.begin(); j != trantorians_.end(); j++) {
                 if (j->playerNumber == i->playerNumber) {
-                    this->addTrantorian(j->team, i->position, trantorians_.size() + 1, 0);
+                    this->addTrantorian(
+                        j->team, i->position, trantorians_.size() + 1, 0);
                     break;
                 }
             }
+            std::cout << "Egg hatched" << std::endl;
             removeGameObject(i->eggObjectId);
             eggs_.erase(i);
             return;
@@ -875,6 +904,7 @@ void ZappyGui::ebo(std::vector<std::string> actualCommand)
 
 void ZappyGui::edi(std::vector<std::string> actualCommand)
 {
+    std::cout << "edi" << std::endl;
     if (actualCommand.size() != 2) {
         std::cerr << "edi: invalid number of arguments" << std::endl;
         return;
@@ -884,6 +914,7 @@ void ZappyGui::edi(std::vector<std::string> actualCommand)
 
     for (auto i = eggs_.begin(); i != eggs_.end(); i++) {
         if (i->eggNumber == eggNumber) {
+            std::cout << "Egg " << eggNumber << " died" << std::endl;
             removeGameObject(i->eggObjectId);
             eggs_.erase(i);
             return;
@@ -897,7 +928,8 @@ void ZappyGui::welcome(std::vector<std::string> actualCommand)
     dprintf(this->client.get()->getSocketFd(), "GRAPHIC\n");
 }
 
-void ZappyGui::addTrantorian(const std::string &teamName, const glm::vec3 &position, int playerNumber, int orientation)
+void ZappyGui::addTrantorian(const std::string &teamName,
+    const glm::vec3 &position, int playerNumber, int orientation)
 {
     glm::vec3 rotation;
 
@@ -915,13 +947,16 @@ void ZappyGui::addTrantorian(const std::string &teamName, const glm::vec3 &posit
             executablePath + "/ZappyGui/textures/Slime.png", position,
             rotation, {0.25f, 0.25f, 0.25f}, true);
 
-    std::shared_ptr<ZappyGameObject> pointLight = std::make_shared<ZappyGameObject>(zappy::ZappyGameObject::makePointLight(0.2f));
+    std::shared_ptr<ZappyGameObject> pointLight =
+        std::make_shared<ZappyGameObject>(
+            zappy::ZappyGameObject::makePointLight(0.2f));
     pointLight->color = this->teamsColors_[teamName];
     pointLight.get()->transform.translation = position;
     pointLight.get()->transform.translation.y -= 1.0f;
     gameObjects.emplace(pointLight->getId(), std::move(*pointLight));
 
-    Trantorian newTrantorian(ObjectId, pointLight->getId(), teamName, playerNumber);
+    Trantorian newTrantorian(
+        ObjectId, pointLight->getId(), teamName, playerNumber);
 
     this->trantorians_.emplace_back(newTrantorian);
 }
@@ -972,13 +1007,18 @@ void ZappyGui::eggLayingPose(int playerNumber)
     std::cout << "Egg laying pose" << std::endl;
 }
 
-void ZappyGui::addEgg(int eggNumber, int playerNumber, const glm::vec3 &position)
+void ZappyGui::addEgg(
+    int eggNumber, int playerNumber, const glm::vec3 &position)
 {
-    ZappyGameObject::id_t EggId = createGameObject(executablePath + "/ZappyGui/models/cube.obj", executablePath + "/ZappyGui/textures/egg.png",
-                                                    position, {0.f, 0.f, 0.f}, {0.15f, 0.15f, 0.15f}, true);
+    ZappyGameObject::id_t EggId =
+        createGameObject(executablePath + "/ZappyGui/models/cube.obj",
+            executablePath + "/ZappyGui/textures/egg.png", position,
+            {0.f, 0.f, 0.f}, {0.15f, 0.15f, 0.15f}, true);
     Egg newEgg(EggId, eggNumber, playerNumber, position);
     this->eggs_.emplace_back(newEgg);
 }
+
+static float degreeToRadiant(float degree) { return degree * M_PI / 180; }
 
 void ZappyGui::createMap(int width, int height)
 {
@@ -989,6 +1029,76 @@ void ZappyGui::createMap(int width, int height)
                 executablePath + "/ZappyGui/textures/Grass_Block.png",
                 {i, 0.f, j}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
         }
+    }
+    for (float i = 0.f; i < width; i++) {
+        createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
+            executablePath + "/ZappyGui/textures/Obsidian.png",
+            {i, -3.f, -1.f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
+        createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
+            executablePath + "/ZappyGui/textures/Obsidian.png", {i, 0.f, -1.f},
+            {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
+        createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
+            executablePath + "/ZappyGui/textures/Obsidian.png",
+            {i, 0.f, height}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
+        createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
+            executablePath + "/ZappyGui/textures/Obsidian.png",
+            {i, -3.f, height}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
+        createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+            executablePath + "/ZappyGui/textures/Portal.png", {i, -1.5f, -1.f},
+            {degreeToRadiant(90), 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
+        createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+            executablePath + "/ZappyGui/textures/Portal.png", {i, -0.5f, -1.f},
+            {degreeToRadiant(90), 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
+        createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+            executablePath + "/ZappyGui/textures/Portal.png",
+            {i, -1.5f, height}, {degreeToRadiant(90), 0.f, 0.f},
+            {1.f, 1.f, 1.f}, true);
+        createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+            executablePath + "/ZappyGui/textures/Portal.png",
+            {i, -0.5f, height}, {degreeToRadiant(90), 0.f, 0.f},
+            {1.f, 1.f, 1.f}, true);
+    }
+    for (float i = 0.f; i < height; i++) {
+        createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
+            executablePath + "/ZappyGui/textures/Obsidian.png", {-1.f, 0.f, i},
+            {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
+        createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
+            executablePath + "/ZappyGui/textures/Obsidian.png",
+            {-1.f, -3.f, i}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
+        createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
+            executablePath + "/ZappyGui/textures/Obsidian.png",
+            {width, 0.f, i}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
+        createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
+            executablePath + "/ZappyGui/textures/Obsidian.png",
+            {width, -3.f, i}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
+        createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+            executablePath + "/ZappyGui/textures/Portal.png", {-1.f, -1.5f, i},
+            {0.f, 0.f, degreeToRadiant(90)}, {1.f, 1.f, 1.f}, true);
+        createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+            executablePath + "/ZappyGui/textures/Portal.png", {-1.f, -0.5f, i},
+            {0.f, 0.f, degreeToRadiant(90)}, {1.f, 1.f, 1.f}, true);
+        createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+            executablePath + "/ZappyGui/textures/Portal.png",
+            {width, -1.5f, i}, {0.f, 0.f, degreeToRadiant(90)},
+            {1.f, 1.f, 1.f}, true);
+        createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+            executablePath + "/ZappyGui/textures/Portal.png",
+            {width, -0.5f, i}, {0.f, 0.f, degreeToRadiant(90)},
+            {1.f, 1.f, 1.f}, true);
+    }
+    for (float i = 0.f; i > -4.f; i--) {
+        createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
+            executablePath + "/ZappyGui/textures/Obsidian.png",
+            {-1.f, i, -1.f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
+        createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
+            executablePath + "/ZappyGui/textures/Obsidian.png",
+            {-1.f, i, height}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
+        createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
+            executablePath + "/ZappyGui/textures/Obsidian.png",
+            {width, i, -1.f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
+        createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
+            executablePath + "/ZappyGui/textures/Obsidian.png",
+            {width, i, height}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
     }
 }
 
