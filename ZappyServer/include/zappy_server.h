@@ -91,8 +91,10 @@ void refill_map_tile(zappy_server_t *zappy, map_tile_t **destination,
 // Linked list functions
 void free_threads(struct threadhead *head);
 void free_teams(struct teamhead *head);
+void free_node(message_t *node);
+int remove_first_node(message_t *list);
 
-// Tools functions
+//  TOOLS FUNCTION
 bool is_valid_resource(char *resource);
 void free_array(char **array);
 void set_inventory_resource_quantite(inventory_t *tile_inventory,
@@ -100,6 +102,13 @@ void set_inventory_resource_quantite(inventory_t *tile_inventory,
 void normalize_coordinate(int *x, int *y, zappy_server_t *zappy);
 void free_string(char **str);
 void realloc_and_strcat(char **message, char *str);
+
+// node
+void free_node(message_t *node);
+void free_list(message_t *list);
+int remove_first_node(message_t *list);
+message_t *create_node(char *cmd, ai_position_t pos);
+message_t *add_node_in_list(message_t *list, char *cmd, ai_position_t pos);
 
 // Server functions
 int init_server(zappy_server_t *zappy, args_config_t *args);
@@ -169,6 +178,8 @@ int ai_initialisation(zappy_server_t *zappy, client_t *ia,
 void send_gui_map_content(map_tile_t **map, int x, int y, int socket);
 
 // AI COMMANDS FUNCTIONS
+int ai_command_breedcast(zappy_server_t *zappy, client_t *client,
+    char *cmd);
 int ai_command_set(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_forward(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_right(zappy_server_t *zappy, client_t *client, char *cmd);
@@ -181,6 +192,9 @@ int ai_command_connect_nbr(zappy_server_t *zappy, client_t *client,
     char *cmd);
 int ai_command_incantation(zappy_server_t *zappy, client_t *client, char *cmd);
 bool is_alive(zappy_server_t *zappy, client_t *client);
+
+int read_message_recieve(zappy_server_t *zappy, client_t *client,
+    int actual_socket);
 
 void send_ppo_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_pin_command_to_all_gui(zappy_server_t *zappy, client_t *client);
