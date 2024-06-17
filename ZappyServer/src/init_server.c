@@ -50,6 +50,7 @@ static void init_value(zappy_server_t *zappy)
     zappy->index_eggs = 0;
     zappy->index_clients = 0;
     zappy->server_running = true;
+    zappy->server_start_game = true;
     zappy->time_refill_map = time(NULL);
     zappy->nb_connected_clients = 5;
     init_list(zappy);

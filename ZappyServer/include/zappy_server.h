@@ -33,6 +33,7 @@ typedef struct zappy_server_s {
     int index_eggs;
     int index_clients;
     int nb_connected_clients;
+    bool server_start_game;
     bool server_running;
     double time_refill_map;
     struct sockaddr_in server_addr;
@@ -156,6 +157,8 @@ void server_command_set_level(zappy_server_t *zappy, char *command);
 void server_command_send_guis(zappy_server_t *zappy, char *command);
 void server_command_kill(zappy_server_t *zappy, char *command);
 void server_command_fork(zappy_server_t *zappy, char *command);
+void server_command_start(zappy_server_t *zappy, char *command);
+void server_command_pause(zappy_server_t *zappy, char *command);
 
 // AI FUNCTIONS
 
