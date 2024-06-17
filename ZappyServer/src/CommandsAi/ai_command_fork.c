@@ -7,14 +7,36 @@
 
 #include <zappy_server.h>
 
+void add_egg(zappy_server_t *zappy, client_t *client, team_t *team)
+{
+    egg_t *new_egg = calloc(sizeof(egg_t), 1);
+
+    if (new_egg == NULL)
+        return;
+    new_egg->egg_number = zappy->index_eggs;
+    new_egg->client_number = -1;
+    new_egg->x = client->pos.x;
+    new_egg->y = client->pos.y;
+    TAILQ_INSERT_TAIL(&(team->eggs_head), new_egg, next);
+    zappy->index_eggs += 1;
+    team->nb_matures_eggs += 1;
+    return;
+}
+
 int ai_command_fork(zappy_server_t *zappy, client_t *client, char *cmd)
 {
+    team_t *team = NULL;
+
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
     if (cast_action(zappy, client, 42, cmd) == ERROR)
         return ERROR;
     if (check_action(zappy, client) == false)
         return OK;
+    TAILQ_FOREACH(team, &zappy->all_teams, next) {
+        if (strcmp(team->name, client->team_name) == 0)
+            add_egg(zappy, client, team);
+    }
     send_pfk_command_to_all_gui(zappy, client);
     dprintf(zappy->actual_sockfd, "ok\n");
     return OK;

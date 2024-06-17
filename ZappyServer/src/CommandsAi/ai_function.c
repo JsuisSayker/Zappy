@@ -18,6 +18,7 @@ bool can_i_eat(zappy_server_t *zappy, client_t *client)
     gettimeofday(&tv, NULL);
     client->health.last_meal = tv.tv_sec + tv.tv_usec / 1000000.0;
     client->inventory.food -= 1;
+    send_pin_command_to_all_gui(zappy, client);
     return true;
 }
 
@@ -28,15 +29,14 @@ bool is_alive(zappy_server_t *zappy, client_t *client)
 
     if (zappy == NULL || client == NULL)
         return false;
-    if (client->health.is_alive == false)
-        return false;
     gettimeofday(&tv, NULL);
     current_time = tv.tv_sec + tv.tv_usec / 1000000.0;
     if (current_time - client->health.last_meal > client->health.time_to_eat) {
         if (can_i_eat(zappy, client) == false){
-            client->health.is_alive = false;
             dprintf(zappy->actual_sockfd, "dead\n");
             send_pdi_command_to_all_gui(zappy, client);
+            FD_CLR(zappy->actual_sockfd, &zappy->fd.save_input);
+            client->type = UNKNOWN;
             return false;
         }
     }

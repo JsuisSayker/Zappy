@@ -9,7 +9,6 @@
 
 void send_inventory(inventory_t *inventory, int socket)
 {
-    printf("send_inventory\n");
     dprintf(socket,
         "[food %d, linemate %d, deraumere %d, sibur %d, mendiane %d, phiras "
         "%d, thystame %d]\n",
