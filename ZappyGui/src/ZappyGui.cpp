@@ -752,12 +752,53 @@ void ZappyGui::pbc(std::vector<std::string> actualCommand)
 
 void ZappyGui::pic(std::vector<std::string> actualCommand)
 {
-    std::cout << "pic" << std::endl;
+    if (actualCommand.size() < 4) {
+        std::cerr << "pic: invalid number of arguments" << std::endl;
+        return;
+    }
+    int x;
+    int y;
+    std::vector<int> playerNumbers;
+    try {
+        x = std::stoi(actualCommand[1]);
+        y = std::stoi(actualCommand[2]);
+        for (int i = 3; i < actualCommand.size(); i++) {
+            playerNumbers.push_back(std::stoi(actualCommand[i]));
+        }
+    } catch (const std::exception &e) {
+        return;
+    }   
+    for (Trantorian &Trantorian : trantorians_) {
+        if (Trantorian.playerNumber = playerNumbers[0])
+            Trantorian.incatationInProgess = true;
+    }
 }
 
 void ZappyGui::pie(std::vector<std::string> actualCommand)
 {
-    std::cout << "pie" << std::endl;
+    if (actualCommand.size() != 4) {
+        std::cerr << "pie: invalid number of arguments" << std::endl;
+        return;
+    }
+    int x;
+    int y;
+    int result;
+    try {
+        x = std::stoi(actualCommand[1]);
+        y = std::stoi(actualCommand[2]);
+        result = std::stoi(actualCommand[3]);
+    } catch (const std::exception &e) {
+        return;
+    }
+    for (auto &object : gameObjects) {
+        if (object.second.transform.translation.x == x &&
+            object.second.transform.translation.z == y) {
+            for (Trantorian &Trantorian : trantorians_) {
+                if (Trantorian.trantorianObject == object.first)
+                    Trantorian.incatationInProgess = false;
+            }
+        }
+    }
 }
 
 void ZappyGui::pfk(std::vector<std::string> actualCommand)
