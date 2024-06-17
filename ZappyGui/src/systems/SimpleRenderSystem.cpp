@@ -52,16 +52,17 @@ void SimpleRenderSystem::createPipelineLayout(
 
     std::vector<VkDescriptorSetLayout> descriptorSetLayouts{globalSetLayout};
 
-  VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-  pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-  pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
-  pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
-  pipelineLayoutInfo.pushConstantRangeCount = 1;
-  pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
-  if (vkCreatePipelineLayout(lveDevice.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) !=
-      VK_SUCCESS) {
-    throw zappy::PipelineLayoutCreationFailedException();
-  }
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    pipelineLayoutInfo.setLayoutCount =
+        static_cast<uint32_t>(descriptorSetLayouts.size());
+    pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
+    pipelineLayoutInfo.pushConstantRangeCount = 1;
+    pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
+    if (vkCreatePipelineLayout(lveDevice.device(), &pipelineLayoutInfo,
+            nullptr, &pipelineLayout) != VK_SUCCESS) {
+        throw zappy::PipelineLayoutCreationFailedException();
+    }
 }
 
 void SimpleRenderSystem::createPipeline(VkRenderPass renderPass)
@@ -92,7 +93,9 @@ void SimpleRenderSystem::renderGameObjects(FrameInfo &frameInfo)
         if (obj.hasDescriptorSet) {
             vkCmdBindDescriptorSets(frameInfo.commandBuffer,
                 VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1,
-                &frameInfo.textureObjects[obj.indexDescriptorSet].first[frameIndex], 0, nullptr);
+                &frameInfo.textureObjects[obj.indexDescriptorSet]
+                     .first[frameIndex],
+                0, nullptr);
         } else {
             vkCmdBindDescriptorSets(frameInfo.commandBuffer,
                 VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1,
