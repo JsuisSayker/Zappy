@@ -122,16 +122,11 @@ void ZappyGui::drawHud()
         ImGui::Separator();
 
         glm::vec3 glmColor1 = this->teamsColors_[current_team] / 255.0f;
-
         float *color = glm::value_ptr(glmColor1);
 
         if (ImGui::ColorEdit3("Color", color)) {
             glmColor1 = glm::vec3(color[0], color[1], color[2]);
             this->teamsColors_[current_team] = glmColor1 * 255.0f;
-
-            std::cout << "Color: " << this->teamsColors_[current_team].r << " "
-                      << this->teamsColors_[current_team].g << " "
-                      << this->teamsColors_[current_team].b << std::endl;
         }
     }
 
