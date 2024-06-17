@@ -5,7 +5,7 @@
 ** ai_command_breedcast
 */
 
-#include <zappy_server.h>
+#include "zappy_server.h"
 
 static int spreads_breedcast(zappy_server_t *zappy, client_t *client,
     char *message)
