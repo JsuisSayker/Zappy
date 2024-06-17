@@ -51,12 +51,14 @@ void ZappyGui::initImGui()
     init_info.Instance = this->lveDevice.getInstance();
     init_info.PhysicalDevice = this->lveDevice.getPhysicalDevice();
     init_info.Device = this->lveDevice.device();
-    init_info.QueueFamily = this->lveDevice.findQueueFamilies(this->lveDevice.getPhysicalDevice()).graphicsFamily;
+    init_info.QueueFamily =
+        this->lveDevice.findQueueFamilies(this->lveDevice.getPhysicalDevice())
+            .graphicsFamily;
     init_info.Queue = this->lveDevice.graphicsQueue();
     init_info.PipelineCache = VK_NULL_HANDLE;
     init_info.DescriptorPool = this->globalPool.get()->descriptorPool;
     init_info.Subpass = 0;
-    init_info.MinImageCount =  ZappySwapChain::MAX_FRAMES_IN_FLIGHT + 1;
+    init_info.MinImageCount = ZappySwapChain::MAX_FRAMES_IN_FLIGHT + 1;
     init_info.ImageCount = ZappySwapChain::MAX_FRAMES_IN_FLIGHT + 1;
     init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
     init_info.Allocator = nullptr;
@@ -78,9 +80,65 @@ void ZappyGui::drawGui()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    // Render ImGui widgets
+    // Render ImGui fps in top left corner
+    ImGui::SetNextWindowPos(ImVec2(10, 10));
+    ImGui::SetNextWindowSize(ImVec2(0, 0));
+    ImGui::Begin("FPS", nullptr,
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+    ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+    ImGui::End();
 
-    ImGui::ShowDemoWindow();
+    // Render ImGui time unit in top right corner
+    ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 150, 10));
+    ImGui::SetNextWindowSize(ImVec2(0, 0));
+    ImGui::Begin("Time Unit", nullptr,
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+    ImGui::Text("Time Unit: %d", this->_timeUnit);
+    ImGui::End();
+
+    // Render ImGui wrap menu with teams colors in left side
+    // When click on a team, display all the trantorians of this team using
+    // e.g.Button()
+    ImGui::SetNextWindowPos(ImVec2(10, 40));
+    ImGui::SetNextWindowSize(ImVec2(150, ImGui::GetIO().DisplaySize.y - 50));
+    ImGui::Begin("Teams", nullptr,
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+    for (auto &i : this->teamsColors_) {
+        if (ImGui::Button(i.first.c_str())) {
+            for (auto &j : this->trantorians_) {
+                if (j.team == i.first) {
+                    // New window with all the trantorians of this team
+                    ImGui::Begin(j.team.c_str());
+                    ImGui::Text("Trantorian %d", j.playerNumber);
+                    ImGui::End();
+                }
+            }
+        }
+    }
+    ImGui::End();
+
+    // Render a chat window in the bottom right corner
+
+    std::vector<std::string> chatMessages = {"Hello", "World", "!", "How",
+        "are", "you", "?", "I'm", "fine", "thanks", "for", "asking", "!", "I",
+        "hope", "you", "are", "too", "!", "Goodbye", "!", "See", "you", "soon",
+        "!", "Bye", "!"};
+
+    ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300,
+        ImGui::GetIO().DisplaySize.y - 200));
+    ImGui::SetNextWindowSize(ImVec2(300, 200));
+    ImGui::Begin("Chat", nullptr,
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+    ImGui::Text("Chat");
+    ImGui::Separator();
+    for (auto &i : chatMessages) {
+        ImGui::Text(i.c_str());
+    }
+    ImGui::End();
 
     // Rendering ImGui
     ImGui::Render();
@@ -96,7 +154,7 @@ ZappyGui::ZappyGui()
                      .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                          ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
                      .build();
-    loadGameObjects();
+    // loadGameObjects();
     this->client = std::make_shared<Client>();
     this->map_ = std::make_unique<Map>();
     this->_pointerToFunction["msz"] =
@@ -272,14 +330,13 @@ void ZappyGui::run()
             // render
             lveRenderer.beginSwapChainRenderPass(commandBuffer);
 
-
-
             // order here matters
             simpleRenderSystem.renderGameObjects(frameInfo);
             pointLightSystem.render(frameInfo);
 
             this->drawGui();
-            ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer);
+            ImGui_ImplVulkan_RenderDrawData(
+                ImGui::GetDrawData(), commandBuffer);
 
             lveRenderer.endSwapChainRenderPass(commandBuffer);
             lveRenderer.endFrame();
@@ -630,7 +687,7 @@ void ZappyGui::pnw(std::vector<std::string> actualCommand)
     }
 
     this->addTrantorian(teamName,
-        {static_cast<float>(x), 0.0f, static_cast<float>(y)}, trantorianId,
+        {static_cast<float>(x), -.25f, static_cast<float>(y)}, trantorianId,
         orientation);
 }
 
@@ -653,7 +710,7 @@ void ZappyGui::ppo(std::vector<std::string> actualCommand)
         return;
     }
     this->updateTrantorianPosition(playerNumber,
-        {static_cast<float>(x), 0.0f, static_cast<float>(y)}, orientation);
+        {static_cast<float>(x), 0.f, static_cast<float>(y)}, orientation);
 }
 
 void ZappyGui::plv(std::vector<std::string> actualCommand)
@@ -695,12 +752,53 @@ void ZappyGui::pbc(std::vector<std::string> actualCommand)
 
 void ZappyGui::pic(std::vector<std::string> actualCommand)
 {
-    std::cout << "pic" << std::endl;
+    if (actualCommand.size() < 4) {
+        std::cerr << "pic: invalid number of arguments" << std::endl;
+        return;
+    }
+    int x;
+    int y;
+    std::vector<int> playerNumbers;
+    try {
+        x = std::stoi(actualCommand[1]);
+        y = std::stoi(actualCommand[2]);
+        for (int i = 3; i < actualCommand.size(); i++) {
+            playerNumbers.push_back(std::stoi(actualCommand[i]));
+        }
+    } catch (const std::exception &e) {
+        return;
+    }   
+    for (Trantorian &Trantorian : trantorians_) {
+        if (Trantorian.playerNumber = playerNumbers[0])
+            Trantorian.incatationInProgess = true;
+    }
 }
 
 void ZappyGui::pie(std::vector<std::string> actualCommand)
 {
-    std::cout << "pie" << std::endl;
+    if (actualCommand.size() != 4) {
+        std::cerr << "pie: invalid number of arguments" << std::endl;
+        return;
+    }
+    int x;
+    int y;
+    int result;
+    try {
+        x = std::stoi(actualCommand[1]);
+        y = std::stoi(actualCommand[2]);
+        result = std::stoi(actualCommand[3]);
+    } catch (const std::exception &e) {
+        return;
+    }
+    for (auto &object : gameObjects) {
+        if (object.second.transform.translation.x == x &&
+            object.second.transform.translation.z == y) {
+            for (Trantorian &Trantorian : trantorians_) {
+                if (Trantorian.trantorianObject == object.first)
+                    Trantorian.incatationInProgess = false;
+            }
+        }
+    }
 }
 
 void ZappyGui::pfk(std::vector<std::string> actualCommand)
@@ -768,9 +866,9 @@ void ZappyGui::addTrantorian(const std::string &teamName,
         rotation = {0.f, -1.57f, 0.f};
 
     ZappyGameObject::id_t ObjectId =
-        createGameObject(executablePath + "/ZappyGui/models/smooth_vase.obj",
-            executablePath + "/ZappyGui/textures/Steve.png", position,
-            rotation, {2.f, 2.f, 2.f}, false);
+        createGameObject(executablePath + "/ZappyGui/models/Slime.obj",
+            executablePath + "/ZappyGui/textures/Slime.png", position,
+            rotation, {0.25f, 0.25f, 0.25f}, true);
 
     std::shared_ptr<ZappyGameObject> pointLight =
         std::make_shared<ZappyGameObject>(
@@ -810,6 +908,7 @@ void ZappyGui::updateTrantorianPosition(
                 }
                 if (object.first == trantorian.trantorianObject) {
                     object.second.transform.translation = position;
+                    object.second.transform.translation.y = object.second.transform.scale.y * -1;
                     if (orientation == 1)
                         object.second.transform.rotation = {0.f, 0.f, 0.f};
                     else if (orientation == 2)

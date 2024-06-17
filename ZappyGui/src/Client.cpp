@@ -113,7 +113,8 @@ void zappy::Client::receiveFromServer()
                 if (command.size() == 0)
                     skiped = true;
                 if (command[0] == "bct" && this->map.getMap().size() != 0) {
-                    std::vector<std::vector<resources>> map = this->map.getMap();
+                    std::vector<std::vector<resources>> map =
+                        this->map.getMap();
                     if (command.size() != 10)
                         skiped = true;
                     int x;
@@ -140,16 +141,27 @@ void zappy::Client::receiveFromServer()
                         continue;
                     }
 
-                    if (map[x][y].food.size() == food && map[x][y].linemate.size() == linemate && map[x][y].deraumere.size() == deraumere && map[x][y].sibur.size() == sibur && map[x][y].mendiane.size() == mendiane && map[x][y].phiras.size() == phiras && map[x][y].thystame.size() == thystame) {
+                    if (map[x][y].food.size() == food &&
+                        map[x][y].linemate.size() == linemate &&
+                        map[x][y].deraumere.size() == deraumere &&
+                        map[x][y].sibur.size() == sibur &&
+                        map[x][y].mendiane.size() == mendiane &&
+                        map[x][y].phiras.size() == phiras &&
+                        map[x][y].thystame.size() == thystame) {
                         skiped = true;
                     }
                 }
-                if (skiped == false) {
+                if (skiped == false)
                     this->pushToQueue(command);
-                    this->_buffer.clear();
-                }
                 skiped = false;
             }
+            int PosLastEndline = this->_buffer.find_last_of(END_STR);
+            if (PosLastEndline != std::string::npos &&
+                PosLastEndline + 1 < this->_buffer.size())
+
+                this->_buffer = this->_buffer.substr(PosLastEndline + 1);
+            else
+                this->_buffer.clear();
         }
     }
 }
