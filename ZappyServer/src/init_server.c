@@ -57,7 +57,7 @@ static void init_value(zappy_server_t *zappy)
     zappy->map_tile = setup_map_tile(zappy->args->width,
         zappy->args->height);
     zappy->map_tile_save = copy_map_tile(zappy->map_tile);
-    for (int i = 0; i < FD_SETSIZE; i += 1) {
+    for (int i = 0; i < zappy->nb_connected_clients; i += 1) {
         zappy->clients[i].type = UNKNOWN;
         zappy->clients[i].client_number = -1;
         zappy->clients[i].team_name = NULL;

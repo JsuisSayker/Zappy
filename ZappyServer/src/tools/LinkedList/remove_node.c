@@ -5,7 +5,7 @@
 ** remove_node
 */
 
-#include "server_struct.h"
+#include "zappy_server.h"
 
 int remove_first_node(message_t *list)
 {

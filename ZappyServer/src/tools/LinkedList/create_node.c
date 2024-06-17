@@ -16,7 +16,7 @@ message_t *create_node(char *cmd, ai_position_t pos)
 
     if (!new_node)
         return NULL;
-    my_strcpy(cmd, &(new_node)->message);
+    new_node->message = strdup(cmd);
     new_node->pos.x = pos.x;
     new_node->pos.y = pos.y;
     new_node->next = NULL;

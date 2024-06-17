@@ -40,6 +40,10 @@ TOOLS		=	splitter.c							\
 				normalize_coordonate.c				\
 				free_string.c						\
 				realloc_and_strcat.c				\
+				LinkedList/add_node.c				\
+				LinkedList/free_list.c				\
+				LinkedList/create_node.c			\
+				LinkedList/remove_node.c			\
 
 COMMAND_AI		=	handle_ai_command.c				\
 					ai_function.c					\
@@ -55,6 +59,8 @@ COMMAND_AI		=	handle_ai_command.c				\
 					ai_command_connect_nbr.c		\
 					ai_command_set.c				\
 					ai_command_incantation.c		\
+					ai_command_breedcast.c			\
+					ai_receive_breedcast.c			\
 					send_ppo_command_to_all_gui.c	\
 					send_pin_command_to_all_gui.c	\
 					send_pdi_command_to_all_gui.c	\
