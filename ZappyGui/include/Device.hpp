@@ -86,6 +86,10 @@ class ZappyDevice {
 
     VkPhysicalDeviceProperties properties;
 
+    VkInstance getInstance() { return instance; }
+
+    QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+
   private:
     void createInstance();
     void setupDebugMessenger();
@@ -98,7 +102,6 @@ class ZappyDevice {
     bool isDeviceSuitable(VkPhysicalDevice device);
     std::vector<const char *> getRequiredExtensions();
     bool checkValidationLayerSupport();
-    QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
     void populateDebugMessengerCreateInfo(
         VkDebugUtilsMessengerCreateInfoEXT &createInfo);
     void hasGflwRequiredInstanceExtensions();
