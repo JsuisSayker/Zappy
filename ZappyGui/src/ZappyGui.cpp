@@ -974,7 +974,8 @@ void ZappyGui::eggLayingPose(int playerNumber)
 
 void ZappyGui::addEgg(int eggNumber, int playerNumber, const glm::vec3 &position)
 {
-    ZappyGameObject::id_t EggId = createGameObject(executablePath + "/ZappyGui/models/cube.obj", executablePath + "/ZappyGui/textures/meme.png", position, {0.f, 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+    ZappyGameObject::id_t EggId = createGameObject(executablePath + "/ZappyGui/models/cube.obj", executablePath + "/ZappyGui/textures/egg.png",
+                                                    position, {0.f, 0.f, 0.f}, {0.15f, 0.15f, 0.15f}, true);
     Egg newEgg(EggId, eggNumber, playerNumber, position);
     this->eggs_.emplace_back(newEgg);
 }
