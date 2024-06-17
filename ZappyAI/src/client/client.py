@@ -1,6 +1,7 @@
 import socket
 import selectors
 import subprocess
+
 from ZappyAI.src.ai.ai import AI
 import select
 import errno
@@ -87,12 +88,23 @@ class Client():
             # self.data_height = height
             self.ai.heightValue = height
             self.ai.widthValue = width
-            self.ai.minWidthValue = self.ai.widthValue // 2
-            self.ai.minHeightValue = self.ai.heightValue // 2
+            # self.ai.minWidthValue = self.ai.widthValue // 2
+            # self.ai.minHeightValue = self.ai.heightValue // 2
             self.ai.dataToSend = ""
             self.actualStep = 3
             self.logged = True
             self.ai.run = True
+
+    def store_previous_data(self, data, filename="previous_data.txt"):
+        with open(filename, 'w') as file:
+            file.write(data)
+
+    def load_previous_data(self, filename="previous_data.txt") -> str:
+        try:
+            with open(filename, 'r') as file:
+                return file.read()
+        except FileNotFoundError:
+            return ""
 
     def forkingProcess(self):
         newClientId = int(self.clientId) + 1
@@ -121,11 +133,14 @@ class Client():
                             exit(0)
                         print(f"DATA: {data}")
                         print(f"self.ai.dataToSend: {self.ai.dataToSend}")
-                        if not data or data == "":
+
+                        if not data:
                             print("closing the connection")
                             self.closeConnection()
                         tmpReceivedData = data.split("\n")
                         print(f"tmpReceivedData: {tmpReceivedData[:-1]}")
+                        previousData = self.load_previous_data()
+                        print(f"MINE PREVIOUS DATA: {previousData}")
                         for element in tmpReceivedData[:-1]:
                             print(f"element: {element}")
                             if "WELCOME" in element and self.logged is False:
@@ -144,7 +159,7 @@ class Client():
                                     in element:
                                 self.ai.updateSharedInventory()
                                 self.ai.newRessource = True
-                            elif "Inventory" in self.ai.dataToSend:
+                            elif "Inventory" in previousData and "Inventory" in self.ai.dataToSend:
                                 try:
                                     self.ai.parse_inventory(element)
                                 except IndexError:
@@ -179,18 +194,23 @@ class Client():
 
                     if mask & selectors.EVENT_WRITE:
                         if self.logged and self.ai.run is True:
+                            self.store_previous_data(self.ai.dataToSend)
                             self.ai.algorithm()
                         if self.ai.dataToSend and self.ai.run is True:
                             if self.ai.dataToSend == (
                                     self.teamName + '\n'
                             ) and self.logged is False:
                                 self.actualStep = 1
-                            print(f"SENDING THIS : {self.ai.dataToSend}")
                             self.socket.send(self.ai.dataToSend.encode())
                             self.ai.run = False
+
         except KeyboardInterrupt:
             print("Closing connection...")
             self.socket.close()
+        except ConnectionResetError:
+            print("Connection reset by peer")
+            self.closeConnection()
+            exit(0)
 
     def closeConnection(self):
         fd = self.socket.fileno()
