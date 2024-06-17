@@ -150,20 +150,35 @@ void ZappyGui::drawHud()
         // Display trantorian informations
         for (auto &trantorian : this->trantorians_) {
             if (trantorian.playerNumber == this->selectedPlayerNbr) {
-                ImGui::Button("View Camera");
-                ImGui::Text("Player number: %d", trantorian.playerNumber);
-                ImGui::Text("Level: %d", trantorian.level);
-                ImGui::Text("Team: %s", trantorian.team.c_str());
-                ImGui::Separator();
-                ImGui::Text("Inventory:");
-                ImGui::Text("Food: %d", trantorian.inventory.food);
-                ImGui::Text("Linemate: %d", trantorian.inventory.linemate);
-                ImGui::Text("Deraumere: %d", trantorian.inventory.deraumere);
-                ImGui::Text("Sibur: %d", trantorian.inventory.sibur);
-                ImGui::Text("Mendiane: %d", trantorian.inventory.mendiane);
-                ImGui::Text("Phiras: %d", trantorian.inventory.phiras);
-                ImGui::Text("Thystame: %d", trantorian.inventory.thystame);
-                ImGui::Separator();
+                if (trantorian.playerNumber == this->selectedPlayerNbr) {
+                    if (ImGui::BeginTabBar("Player Info")) {
+                        if (ImGui::BeginTabItem("General")) {
+                            ImGui::Text(
+                                "Player number: %d", trantorian.playerNumber);
+                            ImGui::Text("Level: %d", trantorian.level);
+                            ImGui::Text("Team: %s", trantorian.team.c_str());
+                            ImGui::EndTabItem();
+                        }
+                        if (ImGui::BeginTabItem("Inventory")) {
+                            ImGui::Text("Food: %d", trantorian.inventory.food);
+                            ImGui::Text(
+                                "Linemate: %d", trantorian.inventory.linemate);
+                            ImGui::Text("Deraumere: %d",
+                                trantorian.inventory.deraumere);
+                            ImGui::Text(
+                                "Sibur: %d", trantorian.inventory.sibur);
+                            ImGui::Text(
+                                "Mendiane: %d", trantorian.inventory.mendiane);
+                            ImGui::Text(
+                                "Phiras: %d", trantorian.inventory.phiras);
+                            ImGui::Text(
+                                "Thystame: %d", trantorian.inventory.thystame);
+                            ImGui::EndTabItem();
+                        }
+                        ImGui::EndTabBar();
+                    }
+                    ImGui::Separator();
+                }
             }
         }
         ImGui::End();
