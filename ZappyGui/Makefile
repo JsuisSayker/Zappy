@@ -7,7 +7,7 @@
 
 include .env
 
-CFLAGS = -std=c++17 -I./include -I./include/systems -I$(TINYOBJ_PATH) -I$(STBIMAGE_PATH)
+CFLAGS = -std=c++17 -I./include -I./include/systems -I$(TINYOBJ_PATH) -I$(STBIMAGE_PATH) -I./imgui/
 LDFLAGS = `pkg-config --static --libs glfw3` -lvulkan
 
 # create list of all spv files and set as dependency
@@ -20,7 +20,7 @@ TARGET = ../zappy_gui
 
 $(TARGET): $(vertObjFiles) $(fragObjFiles)
 $(TARGET): src/*.cpp
-	g++ $(CFLAGS) -o $(TARGET) src/*.cpp src/systems/*.cpp $(LDFLAGS)
+	g++ $(CFLAGS) -o $(TARGET) src/*.cpp src/systems/*.cpp $(LDFLAGS) imgui/*.cpp imgui/backends/*.cpp
 
 all: $(TARGET)
 
@@ -40,6 +40,6 @@ fclean: clean
 re: fclean $(TARGET)
 
 debug: $(vertObjFiles) $(fragObjFiles)
-	g++ $(CFLAGS) -o $(TARGET) src/*.cpp src/systems/*.cpp $(LDFLAGS) -ggdb3
+	g++ $(CFLAGS) -o $(TARGET) src/*.cpp src/systems/*.cpp $(LDFLAGS) imgui/*.cpp imgui/backends/*.cpp -ggdb3
 
 .PHONY: test clean fclean re debug

@@ -51,6 +51,8 @@ class ZappyRenderer {
     void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
     void endSwapChainRenderPass(VkCommandBuffer commandBuffer);
 
+    std::unique_ptr<ZappySwapChain> &getSwapChain() { return lveSwapChain; }
+
   private:
     void createCommandBuffers();
     void freeCommandBuffers();
