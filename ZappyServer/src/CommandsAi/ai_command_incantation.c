@@ -101,7 +101,7 @@ static int complet_incantation(zappy_server_t *zappy, client_t *client,
     if (remove_ressource(tile_inventory, lvl) == ERROR)
         return ERROR;
     for (int i = 3; i < zappy->nb_connected_clients; i++) {
-        if ( zappy->clients[i].type == IA && zappy->clients[i].pos.x ==
+        if (zappy->clients[i].type == IA && zappy->clients[i].pos.x ==
         client->pos.x && zappy->clients[i].pos.y == client->pos.y
         && zappy->clients[i].level == lvl) {
             zappy->clients[i].level += 1;

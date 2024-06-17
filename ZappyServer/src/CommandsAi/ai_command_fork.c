@@ -23,21 +23,34 @@ void add_egg(zappy_server_t *zappy, client_t *client, team_t *team)
     return;
 }
 
-int ai_command_fork(zappy_server_t *zappy, client_t *client, char *cmd)
+static int do_fork(zappy_server_t *zappy, client_t *client)
 {
     team_t *team = NULL;
+    egg_t *tmp_egg;
 
+    TAILQ_FOREACH(team, &zappy->all_teams, next) {
+        if (strcmp(team->name, client->team_name) == 0) {
+            add_egg(zappy, client, team);
+            tmp_egg = TAILQ_LAST(&(team->eggs_head), egghead);
+            send_enw_command_to_all_gui(zappy, tmp_egg);
+            send_eht_command_to_all_gui(zappy, tmp_egg->egg_number);
+            send_pfk_command_to_all_gui(zappy, client);
+            dprintf(zappy->actual_sockfd, "ok\n");
+            return OK;
+        }
+    }
+    return KO;
+}
+
+int ai_command_fork(zappy_server_t *zappy, client_t *client, char *cmd)
+{
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
     if (cast_action(zappy, client, 42, cmd) == ERROR)
         return ERROR;
     if (check_action(zappy, client) == false)
         return OK;
-    TAILQ_FOREACH(team, &zappy->all_teams, next) {
-        if (strcmp(team->name, client->team_name) == 0)
-            add_egg(zappy, client, team);
-    }
-    send_pfk_command_to_all_gui(zappy, client);
-    dprintf(zappy->actual_sockfd, "ok\n");
-    return OK;
+    if (do_fork(zappy, client) == OK)
+        return OK;
+    return KO;
 }
