@@ -59,7 +59,7 @@ static char *inventory_to_string(inventory_t *inventory)
 static void get_players(zappy_server_t *zappy, look_struct_t *look,
     int x, int y)
 {
-    for (int i = 0; i < FD_SETSIZE; i ++){
+    for (int i = 3; i < zappy->nb_connected_clients; i ++){
         if (zappy->clients[i].type == IA &&
         (zappy->clients[i].pos.x == x &&
         zappy->clients[i].pos.y == y)

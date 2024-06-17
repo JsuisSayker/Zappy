@@ -9,7 +9,7 @@
 
 void send_pdi_command_to_all_gui(zappy_server_t *zappy, client_t *client)
 {
-    for (int i = 3; i < FD_SETSIZE; i += 1) {
+    for (int i = 3; i < zappy->nb_connected_clients; i += 1) {
         if (zappy->clients[i].type == GUI)
             dprintf(i, "pdi %d\n", client->client_number);
     }

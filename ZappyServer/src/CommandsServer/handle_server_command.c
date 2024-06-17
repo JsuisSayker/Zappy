@@ -20,18 +20,19 @@ static const struct command_s COMMAND_FUNCS[] = {
     {"/setFreq", &server_command_set_freq},
     {"/setLevel", &server_command_set_level},
     {"/send_guis", &server_command_send_guis},
-    {"/send_guis", &server_command_kill},
+    {"/kill", &server_command_kill},
+    {"/fork", &server_command_fork},
     {"NULL", NULL}
 };
 
-int handle_server_command(zappy_server_t *zappy_server, char *command)
+int handle_server_command(zappy_server_t *zappy, char *command)
 {
     if (command == NULL)
         return ERROR;
     for (int i = 0; COMMAND_FUNCS[i].func != NULL; i += 1) {
         if (strncmp(command, COMMAND_FUNCS[i].command,
             strlen(COMMAND_FUNCS[i].command)) == 0) {
-            COMMAND_FUNCS[i].func(zappy_server,
+            COMMAND_FUNCS[i].func(zappy,
                 &command[strlen(COMMAND_FUNCS[i].command)]);
             return OK;
         }

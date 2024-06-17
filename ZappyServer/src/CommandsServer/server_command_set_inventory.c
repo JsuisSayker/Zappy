@@ -10,7 +10,7 @@
 static void set_inventory(zappy_server_t *zappy, int id, char *resource,
     int resource_quantity)
 {
-    for (int i = 0; i < FD_SETSIZE; i += 1) {
+    for (int i = 3; i < zappy->nb_connected_clients; i += 1) {
         if (zappy->clients[i].client_number == id) {
             set_inventory_resource_quantite(&zappy->clients[i].inventory,
             resource, resource_quantity);
