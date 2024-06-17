@@ -97,7 +97,7 @@ class ZappyGui {
         const glm::vec3 &rotation, const glm::vec3 &scale, bool hasTexture);
     void removeGameObject(ZappyGameObject::id_t gameObjectId);
 
-    ZappyWindow lveWindow{WIDTH, HEIGHT, "Vulkan Tutorial"};
+    ZappyWindow lveWindow{WIDTH, HEIGHT, "ZappyGui"};
     ZappyDevice lveDevice{lveWindow};
     ZappyRenderer lveRenderer{lveWindow, lveDevice};
 
