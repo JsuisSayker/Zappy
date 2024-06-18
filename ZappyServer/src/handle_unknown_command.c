@@ -89,7 +89,7 @@ static int ai_client_find_team(
         tmp_client = &zappy->clients[zappy->actual_sockfd];
         if (ai_initialisation(zappy, tmp_client, tmp_team) == ERROR)
             return ERROR;
-        dprintf(zappy->actual_sockfd, "2\n");
+        dprintf(zappy->actual_sockfd, "%d\n", tmp_client->client_number);
         dprintf(zappy->actual_sockfd, "%d %d\n", tmp_client->pos.x,
             tmp_client->pos.y);
         send_info_ai_to_gui(zappy, tmp_client);
