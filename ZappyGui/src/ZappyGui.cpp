@@ -1051,7 +1051,6 @@ void ZappyGui::pdi(std::vector<std::string> actualCommand)
 
 void ZappyGui::enw(std::vector<std::string> actualCommand)
 {
-    std::cout << "enw" << std::endl;
     if (actualCommand.size() != 5) {
         std::cerr << "enw: invalid number of arguments" << std::endl;
         return;
@@ -1068,7 +1067,6 @@ void ZappyGui::enw(std::vector<std::string> actualCommand)
 
 void ZappyGui::ebo(std::vector<std::string> actualCommand)
 {
-    std::cout << "ebo" << std::endl;
     if (actualCommand.size() != 2) {
         std::cerr << "ebo: invalid number of arguments" << std::endl;
         return;
@@ -1085,7 +1083,6 @@ void ZappyGui::ebo(std::vector<std::string> actualCommand)
                     break;
                 }
             }
-            std::cout << "Egg hatched" << std::endl;
             removeGameObject(i->eggObjectId);
             eggs_.erase(i);
             return;
@@ -1095,7 +1092,6 @@ void ZappyGui::ebo(std::vector<std::string> actualCommand)
 
 void ZappyGui::edi(std::vector<std::string> actualCommand)
 {
-    std::cout << "edi" << std::endl;
     if (actualCommand.size() != 2) {
         std::cerr << "edi: invalid number of arguments" << std::endl;
         return;
@@ -1105,7 +1101,6 @@ void ZappyGui::edi(std::vector<std::string> actualCommand)
 
     for (auto i = eggs_.begin(); i != eggs_.end(); i++) {
         if (i->eggNumber == eggNumber) {
-            std::cout << "Egg " << eggNumber << " died" << std::endl;
             removeGameObject(i->eggObjectId);
             eggs_.erase(i);
             return;
