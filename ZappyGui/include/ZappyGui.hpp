@@ -19,6 +19,7 @@
 #include "Trantorian.hpp"
 #include "Camera.hpp"
 #include "Egg.hpp"
+#include "Timer.hpp"
 
 // std
 #include <memory>
@@ -62,6 +63,7 @@ class ZappyGui {
     std::shared_ptr<Client> getClient() { return this->client; }
 
     void updateGame();
+    void updatePortalFrame();
     void updateGameObjectsTexture(std::string texturePath, ZappyGameObject::id_t gameObjectId);
 
     void processCommand();
@@ -134,5 +136,8 @@ class ZappyGui {
     // ZappyHUD
     int selectedPlayerNbr;
     bool showChildWindow = false;
+    TimerManager timerManager_;
+    int indexPortalFrame;
+    std::vector<ZappyGameObject::id_t> portalFrames;
 };
 } // namespace zappy
