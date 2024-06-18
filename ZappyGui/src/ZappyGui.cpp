@@ -527,13 +527,23 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
     int actualPhiras = map[x][y].phiras.size();
     int actualThystame = map[x][y].thystame.size();
 
+    float z = -0.125f;
+
     if (food >= actualFood) {
         for (int i = 0; i < food - actualFood; i++) {
-            map[x][y].food.push_back(
-                createGameObject(executablePath + "/ZappyGui/models/food.obj",
-                    executablePath + "/ZappyGui/textures/food.png",
-                    {static_cast<float>(x), -0.125f, static_cast<float>(y)},
-                    {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+            if (!map[x][y].food.empty()) {
+                for (auto &gameObject : gameObjects) {
+                    if (gameObject.first == map[x][y].food.back()) {
+                        if (gameObject.second.transform.translation.x == x &&
+                            gameObject.second.transform.translation.z == y)
+                            z = gameObject.second.transform.translation.z - 1.f;
+                    }
+                }
+            }
+
+            map[x][y].food.push_back(createGameObject(executablePath + "/ZappyGui/models/food.obj",
+                        executablePath + "/ZappyGui/textures/food.png", {static_cast<float>(x), z, static_cast<float>(y)},
+                        {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
         }
     } else {
         for (int i = actualFood; i > food; i--) {
@@ -543,11 +553,18 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
     }
     if (linemate >= actualLinemate) {
         for (int i = 0; i < linemate - actualLinemate; i++) {
+            if (!map[x][y].linemate.empty()) {
+                for (auto &gameObject : gameObjects) {
+                    if (gameObject.first == map[x][y].linemate.back())
+                        if (gameObject.second.transform.translation.x == x &&
+                            gameObject.second.transform.translation.z == y)
+                            z = gameObject.second.transform.translation.z - 1.f;
+                }
+            }
             map[x][y].linemate.push_back(createGameObject(
                 executablePath + "/ZappyGui/models/linemate.obj",
                 executablePath + "/ZappyGui/textures/linemate.png",
-                {static_cast<float>(x) - 0.3f, -0.125f,
-                    static_cast<float>(y) - 0.3f},
+                {static_cast<float>(x) - 0.3f, z, static_cast<float>(y) - 0.3f},
                 {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
         }
     } else {
@@ -558,10 +575,18 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
     }
     if (deraumere >= actualDeraumere) {
         for (int i = 0; i < deraumere - actualDeraumere; i++) {
+            if (!map[x][y].deraumere.empty()) {
+                for (auto &gameObject : gameObjects) {
+                    if (gameObject.first == map[x][y].deraumere.back())
+                        if (gameObject.second.transform.translation.x == x &&
+                            gameObject.second.transform.translation.z == y)
+                            z = gameObject.second.transform.translation.z - 1.f;
+                }
+            }
             map[x][y].deraumere.push_back(createGameObject(
                 executablePath + "/ZappyGui/models/deraumere.obj",
                 executablePath + "/ZappyGui/textures/deraumere.png",
-                {static_cast<float>(x) + 0.3f, -0.125f,
+                {static_cast<float>(x) + 0.3f, z,
                     static_cast<float>(y) + 0.3f},
                 {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
         }
@@ -573,10 +598,18 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
     }
     if (sibur >= actualSibur) {
         for (int i = 0; i < sibur - actualSibur; i++) {
+            if (!map[x][y].sibur.empty()) {
+                for (auto &gameObject : gameObjects) {
+                    if (gameObject.first == map[x][y].sibur.back())
+                        if (gameObject.second.transform.translation.x == x &&
+                            gameObject.second.transform.translation.z == y)
+                            z = gameObject.second.transform.translation.z - 1.f;
+                }
+            }
             map[x][y].sibur.push_back(
                 createGameObject(executablePath + "/ZappyGui/models/sibur.obj",
                     executablePath + "/ZappyGui/textures/sibur.png",
-                    {static_cast<float>(x) - 0.3f, -0.125f,
+                    {static_cast<float>(x) - 0.3f, z,
                         static_cast<float>(y) + 0.3f},
                     {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
         }
@@ -588,10 +621,18 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
     }
     if (mendiane >= actualMendiane) {
         for (int i = 0; i < mendiane - actualMendiane; i++) {
+            if (!map[x][y].mendiane.empty()) {
+                for (auto &gameObject : gameObjects) {
+                    if (gameObject.first == map[x][y].mendiane.back())
+                        if (gameObject.second.transform.translation.x == x &&
+                            gameObject.second.transform.translation.z == y)
+                            z = gameObject.second.transform.translation.z - 1.f;
+                }
+            }
             map[x][y].mendiane.push_back(createGameObject(
                 executablePath + "/ZappyGui/models/mendiane.obj",
                 executablePath + "/ZappyGui/textures/mendiane.png",
-                {static_cast<float>(x) + 0.3f, -0.125f,
+                {static_cast<float>(x) + 0.3f, z,
                     static_cast<float>(y) - 0.3f},
                 {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
         }
@@ -603,10 +644,18 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
     }
     if (phiras >= actualPhiras) {
         for (int i = 0; i < phiras - actualPhiras; i++) {
+            if (!map[x][y].phiras.empty()) {
+                for (auto &gameObject : gameObjects) {
+                    if (gameObject.first == map[x][y].phiras.back())
+                        if (gameObject.second.transform.translation.x == x &&
+                            gameObject.second.transform.translation.z == y)
+                            z = gameObject.second.transform.translation.z - 1.f;
+                }
+            }
             map[x][y].phiras.push_back(createGameObject(
                 executablePath + "/ZappyGui/models/phiras.obj",
                 executablePath + "/ZappyGui/textures/phiras.png",
-                {static_cast<float>(x) - 0.3f, -0.125f, static_cast<float>(y)},
+                {static_cast<float>(x) - 0.3f, z, static_cast<float>(y)},
                 {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
         }
     } else {
@@ -617,10 +666,18 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
     }
     if (thystame >= actualThystame) {
         for (int i = 0; i < thystame - actualThystame; i++) {
+            if (!map[x][y].thystame.empty()) {
+                for (auto &gameObject : gameObjects) {
+                    if (gameObject.first == map[x][y].thystame.back())
+                        if (gameObject.second.transform.translation.x == x &&
+                            gameObject.second.transform.translation.z == y)
+                            z = gameObject.second.transform.translation.z - 1.f;
+                }
+            }
             map[x][y].thystame.push_back(createGameObject(
                 executablePath + "/ZappyGui/models/thystame.obj",
                 executablePath + "/ZappyGui/textures/thystame.png",
-                {static_cast<float>(x) + 0.3f, -0.125f, static_cast<float>(y)},
+                {static_cast<float>(x) + 0.3f, z, static_cast<float>(y)},
                 {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
         }
     } else {
