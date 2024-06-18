@@ -12,7 +12,6 @@ SRC			=	zappy_server.c						\
 				generate_random_uuid.c				\
 				accept_new_connection.c				\
 				setup_server.c						\
-				search_in_object.c					\
 				argument_function.c					\
 				generate_ressourse_list.c			\
 				map_tile_function.c					\
@@ -40,6 +39,10 @@ TOOLS		=	splitter.c							\
 				normalize_coordonate.c				\
 				free_string.c						\
 				realloc_and_strcat.c				\
+				LinkedList/add_node.c				\
+				LinkedList/free_list.c				\
+				LinkedList/create_node.c			\
+				LinkedList/remove_node.c			\
 
 COMMAND_AI		=	handle_ai_command.c				\
 					ai_function.c					\
@@ -55,6 +58,8 @@ COMMAND_AI		=	handle_ai_command.c				\
 					ai_command_connect_nbr.c		\
 					ai_command_set.c				\
 					ai_command_incantation.c		\
+					ai_command_breadcast.c			\
+					ai_receive_breadcast.c			\
 					send_ppo_command_to_all_gui.c	\
 					send_pin_command_to_all_gui.c	\
 					send_pdi_command_to_all_gui.c	\
@@ -64,6 +69,7 @@ COMMAND_AI		=	handle_ai_command.c				\
 					send_pie_command_to_all_gui.c	\
 					send_pic_command_to_all_gui.c	\
 					send_plv_command_to_all_gui.c	\
+					send_pbc_command_to_all_gui.c	\
 
 COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_msz.c				\
@@ -96,6 +102,8 @@ COMMAND_SERVER	=	handle_server_command.c			\
 					server_command_send_guis.c		\
 					server_command_kill.c			\
 					server_command_fork.c			\
+					server_command_start.c			\
+					server_command_pause.c			\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 
