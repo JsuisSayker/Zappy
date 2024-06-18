@@ -251,8 +251,6 @@ ZappyGui::ZappyGui()
         std::bind(&ZappyGui::pdi, this, std::placeholders::_1);
     this->_pointerToFunction["enw"] =
         std::bind(&ZappyGui::enw, this, std::placeholders::_1);
-    this->_pointerToFunction["eht"] =
-        std::bind(&ZappyGui::eht, this, std::placeholders::_1);
     this->_pointerToFunction["ebo"] =
         std::bind(&ZappyGui::ebo, this, std::placeholders::_1);
     this->_pointerToFunction["edi"] =
@@ -1001,11 +999,6 @@ void ZappyGui::enw(std::vector<std::string> actualCommand)
 
     this->addEgg(eggNumber, playerNumber,
         {static_cast<float>(x), -0.15f, static_cast<float>(y)});
-}
-
-void ZappyGui::eht(std::vector<std::string> actualCommand)
-{
-    // std::cout << "eht" << std::endl;
 }
 
 void ZappyGui::ebo(std::vector<std::string> actualCommand)

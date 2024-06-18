@@ -92,7 +92,6 @@ class ZappyGui {
     void pgt(std::vector<std::string> actualCommand);
     void pdi(std::vector<std::string> actualCommand);
     void enw(std::vector<std::string> actualCommand);
-    void eht(std::vector<std::string> actualCommand);
     void ebo(std::vector<std::string> actualCommand);
     void edi(std::vector<std::string> actualCommand);
     void welcome(std::vector<std::string> actualCommand);
