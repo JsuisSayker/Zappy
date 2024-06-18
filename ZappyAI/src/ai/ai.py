@@ -234,7 +234,8 @@ class AI():
             ressourcesData = ressourcesData[1:]
         ressourcesData = ressourcesData.split(" ")
         requiredRessources = LEVELS[self.level].copy()
-        print(f"REQUIRED RESSOURCES IN THE DROP FUNCTION: {requiredRessources}")
+        print(
+            f"REQUIRED RESSOURCES IN THE DROP FUNCTION: {requiredRessources}")
         for ressource in requiredRessources:
             for elem in ressourcesData:
                 if requiredRessources[ressource] >= 0:
