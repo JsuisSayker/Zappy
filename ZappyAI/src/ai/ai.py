@@ -198,13 +198,27 @@ class AI():
     def startingIncantation(self) -> None:
         data = self.look.split(",")[0]
         # self.look.split(",")
+        print(f"DATA IN STARTING INCANTATION: {data}")
         while True:
             if len(data) == 0 or data[0].isalpha():
                 break
             data = data[1:]
-        requiredRessources = LEVELS[self.level]
+        # transform data into a list of strings
+        tmpData = data.split(" ")
+        print(f"TMPDATA IN THE START OF THE INCANTATION: {tmpData}")
+        requiredRessources = (LEVELS[self.level]).copy()
+        # for ressource in requiredRessources:
+        #     for elem in tmpData:
+        #         if ressource == elem:
+        #             print(f"RESSOURCE IN THE LOOP OF REQUIRED ONE: |{requiredRessources[ressource]}|")
+        #             print(f"RESOURCE IN THE LOOP OF THE REQUIRED ONE: {self.inventory[ressource]}")
+        #             if self.inventory[ressource] >= requiredRessources[ressource]:
+        #                 self.commandList.insert(0, "Incantation\n")
         for ressource in requiredRessources:
-            for elem in data:
+            print(f"RESSOURCE IN THE LOOP OF REQUIRED ONE: |{ressource}|")
+            print(f"DATA IN THE LOOP OF THE REQUIRED ONE: {data}")
+            for elem in tmpData:
+                print(f"ELEM IN THE LOOP OF THE REQUIRED ONE: |{elem}|")
                 if ressource == elem:
                     requiredRessources[ressource] -= 1
         for ressource in requiredRessources:
@@ -219,21 +233,34 @@ class AI():
                 break
             ressourcesData = ressourcesData[1:]
         ressourcesData = ressourcesData.split(" ")
-        requiredRessources = LEVELS[self.level]
+        requiredRessources = LEVELS[self.level].copy()
+        print(f"REQUIRED RESSOURCES IN THE DROP FUNCTION: {requiredRessources}")
         for ressource in requiredRessources:
             for elem in ressourcesData:
-                if ressource == elem:
-                    requiredRessources[ressource] -= 1
+                if requiredRessources[ressource] >= 0:
+                    if ressource == elem:
+                        requiredRessources[ressource] -= 1
+        # for ressource in requiredRessources:
+        #     for elem in ressourcesData:
+        #         if ressource == elem:
+        #             print(f"RESSOURCE IN THE LOOP OF REQUIRED ONE: |{requiredRessources[ressource]}|")
+        #             print(f"RESOURCE IN THE LOOP OF THE REQUIRED ONE: {self.inventory[ressource]}")
+        #             if self.inventory[ressource] >= requiredRessources[ressource]:
+        #                 self.commandList.append("Set " + ressource + "\n")
+        #                 self.commandList.append("Look\n")
+        #                 self.inventory[ressource] -= 1
+        #                 return
         for ressource in requiredRessources:
             if requiredRessources[ressource] < 1:
                 return
             print(f"requiredRessources[{ressource}]: {requiredRessources[
                 ressource]}")
-            if requiredRessources[ressource] != 0 and\
+            if requiredRessources[ressource] >= 0 and\
                     ressource in self.inventory:
                 self.commandList.append("Set " + ressource + "\n")
                 self.commandList.append("Look\n")
                 self.inventory[ressource] -= 1
+                return
 
     def startingActivity(self):
         self.dataToSend = "Connect_nbr\n"
