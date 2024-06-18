@@ -19,6 +19,7 @@
 #include "Trantorian.hpp"
 #include "Camera.hpp"
 #include "Egg.hpp"
+#include "Timer.hpp"
 
 // std
 #include <memory>
@@ -62,6 +63,7 @@ class ZappyGui {
     std::shared_ptr<Client> getClient() { return this->client; }
 
     void updateGame();
+    void updatePortalFrame();
     void updateGameObjectsTexture(std::string texturePath, ZappyGameObject::id_t gameObjectId);
 
     // Functions to handle commands
@@ -128,5 +130,8 @@ class ZappyGui {
     std::unordered_map<std::string, glm::vec3> teamsColors_;
     std::unordered_map<std::string, FunctionPtr> _pointerToFunction; // Map of pointers to functions
     int _timeUnit; // Time unit of the server
+    TimerManager timerManager_;
+    int indexPortalFrame;
+    std::vector<ZappyGameObject::id_t> portalFrames;
 };
 } // namespace zappy
