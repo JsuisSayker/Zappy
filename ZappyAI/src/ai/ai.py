@@ -44,7 +44,7 @@ class AI():
         for i in range(len(data)):
             if data[i][0] == " ":
                 data[i] = data[i][1:]
-        # data[len(data) - 1] = data[len(data) - 1][:-1]
+        data[len(data) - 1] = data[len(data) - 1][:-1]
         print(f"DATA IN PARSE INVENTORY: {data}")
         for elem in data:
             if elem:
