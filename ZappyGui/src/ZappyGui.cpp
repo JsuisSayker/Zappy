@@ -184,12 +184,6 @@ void ZappyGui::drawHud()
         ImGui::End();
     }
 
-    // Render a chat window in the bottom right corner
-    std::vector<std::string> chatMessages = {"Hello", "World", "!", "How",
-        "are", "you", "?", "I'm", "fine", "thanks", "for", "asking", "!", "I",
-        "hope", "you", "are", "too", "!", "Goodbye", "!", "See", "you", "soon",
-        "!", "Bye", "!"};
-
     ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300,
         ImGui::GetIO().DisplaySize.y - 200));
     ImGui::SetNextWindowSize(ImVec2(300, 200));
@@ -197,11 +191,11 @@ void ZappyGui::drawHud()
         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
     ImGui::Text("Chat");
     ImGui::Separator();
-    for (auto &i : chatMessages) {
-        ImGui::Text(i.c_str());
+    // loop over chat messages queue
+    for (auto &message : this->chatMessages) {
+        ImGui::Text("%s : %s", message.first.c_str(), message.second.c_str());
     }
     ImGui::End();
-
     // Rendering ImGui
     ImGui::Render();
 }
@@ -257,8 +251,6 @@ ZappyGui::ZappyGui()
         std::bind(&ZappyGui::pdi, this, std::placeholders::_1);
     this->_pointerToFunction["enw"] =
         std::bind(&ZappyGui::enw, this, std::placeholders::_1);
-    this->_pointerToFunction["eht"] =
-        std::bind(&ZappyGui::eht, this, std::placeholders::_1);
     this->_pointerToFunction["ebo"] =
         std::bind(&ZappyGui::ebo, this, std::placeholders::_1);
     this->_pointerToFunction["edi"] =
@@ -278,29 +270,27 @@ ZappyGui::ZappyGui()
 
 void ZappyGui::processCommand()
 {
-    {
-        std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
-        auto commandTime = std::chrono::high_resolution_clock::now();
-        auto endTime = commandTime + std::chrono::milliseconds(16);
+    std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
+    auto commandTime = std::chrono::high_resolution_clock::now();
+    auto endTime = commandTime + std::chrono::milliseconds(16);
 
-        while (!this->getClient().get()->getQueue().empty() &&
-            commandTime < endTime) {
-            std::vector<std::string> command =
-                this->getClient().get()->popFromQueue();
+    while (!this->getClient().get()->getQueue().empty() &&
+        commandTime < endTime) {
+        std::vector<std::string> command =
+            this->getClient().get()->popFromQueue();
 
-            if (this->getPointerToFunction().find(command[0]) !=
-                this->getPointerToFunction().end()) {
-                try {
-                    this->getPointerToFunction()[command[0]](command);
-                } catch (const std::exception &e) {
-                    std::cerr << "Exception: " << e.what() << std::endl;
-                }
-            } else {
-                std::cerr << "Unknown command: " << command[0] << std::endl;
+        if (this->getPointerToFunction().find(command[0]) !=
+            this->getPointerToFunction().end()) {
+            try {
+                this->getPointerToFunction()[command[0]](command);
+            } catch (const std::exception &e) {
+                std::cerr << "Exception: " << e.what() << std::endl;
             }
-
-            commandTime = std::chrono::high_resolution_clock::now();
+        } else {
+            std::cerr << "Unknown command: " << command[0] << std::endl;
         }
+
+        commandTime = std::chrono::high_resolution_clock::now();
     }
 }
 
@@ -959,7 +949,19 @@ void ZappyGui::pex(std::vector<std::string> actualCommand)
 
 void ZappyGui::pbc(std::vector<std::string> actualCommand)
 {
-    // std::cout << "pbc" << std::endl;
+    if (actualCommand.size() != 3) {
+        std::cerr << "pbc: invalid number of arguments" << std::endl;
+        return;
+    }
+
+    int playerNumber = std::stoi(actualCommand[1]);
+    std::string message = actualCommand[2];
+
+    for (Trantorian &Trantorian : trantorians_) {
+        if (Trantorian.playerNumber == playerNumber) {
+            chatMessages.push_back(std::make_pair(actualCommand[1], message));
+        }
+    }
 }
 
 void ZappyGui::pic(std::vector<std::string> actualCommand)
@@ -1062,11 +1064,6 @@ void ZappyGui::enw(std::vector<std::string> actualCommand)
 
     this->addEgg(eggNumber, playerNumber,
         {static_cast<float>(x), -0.15f, static_cast<float>(y)});
-}
-
-void ZappyGui::eht(std::vector<std::string> actualCommand)
-{
-    // std::cout << "eht" << std::endl;
 }
 
 void ZappyGui::ebo(std::vector<std::string> actualCommand)
@@ -1455,9 +1452,9 @@ void ZappyGui::updateResourcesAnimation()
     }
     if (resources_["food"].empty())
         return;
-    if (gameObjects[resources_["food"][0]].transform.translation.y < -0.06f)
+    if (gameObjects[resources_["food"][0]].transform.translation.y < -0.07f)
         indexRessourcesAnimation = 0;
-    if (gameObjects[resources_["food"][0]].transform.translation.y > 0.03f)
+    if (gameObjects[resources_["food"][0]].transform.translation.y > 0.02f)
         indexRessourcesAnimation = 1;
 }
 
