@@ -5,8 +5,7 @@
 ** ai_command_right
 */
 
-#include <zappy_server.h>
-
+#include "zappy_server.h"
 
 static void object_to_string(char **str, int nb, char *object)
 {
