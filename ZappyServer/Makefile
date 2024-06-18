@@ -12,7 +12,6 @@ SRC			=	zappy_server.c						\
 				generate_random_uuid.c				\
 				accept_new_connection.c				\
 				setup_server.c						\
-				search_in_object.c					\
 				argument_function.c					\
 				generate_ressourse_list.c			\
 				map_tile_function.c					\
@@ -66,6 +65,7 @@ COMMAND_AI		=	handle_ai_command.c				\
 					send_pie_command_to_all_gui.c	\
 					send_pic_command_to_all_gui.c	\
 					send_plv_command_to_all_gui.c	\
+					send_pbc_command_to_all_gui.c	\
 
 COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_msz.c				\

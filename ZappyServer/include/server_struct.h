@@ -119,38 +119,6 @@ typedef struct client_s {
     message_t *message_receive;
 } client_t;
 
-// REPLY PARAMETERS
-
-typedef struct reply_s {
-    char text[MAX_BODY_LENGTH];
-    char reply_uuid[MAX_UUID_LENGTH];
-    char sender_uuid[MAX_UUID_LENGTH];
-    char thread_uuid[MAX_UUID_LENGTH];
-    time_t timestamp;
-    TAILQ_ENTRY(reply_s) next;
-} reply_t;
-
-struct replyhead {
-    struct reply_s *tqh_first;
-    struct reply_s **tqh_last;
-};
-
-typedef struct thread_s {
-    char title[MAX_NAME_LENGTH];
-    char body[MAX_DESCRIPTION_LENGTH];
-    char thread_uuid[MAX_UUID_LENGTH];
-    char channel_uuid[MAX_UUID_LENGTH];
-    char sender_uuid[MAX_UUID_LENGTH];
-    time_t timestamp;
-    struct replyhead replys_head;
-    TAILQ_ENTRY(thread_s) next;
-} thread_t;
-
-struct threadhead {
-    struct thread_s *tqh_first;
-    struct thread_s **tqh_last;
-};
-
 typedef struct fd_s {
     fd_set input;
     fd_set save_input;

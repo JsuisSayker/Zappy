@@ -10,14 +10,14 @@ from ZappyAI.src.ai.infos import LEVELS, Activity
 class AI():
     def __init__(self, teamName: str):
         self.teamName: str = teamName
-        self.inventory: dict[str, int] = {"food": 10, "linemate": 0,
+        self.inventory: dict[str, int] = {"food": 0, "linemate": 0,
                                           "deraumere": 0, "sibur": 0,
                                           "mendiane": 0, "phiras": 0,
                                           "thystame": 0}
         self.sharedInventory: dict = {}
         self.level: int = 1
         self.incantation: bool = False
-        # self.nbNeededPlayers: int = 1
+        # self.nbPlayerForIncantation: int = 1
         self.nbReadyPlayers: int = 1
         self.playerIsReady: bool = False
         self.searchingRessource: str = ""
@@ -41,13 +41,16 @@ class AI():
         for char in "[]":
             data = data.replace(char, "")
         data = data.split(",")
-        # for i in range(len(data)):
-        #     data[i] = data[i][1:]
+        for i in range(len(data)):
+            if data[i][0] == " ":
+                data[i] = data[i][1:]
         # data[len(data) - 1] = data[len(data) - 1][:-1]
-        print(f"DATA THE PARSE INVENTORY: {data}")
+        print(f"DATA IN PARSE INVENTORY: {data}")
         for elem in data:
             if elem:
-                print(f"CA C'EST MON ELEM: {elem}")
+                print(f"While parsing inventory: |{elem}|")
+                print(f"Inventory: |{self.inventory}|")
+                print(f"elem.split()[0]: |{elem.split()[0]}|")
                 self.inventory[elem.split()[0]] = int(elem.split()[1])
 
     def sxor(self, s1: str, s2: str):
@@ -70,19 +73,7 @@ class AI():
             print(f"yay of inventory: {parsedReceivedMessage[9:]}")
             self.parse_shared_inventory(parsedReceivedMessage[9:])
         if "incantation" in parsedReceivedMessage:
-            if self.nbReadyPlayers >= 1 and int(
-                    parsedReceivedMessage.split("|")[0]) > 6:
-                self.nbReadyPlayers = 0
-                self.incantation = False
-                self.actualActivity = Activity.EXECUTE_COMMAND
-            # elif self.actualActivity is Activity.EXECUTE_COMMAND or\
-            #         self.actualActivity is Activity.CHECK_INCANTATION or\
-            #         self.actualActivity is Activity.LOOKING or\
-            #         self.actualActivity is Activity.FILLING\
-            #         and self.inventory["food"] > 45:
-            #     self.actualActivity = Activity.PREPA_FOR_INCANTATION
-            #     self.commandList = []
-            elif self.incantation is True:
+            if self.incantation is True:
                 self.goToBroadcastSignal(signalDirection)
         if "on my way" in parsedReceivedMessage:
             print("ON MY WAY")
@@ -116,6 +107,7 @@ class AI():
                 self.newRessource = False
                 self.incantation = True
                 self.actualActivity = Activity.PREPA_FOR_INCANTATION
+                return
         else:
             self.actualActivity = Activity.LOOKING
         return
@@ -126,6 +118,7 @@ class AI():
                 self.clientId) + " on my way"), "utf-8").hex()
             print("SENDING ON MY WAY")
             self.dataToSend = "Broadcast " + messageToSend + "\n"
+            self.incantation = True
         elif self.commandList and not self.playerIsReady:
             self.dataToSend = self.commandList.pop(0)
         elif (self.nbReadyPlayers >= self.level and self.incantation is True)\
@@ -159,32 +152,33 @@ class AI():
         self.sharedInventory[receivedClientId] = json.loads(receivedInventory)
         updateCounter: Counter = Counter()
         for key in self.sharedInventory:
-            updateCounter.update(self.sharedInventory[key])
+            if key != "total":
+                updateCounter.update(self.sharedInventory[key])
         self.sharedInventory["total"] = dict(updateCounter)
 
     def updateSharedInventory(self):
         self.sharedInventory[self.clientId] = self.inventory
         updateCounter = Counter()
         for key in self.sharedInventory:
-            updateCounter.update(self.sharedInventory[key])
+            if key != "total":
+                updateCounter.update(self.sharedInventory[key])
         self.sharedInventory["total"] = dict(updateCounter)
 
     def isIncantationPossible(self) -> bool:
         requiredRessources = LEVELS[self.level]
-        print(f"requiredRessources TO LEVEL UP: {requiredRessources}")
-        print(f"self.sharedInventory: {self.sharedInventory}")
+        tmpInventory: dict = {}
         if "total" in self.sharedInventory:
             tmpInventory = self.sharedInventory["total"]
-            print(f"tmpInventory: {tmpInventory}")
-        if self.searchingRessource in tmpInventory:
-            self.inventory[self.searchingRessource] += 1
+        if (self.searchingRessource in self.inventory) and (
+                self.searchingRessource in tmpInventory):
+            tmpInventory[self.searchingRessource] += 1
         for ressource in requiredRessources:
             if tmpInventory[ressource] < requiredRessources[ressource]:
                 return False
         return True
 
     def goToBroadcastSignal(self, signalDirection: int):
-        if self.playerIsReady or self.commandList:
+        if self.playerIsReady is True or self.commandList != []:
             return
         match signalDirection:
             case 0:
@@ -204,12 +198,10 @@ class AI():
     def startingIncantation(self) -> None:
         data = self.look.split(",")[0]
         # self.look.split(",")
-        # print(f"data before the incantation process: {data}")
-        # while True:
-        #     if len(data) == 0 or data[0].isalpha():
-        #         break
-        data = data[1:]
-        # print(f"data while incantating: {data}")
+        while True:
+            if len(data) == 0 or data[0].isalpha():
+                break
+            data = data[1:]
         requiredRessources = LEVELS[self.level]
         for ressource in requiredRessources:
             for elem in data:
@@ -222,10 +214,10 @@ class AI():
 
     def dropRessourcesWhileIncantating(self):
         ressourcesData = self.look.split(",")[0]
-        # while True:
-        #     if len(ressourcesData) == 0 or ressourcesData[0].isalpha():
-        #         break
-        ressourcesData = ressourcesData[1:]
+        while True:
+            if len(ressourcesData) == 0 or ressourcesData[0].isalpha():
+                break
+            ressourcesData = ressourcesData[1:]
         ressourcesData = ressourcesData.split(" ")
         requiredRessources = LEVELS[self.level]
         for ressource in requiredRessources:
@@ -234,12 +226,12 @@ class AI():
                     requiredRessources[ressource] -= 1
         for ressource in requiredRessources:
             if requiredRessources[ressource] < 1:
-                continue
+                return
             print(f"requiredRessources[{ressource}]: {requiredRessources[
                 ressource]}")
             if requiredRessources[ressource] != 0 and\
                     ressource in self.inventory:
-                self.commandList.append(f"Set {ressource}\n")
+                self.commandList.append("Set " + ressource + "\n")
                 self.commandList.append("Look\n")
                 self.inventory[ressource] -= 1
 
@@ -431,23 +423,13 @@ class AI():
     def searchingActivity(self) -> str:
         tmpList = []
         requiredRessources = LEVELS[self.level]
-        if "total" in self.sharedInventory:
-            tmpInventory = self.sharedInventory["total"]
-        else:
-            tmpInventory = {"food": 0, "linemate": 0, "deraumere": 0,
-                            "sibur": 0, "mendiane": 0, "phiras": 0,
-                            "thystame": 0}
         for ressource in requiredRessources:
-            print(f"RESSOURCES IN THE SEARCHING ACTIVITY: {ressource}")
-            if (requiredRessources[ressource] > tmpInventory[ressource]) or (
-                    ressource not in tmpInventory):
+            if requiredRessources[ressource] > self.inventory[ressource] or (
+                    ressource not in self.inventory):
                 tmpList.append(ressource)
-        print(f"LIST OF RESSOURCES THAT I POSSIBLY WANT: {tmpList}")
         if len(tmpList) == 0:
             return "food"
-        tyty = random.choice(tmpList)
-        print(f"RESSOURCE TO SEARCH: {tyty}")
-        return tyty
+        return random.choice(tmpList)
 
     def finishingIncantation(self):
         self.dataToSend = "Inventory\n"

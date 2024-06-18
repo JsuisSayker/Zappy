@@ -12,8 +12,6 @@ static int spreads_breadcast(zappy_server_t *zappy, client_t *client,
 {
     message_t *new_message = malloc(sizeof(message_t));
 
-    if (new_message == NULL)
-        return ERROR;
     new_message->message = strdup(message);
     new_message->pos.x = client->pos.x;
     new_message->pos.y = client->pos.y;
@@ -28,6 +26,7 @@ static int spreads_breadcast(zappy_server_t *zappy, client_t *client,
     }
     free_string(&new_message->message);
     free(new_message);
+    send_pbc_command_to_all_gui(zappy, client, message);
     dprintf(zappy->actual_sockfd, "ok\n");
     return OK;
 }

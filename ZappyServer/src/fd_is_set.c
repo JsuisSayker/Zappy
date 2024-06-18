@@ -62,7 +62,7 @@ int fd_is_set(zappy_server_t *zappy)
         }
         if (client->type == IA)
             is_alive(zappy, client);
-        refill_map(zappy, client);
+        // refill_map(zappy, client);
     }
     return OK;
 }
