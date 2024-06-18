@@ -184,12 +184,6 @@ void ZappyGui::drawHud()
         ImGui::End();
     }
 
-    // Render a chat window in the bottom right corner
-    std::vector<std::string> chatMessages = {"Hello", "World", "!", "How",
-        "are", "you", "?", "I'm", "fine", "thanks", "for", "asking", "!", "I",
-        "hope", "you", "are", "too", "!", "Goodbye", "!", "See", "you", "soon",
-        "!", "Bye", "!"};
-
     ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300,
         ImGui::GetIO().DisplaySize.y - 200));
     ImGui::SetNextWindowSize(ImVec2(300, 200));
@@ -197,11 +191,11 @@ void ZappyGui::drawHud()
         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
     ImGui::Text("Chat");
     ImGui::Separator();
-    for (auto &i : chatMessages) {
-        ImGui::Text(i.c_str());
+    // loop over chat messages queue
+    for (auto &message : this->chatMessages) {
+        ImGui::Text("%s : %s", message.first.c_str(), message.second.c_str());
     }
     ImGui::End();
-
     // Rendering ImGui
     ImGui::Render();
 }
@@ -270,29 +264,27 @@ ZappyGui::ZappyGui()
 
 void ZappyGui::processCommand()
 {
-    {
-        std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
-        auto commandTime = std::chrono::high_resolution_clock::now();
-        auto endTime = commandTime + std::chrono::milliseconds(16);
+    std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
+    auto commandTime = std::chrono::high_resolution_clock::now();
+    auto endTime = commandTime + std::chrono::milliseconds(16);
 
-        while (!this->getClient().get()->getQueue().empty() &&
-            commandTime < endTime) {
-            std::vector<std::string> command =
-                this->getClient().get()->popFromQueue();
+    while (!this->getClient().get()->getQueue().empty() &&
+        commandTime < endTime) {
+        std::vector<std::string> command =
+            this->getClient().get()->popFromQueue();
 
-            if (this->getPointerToFunction().find(command[0]) !=
-                this->getPointerToFunction().end()) {
-                try {
-                    this->getPointerToFunction()[command[0]](command);
-                } catch (const std::exception &e) {
-                    std::cerr << "Exception: " << e.what() << std::endl;
-                }
-            } else {
-                std::cerr << "Unknown command: " << command[0] << std::endl;
+        if (this->getPointerToFunction().find(command[0]) !=
+            this->getPointerToFunction().end()) {
+            try {
+                this->getPointerToFunction()[command[0]](command);
+            } catch (const std::exception &e) {
+                std::cerr << "Exception: " << e.what() << std::endl;
             }
-
-            commandTime = std::chrono::high_resolution_clock::now();
+        } else {
+            std::cerr << "Unknown command: " << command[0] << std::endl;
         }
+
+        commandTime = std::chrono::high_resolution_clock::now();
     }
 }
 
@@ -902,7 +894,19 @@ void ZappyGui::pex(std::vector<std::string> actualCommand)
 
 void ZappyGui::pbc(std::vector<std::string> actualCommand)
 {
-    // std::cout << "pbc" << std::endl;
+    if (actualCommand.size() != 3) {
+        std::cerr << "pbc: invalid number of arguments" << std::endl;
+        return;
+    }
+
+    int playerNumber = std::stoi(actualCommand[1]);
+    std::string message = actualCommand[2];
+
+    for (Trantorian &Trantorian : trantorians_) {
+        if (Trantorian.playerNumber == playerNumber) {
+            chatMessages.push_back(std::make_pair(actualCommand[1], message));
+        }
+    }
 }
 
 void ZappyGui::pic(std::vector<std::string> actualCommand)
@@ -1180,20 +1184,26 @@ void ZappyGui::createMap(int width, int height)
         createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
             executablePath + "/ZappyGui/textures/Obsidian.png",
             {i, -3.f, height}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
-        portalFrames.push_back(createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
-            executablePath + "/ZappyGui/textures/portal/frame1.png", {i, -1.5f, -1.f},
-            {degreeToRadiant(90), 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
-        portalFrames.push_back(createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
-            executablePath + "/ZappyGui/textures/portal/frame1.png", {i, -0.5f, -1.f},
-            {degreeToRadiant(90), 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
-        portalFrames.push_back(createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
-            executablePath + "/ZappyGui/textures/portal/frame1.png",
-            {i, -1.5f, height}, {degreeToRadiant(90), 0.f, 0.f},
-            {1.f, 1.f, 1.f}, true));
-        portalFrames.push_back(createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
-            executablePath + "/ZappyGui/textures/portal/frame1.png",
-            {i, -0.5f, height}, {degreeToRadiant(90), 0.f, 0.f},
-            {1.f, 1.f, 1.f}, true));
+        portalFrames.push_back(
+            createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+                executablePath + "/ZappyGui/textures/portal/frame1.png",
+                {i, -1.5f, -1.f}, {degreeToRadiant(90), 0.f, 0.f},
+                {1.f, 1.f, 1.f}, true));
+        portalFrames.push_back(
+            createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+                executablePath + "/ZappyGui/textures/portal/frame1.png",
+                {i, -0.5f, -1.f}, {degreeToRadiant(90), 0.f, 0.f},
+                {1.f, 1.f, 1.f}, true));
+        portalFrames.push_back(
+            createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+                executablePath + "/ZappyGui/textures/portal/frame1.png",
+                {i, -1.5f, height}, {degreeToRadiant(90), 0.f, 0.f},
+                {1.f, 1.f, 1.f}, true));
+        portalFrames.push_back(
+            createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+                executablePath + "/ZappyGui/textures/portal/frame1.png",
+                {i, -0.5f, height}, {degreeToRadiant(90), 0.f, 0.f},
+                {1.f, 1.f, 1.f}, true));
     }
     for (float i = 0.f; i < height; i++) {
         createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
@@ -1208,20 +1218,26 @@ void ZappyGui::createMap(int width, int height)
         createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
             executablePath + "/ZappyGui/textures/Obsidian.png",
             {width, -3.f, i}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
-        portalFrames.push_back(createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
-            executablePath + "/ZappyGui/textures/portal/frame1.png", {-1.f, -1.5f, i},
-            {0.f, 0.f, degreeToRadiant(90)}, {1.f, 1.f, 1.f}, true));
-        portalFrames.push_back(createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
-            executablePath + "/ZappyGui/textures/portal/frame1.png", {-1.f, -0.5f, i},
-            {0.f, 0.f, degreeToRadiant(90)}, {1.f, 1.f, 1.f}, true));
-        portalFrames.push_back(createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
-            executablePath + "/ZappyGui/textures/portal/frame1.png",
-            {width, -1.5f, i}, {0.f, 0.f, degreeToRadiant(90)},
-            {1.f, 1.f, 1.f}, true));
-        portalFrames.push_back(createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
-            executablePath + "/ZappyGui/textures/portal/frame1.png",
-            {width, -0.5f, i}, {0.f, 0.f, degreeToRadiant(90)},
-            {1.f, 1.f, 1.f}, true));
+        portalFrames.push_back(
+            createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+                executablePath + "/ZappyGui/textures/portal/frame1.png",
+                {-1.f, -1.5f, i}, {0.f, 0.f, degreeToRadiant(90)},
+                {1.f, 1.f, 1.f}, true));
+        portalFrames.push_back(
+            createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+                executablePath + "/ZappyGui/textures/portal/frame1.png",
+                {-1.f, -0.5f, i}, {0.f, 0.f, degreeToRadiant(90)},
+                {1.f, 1.f, 1.f}, true));
+        portalFrames.push_back(
+            createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+                executablePath + "/ZappyGui/textures/portal/frame1.png",
+                {width, -1.5f, i}, {0.f, 0.f, degreeToRadiant(90)},
+                {1.f, 1.f, 1.f}, true));
+        portalFrames.push_back(
+            createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+                executablePath + "/ZappyGui/textures/portal/frame1.png",
+                {width, -0.5f, i}, {0.f, 0.f, degreeToRadiant(90)},
+                {1.f, 1.f, 1.f}, true));
     }
     for (float i = 0.f; i > -4.f; i--) {
         createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
@@ -1282,8 +1298,8 @@ void ZappyGui::updateGameObjectsTexture(
     int index = 0;
     gameObjects[gameObjectId].hasDescriptorSet = true;
     for (std::pair<std::vector<VkDescriptorSet>,
-            std::pair<std::shared_ptr<zappy::Texture>, std::string>>
-            &textureObject : textureObjects) {
+             std::pair<std::shared_ptr<zappy::Texture>, std::string>>
+             &textureObject : textureObjects) {
         if (textureObject.second.second == texturePath) {
             gameObjects[gameObjectId].indexDescriptorSet = index;
             return;
@@ -1295,7 +1311,8 @@ void ZappyGui::updateGameObjectsTexture(
         std::make_shared<Texture>(lveDevice, texturePath);
     gameObjects[gameObjectId].imageInfo.sampler = texture->getSampler();
     gameObjects[gameObjectId].imageInfo.imageView = texture->getImageView();
-    gameObjects[gameObjectId].imageInfo.imageLayout = texture->getImageLayout();
+    gameObjects[gameObjectId].imageInfo.imageLayout =
+        texture->getImageLayout();
 
     std::vector<VkDescriptorSet> descriptorSets(
         ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -1306,8 +1323,8 @@ void ZappyGui::updateGameObjectsTexture(
             .writeImage(1, &gameObjects[gameObjectId].imageInfo)
             .build(descriptorSets[i]);
     }
-    textureObjects.push_back(std::make_pair(
-        descriptorSets, std::make_pair(texture, texturePath)));
+    textureObjects.push_back(
+        std::make_pair(descriptorSets, std::make_pair(texture, texturePath)));
     gameObjects[gameObjectId].indexDescriptorSet = textureObjects.size() - 1;
 }
 
@@ -1335,7 +1352,10 @@ void ZappyGui::updatePortalFrame()
     else
         indexPortalFrame++;
     for (ZappyGameObject::id_t portalFrame : portalFrames) {
-        updateGameObjectsTexture(executablePath + "/ZappyGui/textures/portal/frame" + std::to_string(indexPortalFrame) + ".png", portalFrame);
+        updateGameObjectsTexture(executablePath +
+                "/ZappyGui/textures/portal/frame" +
+                std::to_string(indexPortalFrame) + ".png",
+            portalFrame);
     }
 }
 
