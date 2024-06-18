@@ -18,6 +18,7 @@
 #include "Renderer.hpp"
 #include "Texture.hpp"
 #include "Timer.hpp"
+#include "Map.hpp"
 #include "Trantorian.hpp"
 #include "Window.hpp"
 
@@ -26,6 +27,8 @@
 #include <random>
 #include <signal.h>
 #include <vector>
+#include <random>
+#include <unordered_map>
 
 namespace zappy {
 class ZappyGui {
@@ -41,6 +44,7 @@ class ZappyGui {
     ZappyGui &operator=(const ZappyGui &) = delete;
 
     static std::string getExecutablePath();
+    float degreeToRadiant(float degrees);
 
     void addTrantorian(const std::string &teamName, const glm::vec3 &position,
         int playerNumber, int orientation);
@@ -67,8 +71,8 @@ class ZappyGui {
 
     void updateGame();
     void updatePortalFrame();
-    void updateGameObjectsTexture(
-        std::string texturePath, ZappyGameObject::id_t gameObjectId);
+    void updateResourcesAnimation();
+    void updateGameObjectsTexture(std::string texturePath, ZappyGameObject::id_t gameObjectId);
 
     void processCommand();
 
@@ -92,7 +96,6 @@ class ZappyGui {
     void pgt(std::vector<std::string> actualCommand);
     void pdi(std::vector<std::string> actualCommand);
     void enw(std::vector<std::string> actualCommand);
-    void eht(std::vector<std::string> actualCommand);
     void ebo(std::vector<std::string> actualCommand);
     void edi(std::vector<std::string> actualCommand);
     void welcome(std::vector<std::string> actualCommand);
@@ -133,7 +136,6 @@ class ZappyGui {
         textureObjects;
     std::unique_ptr<Map> map_;
     std::shared_ptr<Client> client;
-    ZappyGameObject::Map ressources_;
     std::vector<Trantorian> trantorians_;
     std::vector<Egg> eggs_;
     std::unordered_map<std::string, glm::vec3> teamsColors_;
@@ -147,6 +149,8 @@ class ZappyGui {
     TimerManager timerManager_;
     int indexPortalFrame;
     std::vector<ZappyGameObject::id_t> portalFrames;
+    std::unordered_map<std::string, std::vector<ZappyGameObject::id_t>> resources_;
+    int indexRessourcesAnimation = 1;
     std::vector<std::pair<std::string, std::string>> chatMessages;
 };
 } // namespace zappy
