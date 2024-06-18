@@ -9,23 +9,23 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "Camera.hpp"
 #include "Client.hpp"
 #include "Descriptors.hpp"
 #include "Device.hpp"
+#include "Egg.hpp"
 #include "GameObject.hpp"
 #include "Renderer.hpp"
 #include "Texture.hpp"
-#include "Window.hpp"
-#include "Trantorian.hpp"
-#include "Camera.hpp"
-#include "Egg.hpp"
 #include "Timer.hpp"
+#include "Trantorian.hpp"
+#include "Window.hpp"
 
 // std
 #include <memory>
+#include <random>
 #include <signal.h>
 #include <vector>
-#include <random>
 
 namespace zappy {
 class ZappyGui {
@@ -42,15 +42,18 @@ class ZappyGui {
 
     static std::string getExecutablePath();
 
-    void addTrantorian(const std::string &teamName, const glm::vec3 &position, int playerNumber, int orientation);
+    void addTrantorian(const std::string &teamName, const glm::vec3 &position,
+        int playerNumber, int orientation);
     void removeTrantorian(int playerNumber);
-    void updateTrantorianPosition(int playerNumber, const glm::vec3 &position, int orientation);
+    void updateTrantorianPosition(
+        int playerNumber, const glm::vec3 &position, int orientation);
 
     void eggLayingPose(int playerNumber);
 
     void addEgg(int eggNumber, int playerNumber, const glm::vec3 &position);
 
-    void setPointerToFunction(std::unordered_map<std::string, FunctionPtr> &pointerToFunction);
+    void setPointerToFunction(
+        std::unordered_map<std::string, FunctionPtr> &pointerToFunction);
 
     std::unordered_map<std::string, FunctionPtr> &getPointerToFunction();
 
@@ -64,7 +67,8 @@ class ZappyGui {
 
     void updateGame();
     void updatePortalFrame();
-    void updateGameObjectsTexture(std::string texturePath, ZappyGameObject::id_t gameObjectId);
+    void updateGameObjectsTexture(
+        std::string texturePath, ZappyGameObject::id_t gameObjectId);
 
     void processCommand();
 
@@ -122,16 +126,20 @@ class ZappyGui {
     ZappyGameObject viewerObject{ZappyGameObject::createGameObject()};
     std::vector<std::unique_ptr<ZappyBuffer>> uboBuffers;
     std::unique_ptr<ZappyDescriptorSetLayout> globalSetLayout;
-    std::vector<std::pair<std::shared_ptr<ZappyModel>, std::string>> modelObjects;
-    std::vector<std::pair<std::vector<VkDescriptorSet>, std::pair<std::shared_ptr<Texture>, std::string>>> textureObjects;
+    std::vector<std::pair<std::shared_ptr<ZappyModel>, std::string>>
+        modelObjects;
+    std::vector<std::pair<std::vector<VkDescriptorSet>,
+        std::pair<std::shared_ptr<Texture>, std::string>>>
+        textureObjects;
     std::unique_ptr<Map> map_;
     std::shared_ptr<Client> client;
     ZappyGameObject::Map ressources_;
     std::vector<Trantorian> trantorians_;
     std::vector<Egg> eggs_;
     std::unordered_map<std::string, glm::vec3> teamsColors_;
-    std::unordered_map<std::string, FunctionPtr> _pointerToFunction; // Map of pointers to functions
-    int _timeUnit; // Time unit of the server
+    std::unordered_map<std::string, FunctionPtr>
+        _pointerToFunction; // Map of pointers to functions
+    int _timeUnit;          // Time unit of the server
 
     // ZappyHUD
     int selectedPlayerNbr;
@@ -139,5 +147,6 @@ class ZappyGui {
     TimerManager timerManager_;
     int indexPortalFrame;
     std::vector<ZappyGameObject::id_t> portalFrames;
+    std::vector<std::pair<std::string, std::string>> chatMessages;
 };
 } // namespace zappy
