@@ -415,10 +415,12 @@ void ZappyGui::run()
     ImGui_ImplVulkan_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+    close(socket_fd);
 
     std::cout << "Closing connection" << std::endl;
     this->getClient().get()->running = false;
     reader.join();
+
 
     vkDeviceWaitIdle(lveDevice.device());
 }
