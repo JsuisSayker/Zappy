@@ -95,11 +95,11 @@ class Client():
             self.logged = True
             self.ai.run = True
 
-    def store_previous_data(self, data, filename="previous_data.txt"):
+    def storePreviousData(self, data, filename="previous_data.txt"):
         with open(filename, 'w') as file:
             file.write(data)
 
-    def load_previous_data(self, filename="previous_data.txt") -> str:
+    def loadPreviousData(self, filename="previous_data.txt") -> str:
         try:
             with open(filename, 'r') as file:
                 return file.read()
@@ -139,7 +139,7 @@ class Client():
                             self.closeConnection()
                         tmpReceivedData = data.split("\n")
                         print(f"tmpReceivedData: {tmpReceivedData[:-1]}")
-                        previousData = self.load_previous_data()
+                        previousData = self.loadPreviousData()
                         print(f"MINE PREVIOUS DATA: {previousData}")
                         for element in tmpReceivedData[:-1]:
                             print(f"element: {element}")
@@ -194,7 +194,7 @@ class Client():
 
                     if mask & selectors.EVENT_WRITE:
                         if self.logged and self.ai.run is True:
-                            self.store_previous_data(self.ai.dataToSend)
+                            self.storePreviousData(self.ai.dataToSend)
                             self.ai.algorithm()
                         if self.ai.dataToSend and self.ai.run is True:
                             if self.ai.dataToSend == (

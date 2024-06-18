@@ -17,7 +17,7 @@ class AI():
         self.sharedInventory: dict = {}
         self.level: int = 1
         self.incantation: bool = False
-        # self.nbNeededPlayers: int = 1
+        # self.nbPlayerForIncantation: int = 1
         self.nbReadyPlayers: int = 1
         self.playerIsReady: bool = False
         self.searchingRessource: str = ""
@@ -118,6 +118,7 @@ class AI():
                 self.clientId) + " on my way"), "utf-8").hex()
             print("SENDING ON MY WAY")
             self.dataToSend = "Broadcast " + messageToSend + "\n"
+            self.incantation = True
         elif self.commandList and not self.playerIsReady:
             self.dataToSend = self.commandList.pop(0)
         elif (self.nbReadyPlayers >= self.level and self.incantation is True)\
@@ -151,20 +152,28 @@ class AI():
         self.sharedInventory[receivedClientId] = json.loads(receivedInventory)
         updateCounter: Counter = Counter()
         for key in self.sharedInventory:
-            updateCounter.update(self.sharedInventory[key])
+            if key != "total":
+                updateCounter.update(self.sharedInventory[key])
+        self.sharedInventory["total"] = dict(updateCounter)
 
     def updateSharedInventory(self):
         self.sharedInventory[self.clientId] = self.inventory
         updateCounter = Counter()
         for key in self.sharedInventory:
-            updateCounter.update(self.sharedInventory[key])
+            if key != "total":
+                updateCounter.update(self.sharedInventory[key])
+        self.sharedInventory["total"] = dict(updateCounter)
 
     def isIncantationPossible(self) -> bool:
         requiredRessources = LEVELS[self.level]
-        if self.searchingRessource in self.inventory:
-            self.inventory[self.searchingRessource] += 1
+        tmpInventory: dict = {}
+        if "total" in self.sharedInventory:
+            tmpInventory = self.sharedInventory["total"]
+        if (self.searchingRessource in self.inventory) and (
+                self.searchingRessource in tmpInventory):
+            tmpInventory[self.searchingRessource] += 1
         for ressource in requiredRessources:
-            if self.inventory[ressource] < requiredRessources[ressource]:
+            if tmpInventory[ressource] < requiredRessources[ressource]:
                 return False
         return True
 
@@ -217,10 +226,10 @@ class AI():
                     requiredRessources[ressource] -= 1
         for ressource in requiredRessources:
             if requiredRessources[ressource] < 1:
-                continue
+                return
             print(f"requiredRessources[{ressource}]: {requiredRessources[
                 ressource]}")
-            if requiredRessources[ressource] >= 0 and\
+            if requiredRessources[ressource] != 0 and\
                     ressource in self.inventory:
                 self.commandList.append("Set " + ressource + "\n")
                 self.commandList.append("Look\n")
