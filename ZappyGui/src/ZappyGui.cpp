@@ -20,6 +20,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_vulkan.h"
@@ -34,10 +35,9 @@
 #include <random>
 #include <stdexcept>
 #include <unistd.h>
-
 namespace zappy {
 
-void ZappyGui::initImGui()
+void ZappyGui::initHud()
 {
     // Initialize ImGui
     IMGUI_CHECKVERSION();
@@ -74,7 +74,7 @@ void ZappyGui::initImGui()
     this->lveDevice.endSingleTimeCommands(command_buffer);
 }
 
-void ZappyGui::drawGui()
+void ZappyGui::drawHud()
 {
     // Start ImGui frame
     ImGui_ImplVulkan_NewFrame();
@@ -84,9 +84,8 @@ void ZappyGui::drawGui()
     // Render ImGui fps in top left corner
     ImGui::SetNextWindowPos(ImVec2(10, 10));
     ImGui::SetNextWindowSize(ImVec2(0, 0));
-    ImGui::Begin("FPS", nullptr,
-        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+    ImGui::Begin(
+        "FPS", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
     ImGui::End();
 
@@ -94,35 +93,98 @@ void ZappyGui::drawGui()
     ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 150, 10));
     ImGui::SetNextWindowSize(ImVec2(0, 0));
     ImGui::Begin("Time Unit", nullptr,
-        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
     ImGui::Text("Time Unit: %d", this->_timeUnit);
     ImGui::End();
 
     // Render ImGui wrap menu with teams colors in left side
-    // When click on a team, display all the trantorians of this team using
-    // e.g.Button()
-    ImGui::SetNextWindowPos(ImVec2(10, 40));
-    ImGui::SetNextWindowSize(ImVec2(150, ImGui::GetIO().DisplaySize.y - 50));
+    ImGui::SetNextWindowPos(ImVec2(10, 60));
+    ImGui::SetNextWindowSize(ImVec2(150, 160));
     ImGui::Begin("Teams", nullptr,
-        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-    for (auto &i : this->teamsColors_) {
-        if (ImGui::Button(i.first.c_str())) {
-            for (auto &j : this->trantorians_) {
-                if (j.team == i.first) {
-                    // New window with all the trantorians of this team
-                    ImGui::Begin(j.team.c_str());
-                    ImGui::Text("Trantorian %d", j.playerNumber);
-                    ImGui::End();
-                }
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
+    static std::string current_team = "";
+
+    if (ImGui::BeginCombo("Teams", current_team.c_str())) {
+        for (auto &team : this->teamsColors_) {
+            bool is_selected = (current_team == team.first);
+            if (ImGui::Selectable(team.first.c_str(), is_selected)) {
+                current_team = team.first;
+            }
+            if (is_selected) {
+                ImGui::SetItemDefaultFocus();
+            }
+        }
+        ImGui::EndCombo();
+    }
+
+    // Display a color selector for the selected team
+    if (!current_team.empty()) {
+        ImGui::Separator();
+
+        glm::vec3 glmColor1 = this->teamsColors_[current_team] / 255.0f;
+        float *color = glm::value_ptr(glmColor1);
+
+        if (ImGui::ColorEdit3("Color", color)) {
+            glmColor1 = glm::vec3(color[0], color[1], color[2]);
+            this->teamsColors_[current_team] = glmColor1 * 255.0f;
+        }
+    }
+
+    ImGui::Separator();
+
+    // Display trantorians for the selected team
+    if (!current_team.empty()) {
+        for (auto &trantorian : this->trantorians_) {
+            ImGui::Button(std::to_string(trantorian.playerNumber).c_str());
+            if (ImGui::IsItemClicked(0)) {
+                this->showChildWindow = !this->showChildWindow;
+                this->selectedPlayerNbr = trantorian.playerNumber;
             }
         }
     }
     ImGui::End();
 
-    // Render a chat window in the bottom right corner
+    if (this->showChildWindow) {
+        ImGui::Begin(
+            std::to_string(this->selectedPlayerNbr).c_str(), nullptr, 0);
+        // Display trantorian informations
+        for (auto &trantorian : this->trantorians_) {
+            if (trantorian.playerNumber == this->selectedPlayerNbr) {
+                if (trantorian.playerNumber == this->selectedPlayerNbr) {
+                    if (ImGui::BeginTabBar("Player Info")) {
+                        if (ImGui::BeginTabItem("General")) {
+                            ImGui::Text(
+                                "Player number: %d", trantorian.playerNumber);
+                            ImGui::Text("Level: %d", trantorian.level);
+                            ImGui::Text("Team: %s", trantorian.team.c_str());
+                            ImGui::EndTabItem();
+                        }
+                        if (ImGui::BeginTabItem("Inventory")) {
+                            ImGui::Text("Food: %d", trantorian.inventory.food);
+                            ImGui::Text(
+                                "Linemate: %d", trantorian.inventory.linemate);
+                            ImGui::Text("Deraumere: %d",
+                                trantorian.inventory.deraumere);
+                            ImGui::Text(
+                                "Sibur: %d", trantorian.inventory.sibur);
+                            ImGui::Text(
+                                "Mendiane: %d", trantorian.inventory.mendiane);
+                            ImGui::Text(
+                                "Phiras: %d", trantorian.inventory.phiras);
+                            ImGui::Text(
+                                "Thystame: %d", trantorian.inventory.thystame);
+                            ImGui::EndTabItem();
+                        }
+                        ImGui::EndTabBar();
+                    }
+                    ImGui::Separator();
+                }
+            }
+        }
+        ImGui::End();
+    }
 
+    // Render a chat window in the bottom right corner
     std::vector<std::string> chatMessages = {"Hello", "World", "!", "How",
         "are", "you", "?", "I'm", "fine", "thanks", "for", "asking", "!", "I",
         "hope", "you", "are", "too", "!", "Goodbye", "!", "See", "you", "soon",
@@ -132,8 +194,7 @@ void ZappyGui::drawGui()
         ImGui::GetIO().DisplaySize.y - 200));
     ImGui::SetNextWindowSize(ImVec2(300, 200));
     ImGui::Begin("Chat", nullptr,
-        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
     ImGui::Text("Chat");
     ImGui::Separator();
     for (auto &i : chatMessages) {
@@ -204,6 +265,35 @@ ZappyGui::ZappyGui()
         std::bind(&ZappyGui::edi, this, std::placeholders::_1);
     this->_pointerToFunction["WELCOME"] =
         std::bind(&ZappyGui::welcome, this, std::placeholders::_1);
+    timerManager_.startTimer("portalAnimation");
+}
+
+void ZappyGui::processCommand()
+{
+    {
+        std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
+        auto commandTime = std::chrono::high_resolution_clock::now();
+        auto endTime = commandTime + std::chrono::milliseconds(16);
+
+        while (!this->getClient().get()->getQueue().empty() &&
+            commandTime < endTime) {
+            std::vector<std::string> command =
+                this->getClient().get()->popFromQueue();
+
+            if (this->getPointerToFunction().find(command[0]) !=
+                this->getPointerToFunction().end()) {
+                try {
+                    this->getPointerToFunction()[command[0]](command);
+                } catch (const std::exception &e) {
+                    std::cerr << "Exception: " << e.what() << std::endl;
+                }
+            } else {
+                std::cerr << "Unknown command: " << command[0] << std::endl;
+            }
+
+            commandTime = std::chrono::high_resolution_clock::now();
+        }
+    }
 }
 
 ZappyGui::~ZappyGui() {}
@@ -236,10 +326,8 @@ void ZappyGui::run()
                 VK_SHADER_STAGE_FRAGMENT_BIT)
             .build();
 
-    // Create descriptor pool with adequate size
     globalPool = ZappyDescriptorPool::Builder(lveDevice)
-                     .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT *
-                         500) // Adjusted to fit more sets
+                     .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 500)
                      .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
                          ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 500)
                      .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
@@ -270,33 +358,14 @@ void ZappyGui::run()
 
     auto currentTime = std::chrono::high_resolution_clock::now();
     int socket_fd = this->getClient().get()->getSocketFd();
-    this->initImGui();
+    this->initHud();
+
     while (!lveWindow.shouldClose()) {
         glfwPollEvents();
+
         updateGame();
 
-        std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
-        auto commandTime = std::chrono::high_resolution_clock::now();
-        auto endTime = commandTime + std::chrono::milliseconds(16);
-        while (!this->getClient().get()->getQueue().empty() &&
-            commandTime < endTime) {
-
-            std::vector<std::string> command =
-                this->getClient().get()->popFromQueue();
-            if (this->getPointerToFunction().find(command[0]) !=
-                this->getPointerToFunction().end()) {
-                try {
-                    // Wrap actualCommand in a vector and call the function
-                    this->getPointerToFunction()[command[0]](command);
-                } catch (const std::exception &e) {
-                    std::cerr << e.what() << std::endl;
-                }
-            } else {
-                std::cerr << "Unknown command: " << command[0] << std::endl;
-            }
-            commandTime = std::chrono::high_resolution_clock::now();
-        }
-        lock.unlock();
+        processCommand();
 
         auto newTime = std::chrono::high_resolution_clock::now();
         float frameTime =
@@ -335,7 +404,7 @@ void ZappyGui::run()
             simpleRenderSystem.renderGameObjects(frameInfo);
             pointLightSystem.render(frameInfo);
 
-            this->drawGui();
+            this->drawHud();
             ImGui_ImplVulkan_RenderDrawData(
                 ImGui::GetDrawData(), commandBuffer);
 
@@ -349,6 +418,7 @@ void ZappyGui::run()
     ImGui_ImplVulkan_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+    close(socket_fd);
 
     std::cout << "Closing connection" << std::endl;
     this->getClient().get()->running = false;
@@ -404,7 +474,7 @@ ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
                 gameObjects.emplace(object.getId(), std::move(object));
                 return object.getId();
             }
-            index++;    
+            index++;
         }
 
         std::shared_ptr<Texture> texture =
@@ -1110,20 +1180,20 @@ void ZappyGui::createMap(int width, int height)
         createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
             executablePath + "/ZappyGui/textures/Obsidian.png",
             {i, -3.f, height}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
-        createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
-            executablePath + "/ZappyGui/textures/Portal.png", {i, -1.5f, -1.f},
-            {degreeToRadiant(90), 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
-        createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
-            executablePath + "/ZappyGui/textures/Portal.png", {i, -0.5f, -1.f},
-            {degreeToRadiant(90), 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
-        createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
-            executablePath + "/ZappyGui/textures/Portal.png",
+        portalFrames.push_back(createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+            executablePath + "/ZappyGui/textures/portal/frame1.png", {i, -1.5f, -1.f},
+            {degreeToRadiant(90), 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+        portalFrames.push_back(createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+            executablePath + "/ZappyGui/textures/portal/frame1.png", {i, -0.5f, -1.f},
+            {degreeToRadiant(90), 0.f, 0.f}, {1.f, 1.f, 1.f}, true));
+        portalFrames.push_back(createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+            executablePath + "/ZappyGui/textures/portal/frame1.png",
             {i, -1.5f, height}, {degreeToRadiant(90), 0.f, 0.f},
-            {1.f, 1.f, 1.f}, true);
-        createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
-            executablePath + "/ZappyGui/textures/Portal.png",
+            {1.f, 1.f, 1.f}, true));
+        portalFrames.push_back(createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+            executablePath + "/ZappyGui/textures/portal/frame1.png",
             {i, -0.5f, height}, {degreeToRadiant(90), 0.f, 0.f},
-            {1.f, 1.f, 1.f}, true);
+            {1.f, 1.f, 1.f}, true));
     }
     for (float i = 0.f; i < height; i++) {
         createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
@@ -1138,20 +1208,20 @@ void ZappyGui::createMap(int width, int height)
         createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
             executablePath + "/ZappyGui/textures/Obsidian.png",
             {width, -3.f, i}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
-        createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
-            executablePath + "/ZappyGui/textures/Portal.png", {-1.f, -1.5f, i},
-            {0.f, 0.f, degreeToRadiant(90)}, {1.f, 1.f, 1.f}, true);
-        createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
-            executablePath + "/ZappyGui/textures/Portal.png", {-1.f, -0.5f, i},
-            {0.f, 0.f, degreeToRadiant(90)}, {1.f, 1.f, 1.f}, true);
-        createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
-            executablePath + "/ZappyGui/textures/Portal.png",
+        portalFrames.push_back(createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+            executablePath + "/ZappyGui/textures/portal/frame1.png", {-1.f, -1.5f, i},
+            {0.f, 0.f, degreeToRadiant(90)}, {1.f, 1.f, 1.f}, true));
+        portalFrames.push_back(createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+            executablePath + "/ZappyGui/textures/portal/frame1.png", {-1.f, -0.5f, i},
+            {0.f, 0.f, degreeToRadiant(90)}, {1.f, 1.f, 1.f}, true));
+        portalFrames.push_back(createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+            executablePath + "/ZappyGui/textures/portal/frame1.png",
             {width, -1.5f, i}, {0.f, 0.f, degreeToRadiant(90)},
-            {1.f, 1.f, 1.f}, true);
-        createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
-            executablePath + "/ZappyGui/textures/Portal.png",
+            {1.f, 1.f, 1.f}, true));
+        portalFrames.push_back(createGameObject(executablePath + "/ZappyGui/models/Portal.obj",
+            executablePath + "/ZappyGui/textures/portal/frame1.png",
             {width, -0.5f, i}, {0.f, 0.f, degreeToRadiant(90)},
-            {1.f, 1.f, 1.f}, true);
+            {1.f, 1.f, 1.f}, true));
     }
     for (float i = 0.f; i > -4.f; i--) {
         createGameObject(executablePath + "/ZappyGui/models/Obsidian.obj",
@@ -1190,6 +1260,7 @@ void ZappyGui::createMap(int width, int height)
         executablePath + "/ZappyGui/textures/Sky.png",
         {(width / 2), 0.f, 25.f + (height / 2)},
         {degreeToRadiant(90), 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
+    indexPortalFrame = 1;
 }
 
 void ZappyGui::removeGameObject(ZappyGameObject::id_t gameObjectId)
@@ -1205,8 +1276,47 @@ float ZappyGui::getRandomFloat(float min, float max)
         (static_cast<float>(RAND_MAX / (max - min)));
 }
 
+void ZappyGui::updateGameObjectsTexture(
+    std::string texturePath, ZappyGameObject::id_t gameObjectId)
+{
+    int index = 0;
+    gameObjects[gameObjectId].hasDescriptorSet = true;
+    for (std::pair<std::vector<VkDescriptorSet>,
+            std::pair<std::shared_ptr<zappy::Texture>, std::string>>
+            &textureObject : textureObjects) {
+        if (textureObject.second.second == texturePath) {
+            gameObjects[gameObjectId].indexDescriptorSet = index;
+            return;
+        }
+        index++;
+    }
+
+    std::shared_ptr<Texture> texture =
+        std::make_shared<Texture>(lveDevice, texturePath);
+    gameObjects[gameObjectId].imageInfo.sampler = texture->getSampler();
+    gameObjects[gameObjectId].imageInfo.imageView = texture->getImageView();
+    gameObjects[gameObjectId].imageInfo.imageLayout = texture->getImageLayout();
+
+    std::vector<VkDescriptorSet> descriptorSets(
+        ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
+    for (int i = 0; i < uboBuffers.size(); i++) {
+        auto bufferInfo = uboBuffers[i]->descriptorInfo();
+        ZappyDescriptorWriter(*globalSetLayout, *globalPool)
+            .writeBuffer(0, &bufferInfo)
+            .writeImage(1, &gameObjects[gameObjectId].imageInfo)
+            .build(descriptorSets[i]);
+    }
+    textureObjects.push_back(std::make_pair(
+        descriptorSets, std::make_pair(texture, texturePath)));
+    gameObjects[gameObjectId].indexDescriptorSet = textureObjects.size() - 1;
+}
+
 void ZappyGui::updateGame()
 {
+    if (timerManager_.getElapsedTime("portalAnimation") > 0.05f) {
+        updatePortalFrame();
+        timerManager_.resetTimer("portalAnimation");
+    }
     for (Trantorian &Trantorian : trantorians_) {
         if (Trantorian.incatationInProgess) {
             for (auto &object : gameObjects) {
@@ -1218,41 +1328,14 @@ void ZappyGui::updateGame()
     }
 }
 
-void ZappyGui::updateGameObjectsTexture(
-    std::string texturePath, ZappyGameObject::id_t gameObjectId)
+void ZappyGui::updatePortalFrame()
 {
-    int index = 0;
-    for (auto &object : gameObjects) {
-        if (object.first == gameObjectId) {
-            object.second.hasDescriptorSet = true;
-            for (std::pair<std::vector<VkDescriptorSet>,
-                    std::pair<std::shared_ptr<zappy::Texture>, std::string>>
-                    &textureObject : textureObjects) {
-                if (textureObject.second.second == texturePath) {
-                    object.second.indexDescriptorSet = index;
-                }
-                index++;
-            }
-
-            std::shared_ptr<Texture> texture =
-                std::make_shared<Texture>(lveDevice, texturePath);
-            object.second.imageInfo.sampler = texture->getSampler();
-            object.second.imageInfo.imageView = texture->getImageView();
-            object.second.imageInfo.imageLayout = texture->getImageLayout();
-
-            std::vector<VkDescriptorSet> descriptorSets(
-                ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
-            for (int i = 0; i < uboBuffers.size(); i++) {
-                auto bufferInfo = uboBuffers[i]->descriptorInfo();
-                ZappyDescriptorWriter(*globalSetLayout, *globalPool)
-                    .writeBuffer(0, &bufferInfo)
-                    .writeImage(1, &object.second.imageInfo)
-                    .build(descriptorSets[i]);
-            }
-            textureObjects.push_back(std::make_pair(
-                descriptorSets, std::make_pair(texture, texturePath)));
-            object.second.indexDescriptorSet = textureObjects.size() - 1;
-        } 
+    if (indexPortalFrame == 32)
+        indexPortalFrame = 1;
+    else
+        indexPortalFrame++;
+    for (ZappyGameObject::id_t portalFrame : portalFrames) {
+        updateGameObjectsTexture(executablePath + "/ZappyGui/textures/portal/frame" + std::to_string(indexPortalFrame) + ".png", portalFrame);
     }
 }
 
