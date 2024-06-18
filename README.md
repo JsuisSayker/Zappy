@@ -129,7 +129,6 @@ By default f=100.
 |                   smg M\n                  |           |            message from the server            | | server send a message |
 |                    suc\n                   |           |                unknown command                | | empty or unknown command |
 |                    sbp\n                   |           |               command parameter               | | invalide command (wrong parameter.s) |
-|                   eht e\n                  |           |                 egg is mature                 | new GUI client connection | server create an egg or egg create by an AI become mature |
 
 <br>
 
