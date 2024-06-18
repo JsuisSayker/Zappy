@@ -2,10 +2,11 @@ import socket
 import selectors
 import subprocess
 
-from numpy import divide
 from ZappyAI.src.ai.ai import AI
 import select
 import errno
+
+from ZappyAI.src.ai.infos import Activity
 
 
 class Client():
@@ -47,6 +48,10 @@ class Client():
             print("Ctrl+C pressed, closing connection...")
             self.socket.close()
             return 0
+        except ConnectionRefusedError:
+            self.socket.close()
+            print("Connection refused")
+            exit(0)
 
         possibleEvents = selectors.EVENT_READ | selectors.EVENT_WRITE
         self.selector.register(self.socket, possibleEvents)
@@ -83,12 +88,36 @@ class Client():
             # self.data_height = height
             self.ai.heightValue = height
             self.ai.widthValue = width
-            self.ai.minWidthValue = self.ai.widthValue // 2
-            self.ai.minHeightValue = self.ai.heightValue // 2
+            # self.ai.minWidthValue = self.ai.widthValue // 2
+            # self.ai.minHeightValue = self.ai.heightValue // 2
             self.ai.dataToSend = ""
             self.actualStep = 3
             self.logged = True
             self.ai.run = True
+
+    def storePreviousData(self, data, filename="previous_data.txt"):
+        with open(filename, 'w') as file:
+            file.write(data)
+
+    def loadPreviousData(self, filename="previous_data.txt") -> str:
+        try:
+            with open(filename, 'r') as file:
+                return file.read()
+        except FileNotFoundError:
+            return ""
+
+    def forkingProcess(self):
+        newClientId = int(self.clientId) + 1
+        subprocess.Popen(["python3",
+                          "zappy_ai",
+                          "-p",
+                          str(self.port),
+                          "-n",
+                          self.teamName,
+                          "-h",
+                          self.host,
+                          "-i",
+                          str(newClientId)])
 
     def launch_client(self):
         try:
@@ -102,13 +131,16 @@ class Client():
                             print("Connection reset by peer")
                             self.closeConnection()
                             exit(0)
-                        print(f"data: {data}")
+                        print(f"DATA: {data}")
                         print(f"self.ai.dataToSend: {self.ai.dataToSend}")
+
                         if not data:
                             print("closing the connection")
                             self.closeConnection()
                         tmpReceivedData = data.split("\n")
                         print(f"tmpReceivedData: {tmpReceivedData[:-1]}")
+                        previousData = self.loadPreviousData()
+                        print(f"MINE PREVIOUS DATA: {previousData}")
                         for element in tmpReceivedData[:-1]:
                             print(f"element: {element}")
                             if "WELCOME" in element and self.logged is False:
@@ -127,14 +159,14 @@ class Client():
                                     in element:
                                 self.ai.updateSharedInventory()
                                 self.ai.newRessource = True
-                            elif "Inventory" in self.ai.dataToSend:
+                            elif "Inventory" in previousData and "Inventory" in self.ai.dataToSend:
                                 try:
                                     self.ai.parse_inventory(element)
                                 except IndexError:
                                     print("ValueError", element)
                                     pass
                             elif "Elevation underway" in element:
-                                self.ai.dataToSend = ""
+                                self.ai.actualActivity = Activity.CLEARING_DATA
                             elif "Current level" in element:
                                 self.ai.level = int(''.join(filter(
                                     str.isdigit, element)))
@@ -147,30 +179,22 @@ class Client():
                                 self.ai.searchingRessource = ""
                                 self.ai.incantation = False
                                 self.ai.nbReadyPlayers = 1
-                                self.ai.actualActivity = 12
+                                self.ai.actualActivity = \
+                                    Activity.FINISHING_INCANTATION
 
                             elif "message" in element:
                                 self.ai.parse_broadcast(element)
                                 # continue
                                 # return
                             elif self.ai.dataToSend == "Fork\n":
-                                newClientId = int(self.clientId) + 1
-                                subprocess.Popen(["python3",
-                                                  "zappy_ai",
-                                                  "-p",
-                                                  str(self.port),
-                                                  "-n",
-                                                  self.teamName,
-                                                  "-h",
-                                                  self.host,
-                                                  "-i",
-                                                  str(newClientId)])
+                                self.forkingProcess()
                                 print("forking")
                                 self.ai.canFork = False
                             self.ai.run = True
 
                     if mask & selectors.EVENT_WRITE:
                         if self.logged and self.ai.run is True:
+                            self.storePreviousData(self.ai.dataToSend)
                             self.ai.algorithm()
                         if self.ai.dataToSend and self.ai.run is True:
                             if self.ai.dataToSend == (
@@ -179,9 +203,14 @@ class Client():
                                 self.actualStep = 1
                             self.socket.send(self.ai.dataToSend.encode())
                             self.ai.run = False
+
         except KeyboardInterrupt:
             print("Closing connection...")
             self.socket.close()
+        except ConnectionResetError:
+            print("Connection reset by peer")
+            self.closeConnection()
+            exit(0)
 
     def closeConnection(self):
         fd = self.socket.fileno()

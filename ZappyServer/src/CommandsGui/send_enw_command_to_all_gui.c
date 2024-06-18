@@ -7,13 +7,12 @@
 
 #include <zappy_server.h>
 
-void send_pgt_command_to_all_gui(zappy_server_t *zappy, client_t *client,
-    int nb_resource)
+void send_enw_command_to_all_gui(zappy_server_t *zappy, egg_t *egg)
 {
     for (int i = 3; i < zappy->nb_connected_clients; i += 1) {
         if (zappy->clients[i].type == GUI) {
-            dprintf(i, "pgt %d %d\n", client->client_number,
-                nb_resource);
+            dprintf(i, "enw %d %d %d %d\n", egg->egg_number,
+                egg->client_number, egg->x, egg->y);
         }
     }
 }
