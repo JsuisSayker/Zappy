@@ -333,10 +333,6 @@ void ZappyGui::run()
     int socket_fd = this->getClient().get()->getSocketFd();
     this->initHud();
 
-    this->addTrantorian("test", {0.f, 0.f, 0.f}, 1, 2);
-    this->addTrantorian("test", {1.f, 0.f, 0.f}, 2, 2);
-    this->addTrantorian("test", {0.f, 0.f, 1.f}, 3, 2);
-
     while (!lveWindow.shouldClose()) {
         glfwPollEvents();
         updateGame();
