@@ -20,12 +20,14 @@
 #include "Camera.hpp"
 #include "Egg.hpp"
 #include "Timer.hpp"
+#include "Map.hpp"
 
 // std
 #include <memory>
 #include <signal.h>
 #include <vector>
 #include <random>
+#include <unordered_map>
 
 namespace zappy {
 class ZappyGui {
@@ -41,6 +43,7 @@ class ZappyGui {
     ZappyGui &operator=(const ZappyGui &) = delete;
 
     static std::string getExecutablePath();
+    float degreeToRadiant(float degrees);
 
     void addTrantorian(const std::string &teamName, const glm::vec3 &position, int playerNumber, int orientation);
     void removeTrantorian(int playerNumber);
@@ -64,6 +67,7 @@ class ZappyGui {
 
     void updateGame();
     void updatePortalFrame();
+    void updateResourcesAnimation();
     void updateGameObjectsTexture(std::string texturePath, ZappyGameObject::id_t gameObjectId);
 
     void processCommand();
@@ -126,7 +130,6 @@ class ZappyGui {
     std::vector<std::pair<std::vector<VkDescriptorSet>, std::pair<std::shared_ptr<Texture>, std::string>>> textureObjects;
     std::unique_ptr<Map> map_;
     std::shared_ptr<Client> client;
-    ZappyGameObject::Map ressources_;
     std::vector<Trantorian> trantorians_;
     std::vector<Egg> eggs_;
     std::unordered_map<std::string, glm::vec3> teamsColors_;
@@ -139,5 +142,7 @@ class ZappyGui {
     TimerManager timerManager_;
     int indexPortalFrame;
     std::vector<ZappyGameObject::id_t> portalFrames;
+    std::unordered_map<std::string, std::vector<ZappyGameObject::id_t>> resources_;
+    int indexRessourcesAnimation = 1;
 };
 } // namespace zappy
