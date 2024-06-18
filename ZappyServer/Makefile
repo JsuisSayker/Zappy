@@ -12,7 +12,6 @@ SRC			=	zappy_server.c						\
 				generate_random_uuid.c				\
 				accept_new_connection.c				\
 				setup_server.c						\
-				search_in_object.c					\
 				argument_function.c					\
 				generate_ressourse_list.c			\
 				map_tile_function.c					\

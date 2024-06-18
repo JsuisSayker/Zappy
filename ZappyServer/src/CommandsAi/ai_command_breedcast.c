@@ -15,12 +15,11 @@ static int spreads_breedcast(zappy_server_t *zappy, client_t *client,
     for (int i = 0; i < zappy->nb_connected_clients; i ++){
         printf("zappy number %d\n", zappy->clients[i].client_number);
         printf("client number %d\n", client->client_number);
-        if (client->client_number != zappy->clients[i].client_number
-            && zappy->clients[i].type == IA){
-            zappy->clients[i].message_receive =
-                add_node_in_list(zappy->clients[i].message_receive, message,
-                    client->pos);
-                printf("ta putain de grandmeme\n");
+        if (zappy->clients[i].type == IA && client->client_number !=
+        zappy->clients[i].client_number) {
+            zappy->clients[i].message_receive = add_node_in_list(
+            zappy->clients[i].message_receive, message, client->pos);
+            printf("ta putain de grandmeme\n");
         }
     }
     dprintf(zappy->actual_sockfd, "ok\n");

@@ -38,7 +38,6 @@ typedef struct zappy_server_s {
     double time_refill_map;
     struct sockaddr_in server_addr;
     struct teamhead all_teams;
-    struct threadhead all_threads;
     struct client_s clients[FD_SETSIZE];
     map_tile_t **map_tile;
     map_tile_t **map_tile_save;
@@ -89,7 +88,6 @@ void refill_map_tile(zappy_server_t *zappy, map_tile_t **destination,
     map_tile_t **source);
 
 // Linked list functions
-void free_threads(struct threadhead *head);
 void free_teams(struct teamhead *head);
 void free_node(message_t *node);
 int remove_first_node(message_t *list);
@@ -125,7 +123,6 @@ int accept_new_connection(int my_socket,
 int setup_server(int port, int max_clients);
 int save_info_to_file(zappy_server_t *zappy);
 int read_info_from_save_file(zappy_server_t *zappy);
-thread_t *search_in_threads(struct threadhead *thread_head, char *uuid);
 team_t *search_in_teams(struct teamhead *team_head, char *uuid);
 int get_len_char_tab(char **command);
 time_t get_actual_time(void);
