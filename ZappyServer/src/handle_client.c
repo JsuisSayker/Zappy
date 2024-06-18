@@ -25,17 +25,6 @@ static int handle_command(zappy_server_t *zappy, char *command)
     return ERROR;
 }
 
-static void last_split(
-    zappy_server_t *zappy, char *buffer, char *last_split)
-{
-    if (buffer[strlen(buffer) - 1] == *END_LINE) {
-        handle_command(zappy, last_split);
-        memset(buffer, 0, MAX_COMMAND_LENGTH);
-    } else {
-        strcpy(buffer, last_split);
-    }
-}
-
 static int clean_string(char *buffer)
 {
     for (int i = strlen(buffer); i > 0; i -= 1) {
@@ -59,13 +48,11 @@ void handle_client(zappy_server_t *zappy)
     strcat(zappy->clients[zappy->actual_sockfd].buffer.
         input_buffer, buffer);
     clean_string(buffer);
-    printf("Received: %s\n--\n", buffer);
     lines = splitter(buffer, END_LINE);
     if (lines == NULL)
         return;
     for (j = 0; lines[j] != NULL; j += 1) {
         handle_command(zappy, lines[j]);
     }
-    last_split(zappy, buffer, lines[j - 1]);
     free_array(lines);
 }
