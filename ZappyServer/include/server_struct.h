@@ -99,6 +99,12 @@ typedef struct ai_health_s {
     double time_to_eat;
 } ai_health_t;
 
+typedef struct message_s {
+    char *message;
+    ai_position_t pos;
+    struct message_s *next;
+} message_t;
+
 typedef struct client_s {
     buffer_t buffer;
     client_type_t type;
@@ -111,39 +117,8 @@ typedef struct client_s {
     ai_command_data_t command;
     ai_position_t pos;
     inventory_t inventory;
+    message_t *message_receive;
 } client_t;
-
-// REPLY PARAMETERS
-
-typedef struct reply_s {
-    char text[MAX_BODY_LENGTH];
-    char reply_uuid[MAX_UUID_LENGTH];
-    char sender_uuid[MAX_UUID_LENGTH];
-    char thread_uuid[MAX_UUID_LENGTH];
-    time_t timestamp;
-    TAILQ_ENTRY(reply_s) next;
-} reply_t;
-
-struct replyhead {
-    struct reply_s *tqh_first;
-    struct reply_s **tqh_last;
-};
-
-typedef struct thread_s {
-    char title[MAX_NAME_LENGTH];
-    char body[MAX_DESCRIPTION_LENGTH];
-    char thread_uuid[MAX_UUID_LENGTH];
-    char channel_uuid[MAX_UUID_LENGTH];
-    char sender_uuid[MAX_UUID_LENGTH];
-    time_t timestamp;
-    struct replyhead replys_head;
-    TAILQ_ENTRY(thread_s) next;
-} thread_t;
-
-struct threadhead {
-    struct thread_s *tqh_first;
-    struct thread_s **tqh_last;
-};
 
 typedef struct fd_s {
     fd_set input;
@@ -179,12 +154,6 @@ struct teamhead {
     struct team_s *tqh_first;
     struct team_s **tqh_last;
 };
-
-typedef struct message_s {
-    char *message;
-    ai_position_t *pos;
-    struct message_s *next;
-} message_t;
 
 typedef struct look_struct_s {
     ai_position_t pos;

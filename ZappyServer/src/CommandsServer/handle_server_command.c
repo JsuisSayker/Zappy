@@ -22,6 +22,8 @@ static const struct command_s COMMAND_FUNCS[] = {
     {"/send_guis", &server_command_send_guis},
     {"/kill", &server_command_kill},
     {"/fork", &server_command_fork},
+    {"/start", &server_command_start},
+    {"/pause", &server_command_pause},
     {"NULL", NULL}
 };
 
