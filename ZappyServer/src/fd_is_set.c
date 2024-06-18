@@ -13,8 +13,7 @@ static int check_connection(zappy_server_t *zappy)
 
     if (zappy->actual_sockfd == zappy->my_socket) {
         client_fd = accept_new_connection(zappy->my_socket,
-            &zappy->clients[zappy->actual_sockfd]
-            .other_socket_addr);
+            &zappy->clients[zappy->actual_sockfd].other_socket_addr);
         if (client_fd == ERROR)
             return ERROR;
         dprintf(client_fd, "WELCOME\n");
@@ -35,8 +34,10 @@ static void refill_map(zappy_server_t *zappy, client_t *client)
     gettimeofday(&tv, NULL);
     elapsed = (tv.tv_sec + tv.tv_usec / 1000000.0) - client->command.time;
     if (cast_time < elapsed) {
-        refill_map_tile(zappy, zappy->map_tile,
-            zappy->map_tile_save);
+        map_tile_t **tmp_map = setup_map_tile(zappy->args->width,
+            zappy->args->height);
+        refill_map_tile(zappy, zappy->map_tile, tmp_map);
+        free_map_tile(tmp_map);
         zappy->time_refill_map = time(NULL);
     }
 }
@@ -53,13 +54,15 @@ int fd_is_set(zappy_server_t *zappy)
             return ERROR;
         return OK;
     }
-    if (client->command.execution != NULL || (client->command.queue != NULL &&
-        client->command.queue[0] != NULL)) {
-        if (ai_function(zappy, client, NULL) != OK)
+    if (zappy->server_start_game) {
+        if ((client->command.execution != NULL ||
+        (client->command.queue != NULL && client->command.queue[0] != NULL))
+        && (ai_function(zappy, client, NULL) != OK)) {
             return KO;
+        }
+        if (client->type == IA)
+            is_alive(zappy, client);
+        // refill_map(zappy, client);
     }
-    if (client->type == IA)
-        is_alive(zappy, client);
-    refill_map(zappy, client);
     return OK;
 }

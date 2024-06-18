@@ -6,13 +6,7 @@
 */
 
 #include <zappy_server.h>
-    // {"/voir", &voir},
-    // {"/prend", &prend},
-    // {"/pose", &pose},
     // {"/expulse", &expulse},
-    // {"/broadcast", &broadcast},
-    // {"/fork", &fork_command},
-    // {"/connect_nbr", &connect_nbr},
 
 static const struct command_ai_s COMMAND_FUNCS[] = {
     {"Forward", &ai_command_forward},
@@ -25,6 +19,7 @@ static const struct command_ai_s COMMAND_FUNCS[] = {
     {"Look", &ai_command_look},
     {"Connect_nbr", &ai_command_connect_nbr},
     {"Incantation", &ai_command_incantation},
+    {"Broadcast", &ai_command_breadcast},
     {"NULL", NULL}
 };
 

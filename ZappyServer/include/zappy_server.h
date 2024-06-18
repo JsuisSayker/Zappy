@@ -33,11 +33,11 @@ typedef struct zappy_server_s {
     int index_eggs;
     int index_clients;
     int nb_connected_clients;
+    bool server_start_game;
     bool server_running;
     double time_refill_map;
     struct sockaddr_in server_addr;
     struct teamhead all_teams;
-    struct threadhead all_threads;
     struct client_s clients[FD_SETSIZE];
     map_tile_t **map_tile;
     map_tile_t **map_tile_save;
@@ -88,10 +88,11 @@ void refill_map_tile(zappy_server_t *zappy, map_tile_t **destination,
     map_tile_t **source);
 
 // Linked list functions
-void free_threads(struct threadhead *head);
 void free_teams(struct teamhead *head);
+void free_node(message_t *node);
+int remove_first_node(message_t *list);
 
-// Tools functions
+//  TOOLS FUNCTION
 bool is_valid_resource(char *resource);
 void free_array(char **array);
 void set_inventory_resource_quantite(inventory_t *tile_inventory,
@@ -99,6 +100,13 @@ void set_inventory_resource_quantite(inventory_t *tile_inventory,
 void normalize_coordinate(int *x, int *y, zappy_server_t *zappy);
 void free_string(char **str);
 void realloc_and_strcat(char **message, char *str);
+
+// node
+void free_node(message_t *node);
+void free_list(message_t *list);
+int remove_first_node(message_t *list);
+message_t *create_node(char *cmd, ai_position_t pos);
+message_t *add_node_in_list(message_t *list, char *cmd, ai_position_t pos);
 
 // Server functions
 int init_server(zappy_server_t *zappy, args_config_t *args);
@@ -115,7 +123,6 @@ int accept_new_connection(int my_socket,
 int setup_server(int port, int max_clients);
 int save_info_to_file(zappy_server_t *zappy);
 int read_info_from_save_file(zappy_server_t *zappy);
-thread_t *search_in_threads(struct threadhead *thread_head, char *uuid);
 team_t *search_in_teams(struct teamhead *team_head, char *uuid);
 int get_len_char_tab(char **command);
 time_t get_actual_time(void);
@@ -147,6 +154,8 @@ void server_command_set_level(zappy_server_t *zappy, char *command);
 void server_command_send_guis(zappy_server_t *zappy, char *command);
 void server_command_kill(zappy_server_t *zappy, char *command);
 void server_command_fork(zappy_server_t *zappy, char *command);
+void server_command_start(zappy_server_t *zappy, char *command);
+void server_command_pause(zappy_server_t *zappy, char *command);
 
 // AI FUNCTIONS
 
@@ -166,6 +175,8 @@ int ai_initialisation(zappy_server_t *zappy, client_t *ia,
 void send_gui_map_content(map_tile_t **map, int x, int y, int socket);
 
 // AI COMMANDS FUNCTIONS
+int ai_command_breadcast(zappy_server_t *zappy, client_t *client,
+    char *cmd);
 int ai_command_set(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_forward(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_right(zappy_server_t *zappy, client_t *client, char *cmd);
@@ -178,6 +189,9 @@ int ai_command_connect_nbr(zappy_server_t *zappy, client_t *client,
     char *cmd);
 int ai_command_incantation(zappy_server_t *zappy, client_t *client, char *cmd);
 bool is_alive(zappy_server_t *zappy, client_t *client);
+
+int read_message_recieve(zappy_server_t *zappy, client_t *client,
+    int actual_socket);
 
 void send_ppo_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_pin_command_to_all_gui(zappy_server_t *zappy, client_t *client);
@@ -192,6 +206,8 @@ void send_pic_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_plv_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_enw_command_to_all_gui(zappy_server_t *zappy, egg_t *egg);
 void send_eht_command_to_all_gui(zappy_server_t *zappy, int egg_number);
+void send_pbc_command_to_all_gui(zappy_server_t *zappy, client_t *client,
+    char *message);
 
 // GUI COMMANDS FUNCTIONS
 int handle_gui_command(zappy_server_t *zappy, char *command);
