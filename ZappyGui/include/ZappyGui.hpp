@@ -61,6 +61,9 @@ class ZappyGui {
 
     std::shared_ptr<Client> getClient() { return this->client; }
 
+    void updateGame();
+    void updateGameObjectsTexture(std::string texturePath, ZappyGameObject::id_t gameObjectId);
+
     // Functions to handle commands
     void msz(std::vector<std::string> actualCommand);
     void bct(std::vector<std::string> actualCommand);
