@@ -69,32 +69,30 @@ static bool refill_inventory(map_tile_t *destination, inventory_t *source)
     return change;
 }
 
-void refill_map_tile_ter(zappy_server_t *zappy_server,
+void refill_map_tile_ter(zappy_server_t *zappy,
     map_tile_t **destination, int i, int j)
 {
-    for (int k = 0; k < FD_SETSIZE; k++) {
-        if (zappy_server->clients[k].type == GUI) {
+    for (int k = 0; k < zappy->nb_connected_clients; k++) {
+        if (zappy->clients[k].type == GUI) {
             display_gui_tile(&destination[i][j], k);
             return;
         }
     }
 }
 
-void refill_map_tile_sub(zappy_server_t *zappy_server,
+void refill_map_tile_sub(zappy_server_t *zappy,
     map_tile_t **destination, map_tile_t **source, int i)
 {
     for (int j = 0; source[i][j].x != -1; j += 1) {
-        if (refill_inventory(&destination[i][j],
-        &source[i][j].inventory)) {
-            refill_map_tile_ter(zappy_server, destination, i, j);
-        }
+        refill_inventory(&destination[i][j], &source[i][j].inventory);
+        refill_map_tile_ter(zappy, destination, i, j);
     }
 }
 
-void refill_map_tile(zappy_server_t *zappy_server, map_tile_t **destination,
+void refill_map_tile(zappy_server_t *zappy, map_tile_t **destination,
     map_tile_t **source)
 {
     for (int i = 0; source[i] != NULL; i += 1) {
-        refill_map_tile_sub(zappy_server, destination, source, i);
+        refill_map_tile_sub(zappy, destination, source, i);
     }
 }

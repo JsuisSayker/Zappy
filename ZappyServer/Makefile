@@ -24,6 +24,7 @@ SRC			=	zappy_server.c						\
 				handle_unknown_command.c			\
 				error_display.c						\
 				ia_direction_function.c				\
+				generate_egg_by_team.c				\
 				${DIR_TOOLS}						\
 				${DIR_COMMAND_IA}					\
 				${DIR_COMMAND_GUI}					\
@@ -77,6 +78,8 @@ COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_sst.c				\
 					send_sgt_command_to_all_gui.c	\
 					send_sbp_command_to_all_gui.c	\
+					send_enw_command_to_all_gui.c	\
+					send_eht_command_to_all_gui.c	\
 
 COMMAND_SERVER	=	handle_server_command.c			\
 					server_command_help.c			\
@@ -92,6 +95,7 @@ COMMAND_SERVER	=	handle_server_command.c			\
 					server_command_set_level.c		\
 					server_command_send_guis.c		\
 					server_command_kill.c			\
+					server_command_fork.c			\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 

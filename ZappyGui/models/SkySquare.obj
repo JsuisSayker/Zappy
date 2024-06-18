@@ -1,0 +1,16 @@
+# Square 50x50 units with texture coordinates
+
+# Vertices
+v -25.0 0.0 25.0
+v -25.0 0.0 -25.0
+v 25.0 0.0 -25.0
+v 25.0 0.0 25.0
+
+# Texture coordinates
+vt 0.0 0.0
+vt 1.0 0.0
+vt 1.0 1.0
+vt 0.0 1.0
+
+# Faces
+f 1/1 2/2 3/3 4/4

@@ -32,29 +32,6 @@ class Trantorian {
     Trantorian(ZappyGameObject::id_t trantObjectId, ZappyGameObject::id_t pointLightObjectId, const std::string &team, int playerNumber);
     ~Trantorian() = default;
 
-    // void updateTrantorian(const Trantorian &trant);
-
-    // void updateTrantorianTranslation(const Trantorian &trant, glm::vec3
-    // translation);
-
-    // void updateTrantorianRotation(const Trantorian &trant, glm::vec3
-    // rotation);
-
-    // void updateTrantorianLevel(const std::string &team, ZappyGameObject
-    // gameObject);
-
-    // void updateInventory(const std::string &team, ZappyGameObject
-    // gameObject, const std::string &item, bool operator_);
-
-    // std::unordered_map<std::string, int> getInventory(const std::string
-    // &team, ZappyGameObject gameObject) const;
-
-    // ZappyGameObject::id_t getTrantorianGameObjectId(const std::string &team,
-    // ZappyGameObject gameObject) const;
-
-    // const std::vector<Trantorian> &getTrantorians() const { return
-    // Trantorians_; }
-
   public:
     ZappyGameObject::id_t trantorianObject;
     ZappyGameObject::id_t pointLightObject;

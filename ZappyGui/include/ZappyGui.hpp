@@ -18,6 +18,7 @@
 #include "Window.hpp"
 #include "Trantorian.hpp"
 #include "Camera.hpp"
+#include "Egg.hpp"
 
 // std
 #include <memory>
@@ -44,6 +45,10 @@ class ZappyGui {
     void removeTrantorian(int playerNumber);
     void updateTrantorianPosition(int playerNumber, const glm::vec3 &position, int orientation);
 
+    void eggLayingPose(int playerNumber);
+
+    void addEgg(int eggNumber, int playerNumber, const glm::vec3 &position);
+
     void setPointerToFunction(std::unordered_map<std::string, FunctionPtr> &pointerToFunction);
 
     std::unordered_map<std::string, FunctionPtr> &getPointerToFunction();
@@ -55,6 +60,9 @@ class ZappyGui {
     void setClient(std::shared_ptr<Client> client) { this->client = client; }
 
     std::shared_ptr<Client> getClient() { return this->client; }
+
+    void updateGame();
+    void updateGameObjectsTexture(std::string texturePath, ZappyGameObject::id_t gameObjectId);
 
     // Functions to handle commands
     void msz(std::vector<std::string> actualCommand);
@@ -91,7 +99,6 @@ class ZappyGui {
 
   protected:
     void createMap(int width, int height);
-    void loadGameObjects();
     ZappyGameObject::id_t createGameObject(const std::string &modelPath,
         const std::string &texturePath, const glm::vec3 &position,
         const glm::vec3 &rotation, const glm::vec3 &scale, bool hasTexture);
@@ -117,6 +124,7 @@ class ZappyGui {
     std::shared_ptr<Client> client;
     ZappyGameObject::Map ressources_;
     std::vector<Trantorian> trantorians_;
+    std::vector<Egg> eggs_;
     std::unordered_map<std::string, glm::vec3> teamsColors_;
     std::unordered_map<std::string, FunctionPtr> _pointerToFunction; // Map of pointers to functions
     int _timeUnit; // Time unit of the server
