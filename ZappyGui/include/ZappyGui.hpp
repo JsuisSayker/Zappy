@@ -64,6 +64,8 @@ class ZappyGui {
     void updateGame();
     void updateGameObjectsTexture(std::string texturePath, ZappyGameObject::id_t gameObjectId);
 
+    void processCommand();
+
     // Functions to handle commands
     void msz(std::vector<std::string> actualCommand);
     void bct(std::vector<std::string> actualCommand);

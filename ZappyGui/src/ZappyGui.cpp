@@ -267,6 +267,34 @@ ZappyGui::ZappyGui()
         std::bind(&ZappyGui::welcome, this, std::placeholders::_1);
 }
 
+void ZappyGui::processCommand()
+{
+    {
+        std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
+        auto commandTime = std::chrono::high_resolution_clock::now();
+        auto endTime = commandTime + std::chrono::milliseconds(16);
+
+        while (!this->getClient().get()->getQueue().empty() &&
+            commandTime < endTime) {
+            std::vector<std::string> command =
+                this->getClient().get()->popFromQueue();
+
+            if (this->getPointerToFunction().find(command[0]) !=
+                this->getPointerToFunction().end()) {
+                try {
+                    this->getPointerToFunction()[command[0]](command);
+                } catch (const std::exception &e) {
+                    std::cerr << "Exception: " << e.what() << std::endl;
+                }
+            } else {
+                std::cerr << "Unknown command: " << command[0] << std::endl;
+            }
+
+            commandTime = std::chrono::high_resolution_clock::now();
+        }
+    }
+}
+
 ZappyGui::~ZappyGui() {}
 
 void ZappyGui::run()
@@ -297,10 +325,8 @@ void ZappyGui::run()
                 VK_SHADER_STAGE_FRAGMENT_BIT)
             .build();
 
-    // Create descriptor pool with adequate size
     globalPool = ZappyDescriptorPool::Builder(lveDevice)
-                     .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT *
-                         500) // Adjusted to fit more sets
+                     .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 500)
                      .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
                          ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 500)
                      .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
@@ -335,30 +361,10 @@ void ZappyGui::run()
 
     while (!lveWindow.shouldClose()) {
         glfwPollEvents();
+
         updateGame();
 
-        std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
-        auto commandTime = std::chrono::high_resolution_clock::now();
-        auto endTime = commandTime + std::chrono::milliseconds(16);
-        while (!this->getClient().get()->getQueue().empty() &&
-            commandTime < endTime) {
-
-            std::vector<std::string> command =
-                this->getClient().get()->popFromQueue();
-            if (this->getPointerToFunction().find(command[0]) !=
-                this->getPointerToFunction().end()) {
-                try {
-                    // Wrap actualCommand in a vector and call the function
-                    this->getPointerToFunction()[command[0]](command);
-                } catch (const std::exception &e) {
-                    std::cerr << e.what() << std::endl;
-                }
-            } else {
-                std::cerr << "Unknown command: " << command[0] << std::endl;
-            }
-            commandTime = std::chrono::high_resolution_clock::now();
-        }
-        lock.unlock();
+        processCommand();
 
         auto newTime = std::chrono::high_resolution_clock::now();
         float frameTime =
@@ -417,7 +423,6 @@ void ZappyGui::run()
     this->getClient().get()->running = false;
     reader.join();
 
-
     vkDeviceWaitIdle(lveDevice.device());
 }
 
@@ -468,7 +473,7 @@ ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
                 gameObjects.emplace(object.getId(), std::move(object));
                 return object.getId();
             }
-            index++;    
+            index++;
         }
 
         std::shared_ptr<Texture> texture =
@@ -1290,8 +1295,8 @@ void ZappyGui::updateGameObjectsTexture(
         if (object.first == gameObjectId) {
             object.second.hasDescriptorSet = true;
             for (std::pair<std::vector<VkDescriptorSet>,
-                    std::pair<std::shared_ptr<zappy::Texture>, std::string>>
-                    &textureObject : textureObjects) {
+                     std::pair<std::shared_ptr<zappy::Texture>, std::string>>
+                     &textureObject : textureObjects) {
                 if (textureObject.second.second == texturePath) {
                     object.second.indexDescriptorSet = index;
                 }
@@ -1316,7 +1321,7 @@ void ZappyGui::updateGameObjectsTexture(
             textureObjects.push_back(std::make_pair(
                 descriptorSets, std::make_pair(texture, texturePath)));
             object.second.indexDescriptorSet = textureObjects.size() - 1;
-        } 
+        }
     }
 }
 
