@@ -1100,6 +1100,24 @@ void ZappyGui::createMap(int width, int height)
             executablePath + "/ZappyGui/textures/Obsidian.png",
             {width, i, height}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
     }
+    createGameObject(executablePath + "/ZappyGui/models/SkySquare.obj",
+        executablePath + "/ZappyGui/textures/SkyTop.png", {width / 2, -25.f, height / 2},
+        {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
+    createGameObject(executablePath + "/ZappyGui/models/SkySquare.obj",
+        executablePath + "/ZappyGui/textures/Sky.png", {width / 2, 25.f, height / 2},
+        {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
+    createGameObject(executablePath + "/ZappyGui/models/SkySquare.obj",
+        executablePath + "/ZappyGui/textures/Sky.png", {-25.f + (width / 2), 0.f, (height / 2)},
+        {0.f, 0.f, degreeToRadiant(90)}, {1.f, 1.f, 1.f}, true);
+    createGameObject(executablePath + "/ZappyGui/models/SkySquare.obj",
+        executablePath + "/ZappyGui/textures/Sky.png", {25.f + (width / 2), 0.f, (height / 2)},
+        {0.f, 0.f, degreeToRadiant(90)}, {1.f, 1.f, 1.f}, true);
+    createGameObject(executablePath + "/ZappyGui/models/SkySquare.obj",
+        executablePath + "/ZappyGui/textures/Sky.png", {(width / 2), 0.f, -25.f + (height / 2)},
+        {degreeToRadiant(90), 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
+    createGameObject(executablePath + "/ZappyGui/models/SkySquare.obj",
+        executablePath + "/ZappyGui/textures/Sky.png", {(width / 2), 0.f, 25.f + (height / 2)},
+        {degreeToRadiant(90), 0.f, 0.f}, {1.f, 1.f, 1.f}, true);
 }
 
 void ZappyGui::removeGameObject(ZappyGameObject::id_t gameObjectId)
