@@ -40,10 +40,6 @@ TOOLS		=	splitter.c							\
 				normalize_coordonate.c				\
 				free_string.c						\
 				realloc_and_strcat.c				\
-				LinkedList/add_node.c				\
-				LinkedList/free_list.c				\
-				LinkedList/create_node.c			\
-				LinkedList/remove_node.c			\
 
 COMMAND_AI		=	handle_ai_command.c				\
 					ai_function.c					\

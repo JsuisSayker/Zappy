@@ -193,8 +193,8 @@ int ai_command_connect_nbr(zappy_server_t *zappy, client_t *client,
 int ai_command_incantation(zappy_server_t *zappy, client_t *client, char *cmd);
 bool is_alive(zappy_server_t *zappy, client_t *client);
 
-int read_message_recieve(zappy_server_t *zappy, client_t *client,
-    int actual_socket);
+int read_message_receive(zappy_server_t *zappy, client_t *client,
+    message_t *message, int actual_sockfd);
 
 void send_ppo_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_pin_command_to_all_gui(zappy_server_t *zappy, client_t *client);
