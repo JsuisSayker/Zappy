@@ -46,7 +46,6 @@ int fd_is_set(zappy_server_t *zappy)
 {
     client_t *client;
 
-    printf("FD_IS_SET\n");
     if (zappy == NULL)
         return ERROR;
     client = &zappy->clients[zappy->actual_sockfd];

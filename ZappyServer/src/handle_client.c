@@ -63,9 +63,9 @@ void handle_client(zappy_server_t *zappy)
     lines = splitter(buffer, END_LINE);
     if (lines == NULL)
         return;
-    for (j = 0; lines[1] != NULL && lines[j + 1]; j += 1) {
+    for (j = 0; lines[j] != NULL; j += 1) {
         handle_command(zappy, lines[j]);
     }
-    last_split(zappy, buffer, lines[j]);
+    last_split(zappy, buffer, lines[j - 1]);
     free_array(lines);
 }
