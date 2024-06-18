@@ -2,12 +2,12 @@
 ** EPITECH PROJECT, 2024
 ** Zappy
 ** File description:
-** ai_command_breedcast
+** ai_command_breadcast
 */
 
 #include "zappy_server.h"
 
-static int spreads_breedcast(zappy_server_t *zappy, client_t *client,
+static int spreads_breadcast(zappy_server_t *zappy, client_t *client,
     char *message)
 {
     if (zappy == NULL || client == NULL)
@@ -26,7 +26,7 @@ static int spreads_breedcast(zappy_server_t *zappy, client_t *client,
     return OK;
 }
 
-int ai_command_breedcast(zappy_server_t *zappy, client_t *client,
+int ai_command_breadcast(zappy_server_t *zappy, client_t *client,
     char *cmd)
 {
     char *message = NULL;
@@ -38,7 +38,7 @@ int ai_command_breedcast(zappy_server_t *zappy, client_t *client,
     if (check_action(zappy, client) == false)
         return OK;
     message = cmd[9] == ' ' ? &cmd[10] : &cmd[9];
-    if (spreads_breedcast(zappy, client, message) == ERROR) {
+    if (spreads_breadcast(zappy, client, message) == ERROR) {
         dprintf(zappy->actual_sockfd, "ko\n");
         return ERROR;
     }

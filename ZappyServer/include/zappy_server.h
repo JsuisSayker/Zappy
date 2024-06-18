@@ -175,7 +175,7 @@ int ai_initialisation(zappy_server_t *zappy, client_t *ia,
 void send_gui_map_content(map_tile_t **map, int x, int y, int socket);
 
 // AI COMMANDS FUNCTIONS
-int ai_command_breedcast(zappy_server_t *zappy, client_t *client,
+int ai_command_breadcast(zappy_server_t *zappy, client_t *client,
     char *cmd);
 int ai_command_set(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_forward(zappy_server_t *zappy, client_t *client, char *cmd);

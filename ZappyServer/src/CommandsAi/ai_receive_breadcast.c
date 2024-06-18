@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2024
 ** Zappy
 ** File description:
-** ai_receive_breedcast
+** ai_receive_breadcast
 */
 
 #include "zappy_server.h"
