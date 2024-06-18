@@ -33,7 +33,6 @@ static int do_fork(zappy_server_t *zappy, client_t *client)
             add_egg(zappy, client, team);
             tmp_egg = TAILQ_LAST(&(team->eggs_head), egghead);
             send_enw_command_to_all_gui(zappy, tmp_egg);
-            send_eht_command_to_all_gui(zappy, tmp_egg->egg_number);
             send_pfk_command_to_all_gui(zappy, client);
             dprintf(zappy->actual_sockfd, "ok\n");
             return OK;

@@ -17,7 +17,6 @@ static void send_egg_info(zappy_server_t *zappy)
             dprintf(zappy->actual_sockfd, "enw %d %d %d %d\n",
                 tmp_egg->egg_number, tmp_egg->client_number, tmp_egg->x,
                 tmp_egg->y);
-            dprintf(zappy->actual_sockfd, "eht %d\n", tmp_egg->egg_number);
         }
     }
 }
