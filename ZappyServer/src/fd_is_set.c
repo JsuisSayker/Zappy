@@ -34,8 +34,8 @@ static void refill_map(zappy_server_t *zappy, client_t *client)
     gettimeofday(&tv, NULL);
     elapsed = (tv.tv_sec + tv.tv_usec / 1000000.0) - client->command.time;
     if (cast_time < elapsed) {
-        map_tile_t **tmp_map =
-            setup_map_tile(zappy->args->width, zappy->args->height);
+        map_tile_t **tmp_map = setup_map_tile(zappy->args->width,
+            zappy->args->height);
         refill_map_tile(zappy, zappy->map_tile, tmp_map);
         free_map_tile(tmp_map);
         zappy->time_refill_map = time(NULL);
@@ -62,7 +62,7 @@ int fd_is_set(zappy_server_t *zappy)
         }
         if (client->type == IA)
             is_alive(zappy, client);
-        refill_map(zappy, client);
+        // refill_map(zappy, client);
     }
     return OK;
 }

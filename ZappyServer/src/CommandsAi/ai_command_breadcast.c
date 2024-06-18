@@ -22,6 +22,7 @@ static int spreads_breadcast(zappy_server_t *zappy, client_t *client,
             printf("ta putain de grandmeme\n");
         }
     }
+    send_pbc_command_to_all_gui(zappy, client, message);
     dprintf(zappy->actual_sockfd, "ok\n");
     return OK;
 }
