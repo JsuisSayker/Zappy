@@ -98,8 +98,8 @@ void ZappyGui::drawHud()
     ImGui::End();
 
     // Render ImGui wrap menu with teams colors in left side
-    ImGui::SetNextWindowPos(ImVec2(10, 60));
-    ImGui::SetNextWindowSize(ImVec2(150, 160));
+    ImGui::SetNextWindowPos(ImVec2(10, 100), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(250, 500), ImGuiCond_FirstUseEver);
     ImGui::Begin("Teams", nullptr,
         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
     static std::string current_team = "";
@@ -145,6 +145,9 @@ void ZappyGui::drawHud()
     ImGui::End();
 
     if (this->showChildWindow) {
+        ImGui::SetNextWindowPos(ImVec2(110, 100), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(200, 180), ImGuiCond_FirstUseEver);
+
         ImGui::Begin(
             std::to_string(this->selectedPlayerNbr).c_str(), nullptr, 0);
         // Display trantorian informations
@@ -191,7 +194,6 @@ void ZappyGui::drawHud()
         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
     ImGui::Text("Chat");
     ImGui::Separator();
-    // loop over chat messages queue
     for (auto &message : this->chatMessages) {
         ImGui::Text("%s : %s", message.first.c_str(), message.second.c_str());
     }
@@ -602,7 +604,10 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
                 foodId = createGameObject(
                     executablePath + "/ZappyGui/models/diamond_apple.obj",
                     executablePath + "/ZappyGui/textures/diamond_apple.png",
-                    {static_cast<float>(x), gameObjects[resources_["food"].back()].transform.translation.y, static_cast<float>(y)},
+                    {static_cast<float>(x),
+                        gameObjects[resources_["food"].back()]
+                            .transform.translation.y,
+                        static_cast<float>(y)},
                     {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
                     true);
             } else {
@@ -610,7 +615,8 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
                     executablePath + "/ZappyGui/models/diamond_apple.obj",
                     executablePath + "/ZappyGui/textures/diamond_apple.png",
                     {static_cast<float>(x), 0.f, static_cast<float>(y)},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             }
             map[x][y].food.push_back(foodId);
             resources_["food"].push_back(foodId);
@@ -634,14 +640,20 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
                 linemateId = createGameObject(
                     executablePath + "/ZappyGui/models/ingot.obj",
                     executablePath + "/ZappyGui/textures/iron_ingot.png",
-                    {static_cast<float>(x) - 0.3f, gameObjects[resources_["linemate"].back()].transform.translation.y, static_cast<float>(y) - 0.3f},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) - 0.3f,
+                        gameObjects[resources_["linemate"].back()]
+                            .transform.translation.y,
+                        static_cast<float>(y) - 0.3f},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             } else {
                 linemateId = createGameObject(
                     executablePath + "/ZappyGui/models/ingot.obj",
                     executablePath + "/ZappyGui/textures/iron_ingot.png",
-                    {static_cast<float>(x) - 0.3f, 0.f, static_cast<float>(y) - 0.3f},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) - 0.3f, 0.f,
+                        static_cast<float>(y) - 0.3f},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             }
             map[x][y].linemate.push_back(linemateId);
             resources_["linemate"].push_back(linemateId);
@@ -651,7 +663,8 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
             removeGameObject(map[x][y].linemate.back());
             for (int j = 0; j < resources_["linemate"].size(); j++) {
                 if (resources_["linemate"][j] == map[x][y].linemate.back()) {
-                    resources_["linemate"].erase(resources_["linemate"].begin() + j);
+                    resources_["linemate"].erase(
+                        resources_["linemate"].begin() + j);
                     break;
                 }
             }
@@ -665,14 +678,20 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
                 deraumereId = createGameObject(
                     executablePath + "/ZappyGui/models/ingot.obj",
                     executablePath + "/ZappyGui/textures/gold_ingot.png",
-                    {static_cast<float>(x) + 0.3f, gameObjects[resources_["deraumere"].back()].transform.translation.y, static_cast<float>(y) + 0.3f},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) + 0.3f,
+                        gameObjects[resources_["deraumere"].back()]
+                            .transform.translation.y,
+                        static_cast<float>(y) + 0.3f},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             } else {
                 deraumereId = createGameObject(
                     executablePath + "/ZappyGui/models/ingot.obj",
                     executablePath + "/ZappyGui/textures/gold_ingot.png",
-                    {static_cast<float>(x) + 0.3f, 0.f, static_cast<float>(y) + 0.3f},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) + 0.3f, 0.f,
+                        static_cast<float>(y) + 0.3f},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             }
             map[x][y].deraumere.push_back(deraumereId);
             resources_["deraumere"].push_back(deraumereId);
@@ -682,7 +701,8 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
             removeGameObject(map[x][y].deraumere.back());
             for (int j = 0; j < resources_["deraumere"].size(); j++) {
                 if (resources_["deraumere"][j] == map[x][y].deraumere.back()) {
-                    resources_["deraumere"].erase(resources_["deraumere"].begin() + j);
+                    resources_["deraumere"].erase(
+                        resources_["deraumere"].begin() + j);
                     break;
                 }
             }
@@ -696,14 +716,20 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
                 siburId = createGameObject(
                     executablePath + "/ZappyGui/models/diamond.obj",
                     executablePath + "/ZappyGui/textures/diamond.png",
-                    {static_cast<float>(x) - 0.3f, gameObjects[resources_["sibur"].back()].transform.translation.y, static_cast<float>(y) + 0.3f},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) - 0.3f,
+                        gameObjects[resources_["sibur"].back()]
+                            .transform.translation.y,
+                        static_cast<float>(y) + 0.3f},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             } else {
                 siburId = createGameObject(
                     executablePath + "/ZappyGui/models/diamond.obj",
                     executablePath + "/ZappyGui/textures/diamond.png",
-                    {static_cast<float>(x) - 0.3f, 0.f, static_cast<float>(y) + 0.3f},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) - 0.3f, 0.f,
+                        static_cast<float>(y) + 0.3f},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             }
             map[x][y].sibur.push_back(siburId);
             resources_["sibur"].push_back(siburId);
@@ -727,14 +753,20 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
                 mendianeId = createGameObject(
                     executablePath + "/ZappyGui/models/diamond.obj",
                     executablePath + "/ZappyGui/textures/diamond_purple.png",
-                    {static_cast<float>(x) + 0.3f, gameObjects[resources_["mendiane"].back()].transform.translation.y, static_cast<float>(y) - 0.3f},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) + 0.3f,
+                        gameObjects[resources_["mendiane"].back()]
+                            .transform.translation.y,
+                        static_cast<float>(y) - 0.3f},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             } else {
                 mendianeId = createGameObject(
                     executablePath + "/ZappyGui/models/diamond.obj",
                     executablePath + "/ZappyGui/textures/diamond_purple.png",
-                    {static_cast<float>(x) + 0.3f, 0.f, static_cast<float>(y) - 0.3f},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) + 0.3f, 0.f,
+                        static_cast<float>(y) - 0.3f},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             }
             map[x][y].mendiane.push_back(mendianeId);
             resources_["mendiane"].push_back(mendianeId);
@@ -744,7 +776,8 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
             removeGameObject(map[x][y].mendiane.back());
             for (int j = 0; j < resources_["mendiane"].size(); j++) {
                 if (resources_["mendiane"][j] == map[x][y].mendiane.back()) {
-                    resources_["mendiane"].erase(resources_["mendiane"].begin() + j);
+                    resources_["mendiane"].erase(
+                        resources_["mendiane"].begin() + j);
                     break;
                 }
             }
@@ -758,14 +791,19 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
                 phirasId = createGameObject(
                     executablePath + "/ZappyGui/models/ingot.obj",
                     executablePath + "/ZappyGui/textures/green_ingot.png",
-                    {static_cast<float>(x) - 0.3f, gameObjects[resources_["phiras"].back()].transform.translation.y, static_cast<float>(y)},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) - 0.3f,
+                        gameObjects[resources_["phiras"].back()]
+                            .transform.translation.y,
+                        static_cast<float>(y)},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             } else {
                 phirasId = createGameObject(
                     executablePath + "/ZappyGui/models/ingot.obj",
                     executablePath + "/ZappyGui/textures/green_ingot.png",
                     {static_cast<float>(x) - 0.3f, 0.f, static_cast<float>(y)},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             }
             map[x][y].phiras.push_back(phirasId);
             resources_["phiras"].push_back(phirasId);
@@ -775,7 +813,8 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
             removeGameObject(map[x][y].phiras.back());
             for (int j = 0; j < resources_["phiras"].size(); j++) {
                 if (resources_["phiras"][j] == map[x][y].phiras.back()) {
-                    resources_["phiras"].erase(resources_["phiras"].begin() + j);
+                    resources_["phiras"].erase(
+                        resources_["phiras"].begin() + j);
                     break;
                 }
             }
@@ -789,14 +828,19 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
                 thystameId = createGameObject(
                     executablePath + "/ZappyGui/models/diamond.obj",
                     executablePath + "/ZappyGui/textures/diamond_red.png",
-                    {static_cast<float>(x) + 0.3f, gameObjects[resources_["thystame"].back()].transform.translation.y, static_cast<float>(y)},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) + 0.3f,
+                        gameObjects[resources_["thystame"].back()]
+                            .transform.translation.y,
+                        static_cast<float>(y)},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             } else {
                 thystameId = createGameObject(
                     executablePath + "/ZappyGui/models/diamond.obj",
                     executablePath + "/ZappyGui/textures/diamond_red.png",
                     {static_cast<float>(x) + 0.3f, 0.f, static_cast<float>(y)},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             }
             map[x][y].thystame.push_back(thystameId);
             resources_["thystame"].push_back(thystameId);
@@ -806,7 +850,8 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
             removeGameObject(map[x][y].thystame.back());
             for (int j = 0; j < resources_["thystame"].size(); j++) {
                 if (resources_["thystame"][j] == map[x][y].thystame.back()) {
-                    resources_["thystame"].erase(resources_["thystame"].begin() + j);
+                    resources_["thystame"].erase(
+                        resources_["thystame"].begin() + j);
                     break;
                 }
             }

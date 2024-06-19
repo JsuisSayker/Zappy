@@ -61,9 +61,9 @@ class AI():
         signalDirection = int(messageReceived[8])
         print(f"signalDirection: {signalDirection}")
         print(f"messageReceived before: {messageReceived}")
-        print(
-            f"the second part of the message received: [{messageReceived[
-                11:]}]")
+        # print(
+            # f"the second part of the message received: [{messageReceived[
+                # 11:]}]")
         parsedReceivedMessage = self.sxor(self.teamName,
                                           bytes.fromhex(messageReceived[11:]
                                                         ).decode("utf-8"))
@@ -254,9 +254,9 @@ class AI():
         for ressource in requiredRessources:
             if requiredRessources[ressource] < 1:
                 return
-            print(f"requiredRessources[{ressource}]: {requiredRessources[
-                ressource]}")
-            if requiredRessources[ressource] >= 0 and\
+            # print(f"requiredRessources[{ressource}]: {requiredRessources[
+                # ressource]}")
+            if requiredRessources[ressource] != 0 and\
                     ressource in self.inventory:
                 self.commandList.append("Set " + ressource + "\n")
                 self.commandList.append("Look\n")
