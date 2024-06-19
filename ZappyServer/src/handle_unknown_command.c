@@ -39,8 +39,7 @@ static void send_map_info(zappy_server_t *zappy)
     dprintf(zappy->actual_sockfd, "sgt %d\n", zappy->args->freq);
     send_gui_map_content(zappy->map_tile, zappy->args->width,
         zappy->args->height, zappy->actual_sockfd);
-    TAILQ_FOREACH(tmp_team, &zappy->all_teams, next)
-    {
+    TAILQ_FOREACH(tmp_team, &zappy->all_teams, next) {
         dprintf(zappy->actual_sockfd, "tna %s\n", tmp_team->name);
     }
 }
@@ -69,7 +68,7 @@ static void send_info_ai_to_gui(zappy_server_t *zappy, client_t *client)
                 client->inventory.deraumere, client->inventory.sibur,
                 client->inventory.mendiane, client->inventory.phiras,
                 client->inventory.thystame);
-            dprintf(i, "ebo %d\n", 2);
+            dprintf(i, "ebo %d\n", client->client_number);
         }
     }
 }
