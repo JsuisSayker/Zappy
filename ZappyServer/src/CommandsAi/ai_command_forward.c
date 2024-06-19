@@ -10,10 +10,10 @@
 static int check_direction_sub(zappy_server_t *zappy, client_t *client)
 {
     if (client->pos.direction == EAST){
-        if (client->pos.x > zappy->args->width - 1)
+        if (client->pos.x == zappy->args->width - 1)
             client->pos.x = 0;
         else
-            client->pos.x = client->pos.x + 1;
+            client->pos.x += 1;
         dprintf(zappy->actual_sockfd, "ok\n");
         send_ppo_command_to_all_gui(zappy, client);
         return OK;
@@ -33,10 +33,10 @@ static int check_direction_sub(zappy_server_t *zappy, client_t *client)
 static int check_direction(zappy_server_t *zappy, client_t *client)
 {
     if (client->pos.direction == NORTH){
-        if (client->pos.y > zappy->args->height - 1)
+        if (client->pos.y == zappy->args->height - 1)
             client->pos.y = 0;
         else
-            client->pos.y = client->pos.y + 1;
+            client->pos.y += 1;
         dprintf(zappy->actual_sockfd, "ok\n");
         return OK;
     }
@@ -63,5 +63,6 @@ int ai_command_forward(zappy_server_t *zappy, client_t *client, char *cmd)
         return OK;
     if (check_direction(zappy, client) == ERROR)
         return ERROR;
+    printf("client, x y %d %d\n", client->pos.x, client->pos.y);
     return OK;
 }

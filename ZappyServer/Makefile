@@ -39,10 +39,6 @@ TOOLS		=	splitter.c							\
 				normalize_coordonate.c				\
 				free_string.c						\
 				realloc_and_strcat.c				\
-				LinkedList/add_node.c				\
-				LinkedList/free_list.c				\
-				LinkedList/create_node.c			\
-				LinkedList/remove_node.c			\
 
 COMMAND_AI		=	handle_ai_command.c				\
 					ai_function.c					\
@@ -85,7 +81,6 @@ COMMAND_GUI		=	handle_gui_command.c			\
 					send_sgt_command_to_all_gui.c	\
 					send_sbp_command_to_all_gui.c	\
 					send_enw_command_to_all_gui.c	\
-					send_eht_command_to_all_gui.c	\
 
 COMMAND_SERVER	=	handle_server_command.c			\
 					server_command_help.c			\

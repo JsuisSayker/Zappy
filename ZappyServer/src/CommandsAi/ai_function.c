@@ -47,8 +47,6 @@ int ai_function(zappy_server_t *zappy, client_t *client, char *cmd)
 {
     if (zappy == NULL || client == NULL)
         return ERROR;
-    if (read_message_recieve(zappy, client, zappy->actual_sockfd) == ERROR)
-        return ERROR;
     if (is_alive(zappy, client) == false)
         return OK;
     if (handle_ai_command(zappy, client, cmd) == ERROR)
