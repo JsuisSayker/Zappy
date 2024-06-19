@@ -105,6 +105,8 @@ static int complet_incantation(zappy_server_t *zappy, client_t *client,
         client->pos.x && zappy->clients[i].pos.y == client->pos.y
         && zappy->clients[i].level == lvl) {
             zappy->clients[i].level += 1;
+            if (zappy->clients[i].level == 8)
+                send_seg_command_to_all_gui(zappy, &zappy->clients[i]);
             zappy->clients[i].incantation = false;
             send_pie_command_to_all_gui(zappy, &zappy->clients[i]);
             send_plv_command_to_all_gui(zappy, &zappy->clients[i]);
