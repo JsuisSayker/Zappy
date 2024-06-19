@@ -62,8 +62,8 @@ class AI():
         print(f"signalDirection: {signalDirection}")
         print(f"messageReceived before: {messageReceived}")
         # print(
-            # f"the second part of the message received: [{messageReceived[
-                # 11:]}]")
+        # f"the second part of the message received: [{messageReceived[
+        # 11:]}]")
         parsedReceivedMessage = self.sxor(self.teamName,
                                           bytes.fromhex(messageReceived[11:]
                                                         ).decode("utf-8"))
