@@ -276,10 +276,8 @@ void ZappyGui::processCommand()
     auto commandTime = std::chrono::high_resolution_clock::now();
     auto endTime = commandTime + std::chrono::milliseconds(16);
 
-    while (!this->getClient().get()->getQueue().empty() &&
-        commandTime < endTime) {
-        std::vector<std::string> command =
-            this->getClient().get()->popFromQueue();
+    while (!this->getClient().get()->getQueue().empty() && commandTime < endTime) {
+        std::vector<std::string> command = this->getClient().get()->popFromQueue();
 
         if (this->getPointerToFunction().find(command[0]) !=
             this->getPointerToFunction().end()) {
@@ -892,17 +890,18 @@ void ZappyGui::pnw(std::vector<std::string> actualCommand)
         std::cerr << "pnw: invalid number of arguments" << std::endl;
         return;
     }
-    int trantorianId;
+    int playerNumber;
     int x;
     int y;
-    int orientation;
+    std::string orientation;
     int level;
     std::string teamName;
     try {
-        trantorianId = std::stoi(actualCommand[1]);
+        actualCommand[1].erase(actualCommand[1].begin());
+        playerNumber = std::stoi(actualCommand[1]);
         x = std::stoi(actualCommand[2]);
         y = std::stoi(actualCommand[3]);
-        orientation = std::stoi(actualCommand[4]);
+        orientation = actualCommand[4];
         level = std::stoi(actualCommand[5]);
         teamName = actualCommand[6];
     } catch (const std::exception &e) {
@@ -910,7 +909,7 @@ void ZappyGui::pnw(std::vector<std::string> actualCommand)
     }
 
     this->addTrantorian(teamName,
-        {static_cast<float>(x), -.25f, static_cast<float>(y)}, trantorianId,
+        {static_cast<float>(x), -.25f, static_cast<float>(y)}, playerNumber,
         orientation);
 }
 
@@ -923,12 +922,13 @@ void ZappyGui::ppo(std::vector<std::string> actualCommand)
     int playerNumber;
     int x;
     int y;
-    int orientation;
+    std::string orientation;
     try {
+        actualCommand[1].erase(actualCommand[1].begin());
         playerNumber = std::stoi(actualCommand[1]);
         x = std::stoi(actualCommand[2]);
         y = std::stoi(actualCommand[3]);
-        orientation = std::stoi(actualCommand[4]);
+        orientation = actualCommand[4];
     } catch (const std::exception &e) {
         return;
     }
@@ -946,6 +946,7 @@ void ZappyGui::plv(std::vector<std::string> actualCommand)
     int playerNumber;
     int level;
     try {
+        actualCommand[1].erase(actualCommand[1].begin());
         playerNumber = std::stoi(actualCommand[1]);
         level = std::stoi(actualCommand[2]);
     } catch (const std::exception &e) {
@@ -998,7 +999,7 @@ void ZappyGui::pbc(std::vector<std::string> actualCommand)
         std::cerr << "pbc: invalid number of arguments" << std::endl;
         return;
     }
-
+    actualCommand[1].erase(actualCommand[1].begin());
     int playerNumber = std::stoi(actualCommand[1]);
     std::string message = actualCommand[2];
 
@@ -1022,6 +1023,7 @@ void ZappyGui::pic(std::vector<std::string> actualCommand)
         x = std::stoi(actualCommand[1]);
         y = std::stoi(actualCommand[2]);
         for (int i = 3; i < actualCommand.size(); i++) {
+            actualCommand[i].erase(actualCommand[i].begin());
             playerNumbers.push_back(std::stoi(actualCommand[i]));
         }
     } catch (const std::exception &e) {
@@ -1066,7 +1068,7 @@ void ZappyGui::pfk(std::vector<std::string> actualCommand)
         std::cerr << "pfk: invalid number of arguments" << std::endl;
         return;
     }
-
+    actualCommand[1].erase(actualCommand[1].begin());
     int playerNumber = std::stoi(actualCommand[1]);
 
     this->eggLayingPose(playerNumber);
@@ -1088,7 +1090,7 @@ void ZappyGui::pdi(std::vector<std::string> actualCommand)
         std::cerr << "pdi: invalid number of arguments" << std::endl;
         return;
     }
-
+    actualCommand[1].erase(actualCommand[1].begin());
     int playerNumber = std::stoi(actualCommand[1]);
 
     this->removeTrantorian(playerNumber);
@@ -1100,7 +1102,8 @@ void ZappyGui::enw(std::vector<std::string> actualCommand)
         std::cerr << "enw: invalid number of arguments" << std::endl;
         return;
     }
-
+    actualCommand[1].erase(actualCommand[1].begin());
+    actualCommand[2].erase(actualCommand[2].begin());
     int eggNumber = std::stoi(actualCommand[1]);
     int playerNumber = std::stoi(actualCommand[2]);
     int x = std::stoi(actualCommand[2]);
@@ -1116,9 +1119,8 @@ void ZappyGui::ebo(std::vector<std::string> actualCommand)
         std::cerr << "ebo: invalid number of arguments" << std::endl;
         return;
     }
-
+    actualCommand[1].erase(actualCommand[1].begin());
     int eggNumber = std::stoi(actualCommand[1]);
-
     for (auto i = eggs_.begin(); i != eggs_.end(); i++) {
         if (i->eggNumber == eggNumber) {
             for (auto j = trantorians_.begin(); j != trantorians_.end(); j++) {
@@ -1141,9 +1143,8 @@ void ZappyGui::edi(std::vector<std::string> actualCommand)
         std::cerr << "edi: invalid number of arguments" << std::endl;
         return;
     }
-
+    actualCommand[1].erase(actualCommand[1].begin());
     int eggNumber = std::stoi(actualCommand[1]);
-
     for (auto i = eggs_.begin(); i != eggs_.end(); i++) {
         if (i->eggNumber == eggNumber) {
             removeGameObject(i->eggObjectId);
@@ -1159,18 +1160,17 @@ void ZappyGui::welcome(std::vector<std::string> actualCommand)
     dprintf(this->client.get()->getSocketFd(), "GRAPHIC\n");
 }
 
-void ZappyGui::addTrantorian(const std::string &teamName,
-    const glm::vec3 &position, int playerNumber, int orientation)
+void ZappyGui::addTrantorian(const std::string &teamName, const glm::vec3 &position, int playerNumber, std::string orientation)
 {
     glm::vec3 rotation;
 
-    if (orientation == 1)
+    if (orientation == "N")
         rotation = {0.f, 0.f, 0.f};
-    else if (orientation == 2)
+    else if (orientation == "E")
         rotation = {0.f, 1.55f, 0.f};
-    else if (orientation == 3)
+    else if (orientation == "S")
         rotation = {0.f, 3.14f, 0.f};
-    else if (orientation == 4)
+    else if (orientation == "W")
         rotation = {0.f, -1.57f, 0.f};
 
     ZappyGameObject::id_t ObjectId =
@@ -1204,8 +1204,7 @@ void ZappyGui::removeTrantorian(int playerNumber)
     }
 }
 
-void ZappyGui::updateTrantorianPosition(
-    int playerNumber, const glm::vec3 &position, int orientation)
+void ZappyGui::updateTrantorianPosition(int playerNumber, const glm::vec3 &position, std::string orientation)
 {
     for (Trantorian &trantorian : trantorians_) {
         if (trantorian.playerNumber == playerNumber) {
@@ -1218,13 +1217,13 @@ void ZappyGui::updateTrantorianPosition(
                     object.second.transform.translation = position;
                     object.second.transform.translation.y =
                         object.second.transform.scale.y * -1;
-                    if (orientation == 1)
+                    if (orientation == "N")
                         object.second.transform.rotation = {0.f, 0.f, 0.f};
-                    else if (orientation == 2)
+                    else if (orientation == "E")
                         object.second.transform.rotation = {0.f, 1.55f, 0.f};
-                    else if (orientation == 3)
+                    else if (orientation == "S")
                         object.second.transform.rotation = {0.f, 3.14f, 0.f};
-                    else if (orientation == 4)
+                    else if (orientation == "W")
                         object.second.transform.rotation = {0.f, -1.57f, 0.f};
                 }
             }
