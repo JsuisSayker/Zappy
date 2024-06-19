@@ -225,8 +225,6 @@ void gui_command_sst(zappy_server_t *zappy, char *command);
 void send_sgt_command_to_all_gui(zappy_server_t *zappy);
 void send_sbp_command_to_all_gui(zappy_server_t *zappy);
 
-<<<<<<< Updated upstream
-=======
 // ERROR FUNCTIONS
 void error_command_argument(char *command, int nb_argument, int nb_expected);
 
@@ -237,5 +235,4 @@ typedef struct path_type_s {
     int (*func)(zappy_server_t *zappy, char *command);
 } path_type_t;
 
->>>>>>> Stashed changes
 #endif /* !ZAPPY_SERVER_H_ */
