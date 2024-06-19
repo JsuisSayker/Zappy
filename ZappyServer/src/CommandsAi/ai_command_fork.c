@@ -43,6 +43,7 @@ static int do_fork(zappy_server_t *zappy, client_t *client)
 
 int ai_command_fork(zappy_server_t *zappy, client_t *client, char *cmd)
 {
+    printf("    FORK\n");
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
     if (cast_action(zappy, client, 42, cmd) == ERROR)

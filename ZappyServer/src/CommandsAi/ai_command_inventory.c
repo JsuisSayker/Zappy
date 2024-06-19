@@ -19,6 +19,7 @@ void send_inventory(inventory_t *inventory, int socket)
 
 int ai_command_inventory(zappy_server_t *zappy, client_t *client, char *cmd)
 {
+    printf("    INVENTORY\n");
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
     if (cast_action(zappy, client, 1, cmd) == ERROR)
@@ -26,8 +27,6 @@ int ai_command_inventory(zappy_server_t *zappy, client_t *client, char *cmd)
     if (check_action(zappy, client) == false)
         return OK;
     send_inventory(&client->inventory, zappy->actual_sockfd);
-    printf("Inventory\n");
     send_pin_command_to_all_gui(zappy, client);
-    printf("Pin\n");
     return OK;
 }

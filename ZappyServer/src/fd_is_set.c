@@ -10,7 +10,13 @@
 static int check_connection(zappy_server_t *zappy)
 {
     int client_fd = 0;
-
+    client_t *client = &zappy->clients[zappy->actual_sockfd];
+    if (zappy->clients[zappy->actual_sockfd].type  > 3)
+        printf("zappy->clients[zappy->actual_sockfd].type = %d\n",
+            zappy->clients[zappy->actual_sockfd].type);
+    client = &zappy->clients[zappy->actual_sockfd];
+    if (client->type > 3)
+        printf("client->type = %d\n", client->type);
     if (zappy->actual_sockfd == zappy->my_socket) {
         client_fd = accept_new_connection(zappy->my_socket,
             &zappy->clients[zappy->actual_sockfd].other_socket_addr);
@@ -20,6 +26,7 @@ static int check_connection(zappy_server_t *zappy)
         FD_SET(client_fd, &zappy->fd.save_input);
         zappy->nb_connected_clients += 1;
     } else {
+        printf("            client->type = %d\n", client->type);
         handle_client(zappy);
     }
     return OK;
@@ -48,7 +55,12 @@ int fd_is_set(zappy_server_t *zappy)
 
     if (zappy == NULL)
         return ERROR;
+    if (zappy->clients[zappy->actual_sockfd].type  > 3)
+        printf("zappy->clients[zappy->actual_sockfd].type = %d\n",
+            zappy->clients[zappy->actual_sockfd].type);
     client = &zappy->clients[zappy->actual_sockfd];
+    if (client->type > 3)
+        printf("client->type = %d\n", client->type);
     if (FD_ISSET(zappy->actual_sockfd, &zappy->fd.input)) {
         if (check_connection(zappy) == ERROR)
             return ERROR;

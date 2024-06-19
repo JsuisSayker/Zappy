@@ -72,6 +72,8 @@ zappy_gui
 zappy_server
 Mkfile.old
 dkms.conf
+toto
+previous_data.txt
 
 *.spv
 notes.txt
