@@ -21,9 +21,9 @@ SRC			=	zappy_server.c						\
 				close_server.c						\
 				fd_is_set.c							\
 				handle_unknown_command.c			\
-				error_display.c						\
 				ia_direction_function.c				\
 				generate_egg_by_team.c				\
+				lib/log.c							\
 				${DIR_TOOLS}						\
 				${DIR_COMMAND_IA}					\
 				${DIR_COMMAND_GUI}					\
@@ -146,8 +146,8 @@ OBJ_MAIN	=	$(DIR_MAIN:.c=.o)
 
 OBJ			=	$(OBJ_DIR_SRC) $(OBJ_MAIN)
 
-CPPFLAGS	=	-I include/ \
-				-I ../include/
+CPPFLAGS	=	-I include/			\
+				-I ../include/		\
 
 LDLIBS		=	-luuid
 

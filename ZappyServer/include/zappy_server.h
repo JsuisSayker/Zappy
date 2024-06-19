@@ -25,6 +25,7 @@
     #include <unistd.h>
     #include "macro_server.h"
     #include "server_struct.h"
+    #include "log.h"
 
 typedef struct zappy_server_s {
     fd_t fd;
@@ -223,8 +224,5 @@ void gui_command_sgt(zappy_server_t *zappy, char *command);
 void gui_command_sst(zappy_server_t *zappy, char *command);
 void send_sgt_command_to_all_gui(zappy_server_t *zappy);
 void send_sbp_command_to_all_gui(zappy_server_t *zappy);
-
-// ERROR FUNCTIONS
-void error_command_argument(char *command, int nb_argument, int nb_expected);
 
 #endif /* !ZAPPY_SERVER_H_ */

@@ -63,6 +63,6 @@ int ai_command_forward(zappy_server_t *zappy, client_t *client, char *cmd)
         return OK;
     if (check_direction(zappy, client) == ERROR)
         return ERROR;
-    printf("client, x y %d %d\n", client->pos.x, client->pos.y);
+    log_trace("client, x y %d %d\n", client->pos.x, client->pos.y);
     return OK;
 }

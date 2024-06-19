@@ -18,7 +18,7 @@ void server_command_tile(zappy_server_t *zappy, char *command)
     command_args = splitter(command, " ");
     if (command_args == NULL || command_args[0] == NULL ||
         command_args[1] == NULL || command_args[2] != NULL) {
-        error_command_argument("/tile", get_len_char_tab(command_args), 2);
+        send_sbp_command_to_all_gui(zappy);
         free_array(command_args);
         return;
     }
