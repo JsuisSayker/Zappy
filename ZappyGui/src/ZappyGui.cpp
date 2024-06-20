@@ -37,6 +37,11 @@
 #include <unistd.h>
 namespace zappy {
 
+/**
+ * Initializes the heads-up display (HUD) for the ZappyGui class.
+ * This function sets up ImGui and initializes ImGui for Vulkan.
+ * It also uploads fonts for rendering text in ImGui.
+ */
 void ZappyGui::initHud()
 {
     // Initialize ImGui
@@ -74,6 +79,15 @@ void ZappyGui::initHud()
     this->lveDevice.endSingleTimeCommands(command_buffer);
 }
 
+/**
+ * @brief Draws the heads-up display (HUD) for the ZappyGui.
+ *
+ * This function is responsible for rendering the graphical user interface
+ * (GUI) elements of the HUD, including the FPS counter, time unit display,
+ * team color selection menu, trantorian information display, and chat window.
+ *
+ * The HUD is rendered using the ImGui library.
+ */
 void ZappyGui::drawHud()
 {
     // Start ImGui frame
@@ -202,6 +216,9 @@ void ZappyGui::drawHud()
     ImGui::Render();
 }
 
+/**
+ * @brief Constructs a new instance of the ZappyGui class.
+ */
 ZappyGui::ZappyGui()
 {
     executablePath = getExecutablePath();
@@ -270,14 +287,25 @@ ZappyGui::ZappyGui()
     resources_.emplace("thystame", 0);
 }
 
+/**
+ * @brief Processes commands from the client's command queue.
+ *
+ * This function retrieves commands from the client's command queue and
+ * executes them. It checks if the command exists in the function pointer map
+ * and calls the corresponding function. If the command is not found, it prints
+ * an error message. The function continues processing commands until the
+ * command queue is empty or the time limit is reached.
+ */
 void ZappyGui::processCommand()
 {
     std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
     auto commandTime = std::chrono::high_resolution_clock::now();
     auto endTime = commandTime + std::chrono::milliseconds(16);
 
-    while (!this->getClient().get()->getQueue().empty() && commandTime < endTime) {
-        std::vector<std::string> command = this->getClient().get()->popFromQueue();
+    while (!this->getClient().get()->getQueue().empty() &&
+        commandTime < endTime) {
+        std::vector<std::string> command =
+            this->getClient().get()->popFromQueue();
 
         if (this->getPointerToFunction().find(command[0]) !=
             this->getPointerToFunction().end()) {
@@ -294,8 +322,23 @@ void ZappyGui::processCommand()
     }
 }
 
+/**
+ * @brief Destructor for the ZappyGui class.
+ *
+ * This destructor is responsible for cleaning up any resources allocated by
+ * the ZappyGui class. It is automatically called when an instance of the
+ * ZappyGui class is destroyed.
+ */
 ZappyGui::~ZappyGui() {}
 
+/**
+ * Runs the ZappyGui application.
+ * This function initializes the necessary resources, enters the main loop, and
+ * handles rendering and user input. It continuously updates the game state,
+ * processes user commands, and renders the game objects and HUD. The function
+ * also manages the connection to the server and handles cleanup after the
+ * application is closed.
+ */
 void ZappyGui::run()
 {
     this->getClient().get()->connectToServer();
@@ -425,6 +468,12 @@ void ZappyGui::run()
     vkDeviceWaitIdle(lveDevice.device());
 }
 
+/**
+ * Retrieves the path of the executable file.
+ *
+ * @return The path of the executable file.
+ * @throws zappy::ReadLinkFailedException if the readlink operation fails.
+ */
 std::string ZappyGui::getExecutablePath()
 {
     char buffer[1024];
@@ -442,6 +491,17 @@ std::string ZappyGui::getExecutablePath()
     return std::string(buffer, (count > 0) ? count : 0);
 }
 
+/**
+ * Creates a new game object with the specified parameters.
+ *
+ * @param modelPath The path to the model file for the game object.
+ * @param texturePath The path to the texture file for the game object.
+ * @param position The position of the game object in 3D space.
+ * @param rotation The rotation of the game object in 3D space.
+ * @param scale The scale of the game object in 3D space.
+ * @param hasTexture Whether the game object has a texture or not.
+ * @return The ID of the created game object.
+ */
 ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
     const std::string &texturePath, const glm::vec3 &position,
     const glm::vec3 &rotation, const glm::vec3 &scale, bool hasTexture)
@@ -498,6 +558,15 @@ ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
     return object.getId();
 }
 
+/**
+ * @brief Sets the pointer to function map.
+ *
+ * This method sets the internal pointer to function map of the ZappyGui class.
+ * The map is used to store function pointers associated with string keys.
+ *
+ * @param pointerToFunction The map containing string keys and function
+ * pointers.
+ */
 void ZappyGui::setPointerToFunction(
     std::unordered_map<std::string, ZappyGui::FunctionPtr> &pointerToFunction)
 {
@@ -515,6 +584,26 @@ ZappyGui::getPointerToFunction()
     return this->_pointerToFunction;
 }
 
+/**
+ * @brief Sets the size of the map and updates the viewer object accordingly.
+ *
+ * @param actualCommand A vector of strings representing the command and its
+ * arguments. The expected format is ["msz", width, height].
+ *
+ * @details This function sets the width and height of the map based on the
+ * provided arguments. It also updates the viewer object's translation and
+ * rotation properties to center the map and provide a suitable viewing angle.
+ *          If the width and height are the same as the current map size, no
+ * changes are made. The map is then initialized with empty resources.
+ *
+ * @note The function expects exactly 3 arguments in the actualCommand vector.
+ *       If the number of arguments is invalid, an error message is printed to
+ * std::cerr. If the width or height cannot be converted to integers, the
+ * function returns without making any changes.
+ *
+ * @param width The width of the map.
+ * @param height The height of the map.
+ */
 void ZappyGui::msz(std::vector<std::string> actualCommand)
 {
     if (actualCommand.size() != 3) {
@@ -557,6 +646,47 @@ void ZappyGui::msz(std::vector<std::string> actualCommand)
     this->createMap(width, height);
 }
 
+/**
+ * @brief Updates the resources on the map at the specified coordinates.
+ *
+ * This function takes a vector of strings `actualCommand` as input, which
+ * should contain 10 elements. The elements represent the following
+ * information:
+ * - `actualCommand[0]`: The command name (should be "bct").
+ * - `actualCommand[1]`: The x-coordinate of the map.
+ * - `actualCommand[2]`: The y-coordinate of the map.
+ * - `actualCommand[3]`: The number of food resources.
+ * - `actualCommand[4]`: The number of linemate resources.
+ * - `actualCommand[5]`: The number of deraumere resources.
+ * - `actualCommand[6]`: The number of sibur resources.
+ * - `actualCommand[7]`: The number of mendiane resources.
+ * - `actualCommand[8]`: The number of phiras resources.
+ * - `actualCommand[9]`: The number of thystame resources.
+ *
+ * If the number of elements in `actualCommand` is not equal to 10, an error
+ * message is printed to `std::cerr` and the function returns.
+ *
+ * The function then converts the string elements of `actualCommand` to
+ * integers and assigns them to corresponding variables. If any conversion
+ * fails, the function returns.
+ *
+ * The function retrieves the current map from the `map_` member variable and
+ * stores it in a local variable `map`. It also retrieves the current number of
+ * resources at the specified coordinates and stores them in local variables.
+ *
+ * If the number of food resources in `actualCommand` is greater than or equal
+ * to the current number of food resources, the function adds the required
+ * number of food resources to the map by creating game objects and updating
+ * the `resources_` member variable. Otherwise, it removes the excess food
+ * resources from the map and updates the `resources_` member variable
+ * accordingly.
+ *
+ * The same process is repeated for the other types of resources (linemate,
+ * deraumere, sibur, mendiane, phiras, and thystame).
+ *
+ * @param actualCommand The vector of strings containing the command and
+ * resource information.
+ */
 void ZappyGui::bct(std::vector<std::string> actualCommand)
 {
     if (actualCommand.size() != 10) {
@@ -865,6 +995,20 @@ void ZappyGui::mct(std::vector<std::string> actualCommand)
     // std::cout << "mct" << std::endl;
 }
 
+/**
+ * @brief Adds a new team with a random color to the ZappyGui instance.
+ *
+ * This function takes a vector of strings `actualCommand` as a parameter,
+ * which should contain the command and the team name. If the number of
+ * arguments is not equal to 2, an error message is printed to `std::cerr` and
+ * the function returns. If the team name already exists in the `teamsColors_`
+ * map, an error message is printed to `std::cerr` and the function returns.
+ * Otherwise, a new team with the given name and a randomly generated color is
+ * added to the `teamsColors_` map.
+ *
+ * @param actualCommand A vector of strings containing the command and the team
+ * name.
+ */
 void ZappyGui::tna(std::vector<std::string> actualCommand)
 {
     if (actualCommand.size() != 2) {
@@ -884,6 +1028,20 @@ void ZappyGui::tna(std::vector<std::string> actualCommand)
             getRandomFloat(0.01, 1.0)));
 }
 
+/**
+ * @brief Handles the 'pnw' command.
+ *
+ * This function is responsible for processing the 'pnw' command, which is used
+ * to create a new player in the game. It takes a vector of strings as the
+ * argument, which represents the command and its parameters. If the number of
+ * arguments is not equal to 7, an error message is printed and the function
+ * returns. Otherwise, the function extracts the player number, coordinates,
+ * orientation, level, and team name from the command, and calls the
+ * 'addTrantorian' function to add the player to the game.
+ *
+ * @param actualCommand The vector of strings representing the 'pnw' command
+ * and its parameters.
+ */
 void ZappyGui::pnw(std::vector<std::string> actualCommand)
 {
     if (actualCommand.size() != 7) {
@@ -913,6 +1071,19 @@ void ZappyGui::pnw(std::vector<std::string> actualCommand)
         orientation);
 }
 
+/**
+ * @brief Updates the position and orientation of a player in the Zappy game.
+ *
+ * This function takes a vector of strings `actualCommand` as input, which
+ * should contain the player number, x-coordinate, y-coordinate, and
+ * orientation of the player. If the vector does not contain exactly 5
+ * elements, an error message is printed to `std::cerr`. Otherwise, the player
+ * number, coordinates, and orientation are extracted from the vector and used
+ * to update the position and orientation of the player in the game.
+ *
+ * @param actualCommand The vector of strings containing the player
+ * information.
+ */
 void ZappyGui::ppo(std::vector<std::string> actualCommand)
 {
     if (actualCommand.size() != 5) {
@@ -936,6 +1107,22 @@ void ZappyGui::ppo(std::vector<std::string> actualCommand)
         {static_cast<float>(x), 0.f, static_cast<float>(y)}, orientation);
 }
 
+/**
+ * @brief Updates the level of a player in the game.
+ *
+ * This function takes a vector of strings `actualCommand` as input, which
+ * should contain the player number and the new level. It checks if the number
+ * of arguments is valid and if not, it prints an error message and returns. It
+ * then converts the player number and level from strings to integers. If any
+ * exception occurs during the conversion, the function returns. It then
+ * iterates through the `trantorians_` vector and finds the Trantorian object
+ * with the matching player number. If found, it updates the level of the
+ * Trantorian object and adjusts the scale and translation of the associated
+ * game objects.
+ *
+ * @param actualCommand The vector of strings containing the player number and
+ * level.
+ */
 void ZappyGui::plv(std::vector<std::string> actualCommand)
 {
     if (actualCommand.size() != 3) {
@@ -971,6 +1158,12 @@ void ZappyGui::pin(std::vector<std::string> actualCommand)
     // std::cout << "pin" << std::endl;
 }
 
+/**
+ * Sets the time unit for the ZappyGui application.
+ *
+ * @param actualCommand A vector of strings containing the command and its
+ * arguments. The second element of the vector should be the time unit value.
+ */
 void ZappyGui::sgt(std::vector<std::string> actualCommand)
 {
     if (actualCommand.size() != 2) {
@@ -993,6 +1186,13 @@ void ZappyGui::pex(std::vector<std::string> actualCommand)
     // std::cout << "pex" << std::endl;
 }
 
+/**
+ * Sends a private broadcast message to a specific player.
+ *
+ * @param actualCommand The command and its arguments.
+ *                      The command should have 3 arguments: the player number,
+ * and the message.
+ */
 void ZappyGui::pbc(std::vector<std::string> actualCommand)
 {
     if (actualCommand.size() != 3) {
@@ -1010,6 +1210,14 @@ void ZappyGui::pbc(std::vector<std::string> actualCommand)
     }
 }
 
+/**
+ * Process the 'pic' command.
+ * This command updates the state of the Trantorians in the GUI based on the
+ * provided arguments.
+ *
+ * @param actualCommand The vector of strings containing the command and its
+ * arguments.
+ */
 void ZappyGui::pic(std::vector<std::string> actualCommand)
 {
     if (actualCommand.size() < 4) {
@@ -1035,6 +1243,15 @@ void ZappyGui::pic(std::vector<std::string> actualCommand)
     }
 }
 
+/**
+ * @brief Executes the "pie" command in the Zappy game.
+ *
+ * This function is responsible for executing the "pie" command in the Zappy
+ * game. The "pie" command is used to notify the server that an incantation has
+ * been completed at a specific position on the game map.
+ *
+ * @param actualCommand The vector containing the command and its arguments.
+ */
 void ZappyGui::pie(std::vector<std::string> actualCommand)
 {
     if (actualCommand.size() != 4) {
@@ -1062,6 +1279,21 @@ void ZappyGui::pie(std::vector<std::string> actualCommand)
     }
 }
 
+/**
+ * @brief Sends a player's egg-laying pose command to the server.
+ *
+ * This function is responsible for sending the egg-laying pose command to the
+ * server for a specific player. It takes a vector of strings as input, where
+ * the first element is the command name and the second element is the player
+ * number. If the number of arguments is not equal to 2, an error message is
+ * printed to the standard error stream and the function returns. The player
+ * number is extracted from the second element of the input vector and stored
+ * in the 'playerNumber' variable. Finally, the 'eggLayingPose' function is
+ * called with the 'playerNumber' as an argument.
+ *
+ * @param actualCommand The vector of strings containing the command and player
+ * number.
+ */
 void ZappyGui::pfk(std::vector<std::string> actualCommand)
 {
     if (actualCommand.size() != 2) {
@@ -1084,6 +1316,15 @@ void ZappyGui::pgt(std::vector<std::string> actualCommand)
     // std::cout << "pgt" << std::endl;
 }
 
+/**
+ * @brief Removes a player from the game.
+ *
+ * This function is called when the server sends a "pdi" command, indicating
+ * that a player has died. It removes the player with the specified player
+ * number from the game.
+ *
+ * @param actualCommand The command and its arguments received from the server.
+ */
 void ZappyGui::pdi(std::vector<std::string> actualCommand)
 {
     if (actualCommand.size() != 2) {
@@ -1096,6 +1337,16 @@ void ZappyGui::pdi(std::vector<std::string> actualCommand)
     this->removeTrantorian(playerNumber);
 }
 
+/**
+ * @brief Handles the "enw" command.
+ *
+ * This function is responsible for processing the "enw" command, which is used
+ * to create a new egg in the game. It extracts the necessary information from
+ * the provided command arguments and adds the egg to the game.
+ *
+ * @param actualCommand The vector of strings containing the command arguments.
+ * @return void
+ */
 void ZappyGui::enw(std::vector<std::string> actualCommand)
 {
     if (actualCommand.size() != 5) {
@@ -1113,6 +1364,16 @@ void ZappyGui::enw(std::vector<std::string> actualCommand)
         {static_cast<float>(x), -0.15f, static_cast<float>(y)});
 }
 
+/**
+ * @brief Handles the "ebo" command.
+ *
+ * This function is responsible for processing the "ebo" command, which is used
+ * to handle the removal of an egg from the game.
+ *
+ * @param actualCommand The vector containing the command and its arguments.
+ *
+ * @return void
+ */
 void ZappyGui::ebo(std::vector<std::string> actualCommand)
 {
     if (actualCommand.size() != 2) {
@@ -1137,6 +1398,21 @@ void ZappyGui::ebo(std::vector<std::string> actualCommand)
     }
 }
 
+/**
+ * @brief Removes a specific egg from the game.
+ *
+ * This function removes a specific egg from the game based on the given egg
+ * number. It takes a vector of strings as input, where the first element is
+ * the command name and the second element is the egg number. If the number of
+ * arguments is not equal to 2, an error message is printed and the function
+ * returns. The egg number is extracted from the second element of the input
+ * vector and used to find the corresponding egg in the eggs_ container. If a
+ * matching egg is found, the corresponding game object is removed and the egg
+ * is erased from the eggs_ container.
+ *
+ * @param actualCommand The vector of strings containing the command name and
+ * the egg number.
+ */
 void ZappyGui::edi(std::vector<std::string> actualCommand)
 {
     if (actualCommand.size() != 2) {
@@ -1154,13 +1430,28 @@ void ZappyGui::edi(std::vector<std::string> actualCommand)
     }
 }
 
+/**
+ * Displays a welcome message and sends a command to the client.
+ *
+ * @param actualCommand The vector of actual commands.
+ */
 void ZappyGui::welcome(std::vector<std::string> actualCommand)
 {
     std::cout << "WELCOME" << std::endl;
     dprintf(this->client.get()->getSocketFd(), "GRAPHIC\n");
 }
 
-void ZappyGui::addTrantorian(const std::string &teamName, const glm::vec3 &position, int playerNumber, std::string orientation)
+/**
+ * Adds a Trantorian to the game.
+ *
+ * @param teamName The name of the team the Trantorian belongs to.
+ * @param position The position of the Trantorian in 3D space.
+ * @param playerNumber The player number of the Trantorian.
+ * @param orientation The orientation of the Trantorian ("N", "E", "S", or
+ * "W").
+ */
+void ZappyGui::addTrantorian(const std::string &teamName,
+    const glm::vec3 &position, int playerNumber, std::string orientation)
 {
     glm::vec3 rotation;
 
@@ -1192,6 +1483,16 @@ void ZappyGui::addTrantorian(const std::string &teamName, const glm::vec3 &posit
     this->trantorians_.emplace_back(newTrantorian);
 }
 
+/**
+ * @brief Removes a Trantorian from the game.
+ *
+ * This function removes a Trantorian from the game based on the provided
+ * player number. It searches for the Trantorian with the matching player
+ * number in the `trantorians_` vector, and removes its associated game objects
+ * (point light object and Trantorian object) from the scene.
+ *
+ * @param playerNumber The player number of the Trantorian to be removed.
+ */
 void ZappyGui::removeTrantorian(int playerNumber)
 {
     for (auto i = trantorians_.begin(); i != trantorians_.end(); i++) {
@@ -1204,7 +1505,21 @@ void ZappyGui::removeTrantorian(int playerNumber)
     }
 }
 
-void ZappyGui::updateTrantorianPosition(int playerNumber, const glm::vec3 &position, std::string orientation)
+/**
+ * @brief Updates the position and orientation of a Trantorian player in the
+ * game.
+ *
+ * This function is responsible for updating the position and orientation of a
+ * Trantorian player in the game. It takes the player number, position, and
+ * orientation as parameters and updates the corresponding game objects'
+ * transformations accordingly.
+ *
+ * @param playerNumber The number of the Trantorian player.
+ * @param position The new position of the Trantorian player.
+ * @param orientation The new orientation of the Trantorian player.
+ */
+void ZappyGui::updateTrantorianPosition(
+    int playerNumber, const glm::vec3 &position, std::string orientation)
 {
     for (Trantorian &trantorian : trantorians_) {
         if (trantorian.playerNumber == playerNumber) {
@@ -1231,12 +1546,26 @@ void ZappyGui::updateTrantorianPosition(int playerNumber, const glm::vec3 &posit
     }
 }
 
+/**
+ * Changes the trantorian's pose to show that it is laying an egg.
+ *
+ * @param playerNumber The number of the player laying the egg.
+ */
 void ZappyGui::eggLayingPose(int playerNumber)
 {
     // change trantorians pose to show it is laying an egg
     std::cout << "Egg laying pose" << std::endl;
 }
 
+/**
+ * @brief Adds an egg to the ZappyGui game.
+ *
+ * This function creates a new egg GameObject and adds it to the game.
+ *
+ * @param eggNumber The number of the egg.
+ * @param playerNumber The number of the player who owns the egg.
+ * @param position The position of the egg in 3D space.
+ */
 void ZappyGui::addEgg(
     int eggNumber, int playerNumber, const glm::vec3 &position)
 {
@@ -1248,8 +1577,25 @@ void ZappyGui::addEgg(
     this->eggs_.emplace_back(newEgg);
 }
 
+/**
+ * Converts degrees to radians.
+ *
+ * @param degree The angle in degrees to be converted.
+ * @return The angle in radians.
+ */
 float ZappyGui::degreeToRadiant(float degree) { return degree * M_PI / 180; }
 
+/**
+ * @brief Creates the map for the ZappyGui.
+ *
+ * This function creates the map for the ZappyGui by generating game objects
+ * based on the given width and height. It creates grass blocks, obsidian blocks,
+ * and portal frames. It also creates sky squares for the top, sides, and bottom
+ * of the map.
+ *
+ * @param width The width of the map.
+ * @param height The height of the map.
+ */
 void ZappyGui::createMap(int width, int height)
 {
     for (float i = 0.f; i < width; i++) {
@@ -1368,12 +1714,27 @@ void ZappyGui::createMap(int width, int height)
     indexPortalFrame = 1;
 }
 
+/**
+ * @brief Removes a game object from the ZappyGui.
+ *
+ * This function removes a game object with the specified ID from the ZappyGui.
+ * It waits for the Vulkan device to become idle before removing the object.
+ *
+ * @param gameObjectId The ID of the game object to remove.
+ */
 void ZappyGui::removeGameObject(ZappyGameObject::id_t gameObjectId)
 {
     vkDeviceWaitIdle(lveDevice.device());
     gameObjects.erase(gameObjectId);
 }
 
+/**
+ * Generates a random float value between the given minimum and maximum values.
+ *
+ * @param min The minimum value of the range (inclusive).
+ * @param max The maximum value of the range (exclusive).
+ * @return A random float value between min and max.
+ */
 float ZappyGui::getRandomFloat(float min, float max)
 {
     return min +
@@ -1381,6 +1742,12 @@ float ZappyGui::getRandomFloat(float min, float max)
         (static_cast<float>(RAND_MAX / (max - min)));
 }
 
+/**
+ * Updates the texture of a game object in the ZappyGui.
+ *
+ * @param texturePath The path to the new texture.
+ * @param gameObjectId The ID of the game object to update.
+ */
 void ZappyGui::updateGameObjectsTexture(
     std::string texturePath, ZappyGameObject::id_t gameObjectId)
 {
@@ -1417,6 +1784,13 @@ void ZappyGui::updateGameObjectsTexture(
     gameObjects[gameObjectId].indexDescriptorSet = textureObjects.size() - 1;
 }
 
+/**
+ * @brief Updates the game state.
+ *
+ * This function is responsible for updating the game state by performing various tasks such as
+ * updating portal animation, resources animation, and rotating Trantorian objects during incantation.
+ * It uses the timer manager to control the timing of these updates.
+ */
 void ZappyGui::updateGame()
 {
     if (timerManager_.getElapsedTime("portalAnimation") > 0.05f) {
@@ -1438,6 +1812,21 @@ void ZappyGui::updateGame()
     }
 }
 
+/**
+ * @brief Updates the animation of the resources in the game.
+ * 
+ * This function is responsible for updating the rotation and translation of the resources
+ * in the game. It iterates through each type of resource (linemate, deraumere, sibur, mendiane,
+ * phiras, thystame, and food) and applies the corresponding animation based on the value of
+ * `indexRessourcesAnimation`. The rotation is incremented by 0.02f, and the translation is
+ * adjusted by +/- 0.01f depending on the value of `indexRessourcesAnimation`.
+ * 
+ * If the list of food resources is empty, the function returns early. Otherwise, it checks the
+ * translation of the first food resource and updates `indexRessourcesAnimation` accordingly.
+ * 
+ * @note This function assumes the existence of a `gameObjects` container and a `resources_` map
+ *       that stores the resource IDs.
+ */
 void ZappyGui::updateResourcesAnimation()
 {
     for (ZappyGameObject::id_t linemateId : resources_["linemate"]) {
@@ -1497,6 +1886,14 @@ void ZappyGui::updateResourcesAnimation()
         indexRessourcesAnimation = 1;
 }
 
+/**
+ * @brief Updates the texture of the portal frames in the ZappyGui.
+ * 
+ * This function increments the index of the portal frame and updates the texture
+ * of all portal frames in the ZappyGui using the new index.
+ * 
+ * @note The index of the portal frame is reset to 1 when it reaches 32.
+ */
 void ZappyGui::updatePortalFrame()
 {
     if (indexPortalFrame == 32)
