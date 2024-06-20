@@ -26,25 +26,40 @@ static int check_connection(zappy_server_t *zappy)
         FD_SET(client_fd, &zappy->fd.save_input);
         zappy->nb_connected_clients += 1;
     } else {
-        printf("            client->type = %d\n", client->type);
+        printf("client->type = %d\n", client->type);
         handle_client(zappy);
     }
     return OK;
 }
 
-static void refill_map(zappy_server_t *zappy, client_t *client)
+static void refill_map(zappy_server_t *zappy)
 {
     struct timeval tv;
     double cast_time = 20 / (double)zappy->args->freq;
     double elapsed = 0;
+    int x = rand() % zappy->args->width;
+    int y = rand() % zappy->args->height;
 
     gettimeofday(&tv, NULL);
-    elapsed = (tv.tv_sec + tv.tv_usec / 1000000.0) - client->command.time;
+    elapsed = (tv.tv_sec + tv.tv_usec / 1000000.0) - zappy->time_refill_map;
     if (cast_time < elapsed) {
-        map_tile_t **tmp_map = setup_map_tile(zappy->args->width,
-            zappy->args->height);
-        refill_map_tile(zappy, zappy->map_tile, tmp_map);
-        free_map_tile(tmp_map);
+        struct char_tab_head *resourse_list = generate_ressourse_list(
+            zappy->args->width, zappy->args->height);
+        if (strcmp(resourse_list->tqh_first->str, "food") == 0)
+            zappy->map_tile[y][x].inventory.food += 1;
+        if (strcmp(resourse_list->tqh_first->str, "linemate") == 0)
+            zappy->map_tile[y][x].inventory.linemate += 1;
+        if (strcmp(resourse_list->tqh_first->str, "deraumere") == 0)
+            zappy->map_tile[y][x].inventory.deraumere += 1;
+        if (strcmp(resourse_list->tqh_first->str, "sibur") == 0)
+            zappy->map_tile[y][x].inventory.sibur += 1;
+        if (strcmp(resourse_list->tqh_first->str, "mendiane") == 0)
+            zappy->map_tile[y][x].inventory.mendiane += 1;
+        if (strcmp(resourse_list->tqh_first->str, "phiras") == 0)
+            zappy->map_tile[y][x].inventory.phiras += 1;
+        if (strcmp(resourse_list->tqh_first->str, "thystame") == 0)
+            zappy->map_tile[y][x].inventory.thystame += 1;
+        free_char_tab_list(resourse_list);
         zappy->time_refill_map = time(NULL);
     }
 }
@@ -74,7 +89,7 @@ int fd_is_set(zappy_server_t *zappy)
         }
         if (client->type == IA)
             is_alive(zappy, client);
-        // refill_map(zappy, client);
+        refill_map(zappy);
     }
     return OK;
 }
