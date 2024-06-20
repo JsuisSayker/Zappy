@@ -31,28 +31,6 @@ static const struct path_type_s COMMAND_FUNCS[] = {
     {"NULL", NULL}
 };
 
-static int type_gui(zappy_server_t *zappy, char *cmd)
-{
-    if (zappy == NULL || cmd == NULL)
-        return ERROR;
-    zappy->clients[zappy->actual_sockfd].type = GUI;
-    handle_gui_command(zappy, cmd);
-    return OK;
-}
-
-static int type_ai(zappy_server_t *zappy, char *cmd)
-{
-    client_t *client;
-
-    if (zappy == NULL || cmd == NULL)
-        return ERROR;
-    client = &zappy->clients[zappy->actual_sockfd];
-    client->type = IA;
-    printf("Je suis dans type_ai %d\n", client->type);
-    ai_function(zappy, client, cmd);
-    return OK;
-}
-
 static int path_type(zappy_server_t *zappy, char *cmd)
 {
     if (zappy == NULL || cmd == NULL)

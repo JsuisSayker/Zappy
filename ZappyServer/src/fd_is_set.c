@@ -72,6 +72,7 @@ int fd_is_set(zappy_server_t *zappy)
 
     if (zappy == NULL)
         return ERROR;
+    client = &zappy->clients[zappy->actual_sockfd];
     if (FD_ISSET(zappy->actual_sockfd, &zappy->fd.input)) {
         if (check_connection(zappy) == ERROR)
             return ERROR;

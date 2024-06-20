@@ -228,5 +228,7 @@ typedef struct path_type_s {
     char *command;
     int (*func)(zappy_server_t *zappy, char *command);
 } path_type_t;
+int type_gui(zappy_server_t *zappy, char *cmd);
+int type_ai(zappy_server_t *zappy, char *cmd);
 
 #endif /* !ZAPPY_SERVER_H_ */
