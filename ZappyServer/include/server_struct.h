@@ -100,7 +100,6 @@ typedef struct message_s {
 } message_t;
 
 typedef struct client_s {
-    buffer_t buffer;
     client_type_t type;
     int client_number;
     int level;
