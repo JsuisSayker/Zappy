@@ -13,7 +13,7 @@ void send_ppo_command_to_all_gui(zappy_server_t *zappy, client_t *client)
         if (zappy->clients[i].type == GUI) {
             dprintf(i, "ppo #%d %d %d %d\n",
             client->client_number, client->pos.x, client->pos.y,
-            client->pos.direction);
+            direction_string(client->pos.direction));
         }
     }
 }
