@@ -7,28 +7,6 @@
 
 #include "zappy_server.h"
 
-static int type_gui(zappy_server_t *zappy, char *cmd)
-{
-    if (zappy == NULL || cmd == NULL)
-        return ERROR;
-    zappy->clients[zappy->actual_sockfd].type = GUI;
-    handle_gui_command(zappy, cmd);
-    return OK;
-}
-
-static int type_ai(zappy_server_t *zappy, char *cmd)
-{
-    client_t *client;
-
-    if (zappy == NULL || cmd == NULL)
-        return ERROR;
-    client = &zappy->clients[zappy->actual_sockfd];
-    client->type = IA;
-    printf("Je suis dans type_ai %d\n", client->type);
-    ai_function(zappy, client, cmd);
-    return OK;
-}
-
 static const struct path_type_s COMMAND_FUNCS[] = {
     {"Forward", &type_ai},
     {"Right", &type_ai},
@@ -53,6 +31,28 @@ static const struct path_type_s COMMAND_FUNCS[] = {
     {"NULL", NULL}
 };
 
+static int type_gui(zappy_server_t *zappy, char *cmd)
+{
+    if (zappy == NULL || cmd == NULL)
+        return ERROR;
+    zappy->clients[zappy->actual_sockfd].type = GUI;
+    handle_gui_command(zappy, cmd);
+    return OK;
+}
+
+static int type_ai(zappy_server_t *zappy, char *cmd)
+{
+    client_t *client;
+
+    if (zappy == NULL || cmd == NULL)
+        return ERROR;
+    client = &zappy->clients[zappy->actual_sockfd];
+    client->type = IA;
+    printf("Je suis dans type_ai %d\n", client->type);
+    ai_function(zappy, client, cmd);
+    return OK;
+}
+
 static int path_type(zappy_server_t *zappy, char *cmd)
 {
     if (zappy == NULL || cmd == NULL)
@@ -73,14 +73,12 @@ static int handle_command(zappy_server_t *zappy, char *command)
         return ERROR;
     if (zappy->actual_sockfd == STDIN_FILENO)
         return handle_server_command(zappy, command);
-    printf("  Le client est de type %d\n", zappy->clients[zappy->actual_sockfd].type);
     switch (zappy->clients[zappy->actual_sockfd].type) {
     case UNKNOWN:
         return handle_unknown_command(zappy, command);
     case IA:
-        printf("Je suis dans IA\n");
-        return ai_function(zappy,
-            &zappy->clients[zappy->actual_sockfd], command);
+        return ai_function(zappy, &zappy->clients[zappy->actual_sockfd],
+            command);
     case GUI:
         return handle_gui_command(zappy, command);
     default:
@@ -106,9 +104,7 @@ void handle_client(zappy_server_t *zappy)
     char buffer[BUFSIZ] = {0};
     char **lines = NULL;
     ssize_t n = read(zappy->actual_sockfd, buffer, sizeof(buffer) - 1);
-    log_trace("In handle_command\n");
-    log_trace("client type %d\n", zappy->clients[zappy->actual_sockfd].type);
-    log_trace("On the socket %d\n", zappy->actual_sockfd);
+
     if (n == -1 || n == 0)
         return;
     clean_string(buffer);

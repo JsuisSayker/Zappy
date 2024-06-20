@@ -90,6 +90,13 @@ static bool check_incantation(zappy_server_t *zappy, client_t *client)
     return false;
 }
 
+static void check_win_condition(zappy_server_t *zappy, client_t *client)
+{
+    client->level += 1;
+    if (client->level == 8)
+        send_seg_command_to_all_gui(zappy, client);
+}
+
 static int complet_incantation(zappy_server_t *zappy, client_t *client,
     int lvl)
 {
@@ -104,9 +111,7 @@ static int complet_incantation(zappy_server_t *zappy, client_t *client,
         if (zappy->clients[i].type == IA && zappy->clients[i].pos.x ==
         client->pos.x && zappy->clients[i].pos.y == client->pos.y
         && zappy->clients[i].level == lvl) {
-            zappy->clients[i].level += 1;
-            if (zappy->clients[i].level == 8)
-                send_seg_command_to_all_gui(zappy, &zappy->clients[i]);
+            check_win_condition(zappy, &zappy->clients[i]);
             zappy->clients[i].incantation = false;
             send_pie_command_to_all_gui(zappy, &zappy->clients[i]);
             send_plv_command_to_all_gui(zappy, &zappy->clients[i]);
