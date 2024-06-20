@@ -79,3 +79,6 @@ previous_data.txt
 notes.txt
 
 vulkan-sdk*
+
+doc_doxygen
+build

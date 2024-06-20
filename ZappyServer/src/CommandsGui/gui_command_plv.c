@@ -17,6 +17,6 @@ void gui_command_plv(zappy_server_t *zappy, char *command)
     client_nb = atoi(command);
     if (client_nb < 3)
         return send_sbp_command_to_all_gui(zappy);
-    dprintf(zappy->actual_sockfd, "plv %d %d\n", client_nb,
+    dprintf(zappy->actual_sockfd, "plv #%d %d\n", client_nb,
         zappy->clients[client_nb].level);
 }
