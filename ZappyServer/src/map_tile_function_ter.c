@@ -25,58 +25,23 @@ map_tile_t **copy_map_tile(map_tile_t **source)
     return destination;
 }
 
-static bool refill_inventory_sub(map_tile_t *destination, inventory_t *source)
+static void refill_inventory(map_tile_t *destination, inventory_t *source)
 {
-    bool change = false;
-
-    if (destination->inventory.sibur < source->sibur) {
-        destination->inventory.sibur = source->sibur;
-        change = true;
-    }
-    if (destination->inventory.mendiane < source->mendiane) {
-        destination->inventory.mendiane = source->mendiane;
-        change = true;
-    }
-    if (destination->inventory.phiras < source->phiras) {
-        destination->inventory.phiras = source->phiras;
-        change = true;
-    }
-    if (destination->inventory.thystame < source->thystame) {
-        destination->inventory.thystame = source->thystame;
-        change = true;
-    }
-    return change;
-}
-
-static bool refill_inventory(map_tile_t *destination, inventory_t *source)
-{
-    bool change = false;
-
-    if (destination->inventory.food < source->food) {
-        destination->inventory.food = source->food;
-        change = true;
-    }
-    if (destination->inventory.linemate < source->linemate) {
-        destination->inventory.linemate = source->linemate;
-        change = true;
-    }
-    if (destination->inventory.deraumere < source->deraumere) {
-        destination->inventory.deraumere = source->deraumere;
-        change = true;
-    }
-    if (refill_inventory_sub(destination, source))
-        change = true;
-    return change;
+    destination->inventory.food += source->food;
+    destination->inventory.linemate += source->linemate;
+    destination->inventory.deraumere += source->deraumere;
+    destination->inventory.sibur += source->sibur;
+    destination->inventory.mendiane += source->mendiane;
+    destination->inventory.phiras += source->phiras;
+    destination->inventory.thystame += source->thystame;
 }
 
 void refill_map_tile_ter(zappy_server_t *zappy,
     map_tile_t **destination, int i, int j)
 {
     for (int k = 0; k < zappy->nb_connected_clients; k++) {
-        if (zappy->clients[k].type == GUI) {
+        if (zappy->clients[k].type == GUI)
             display_gui_tile(&destination[i][j], k);
-            return;
-        }
     }
 }
 

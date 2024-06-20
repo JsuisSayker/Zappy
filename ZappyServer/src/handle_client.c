@@ -106,8 +106,9 @@ void handle_client(zappy_server_t *zappy)
     char buffer[BUFSIZ] = {0};
     char **lines = NULL;
     ssize_t n = read(zappy->actual_sockfd, buffer, sizeof(buffer) - 1);
-    printf("Je suis dans handle_command\nLe client est de type %d\nOn the socket %d\n",
-        zappy->clients[zappy->actual_sockfd].type, zappy->actual_sockfd);
+    log_trace("In handle_command\n");
+    log_trace("client type %d\n", zappy->clients[zappy->actual_sockfd].type);
+    log_trace("On the socket %d\n", zappy->actual_sockfd);
     if (n == -1 || n == 0)
         return;
     strcat(zappy->clients[zappy->actual_sockfd].buffer.
@@ -116,10 +117,10 @@ void handle_client(zappy_server_t *zappy)
     lines = splitter(buffer, END_LINE);
     if (lines == NULL)
         return;
-    printf("RECEIVED: %s--\n", buffer);
+    log_trace("RECEIVED: %s--\n", buffer);
     for (j = 0; lines[j] != NULL; j += 1) {
         handle_command(zappy, lines[j]);
     }
-    printf("END\n");
+    log_trace("END handle_command\n");
     free_array(lines);
 }

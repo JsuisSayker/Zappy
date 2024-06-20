@@ -69,7 +69,7 @@ static void send_info_ai_to_gui(zappy_server_t *zappy, client_t *client)
                 client->inventory.deraumere, client->inventory.sibur,
                 client->inventory.mendiane, client->inventory.phiras,
                 client->inventory.thystame);
-            dprintf(i, "ebo %d\n", client->client_number);
+            dprintf(i, "ebo #%d\n", client->client_number);
         }
     }
 }

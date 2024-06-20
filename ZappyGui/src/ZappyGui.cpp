@@ -1064,6 +1064,7 @@ void ZappyGui::pnw(std::vector<std::string> actualCommand)
         level = std::stoi(actualCommand[5]);
         teamName = actualCommand[6];
     } catch (const std::exception &e) {
+        std::cerr << "pnw: invalid arguments" << std::endl;
         return;
     }
 
@@ -1096,12 +1097,18 @@ void ZappyGui::ppo(std::vector<std::string> actualCommand)
     int y;
     std::string orientation;
     try {
+        if (actualCommand[1][0] != '#') {
+            std::cerr << "ppo: invalid player number" << std::endl;
+            std::cout << actualCommand[1] << std::endl;
+            return;
+        }
         actualCommand[1].erase(actualCommand[1].begin());
         playerNumber = std::stoi(actualCommand[1]);
         x = std::stoi(actualCommand[2]);
         y = std::stoi(actualCommand[3]);
         orientation = actualCommand[4];
     } catch (const std::exception &e) {
+        std::cerr << "ppo: invalid arguments" << std::endl;
         return;
     }
     for (Trantorian &Trantorian : trantorians_) {
@@ -1138,10 +1145,15 @@ void ZappyGui::plv(std::vector<std::string> actualCommand)
     int playerNumber;
     int level;
     try {
+        if (actualCommand[1][0] != '#') {
+            std::cerr << "plv: invalid player number" << std::endl;
+            return;
+        }
         actualCommand[1].erase(actualCommand[1].begin());
         playerNumber = std::stoi(actualCommand[1]);
         level = std::stoi(actualCommand[2]);
     } catch (const std::exception &e) {
+        std::cerr << "plv: invalid arguments" << std::endl;
         return;
     }
     for (Trantorian &Trantorian : trantorians_) {
@@ -1174,8 +1186,13 @@ void ZappyGui::sgt(std::vector<std::string> actualCommand)
         std::cerr << "sgt: invalid number of arguments" << std::endl;
         return;
     }
-
-    int timeUnit = std::stoi(actualCommand[1]);
+    int timeUnit;
+    try {
+        timeUnit = std::stoi(actualCommand[1]);
+    } catch (const std::exception &e) {
+        std::cerr << "sgt: invalid arguments" << std::endl;
+        return;
+    }
 
     this->_timeUnit = timeUnit;
 }
@@ -1203,9 +1220,20 @@ void ZappyGui::pbc(std::vector<std::string> actualCommand)
         std::cerr << "pbc: invalid number of arguments" << std::endl;
         return;
     }
-    actualCommand[1].erase(actualCommand[1].begin());
-    int playerNumber = std::stoi(actualCommand[1]);
-    std::string message = actualCommand[2];
+    int playerNumber;
+    std::string message;
+    try {
+        if (actualCommand[1][0] != '#') {
+            std::cerr << "pbc: invalid player number" << std::endl;
+            return;
+        }
+        actualCommand[1].erase(actualCommand[1].begin());
+        playerNumber = std::stoi(actualCommand[1]);
+        message = actualCommand[2];
+    } catch (const std::exception &e) {
+        std::cerr << "pbc: invalid arguments" << std::endl;
+        return;
+    }
 
     for (Trantorian &Trantorian : trantorians_) {
         if (Trantorian.playerNumber == playerNumber) {
@@ -1235,10 +1263,13 @@ void ZappyGui::pic(std::vector<std::string> actualCommand)
         x = std::stoi(actualCommand[1]);
         y = std::stoi(actualCommand[2]);
         for (int i = 3; i < actualCommand.size(); i++) {
+            if (actualCommand[i][0] != '#')
+                return;
             actualCommand[i].erase(actualCommand[i].begin());
             playerNumbers.push_back(std::stoi(actualCommand[i]));
         }
     } catch (const std::exception &e) {
+        std::cerr << "pic: invalid arguments" << std::endl;
         return;
     }
     for (Trantorian &Trantorian : trantorians_) {
@@ -1270,6 +1301,7 @@ void ZappyGui::pie(std::vector<std::string> actualCommand)
         y = std::stoi(actualCommand[2]);
         result = std::stoi(actualCommand[3]);
     } catch (const std::exception &e) {
+        std::cerr << "pie: invalid arguments" << std::endl;
         return;
     }
     for (auto &object : gameObjects) {
@@ -1304,8 +1336,18 @@ void ZappyGui::pfk(std::vector<std::string> actualCommand)
         std::cerr << "pfk: invalid number of arguments" << std::endl;
         return;
     }
-    actualCommand[1].erase(actualCommand[1].begin());
-    int playerNumber = std::stoi(actualCommand[1]);
+    int playerNumber;
+    try {
+        if (actualCommand[1][0] != '#') {
+            std:: cerr << "pfk: invalid arguments" << std::endl;
+            return;
+        }
+        actualCommand[1].erase(actualCommand[1].begin());
+        playerNumber = std::stoi(actualCommand[1]);
+    } catch (const std::exception &e) {
+        std::cerr << "pfk: invalid arguments" << std::endl;
+        return;
+    }
 
     this->eggLayingPose(playerNumber);
 }
@@ -1335,8 +1377,18 @@ void ZappyGui::pdi(std::vector<std::string> actualCommand)
         std::cerr << "pdi: invalid number of arguments" << std::endl;
         return;
     }
-    actualCommand[1].erase(actualCommand[1].begin());
-    int playerNumber = std::stoi(actualCommand[1]);
+    int playerNumber;
+    try {
+        if (actualCommand[1][0] != '#') {
+            std::cerr << "pdi: invalid arguments" << std::endl;
+            return;
+        }
+        actualCommand[1].erase(actualCommand[1].begin());
+        playerNumber = std::stoi(actualCommand[1]);
+    } catch (const std::exception &e) {
+        std::cerr << "pdi: invalid arguments" << std::endl;
+        return;
+    }
 
     this->removeTrantorian(playerNumber);
 }
@@ -1357,12 +1409,21 @@ void ZappyGui::enw(std::vector<std::string> actualCommand)
         std::cerr << "enw: invalid number of arguments" << std::endl;
         return;
     }
-    actualCommand[1].erase(actualCommand[1].begin());
-    actualCommand[2].erase(actualCommand[2].begin());
-    int eggNumber = std::stoi(actualCommand[1]);
-    int playerNumber = std::stoi(actualCommand[2]);
-    int x = std::stoi(actualCommand[2]);
-    int y = std::stoi(actualCommand[3]);
+    int eggNumber;
+    int playerNumber;
+    int x;
+    int y;
+    try {
+        actualCommand[1].erase(actualCommand[1].begin());
+        actualCommand[2].erase(actualCommand[2].begin());
+        eggNumber = std::stoi(actualCommand[1]);
+        playerNumber = std::stoi(actualCommand[2]);
+        x = std::stoi(actualCommand[3]);
+        y = std::stoi(actualCommand[4]);
+    } catch (const std::exception &e) {
+        std::cerr << "enw: invalid arguments" << std::endl;
+        return;
+    }
 
     this->addEgg(eggNumber, playerNumber,
         {static_cast<float>(x), -0.15f, static_cast<float>(y)});
@@ -1384,8 +1445,18 @@ void ZappyGui::ebo(std::vector<std::string> actualCommand)
         std::cerr << "ebo: invalid number of arguments" << std::endl;
         return;
     }
-    actualCommand[1].erase(actualCommand[1].begin());
-    int eggNumber = std::stoi(actualCommand[1]);
+    int eggNumber;
+    try {
+        if (actualCommand[1][0] != '#') {
+            std::cerr << "ebo: invalid arguments" << std::endl;
+            return;
+        }
+        actualCommand[1].erase(actualCommand[1].begin());
+        eggNumber = std::stoi(actualCommand[1]);
+    } catch (const std::exception &e) {
+        std::cerr << "ebo: invalid arguments" << std::endl;
+        return;
+    }
     for (auto i = eggs_.begin(); i != eggs_.end(); i++) {
         if (i->eggNumber == eggNumber) {
             for (auto j = trantorians_.begin(); j != trantorians_.end(); j++) {
@@ -1423,8 +1494,18 @@ void ZappyGui::edi(std::vector<std::string> actualCommand)
         std::cerr << "edi: invalid number of arguments" << std::endl;
         return;
     }
-    actualCommand[1].erase(actualCommand[1].begin());
-    int eggNumber = std::stoi(actualCommand[1]);
+    int eggNumber;
+    try {
+        if (actualCommand[1][0] != '#') {
+            std::cerr << "edi: invalid arguments" << std::endl;
+            return;
+        }
+        actualCommand[1].erase(actualCommand[1].begin());
+        eggNumber = std::stoi(actualCommand[1]);
+    } catch (const std::exception &e) {
+        std::cerr << "edi: invalid arguments" << std::endl;
+        return;
+    }
     for (auto i = eggs_.begin(); i != eggs_.end(); i++) {
         if (i->eggNumber == eggNumber) {
             removeGameObject(i->eggObjectId);
@@ -1809,7 +1890,7 @@ void ZappyGui::updateGame()
         timerManager_.resetTimer("resourcesAnimation");
     }
     if (timerManager_.getElapsedTime("trantoriansPosition") > 7.f / (20 * _timeUnit)) {
-        // updateTrantoriansPosition();
+        updateTrantoriansPosition();
         timerManager_.resetTimer("trantoriansPosition");
     }
     for (Trantorian &Trantorian : trantorians_) {
