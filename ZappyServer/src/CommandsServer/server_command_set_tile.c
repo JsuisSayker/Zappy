@@ -19,7 +19,6 @@ static void server_command_set_tile_sub(zappy_server_t *zappy,
         y < zappy->args->height) {
         set_inventory_resource_quantite(&zappy->map_tile[y][x].inventory,
             resource, resource_quantity);
-        printf("tp done\n");
     }
 }
 

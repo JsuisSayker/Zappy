@@ -21,11 +21,9 @@ void gui_command_pin(zappy_server_t *zappy, char *command)
 {
     int client_nb = 0;
 
-    if (command[0] != ' ' && command[1] != '#') {
-        send_sbp_command_to_all_gui(zappy);
-        return;
-    }
-    client_nb = atoi(&command[1]);
+    if (command[0] != ' ' && command[1] != '#')
+        return send_sbp_command_to_all_gui(zappy);
+    client_nb = atoi(&command[2]);
     for (int i = 3; i < zappy->nb_connected_clients; i += 1) {
         if (zappy->clients[i].client_number == client_nb &&
             zappy->clients[i].type == IA) {

@@ -278,6 +278,7 @@ ZappyGui::ZappyGui()
         std::bind(&ZappyGui::welcome, this, std::placeholders::_1);
     timerManager_.startTimer("portalAnimation");
     timerManager_.startTimer("resourcesAnimation");
+    timerManager_.startTimer("trantoriansPosition");
     resources_.emplace("food", 0);
     resources_.emplace("linemate", 0);
     resources_.emplace("deraumere", 0);
@@ -1103,8 +1104,12 @@ void ZappyGui::ppo(std::vector<std::string> actualCommand)
     } catch (const std::exception &e) {
         return;
     }
-    this->updateTrantorianPosition(playerNumber,
-        {static_cast<float>(x), 0.f, static_cast<float>(y)}, orientation);
+    for (Trantorian &Trantorian : trantorians_) {
+        if (Trantorian.playerNumber == playerNumber) {
+            Trantorian.newPosition = {static_cast<float>(x), 0.f,
+                static_cast<float>(y)};
+        }
+    }
 }
 
 /**
@@ -1142,13 +1147,12 @@ void ZappyGui::plv(std::vector<std::string> actualCommand)
     for (Trantorian &Trantorian : trantorians_) {
         if (Trantorian.playerNumber == playerNumber) {
             Trantorian.level = level;
-            for (auto &object : gameObjects) {
-                if (object.first == Trantorian.trantorianObject)
-                    object.second.transform.scale = {0.25f + 0.1f * level,
-                        0.25f + 0.1f * level, 0.25f + 0.1f * level};
-                object.second.transform.translation.y =
-                    -0.25f - (0.1f * level);
-            }
+            gameObjects[Trantorian.trantorianObject].transform.scale = {
+                0.25f + 0.1f * level, 0.25f + 0.1f * level,
+                0.25f + 0.1f * level};
+            gameObjects[Trantorian.trantorianObject].transform.translation.y =
+                -0.25f - (0.1f * level);
+            gameObjects[Trantorian.pointLightObject].transform.translation.y = -1.f - (0.1f * level);
         }
     }
 }
@@ -1479,6 +1483,8 @@ void ZappyGui::addTrantorian(const std::string &teamName,
 
     Trantorian newTrantorian(
         ObjectId, pointLight->getId(), teamName, playerNumber);
+    newTrantorian.position = position;
+    newTrantorian.newPosition = position;
 
     this->trantorians_.emplace_back(newTrantorian);
 }
@@ -1589,9 +1595,9 @@ float ZappyGui::degreeToRadiant(float degree) { return degree * M_PI / 180; }
  * @brief Creates the map for the ZappyGui.
  *
  * This function creates the map for the ZappyGui by generating game objects
- * based on the given width and height. It creates grass blocks, obsidian blocks,
- * and portal frames. It also creates sky squares for the top, sides, and bottom
- * of the map.
+ * based on the given width and height. It creates grass blocks, obsidian
+ * blocks, and portal frames. It also creates sky squares for the top, sides,
+ * and bottom of the map.
  *
  * @param width The width of the map.
  * @param height The height of the map.
@@ -1787,9 +1793,10 @@ void ZappyGui::updateGameObjectsTexture(
 /**
  * @brief Updates the game state.
  *
- * This function is responsible for updating the game state by performing various tasks such as
- * updating portal animation, resources animation, and rotating Trantorian objects during incantation.
- * It uses the timer manager to control the timing of these updates.
+ * This function is responsible for updating the game state by performing
+ * various tasks such as updating portal animation, resources animation, and
+ * rotating Trantorian objects during incantation. It uses the timer manager to
+ * control the timing of these updates.
  */
 void ZappyGui::updateGame()
 {
@@ -1800,6 +1807,10 @@ void ZappyGui::updateGame()
     if (timerManager_.getElapsedTime("resourcesAnimation") > 0.05f) {
         updateResourcesAnimation();
         timerManager_.resetTimer("resourcesAnimation");
+    }
+    if (timerManager_.getElapsedTime("trantoriansPosition") > 7.f / (20 * _timeUnit)) {
+        // updateTrantoriansPosition();
+        timerManager_.resetTimer("trantoriansPosition");
     }
     for (Trantorian &Trantorian : trantorians_) {
         if (Trantorian.incatationInProgess) {
@@ -1814,18 +1825,21 @@ void ZappyGui::updateGame()
 
 /**
  * @brief Updates the animation of the resources in the game.
- * 
- * This function is responsible for updating the rotation and translation of the resources
- * in the game. It iterates through each type of resource (linemate, deraumere, sibur, mendiane,
- * phiras, thystame, and food) and applies the corresponding animation based on the value of
- * `indexRessourcesAnimation`. The rotation is incremented by 0.02f, and the translation is
- * adjusted by +/- 0.01f depending on the value of `indexRessourcesAnimation`.
- * 
- * If the list of food resources is empty, the function returns early. Otherwise, it checks the
- * translation of the first food resource and updates `indexRessourcesAnimation` accordingly.
- * 
- * @note This function assumes the existence of a `gameObjects` container and a `resources_` map
- *       that stores the resource IDs.
+ *
+ * This function is responsible for updating the rotation and translation of
+ * the resources in the game. It iterates through each type of resource
+ * (linemate, deraumere, sibur, mendiane, phiras, thystame, and food) and
+ * applies the corresponding animation based on the value of
+ * `indexRessourcesAnimation`. The rotation is incremented by 0.02f, and the
+ * translation is adjusted by +/- 0.01f depending on the value of
+ * `indexRessourcesAnimation`.
+ *
+ * If the list of food resources is empty, the function returns early.
+ * Otherwise, it checks the translation of the first food resource and updates
+ * `indexRessourcesAnimation` accordingly.
+ *
+ * @note This function assumes the existence of a `gameObjects` container and a
+ * `resources_` map that stores the resource IDs.
  */
 void ZappyGui::updateResourcesAnimation()
 {
@@ -1888,10 +1902,10 @@ void ZappyGui::updateResourcesAnimation()
 
 /**
  * @brief Updates the texture of the portal frames in the ZappyGui.
- * 
- * This function increments the index of the portal frame and updates the texture
- * of all portal frames in the ZappyGui using the new index.
- * 
+ *
+ * This function increments the index of the portal frame and updates the
+ * texture of all portal frames in the ZappyGui using the new index.
+ *
  * @note The index of the portal frame is reset to 1 when it reaches 32.
  */
 void ZappyGui::updatePortalFrame()
@@ -1905,6 +1919,19 @@ void ZappyGui::updatePortalFrame()
                 "/ZappyGui/textures/portal/frame" +
                 std::to_string(indexPortalFrame) + ".png",
             portalFrame);
+    }
+}
+
+void ZappyGui::updateTrantoriansPosition()
+{
+    for (Trantorian &Trantorian : trantorians_) {
+        if (Trantorian.position != Trantorian.newPosition) {
+            glm::vec3 direction = Trantorian.newPosition - Trantorian.position;
+            glm::vec3 normalizedDirection = glm::normalize(direction);
+            Trantorian.position += normalizedDirection * 0.05f;
+            gameObjects[Trantorian.trantorianObject].transform.translation =
+                Trantorian.position;
+        }
     }
 }
 

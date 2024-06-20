@@ -175,6 +175,7 @@ static int message_receive(client_t *client, zappy_server_t *zappy,
 int read_message_receive(zappy_server_t *zappy, client_t *client,
     message_t *message, int actual_sockfd)
 {
+    printf("    MESSAGE\n");
     if (client == NULL || zappy == NULL || message == NULL)
         return ERROR;
     if (message_receive(client, zappy, message, actual_sockfd) == ERROR)

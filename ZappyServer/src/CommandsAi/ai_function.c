@@ -45,6 +45,7 @@ bool is_alive(zappy_server_t *zappy, client_t *client)
 
 int ai_function(zappy_server_t *zappy, client_t *client, char *cmd)
 {
+    printf("    AI FUNCTION\n");
     if (zappy == NULL || client == NULL)
         return ERROR;
     if (is_alive(zappy, client) == false)

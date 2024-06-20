@@ -72,6 +72,7 @@ class ZappyGui {
     void updateGame();
     void updatePortalFrame();
     void updateResourcesAnimation();
+    void updateTrantoriansPosition();
     void updateGameObjectsTexture(std::string texturePath, ZappyGameObject::id_t gameObjectId);
 
     void processCommand();
