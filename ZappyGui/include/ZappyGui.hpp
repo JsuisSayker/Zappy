@@ -47,10 +47,10 @@ class ZappyGui {
     float degreeToRadiant(float degrees);
 
     void addTrantorian(const std::string &teamName, const glm::vec3 &position,
-        int playerNumber, int orientation);
+        int playerNumber, std::string orientation);
     void removeTrantorian(int playerNumber);
     void updateTrantorianPosition(
-        int playerNumber, const glm::vec3 &position, int orientation);
+        int playerNumber, const glm::vec3 &position, std::string orientation);
 
     void eggLayingPose(int playerNumber);
 

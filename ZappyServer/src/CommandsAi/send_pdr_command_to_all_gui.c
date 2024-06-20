@@ -12,7 +12,7 @@ void send_pdr_command_to_all_gui(zappy_server_t *zappy, client_t *client,
 {
     for (int i = 3; i < zappy->nb_connected_clients; i += 1) {
         if (zappy->clients[i].type == GUI) {
-            dprintf(i, "pdr %d %d\n", client->client_number, nb_resource);
+            dprintf(i, "pdr #%d %d\n", client->client_number, nb_resource);
         }
     }
 }

@@ -120,6 +120,7 @@ class Client():
                           str(newClientId)])
 
     def launch_client(self):
+        previousData = ""
         try:
             while True:
                 event = self.selector.select(None)
@@ -132,6 +133,11 @@ class Client():
                             self.closeConnection()
                             exit(0)
                         print(f"DATA: {data}")
+                        self.storePreviousData(self.ai.dataToSend)
+
+                        if previousData == "":
+                            previousData = ""
+                        print(f"MINE PREVIOUS DATA: {previousData}")
                         print(f"self.ai.dataToSend: {self.ai.dataToSend}")
 
                         if not data:
@@ -139,8 +145,6 @@ class Client():
                             self.closeConnection()
                         tmpReceivedData = data.split("\n")
                         print(f"tmpReceivedData: {tmpReceivedData[:-1]}")
-                        previousData = self.loadPreviousData()
-                        print(f"MINE PREVIOUS DATA: {previousData}")
                         for element in tmpReceivedData[:-1]:
                             print(f"element: {element}")
                             if "WELCOME" in element and self.logged is False:
@@ -193,15 +197,20 @@ class Client():
                             self.ai.run = True
 
                     if mask & selectors.EVENT_WRITE:
+                        previousData = self.loadPreviousData()
                         if self.logged and self.ai.run is True:
-                            self.storePreviousData(self.ai.dataToSend)
+                            # self.storePreviousData(self.ai.dataToSend)
+                            # print(f"DO BICH {self.ai.dataToSend}")
                             self.ai.algorithm()
+                            # print(f"DO BICH AFTER {self.ai.dataToSend}")
+                            # exit(0)
                         if self.ai.dataToSend and self.ai.run is True:
                             if self.ai.dataToSend == (
                                     self.teamName + '\n'
                             ) and self.logged is False:
                                 self.actualStep = 1
                             self.socket.send(self.ai.dataToSend.encode())
+                            print(f"DATA SENT: {self.ai.dataToSend}")
                             self.ai.run = False
 
         except KeyboardInterrupt:

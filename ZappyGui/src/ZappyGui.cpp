@@ -98,8 +98,8 @@ void ZappyGui::drawHud()
     ImGui::End();
 
     // Render ImGui wrap menu with teams colors in left side
-    ImGui::SetNextWindowPos(ImVec2(10, 60));
-    ImGui::SetNextWindowSize(ImVec2(150, 160));
+    ImGui::SetNextWindowPos(ImVec2(10, 100), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(250, 500), ImGuiCond_FirstUseEver);
     ImGui::Begin("Teams", nullptr,
         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
     static std::string current_team = "";
@@ -145,6 +145,9 @@ void ZappyGui::drawHud()
     ImGui::End();
 
     if (this->showChildWindow) {
+        ImGui::SetNextWindowPos(ImVec2(110, 100), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(200, 180), ImGuiCond_FirstUseEver);
+
         ImGui::Begin(
             std::to_string(this->selectedPlayerNbr).c_str(), nullptr, 0);
         // Display trantorian informations
@@ -191,7 +194,6 @@ void ZappyGui::drawHud()
         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
     ImGui::Text("Chat");
     ImGui::Separator();
-    // loop over chat messages queue
     for (auto &message : this->chatMessages) {
         ImGui::Text("%s : %s", message.first.c_str(), message.second.c_str());
     }
@@ -274,10 +276,8 @@ void ZappyGui::processCommand()
     auto commandTime = std::chrono::high_resolution_clock::now();
     auto endTime = commandTime + std::chrono::milliseconds(16);
 
-    while (!this->getClient().get()->getQueue().empty() &&
-        commandTime < endTime) {
-        std::vector<std::string> command =
-            this->getClient().get()->popFromQueue();
+    while (!this->getClient().get()->getQueue().empty() && commandTime < endTime) {
+        std::vector<std::string> command = this->getClient().get()->popFromQueue();
 
         if (this->getPointerToFunction().find(command[0]) !=
             this->getPointerToFunction().end()) {
@@ -602,7 +602,10 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
                 foodId = createGameObject(
                     executablePath + "/ZappyGui/models/diamond_apple.obj",
                     executablePath + "/ZappyGui/textures/diamond_apple.png",
-                    {static_cast<float>(x), gameObjects[resources_["food"].back()].transform.translation.y, static_cast<float>(y)},
+                    {static_cast<float>(x),
+                        gameObjects[resources_["food"].back()]
+                            .transform.translation.y,
+                        static_cast<float>(y)},
                     {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
                     true);
             } else {
@@ -610,7 +613,8 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
                     executablePath + "/ZappyGui/models/diamond_apple.obj",
                     executablePath + "/ZappyGui/textures/diamond_apple.png",
                     {static_cast<float>(x), 0.f, static_cast<float>(y)},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             }
             map[x][y].food.push_back(foodId);
             resources_["food"].push_back(foodId);
@@ -634,14 +638,20 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
                 linemateId = createGameObject(
                     executablePath + "/ZappyGui/models/ingot.obj",
                     executablePath + "/ZappyGui/textures/iron_ingot.png",
-                    {static_cast<float>(x) - 0.3f, gameObjects[resources_["linemate"].back()].transform.translation.y, static_cast<float>(y) - 0.3f},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) - 0.3f,
+                        gameObjects[resources_["linemate"].back()]
+                            .transform.translation.y,
+                        static_cast<float>(y) - 0.3f},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             } else {
                 linemateId = createGameObject(
                     executablePath + "/ZappyGui/models/ingot.obj",
                     executablePath + "/ZappyGui/textures/iron_ingot.png",
-                    {static_cast<float>(x) - 0.3f, 0.f, static_cast<float>(y) - 0.3f},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) - 0.3f, 0.f,
+                        static_cast<float>(y) - 0.3f},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             }
             map[x][y].linemate.push_back(linemateId);
             resources_["linemate"].push_back(linemateId);
@@ -651,7 +661,8 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
             removeGameObject(map[x][y].linemate.back());
             for (int j = 0; j < resources_["linemate"].size(); j++) {
                 if (resources_["linemate"][j] == map[x][y].linemate.back()) {
-                    resources_["linemate"].erase(resources_["linemate"].begin() + j);
+                    resources_["linemate"].erase(
+                        resources_["linemate"].begin() + j);
                     break;
                 }
             }
@@ -665,14 +676,20 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
                 deraumereId = createGameObject(
                     executablePath + "/ZappyGui/models/ingot.obj",
                     executablePath + "/ZappyGui/textures/gold_ingot.png",
-                    {static_cast<float>(x) + 0.3f, gameObjects[resources_["deraumere"].back()].transform.translation.y, static_cast<float>(y) + 0.3f},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) + 0.3f,
+                        gameObjects[resources_["deraumere"].back()]
+                            .transform.translation.y,
+                        static_cast<float>(y) + 0.3f},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             } else {
                 deraumereId = createGameObject(
                     executablePath + "/ZappyGui/models/ingot.obj",
                     executablePath + "/ZappyGui/textures/gold_ingot.png",
-                    {static_cast<float>(x) + 0.3f, 0.f, static_cast<float>(y) + 0.3f},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) + 0.3f, 0.f,
+                        static_cast<float>(y) + 0.3f},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             }
             map[x][y].deraumere.push_back(deraumereId);
             resources_["deraumere"].push_back(deraumereId);
@@ -682,7 +699,8 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
             removeGameObject(map[x][y].deraumere.back());
             for (int j = 0; j < resources_["deraumere"].size(); j++) {
                 if (resources_["deraumere"][j] == map[x][y].deraumere.back()) {
-                    resources_["deraumere"].erase(resources_["deraumere"].begin() + j);
+                    resources_["deraumere"].erase(
+                        resources_["deraumere"].begin() + j);
                     break;
                 }
             }
@@ -696,14 +714,20 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
                 siburId = createGameObject(
                     executablePath + "/ZappyGui/models/diamond.obj",
                     executablePath + "/ZappyGui/textures/diamond.png",
-                    {static_cast<float>(x) - 0.3f, gameObjects[resources_["sibur"].back()].transform.translation.y, static_cast<float>(y) + 0.3f},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) - 0.3f,
+                        gameObjects[resources_["sibur"].back()]
+                            .transform.translation.y,
+                        static_cast<float>(y) + 0.3f},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             } else {
                 siburId = createGameObject(
                     executablePath + "/ZappyGui/models/diamond.obj",
                     executablePath + "/ZappyGui/textures/diamond.png",
-                    {static_cast<float>(x) - 0.3f, 0.f, static_cast<float>(y) + 0.3f},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) - 0.3f, 0.f,
+                        static_cast<float>(y) + 0.3f},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             }
             map[x][y].sibur.push_back(siburId);
             resources_["sibur"].push_back(siburId);
@@ -727,14 +751,20 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
                 mendianeId = createGameObject(
                     executablePath + "/ZappyGui/models/diamond.obj",
                     executablePath + "/ZappyGui/textures/diamond_purple.png",
-                    {static_cast<float>(x) + 0.3f, gameObjects[resources_["mendiane"].back()].transform.translation.y, static_cast<float>(y) - 0.3f},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) + 0.3f,
+                        gameObjects[resources_["mendiane"].back()]
+                            .transform.translation.y,
+                        static_cast<float>(y) - 0.3f},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             } else {
                 mendianeId = createGameObject(
                     executablePath + "/ZappyGui/models/diamond.obj",
                     executablePath + "/ZappyGui/textures/diamond_purple.png",
-                    {static_cast<float>(x) + 0.3f, 0.f, static_cast<float>(y) - 0.3f},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) + 0.3f, 0.f,
+                        static_cast<float>(y) - 0.3f},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             }
             map[x][y].mendiane.push_back(mendianeId);
             resources_["mendiane"].push_back(mendianeId);
@@ -744,7 +774,8 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
             removeGameObject(map[x][y].mendiane.back());
             for (int j = 0; j < resources_["mendiane"].size(); j++) {
                 if (resources_["mendiane"][j] == map[x][y].mendiane.back()) {
-                    resources_["mendiane"].erase(resources_["mendiane"].begin() + j);
+                    resources_["mendiane"].erase(
+                        resources_["mendiane"].begin() + j);
                     break;
                 }
             }
@@ -758,14 +789,19 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
                 phirasId = createGameObject(
                     executablePath + "/ZappyGui/models/ingot.obj",
                     executablePath + "/ZappyGui/textures/green_ingot.png",
-                    {static_cast<float>(x) - 0.3f, gameObjects[resources_["phiras"].back()].transform.translation.y, static_cast<float>(y)},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) - 0.3f,
+                        gameObjects[resources_["phiras"].back()]
+                            .transform.translation.y,
+                        static_cast<float>(y)},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             } else {
                 phirasId = createGameObject(
                     executablePath + "/ZappyGui/models/ingot.obj",
                     executablePath + "/ZappyGui/textures/green_ingot.png",
                     {static_cast<float>(x) - 0.3f, 0.f, static_cast<float>(y)},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             }
             map[x][y].phiras.push_back(phirasId);
             resources_["phiras"].push_back(phirasId);
@@ -775,7 +811,8 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
             removeGameObject(map[x][y].phiras.back());
             for (int j = 0; j < resources_["phiras"].size(); j++) {
                 if (resources_["phiras"][j] == map[x][y].phiras.back()) {
-                    resources_["phiras"].erase(resources_["phiras"].begin() + j);
+                    resources_["phiras"].erase(
+                        resources_["phiras"].begin() + j);
                     break;
                 }
             }
@@ -789,14 +826,19 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
                 thystameId = createGameObject(
                     executablePath + "/ZappyGui/models/diamond.obj",
                     executablePath + "/ZappyGui/textures/diamond_red.png",
-                    {static_cast<float>(x) + 0.3f, gameObjects[resources_["thystame"].back()].transform.translation.y, static_cast<float>(y)},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {static_cast<float>(x) + 0.3f,
+                        gameObjects[resources_["thystame"].back()]
+                            .transform.translation.y,
+                        static_cast<float>(y)},
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             } else {
                 thystameId = createGameObject(
                     executablePath + "/ZappyGui/models/diamond.obj",
                     executablePath + "/ZappyGui/textures/diamond_red.png",
                     {static_cast<float>(x) + 0.3f, 0.f, static_cast<float>(y)},
-                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f}, true);
+                    {degreeToRadiant(180), 0.f, 0.f}, {0.2f, 0.2f, 0.2f},
+                    true);
             }
             map[x][y].thystame.push_back(thystameId);
             resources_["thystame"].push_back(thystameId);
@@ -806,7 +848,8 @@ void ZappyGui::bct(std::vector<std::string> actualCommand)
             removeGameObject(map[x][y].thystame.back());
             for (int j = 0; j < resources_["thystame"].size(); j++) {
                 if (resources_["thystame"][j] == map[x][y].thystame.back()) {
-                    resources_["thystame"].erase(resources_["thystame"].begin() + j);
+                    resources_["thystame"].erase(
+                        resources_["thystame"].begin() + j);
                     break;
                 }
             }
@@ -847,17 +890,18 @@ void ZappyGui::pnw(std::vector<std::string> actualCommand)
         std::cerr << "pnw: invalid number of arguments" << std::endl;
         return;
     }
-    int trantorianId;
+    int playerNumber;
     int x;
     int y;
-    int orientation;
+    std::string orientation;
     int level;
     std::string teamName;
     try {
-        trantorianId = std::stoi(actualCommand[1]);
+        actualCommand[1].erase(actualCommand[1].begin());
+        playerNumber = std::stoi(actualCommand[1]);
         x = std::stoi(actualCommand[2]);
         y = std::stoi(actualCommand[3]);
-        orientation = std::stoi(actualCommand[4]);
+        orientation = actualCommand[4];
         level = std::stoi(actualCommand[5]);
         teamName = actualCommand[6];
     } catch (const std::exception &e) {
@@ -865,7 +909,7 @@ void ZappyGui::pnw(std::vector<std::string> actualCommand)
     }
 
     this->addTrantorian(teamName,
-        {static_cast<float>(x), -.25f, static_cast<float>(y)}, trantorianId,
+        {static_cast<float>(x), -.25f, static_cast<float>(y)}, playerNumber,
         orientation);
 }
 
@@ -878,12 +922,13 @@ void ZappyGui::ppo(std::vector<std::string> actualCommand)
     int playerNumber;
     int x;
     int y;
-    int orientation;
+    std::string orientation;
     try {
+        actualCommand[1].erase(actualCommand[1].begin());
         playerNumber = std::stoi(actualCommand[1]);
         x = std::stoi(actualCommand[2]);
         y = std::stoi(actualCommand[3]);
-        orientation = std::stoi(actualCommand[4]);
+        orientation = actualCommand[4];
     } catch (const std::exception &e) {
         return;
     }
@@ -901,6 +946,7 @@ void ZappyGui::plv(std::vector<std::string> actualCommand)
     int playerNumber;
     int level;
     try {
+        actualCommand[1].erase(actualCommand[1].begin());
         playerNumber = std::stoi(actualCommand[1]);
         level = std::stoi(actualCommand[2]);
     } catch (const std::exception &e) {
@@ -953,7 +999,7 @@ void ZappyGui::pbc(std::vector<std::string> actualCommand)
         std::cerr << "pbc: invalid number of arguments" << std::endl;
         return;
     }
-
+    actualCommand[1].erase(actualCommand[1].begin());
     int playerNumber = std::stoi(actualCommand[1]);
     std::string message = actualCommand[2];
 
@@ -977,6 +1023,7 @@ void ZappyGui::pic(std::vector<std::string> actualCommand)
         x = std::stoi(actualCommand[1]);
         y = std::stoi(actualCommand[2]);
         for (int i = 3; i < actualCommand.size(); i++) {
+            actualCommand[i].erase(actualCommand[i].begin());
             playerNumbers.push_back(std::stoi(actualCommand[i]));
         }
     } catch (const std::exception &e) {
@@ -1021,7 +1068,7 @@ void ZappyGui::pfk(std::vector<std::string> actualCommand)
         std::cerr << "pfk: invalid number of arguments" << std::endl;
         return;
     }
-
+    actualCommand[1].erase(actualCommand[1].begin());
     int playerNumber = std::stoi(actualCommand[1]);
 
     this->eggLayingPose(playerNumber);
@@ -1043,7 +1090,7 @@ void ZappyGui::pdi(std::vector<std::string> actualCommand)
         std::cerr << "pdi: invalid number of arguments" << std::endl;
         return;
     }
-
+    actualCommand[1].erase(actualCommand[1].begin());
     int playerNumber = std::stoi(actualCommand[1]);
 
     this->removeTrantorian(playerNumber);
@@ -1055,7 +1102,8 @@ void ZappyGui::enw(std::vector<std::string> actualCommand)
         std::cerr << "enw: invalid number of arguments" << std::endl;
         return;
     }
-
+    actualCommand[1].erase(actualCommand[1].begin());
+    actualCommand[2].erase(actualCommand[2].begin());
     int eggNumber = std::stoi(actualCommand[1]);
     int playerNumber = std::stoi(actualCommand[2]);
     int x = std::stoi(actualCommand[2]);
@@ -1071,9 +1119,8 @@ void ZappyGui::ebo(std::vector<std::string> actualCommand)
         std::cerr << "ebo: invalid number of arguments" << std::endl;
         return;
     }
-
+    actualCommand[1].erase(actualCommand[1].begin());
     int eggNumber = std::stoi(actualCommand[1]);
-
     for (auto i = eggs_.begin(); i != eggs_.end(); i++) {
         if (i->eggNumber == eggNumber) {
             for (auto j = trantorians_.begin(); j != trantorians_.end(); j++) {
@@ -1096,9 +1143,8 @@ void ZappyGui::edi(std::vector<std::string> actualCommand)
         std::cerr << "edi: invalid number of arguments" << std::endl;
         return;
     }
-
+    actualCommand[1].erase(actualCommand[1].begin());
     int eggNumber = std::stoi(actualCommand[1]);
-
     for (auto i = eggs_.begin(); i != eggs_.end(); i++) {
         if (i->eggNumber == eggNumber) {
             removeGameObject(i->eggObjectId);
@@ -1114,18 +1160,17 @@ void ZappyGui::welcome(std::vector<std::string> actualCommand)
     dprintf(this->client.get()->getSocketFd(), "GRAPHIC\n");
 }
 
-void ZappyGui::addTrantorian(const std::string &teamName,
-    const glm::vec3 &position, int playerNumber, int orientation)
+void ZappyGui::addTrantorian(const std::string &teamName, const glm::vec3 &position, int playerNumber, std::string orientation)
 {
     glm::vec3 rotation;
 
-    if (orientation == 1)
+    if (orientation == "N")
         rotation = {0.f, 0.f, 0.f};
-    else if (orientation == 2)
+    else if (orientation == "E")
         rotation = {0.f, 1.55f, 0.f};
-    else if (orientation == 3)
+    else if (orientation == "S")
         rotation = {0.f, 3.14f, 0.f};
-    else if (orientation == 4)
+    else if (orientation == "W")
         rotation = {0.f, -1.57f, 0.f};
 
     ZappyGameObject::id_t ObjectId =
@@ -1159,8 +1204,7 @@ void ZappyGui::removeTrantorian(int playerNumber)
     }
 }
 
-void ZappyGui::updateTrantorianPosition(
-    int playerNumber, const glm::vec3 &position, int orientation)
+void ZappyGui::updateTrantorianPosition(int playerNumber, const glm::vec3 &position, std::string orientation)
 {
     for (Trantorian &trantorian : trantorians_) {
         if (trantorian.playerNumber == playerNumber) {
@@ -1173,13 +1217,13 @@ void ZappyGui::updateTrantorianPosition(
                     object.second.transform.translation = position;
                     object.second.transform.translation.y =
                         object.second.transform.scale.y * -1;
-                    if (orientation == 1)
+                    if (orientation == "N")
                         object.second.transform.rotation = {0.f, 0.f, 0.f};
-                    else if (orientation == 2)
+                    else if (orientation == "E")
                         object.second.transform.rotation = {0.f, 1.55f, 0.f};
-                    else if (orientation == 3)
+                    else if (orientation == "S")
                         object.second.transform.rotation = {0.f, 3.14f, 0.f};
-                    else if (orientation == 4)
+                    else if (orientation == "W")
                         object.second.transform.rotation = {0.f, -1.57f, 0.f};
                 }
             }

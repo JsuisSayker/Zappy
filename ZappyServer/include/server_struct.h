@@ -102,7 +102,6 @@ typedef struct ai_health_s {
 typedef struct message_s {
     char *message;
     ai_position_t pos;
-    struct message_s *next;
 } message_t;
 
 typedef struct client_s {

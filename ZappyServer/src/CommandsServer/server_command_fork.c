@@ -18,7 +18,6 @@ static int do_fork(zappy_server_t *zappy, char **split_cmd)
                 atoi(split_cmd[2]));
             tmp_egg = TAILQ_LAST(&(team->eggs_head), egghead);
             send_enw_command_to_all_gui(zappy, tmp_egg);
-            send_eht_command_to_all_gui(zappy, tmp_egg->egg_number);
             return OK;
         }
     }
