@@ -111,8 +111,6 @@ void handle_client(zappy_server_t *zappy)
     log_trace("On the socket %d\n", zappy->actual_sockfd);
     if (n == -1 || n == 0)
         return;
-    strcat(zappy->clients[zappy->actual_sockfd].buffer.
-        input_buffer, buffer);
     clean_string(buffer);
     lines = splitter(buffer, END_LINE);
     if (lines == NULL)

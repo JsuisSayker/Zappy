@@ -113,7 +113,6 @@ message_t *add_node_in_list(message_t *list, char *cmd, ai_position_t pos);
 int init_server(zappy_server_t *zappy, args_config_t *args);
 int close_server(zappy_server_t *zappy);
 int fd_is_set(zappy_server_t *zappy);
-void init_buffer_struct(buffer_t *buffer, int *my_socket);
 int scan_fd(zappy_server_t *zappy);
 void handle_client(zappy_server_t *zappy);
 int setup_server(int port, int max_clients);
