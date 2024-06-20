@@ -20,6 +20,7 @@ TARGET = ../zappy_gui
 
 $(TARGET): $(vertObjFiles) $(fragObjFiles)
 $(TARGET): src/*.cpp
+	./rebuild.sh
 	g++ $(CFLAGS) -o $(TARGET) src/*.cpp src/systems/*.cpp $(LDFLAGS) imgui/*.cpp imgui/backends/*.cpp
 
 all: $(TARGET)

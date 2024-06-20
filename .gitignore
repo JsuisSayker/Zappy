@@ -77,3 +77,6 @@ dkms.conf
 notes.txt
 
 vulkan-sdk*
+
+doc_doxygen
+build
