@@ -49,11 +49,6 @@ typedef struct args_config_s {
     struct char_tab_head names;
 } args_config_t;
 
-typedef struct buffer_s {
-    char input_buffer[BUFSIZ];
-    char output_buffer[BUFSIZ];
-} buffer_t;
-
 // AI PARAMETERS
 
 typedef struct inventory_s {
