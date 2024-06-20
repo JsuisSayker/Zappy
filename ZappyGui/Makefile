@@ -7,7 +7,34 @@
 
 include .env
 
-CFLAGS = -std=c++17 -I./include -I./include/systems -I$(TINYOBJ_PATH) -I$(STBIMAGE_PATH) -I./imgui/
+SRC			=	Window.cpp \
+				systems/PointLightSystem.cpp \
+				systems/SimpleRenderSystem.cpp \
+				Buffer.cpp \
+				Camera.cpp \
+				Client.cpp \
+				Descriptors.cpp \
+				Device.cpp \
+				Egg.cpp \
+				GameObject.cpp \
+				KeyboardMovementController.cpp \
+				Main.cpp \
+				Map.cpp \
+				Model.cpp \
+				Pipeline.cpp \
+				Renderer.cpp \
+				SwapChain.cpp \
+				Texture.cpp \
+				Trantorian.cpp \
+				ZappyGui.cpp \
+
+DIR_SRC		=	$(addprefix src/, $(SRC))
+
+OBJ_SRC		=	$(DIR_SRC:.cpp=.o)
+
+OBJ			=	$(OBJ_SRC)
+
+CPPFLAGS = -I./include -I./include/systems -I$(TINYOBJ_PATH) -I$(STBIMAGE_PATH) -I./imgui/
 LDFLAGS = `pkg-config --static --libs glfw3` -lvulkan
 
 # create list of all spv files and set as dependency
@@ -16,31 +43,30 @@ vertObjFiles = $(patsubst %.vert, %.vert.spv, $(vertSources))
 fragSources = $(shell find ./shaders -type f -name "*.frag")
 fragObjFiles = $(patsubst %.frag, %.frag.spv, $(fragSources))
 
-TARGET = ../zappy_gui
+NAME = ../zappy_gui
 
-$(TARGET): $(vertObjFiles) $(fragObjFiles)
-$(TARGET): src/*.cpp
+$(NAME):	$(OBJ) $(vertObjFiles) $(fragObjFiles)
+	g++ -o $(NAME) $(OBJ) $(LDFLAGS) $(CPPFLAGS) imgui/*.cpp imgui/backends/*.cpp
 	./rebuild.sh
-	g++ $(CFLAGS) -o $(TARGET) src/*.cpp src/systems/*.cpp $(LDFLAGS) imgui/*.cpp imgui/backends/*.cpp
 
-all: $(TARGET)
+all: $(NAME)
 
 # make shader targets
 %.spv: %
 	${GLSLC} $< -o $@
 
-test: $(TARGET)
-	./$(TARGET)
+test: $(NAME)
+	./$(NAME)
 
 clean:
-	rm -rf shaders/*.spv
+	rm -rf shaders/*.spv $(OBJ)
 
 fclean: clean
-	rm -f $(TARGET)
+	rm -f $(NAME)
 
-re: fclean $(TARGET)
+re: fclean all
 
-debug: $(vertObjFiles) $(fragObjFiles)
-	g++ $(CFLAGS) -o $(TARGET) src/*.cpp src/systems/*.cpp $(LDFLAGS) imgui/*.cpp imgui/backends/*.cpp -ggdb3
+debug: $(OBJ) $(vertObjFiles) $(fragObjFiles)
+	g++ -o $(NAME) $(OBJ) $(CPPFLAGS) $(LDFLAGS) -ggdb3
 
 .PHONY: test clean fclean re debug
