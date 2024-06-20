@@ -15,7 +15,7 @@ void generate_egg_by_team(zappy_server_t *zappy, team_t *new_team, int x,
     if (new_egg == NULL)
         return;
     new_egg->egg_number = zappy->index_eggs;
-    new_egg->client_number = -1;
+    new_egg->client_number = zappy->index_eggs;
     new_egg->x = x;
     new_egg->y = y;
     TAILQ_INSERT_TAIL(&(new_team->eggs_head), new_egg, next);

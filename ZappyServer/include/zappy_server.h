@@ -32,7 +32,6 @@ typedef struct zappy_server_s {
     int my_socket;
     int actual_sockfd;
     int index_eggs;
-    int index_clients;
     int nb_connected_clients;
     bool server_start_game;
     bool server_running;
