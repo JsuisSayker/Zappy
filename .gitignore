@@ -82,3 +82,6 @@ vulkan-sdk*
 
 doc_doxygen
 build
+
+coverage.*
+imgui.ini
