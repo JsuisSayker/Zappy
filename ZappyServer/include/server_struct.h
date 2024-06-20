@@ -50,8 +50,8 @@ typedef struct args_config_s {
 } args_config_t;
 
 typedef struct buffer_s {
-    char input_buffer[MAX_COMMAND_LENGTH];
-    char output_buffer[MAX_COMMAND_LENGTH];
+    char input_buffer[BUFSIZ];
+    char output_buffer[BUFSIZ];
 } buffer_t;
 
 // AI PARAMETERS
