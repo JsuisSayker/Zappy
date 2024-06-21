@@ -63,7 +63,7 @@ class ZappyModel {
     void createVertexBuffers(const std::vector<Vertex> &vertices);
     void createIndexBuffers(const std::vector<uint32_t> &indices);
 
-    ZappyDevice &lveDevice;
+    ZappyDevice &zappyDevice;
 
     std::unique_ptr<ZappyBuffer> vertexBuffer;
     uint32_t vertexCount;

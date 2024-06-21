@@ -54,7 +54,7 @@ class ZappyBuffer {
     static VkDeviceSize getAlignment(
         VkDeviceSize instanceSize, VkDeviceSize minOffsetAlignment);
 
-    ZappyDevice &lveDevice;
+    ZappyDevice &zappyDevice;
     void *mapped = nullptr;
     VkBuffer buffer = VK_NULL_HANDLE;
     VkDeviceMemory memory = VK_NULL_HANDLE;

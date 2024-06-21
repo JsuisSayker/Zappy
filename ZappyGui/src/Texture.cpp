@@ -24,7 +24,7 @@ namespace zappy {
  * @param filepath The filepath of the image used for the texture.
  */
 Texture::Texture(ZappyDevice &device, const std::string &filepath)
-    : lveDevice{device}
+    : zappyDevice{device}
 {
     int channels;
     int m_BytesPerPixel;
@@ -36,7 +36,7 @@ Texture::Texture(ZappyDevice &device, const std::string &filepath)
         static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) +
         1;
 
-    ZappyBuffer stagingBuffer{lveDevice, 4,
+    ZappyBuffer stagingBuffer{zappyDevice, 4,
         static_cast<uint32_t>(width * height),
         VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
@@ -62,13 +62,13 @@ Texture::Texture(ZappyDevice &device, const std::string &filepath)
     imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
         VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 
-    lveDevice.createImageWithInfo(
+    zappyDevice.createImageWithInfo(
         imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, imageMemory);
 
     transitionImageLayout(
         VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-    lveDevice.copyBufferToImage(stagingBuffer.getBuffer(), image,
+    zappyDevice.copyBufferToImage(stagingBuffer.getBuffer(), image,
         static_cast<uint>(width), static_cast<uint>(height), 1);
 
     generateMipmaps();
@@ -90,7 +90,7 @@ Texture::Texture(ZappyDevice &device, const std::string &filepath)
     samplerInfo.anisotropyEnable = VK_TRUE;
     samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 
-    vkCreateSampler(lveDevice.device(), &samplerInfo, nullptr, &sampler);
+    vkCreateSampler(zappyDevice.device(), &samplerInfo, nullptr, &sampler);
 
     VkImageViewCreateInfo imageViewInfo{};
     imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -105,7 +105,7 @@ Texture::Texture(ZappyDevice &device, const std::string &filepath)
     imageViewInfo.subresourceRange.levelCount = mipLevels;
     imageViewInfo.image = image;
 
-    vkCreateImageView(lveDevice.device(), &imageViewInfo, nullptr, &imageView);
+    vkCreateImageView(zappyDevice.device(), &imageViewInfo, nullptr, &imageView);
 
     stbi_image_free(data);
 }
@@ -119,10 +119,10 @@ Texture::Texture(ZappyDevice &device, const std::string &filepath)
  */
 Texture::~Texture()
 {
-    vkDestroyImage(lveDevice.device(), image, nullptr);
-    vkFreeMemory(lveDevice.device(), imageMemory, nullptr);
-    vkDestroyImageView(lveDevice.device(), imageView, nullptr);
-    vkDestroySampler(lveDevice.device(), sampler, nullptr);
+    vkDestroyImage(zappyDevice.device(), image, nullptr);
+    vkFreeMemory(zappyDevice.device(), imageMemory, nullptr);
+    vkDestroyImageView(zappyDevice.device(), imageView, nullptr);
+    vkDestroySampler(zappyDevice.device(), sampler, nullptr);
 }
 
 /**
@@ -134,7 +134,7 @@ Texture::~Texture()
 void Texture::transitionImageLayout(
     VkImageLayout oldLayout, VkImageLayout newLayout)
 {
-    VkCommandBuffer commandBuffer = lveDevice.beginSingleTimeCommands();
+    VkCommandBuffer commandBuffer = zappyDevice.beginSingleTimeCommands();
 
     VkImageMemoryBarrier barrier{};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -174,7 +174,7 @@ void Texture::transitionImageLayout(
     vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0,
         nullptr, 0, nullptr, 1, &barrier);
 
-    lveDevice.endSingleTimeCommands(commandBuffer);
+    zappyDevice.endSingleTimeCommands(commandBuffer);
 }
 
 /**
@@ -185,13 +185,13 @@ void Texture::generateMipmaps()
 {
     VkFormatProperties formatProperties;
     vkGetPhysicalDeviceFormatProperties(
-        lveDevice.getPhysicalDevice(), imageFormat, &formatProperties);
+        zappyDevice.getPhysicalDevice(), imageFormat, &formatProperties);
 
         if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) {
             throw zappy::LinearBlittingNotSupportedException();
         }
 
-    VkCommandBuffer commandBuffer = lveDevice.beginSingleTimeCommands();
+    VkCommandBuffer commandBuffer = zappyDevice.beginSingleTimeCommands();
 
     VkImageMemoryBarrier barrier{};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -261,6 +261,6 @@ void Texture::generateMipmaps()
         VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 1,
         &barrier);
 
-    lveDevice.endSingleTimeCommands(commandBuffer);
+    zappyDevice.endSingleTimeCommands(commandBuffer);
 }
 } // namespace zappy

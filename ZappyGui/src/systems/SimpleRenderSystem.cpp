@@ -46,7 +46,7 @@ struct SimplePushConstantData {
 SimpleRenderSystem::SimpleRenderSystem(ZappyDevice &device,
     VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout,
     std::string executablePath)
-    : lveDevice{device}, executablePath{executablePath}
+    : zappyDevice{device}, executablePath{executablePath}
 {
     createPipelineLayout(globalSetLayout);
     createPipeline(renderPass);
@@ -57,7 +57,7 @@ SimpleRenderSystem::SimpleRenderSystem(ZappyDevice &device,
  */
 SimpleRenderSystem::~SimpleRenderSystem()
 {
-    vkDestroyPipelineLayout(lveDevice.device(), pipelineLayout, nullptr);
+    vkDestroyPipelineLayout(zappyDevice.device(), pipelineLayout, nullptr);
 }
 
 /**
@@ -82,7 +82,7 @@ void SimpleRenderSystem::createPipelineLayout(
     pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
-    if (vkCreatePipelineLayout(lveDevice.device(), &pipelineLayoutInfo,
+    if (vkCreatePipelineLayout(zappyDevice.device(), &pipelineLayoutInfo,
             nullptr, &pipelineLayout) != VK_SUCCESS) {
         throw zappy::PipelineLayoutCreationFailedException();
     }
@@ -101,7 +101,7 @@ void SimpleRenderSystem::createPipeline(VkRenderPass renderPass)
     ZappyPipeline::defaultPipelineConfigInfo(pipelineConfig);
     pipelineConfig.renderPass = renderPass;
     pipelineConfig.pipelineLayout = pipelineLayout;
-    lvePipeline = std::make_unique<ZappyPipeline>(lveDevice,
+    zappyPipeline = std::make_unique<ZappyPipeline>(zappyDevice,
         executablePath + "/ZappyGui/shaders/SimpleShader.vert.spv",
         executablePath + "/ZappyGui/shaders/SimpleShader.frag.spv",
         pipelineConfig);
@@ -113,7 +113,7 @@ void SimpleRenderSystem::createPipeline(VkRenderPass renderPass)
  */
 void SimpleRenderSystem::renderGameObjects(FrameInfo &frameInfo)
 {
-    lvePipeline->bind(frameInfo.commandBuffer);
+    zappyPipeline->bind(frameInfo.commandBuffer);
 
     int frameIndex = frameInfo.frameIndex;
     for (auto &kv : frameInfo.gameObjects) {

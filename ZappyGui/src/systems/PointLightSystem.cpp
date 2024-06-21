@@ -45,7 +45,7 @@ struct PointLightPushConstants {
 PointLightSystem::PointLightSystem(ZappyDevice &device,
     VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout,
     std::string executablePath)
-    : lveDevice{device}, executablePath{executablePath}
+    : zappyDevice{device}, executablePath{executablePath}
 {
     createPipelineLayout(globalSetLayout);
     createPipeline(renderPass);
@@ -56,7 +56,7 @@ PointLightSystem::PointLightSystem(ZappyDevice &device,
  */
 PointLightSystem::~PointLightSystem()
 {
-    vkDestroyPipelineLayout(lveDevice.device(), pipelineLayout, nullptr);
+    vkDestroyPipelineLayout(zappyDevice.device(), pipelineLayout, nullptr);
 }
 
 /**
@@ -80,7 +80,7 @@ void PointLightSystem::createPipelineLayout(
     pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
-    if (vkCreatePipelineLayout(lveDevice.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) !=
+    if (vkCreatePipelineLayout(zappyDevice.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) !=
         VK_SUCCESS) {
         throw zappy::PipelineLayoutCreationFailedException();
     }
@@ -102,7 +102,7 @@ void PointLightSystem::createPipeline(VkRenderPass renderPass)
     pipelineConfig.bindingDescriptions.clear();
     pipelineConfig.renderPass = renderPass;
     pipelineConfig.pipelineLayout = pipelineLayout;
-    lvePipeline = std::make_unique<ZappyPipeline>(lveDevice,
+    zappyPipeline = std::make_unique<ZappyPipeline>(zappyDevice,
         executablePath + "/ZappyGui/shaders/PointLight.vert.spv",
         executablePath + "/ZappyGui/shaders/PointLight.frag.spv",
         pipelineConfig);
@@ -155,7 +155,7 @@ void PointLightSystem::render(FrameInfo &frameInfo)
         sorted[disSquared] = obj.getId();
     }
 
-    lvePipeline->bind(frameInfo.commandBuffer);
+    zappyPipeline->bind(frameInfo.commandBuffer);
 
     vkCmdBindDescriptorSets(frameInfo.commandBuffer,
         VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1,

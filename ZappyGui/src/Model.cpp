@@ -47,7 +47,7 @@ namespace zappy {
  * @param device The ZappyDevice object associated with the model.
  * @param builder The Builder object containing the vertex and index data for the model.
  */
-ZappyModel::ZappyModel(ZappyDevice &device, const ZappyModel::Builder &builder) : lveDevice{device} {
+ZappyModel::ZappyModel(ZappyDevice &device, const ZappyModel::Builder &builder) : zappyDevice{device} {
   createVertexBuffers(builder.vertices);
   createIndexBuffers(builder.indices);
 }
@@ -88,7 +88,7 @@ void ZappyModel::createVertexBuffers(const std::vector<Vertex> &vertices) {
   uint32_t vertexSize = sizeof(vertices[0]);
 
   ZappyBuffer stagingBuffer{
-      lveDevice,
+      zappyDevice,
       vertexSize,
       vertexCount,
       VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -99,13 +99,13 @@ void ZappyModel::createVertexBuffers(const std::vector<Vertex> &vertices) {
   stagingBuffer.writeToBuffer((void *)vertices.data());
 
   vertexBuffer = std::make_unique<ZappyBuffer>(
-      lveDevice,
+      zappyDevice,
       vertexSize,
       vertexCount,
       VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-  lveDevice.copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
+  zappyDevice.copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
 }
 
 /**
@@ -127,7 +127,7 @@ void ZappyModel::createIndexBuffers(const std::vector<uint32_t> &indices) {
   uint32_t indexSize = sizeof(indices[0]);
 
   ZappyBuffer stagingBuffer{
-      lveDevice,
+      zappyDevice,
       indexSize,
       indexCount,
       VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -138,13 +138,13 @@ void ZappyModel::createIndexBuffers(const std::vector<uint32_t> &indices) {
   stagingBuffer.writeToBuffer((void *)indices.data());
 
   indexBuffer = std::make_unique<ZappyBuffer>(
-      lveDevice,
+      zappyDevice,
       indexSize,
       indexCount,
       VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-  lveDevice.copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
+  zappyDevice.copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
 }
 
 /**

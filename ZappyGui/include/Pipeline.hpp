@@ -59,7 +59,7 @@ class ZappyPipeline {
     void createShaderModule(
         const std::vector<char> &code, VkShaderModule *shaderModule);
 
-    ZappyDevice &lveDevice;
+    ZappyDevice &zappyDevice;
     VkPipeline graphicsPipeline;
     VkShaderModule vertShaderModule;
     VkShaderModule fragShaderModule;

@@ -76,11 +76,11 @@ void ZappyWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface
 void ZappyWindow::framebufferResizeCallback(
     GLFWwindow *window, int width, int height)
 {
-    auto lveWindow =
+    auto zappyWindow =
         reinterpret_cast<ZappyWindow *>(glfwGetWindowUserPointer(window));
-    lveWindow->framebufferResized = true;
-    lveWindow->width = width;
-    lveWindow->height = height;
+    zappyWindow->framebufferResized = true;
+    zappyWindow->width = width;
+    zappyWindow->height = height;
 }
 
 } // namespace zappy

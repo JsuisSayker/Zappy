@@ -52,14 +52,14 @@ ZappyDescriptorSetLayout::Builder::addBinding(uint32_t binding,
  * @brief Builds a unique pointer to a ZappyDescriptorSetLayout object.
  *
  * This function constructs a unique pointer to a ZappyDescriptorSetLayout object using the provided
- * lveDevice and bindings. The constructed object is then returned as a unique pointer.
+ * zappyDevice and bindings. The constructed object is then returned as a unique pointer.
  *
  * @return A unique pointer to a ZappyDescriptorSetLayout object.
  */
 std::unique_ptr<ZappyDescriptorSetLayout>
 ZappyDescriptorSetLayout::Builder::build() const
 {
-    return std::make_unique<ZappyDescriptorSetLayout>(lveDevice, bindings);
+    return std::make_unique<ZappyDescriptorSetLayout>(zappyDevice, bindings);
 }
 
 // *************** Descriptor Set Layout *********************
@@ -70,12 +70,12 @@ ZappyDescriptorSetLayout::Builder::build() const
  *
  * This constructor initializes a ZappyDescriptorSetLayout object with the specified device and descriptor set layout bindings.
  *
- * @param lveDevice The ZappyDevice object associated with the descriptor set layout.
+ * @param zappyDevice The ZappyDevice object associated with the descriptor set layout.
  * @param bindings A std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> containing the descriptor set layout bindings.
  */
-ZappyDescriptorSetLayout::ZappyDescriptorSetLayout(ZappyDevice &lveDevice,
+ZappyDescriptorSetLayout::ZappyDescriptorSetLayout(ZappyDevice &zappyDevice,
     std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings)
-    : lveDevice{lveDevice}, bindings{bindings}
+    : zappyDevice{zappyDevice}, bindings{bindings}
 {
     std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings{};
     for (auto kv : bindings) {
@@ -89,7 +89,7 @@ ZappyDescriptorSetLayout::ZappyDescriptorSetLayout(ZappyDevice &lveDevice,
         static_cast<uint32_t>(setLayoutBindings.size());
     descriptorSetLayoutInfo.pBindings = setLayoutBindings.data();
 
-    if (vkCreateDescriptorSetLayout(lveDevice.device(),
+    if (vkCreateDescriptorSetLayout(zappyDevice.device(),
             &descriptorSetLayoutInfo, nullptr,
             &descriptorSetLayout) != VK_SUCCESS) {
         throw zappy::DescriptorSetLayoutCreationFailedException();
@@ -103,7 +103,7 @@ ZappyDescriptorSetLayout::ZappyDescriptorSetLayout(ZappyDevice &lveDevice,
 ZappyDescriptorSetLayout::~ZappyDescriptorSetLayout()
 {
     vkDestroyDescriptorSetLayout(
-        lveDevice.device(), descriptorSetLayout, nullptr);
+        zappyDevice.device(), descriptorSetLayout, nullptr);
 }
 
 // *************** Descriptor Pool Builder *********************
@@ -160,7 +160,7 @@ ZappyDescriptorPool::Builder &ZappyDescriptorPool::Builder::setMaxSets(
  * @brief Builds a unique pointer to a ZappyDescriptorPool object.
  *
  * This function constructs a unique pointer to a ZappyDescriptorPool object using the provided
- * lveDevice, maxSets, poolFlags, and poolSizes. The constructed object is then returned as a unique pointer.
+ * zappyDevice, maxSets, poolFlags, and poolSizes. The constructed object is then returned as a unique pointer.
  *
  * @return A unique pointer to a ZappyDescriptorPool object.
  */
@@ -168,7 +168,7 @@ std::unique_ptr<ZappyDescriptorPool>
 ZappyDescriptorPool::Builder::build() const
 {
     return std::make_unique<ZappyDescriptorPool>(
-        lveDevice, maxSets, poolFlags, poolSizes);
+        zappyDevice, maxSets, poolFlags, poolSizes);
 }
 
 
@@ -177,17 +177,17 @@ ZappyDescriptorPool::Builder::build() const
  *
  * This constructor initializes a ZappyDescriptorPool object with the specified parameters.
  *
- * @param lveDevice The ZappyDevice object associated with the descriptor pool.
+ * @param zappyDevice The ZappyDevice object associated with the descriptor pool.
  * @param maxSets The maximum number of descriptor sets that can be allocated from the pool.
  * @param poolFlags Flags controlling the behavior of the descriptor pool.
  * @param poolSizes A vector of VkDescriptorPoolSize objects specifying the number of descriptors of each type to allocate.
  *
  * @throws zappy::DescriptorPoolCreationFailedException if the descriptor pool creation fails.
  */
-ZappyDescriptorPool::ZappyDescriptorPool(ZappyDevice &lveDevice,
+ZappyDescriptorPool::ZappyDescriptorPool(ZappyDevice &zappyDevice,
     uint32_t maxSets, VkDescriptorPoolCreateFlags poolFlags,
     const std::vector<VkDescriptorPoolSize> &poolSizes)
-    : lveDevice{lveDevice}
+    : zappyDevice{zappyDevice}
 {
     VkDescriptorPoolSize pool_sizes[] = {{VK_DESCRIPTOR_TYPE_SAMPLER, 1000},
         {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000},
@@ -209,7 +209,7 @@ ZappyDescriptorPool::ZappyDescriptorPool(ZappyDevice &lveDevice,
     descriptorPoolInfo.flags =
         poolFlags | VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
-    if (vkCreateDescriptorPool(lveDevice.device(), &descriptorPoolInfo,
+    if (vkCreateDescriptorPool(zappyDevice.device(), &descriptorPoolInfo,
             nullptr, &descriptorPool) != VK_SUCCESS) {
         throw zappy::DescriptorPoolCreationFailedException();
     }
@@ -221,7 +221,7 @@ ZappyDescriptorPool::ZappyDescriptorPool(ZappyDevice &lveDevice,
  */
 ZappyDescriptorPool::~ZappyDescriptorPool()
 {
-    vkDestroyDescriptorPool(lveDevice.device(), descriptorPool, nullptr);
+    vkDestroyDescriptorPool(zappyDevice.device(), descriptorPool, nullptr);
 }
 
 /**
@@ -247,7 +247,7 @@ bool ZappyDescriptorPool::allocateDescriptor(
     // case, and builds a new pool whenever an old pool fills up. But this is
     // beyond our current scope
     if (vkAllocateDescriptorSets(
-            lveDevice.device(), &allocInfo, &descriptor) != VK_SUCCESS) {
+            zappyDevice.device(), &allocInfo, &descriptor) != VK_SUCCESS) {
         return false;
     }
     return true;
@@ -264,7 +264,7 @@ bool ZappyDescriptorPool::allocateDescriptor(
 void ZappyDescriptorPool::freeDescriptors(
     std::vector<VkDescriptorSet> &descriptors) const
 {
-    vkFreeDescriptorSets(lveDevice.device(), descriptorPool,
+    vkFreeDescriptorSets(zappyDevice.device(), descriptorPool,
         static_cast<uint32_t>(descriptors.size()), descriptors.data());
 }
 
@@ -275,7 +275,7 @@ void ZappyDescriptorPool::freeDescriptors(
  */
 void ZappyDescriptorPool::resetPool()
 {
-    vkResetDescriptorPool(lveDevice.device(), descriptorPool, 0);
+    vkResetDescriptorPool(zappyDevice.device(), descriptorPool, 0);
 }
 
 // *************** Descriptor Writer *********************
@@ -382,7 +382,7 @@ void ZappyDescriptorWriter::overwrite(VkDescriptorSet &set)
         write.dstSet = set;
     }
     vkUpdateDescriptorSets(
-        pool.lveDevice.device(), writes.size(), writes.data(), 0, nullptr);
+        pool.zappyDevice.device(), writes.size(), writes.data(), 0, nullptr);
 }
 
 } // namespace zappy

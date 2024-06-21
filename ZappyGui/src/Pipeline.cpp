@@ -33,7 +33,7 @@ namespace zappy {
 ZappyPipeline::ZappyPipeline(ZappyDevice &device,
     const std::string &vertFilepath, const std::string &fragFilepath,
     const PipelineConfigInfo &configInfo)
-    : lveDevice{device}
+    : zappyDevice{device}
 {
     createGraphicsPipeline(vertFilepath, fragFilepath, configInfo);
 }
@@ -44,9 +44,9 @@ ZappyPipeline::ZappyPipeline(ZappyDevice &device,
  */
 ZappyPipeline::~ZappyPipeline()
 {
-    vkDestroyShaderModule(lveDevice.device(), vertShaderModule, nullptr);
-    vkDestroyShaderModule(lveDevice.device(), fragShaderModule, nullptr);
-    vkDestroyPipeline(lveDevice.device(), graphicsPipeline, nullptr);
+    vkDestroyShaderModule(zappyDevice.device(), vertShaderModule, nullptr);
+    vkDestroyShaderModule(zappyDevice.device(), fragShaderModule, nullptr);
+    vkDestroyPipeline(zappyDevice.device(), graphicsPipeline, nullptr);
 }
 
 /**
@@ -152,7 +152,7 @@ void ZappyPipeline::createGraphicsPipeline(const std::string &vertFilepath,
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
   if (vkCreateGraphicsPipelines(
-          lveDevice.device(),
+          zappyDevice.device(),
           VK_NULL_HANDLE,
           1,
           &pipelineInfo,
@@ -178,7 +178,7 @@ void ZappyPipeline::createShaderModule(
     createInfo.codeSize = code.size();
     createInfo.pCode = reinterpret_cast<const uint32_t *>(code.data());
 
-  if (vkCreateShaderModule(lveDevice.device(), &createInfo, nullptr, shaderModule) != VK_SUCCESS) {
+  if (vkCreateShaderModule(zappyDevice.device(), &createInfo, nullptr, shaderModule) != VK_SUCCESS) {
     throw zappy::ShaderModuleCreationFailedException();
   }
 }

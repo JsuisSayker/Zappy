@@ -32,6 +32,10 @@ class Trantorian {
     Trantorian(ZappyGameObject::id_t trantObjectId, ZappyGameObject::id_t pointLightObjectId, const std::string &team, int playerNumber);
     ~Trantorian() = default;
 
+    bool operator==(const Trantorian &trant) const {
+        return (this->trantorianObject == trant.trantorianObject);
+    }
+
   public:
     ZappyGameObject::id_t trantorianObject;
     ZappyGameObject::id_t pointLightObject;
