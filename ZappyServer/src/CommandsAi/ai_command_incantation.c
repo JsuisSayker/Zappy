@@ -113,7 +113,7 @@ static int complet_incantation(zappy_server_t *zappy, client_t *client,
         && zappy->clients[i].level == lvl) {
             check_win_condition(zappy, &zappy->clients[i]);
             zappy->clients[i].incantation = false;
-            send_pie_command_to_all_gui(zappy, &zappy->clients[i]);
+            send_pie_command_to_all_gui(zappy, &zappy->clients[i], 1);
             send_plv_command_to_all_gui(zappy, &zappy->clients[i]);
             dprintf(zappy->actual_sockfd, "Current level: %d\n",
                 zappy->clients[i].level);
