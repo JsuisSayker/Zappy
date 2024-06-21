@@ -48,7 +48,6 @@ static int check_direction(zappy_server_t *zappy, client_t *client)
             client->pos.y = client->pos.y - 1;
         dprintf(zappy->actual_sockfd, "ok\n");
         send_ppo_command_to_all_gui(zappy, client);
-
         return OK;
     }
     if (check_direction_sub(zappy, client) == ERROR)
