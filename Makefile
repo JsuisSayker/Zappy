@@ -13,7 +13,7 @@ all:
 debug:
 	make debug -C ZappyServer
 	# make debug -C ZappyAI
-	make debug -C ZappyGui
+	# make debug -C ZappyGui
 
 clean:
 	make clean -C ZappyServer
@@ -43,5 +43,6 @@ unit_tests:
 
 tests_run:
 	make tests_run -C ZappyServer
+	make tests_run -C ZappyGui
 
 .PHONY: all clean fclean re tests_run

@@ -49,11 +49,6 @@ typedef struct args_config_s {
     struct char_tab_head names;
 } args_config_t;
 
-typedef struct buffer_s {
-    char input_buffer[MAX_COMMAND_LENGTH];
-    char output_buffer[MAX_COMMAND_LENGTH];
-} buffer_t;
-
 // AI PARAMETERS
 
 typedef struct inventory_s {
@@ -105,7 +100,6 @@ typedef struct message_s {
 } message_t;
 
 typedef struct client_s {
-    buffer_t buffer;
     client_type_t type;
     int client_number;
     int level;

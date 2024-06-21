@@ -7,7 +7,43 @@
 
 include .env
 
-CFLAGS = -std=c++17 -I./include -I./include/systems -I$(TINYOBJ_PATH) -I$(STBIMAGE_PATH) -I./imgui/
+SRC			=	Window.cpp \
+				systems/PointLightSystem.cpp \
+				systems/SimpleRenderSystem.cpp \
+				Buffer.cpp \
+				Camera.cpp \
+				Client.cpp \
+				Descriptors.cpp \
+				Device.cpp \
+				Egg.cpp \
+				GameObject.cpp \
+				KeyboardMovementController.cpp \
+				Map.cpp \
+				Model.cpp \
+				Pipeline.cpp \
+				Renderer.cpp \
+				SwapChain.cpp \
+				Texture.cpp \
+				Trantorian.cpp \
+				ZappyGui.cpp \
+
+TEST			=	test_client.cpp
+
+MAIN		=	Main.cpp
+
+DIR_MAIN		=	$(addprefix src/, $(MAIN))
+
+DIR_TESTS	=	$(addprefix tests/, $(TEST))
+
+DIR_SRC		=	$(addprefix src/, $(SRC))
+
+OBJ_SRC		=	$(DIR_SRC:.cpp=.o)
+
+OBJ_MAIN	=	$(DIR_MAIN:.cpp=.o)
+
+OBJ			=	$(OBJ_SRC) $(OBJ_MAIN)
+
+CPPFLAGS = -I./include -I./include/systems -I$(TINYOBJ_PATH) -I$(STBIMAGE_PATH) -I./imgui/ -I./imgui/backends
 LDFLAGS = `pkg-config --static --libs glfw3` -lvulkan
 
 # create list of all spv files and set as dependency
@@ -16,30 +52,40 @@ vertObjFiles = $(patsubst %.vert, %.vert.spv, $(vertSources))
 fragSources = $(shell find ./shaders -type f -name "*.frag")
 fragObjFiles = $(patsubst %.frag, %.frag.spv, $(fragSources))
 
-TARGET = ../zappy_gui
+NAME = ../zappy_gui
 
-$(TARGET): $(vertObjFiles) $(fragObjFiles)
-$(TARGET): src/*.cpp
-	g++ $(CFLAGS) -o $(TARGET) src/*.cpp src/systems/*.cpp $(LDFLAGS) imgui/*.cpp imgui/backends/*.cpp
+$(NAME):	$(OBJ) $(vertObjFiles) $(fragObjFiles)
+	g++ -o $(NAME) $(OBJ) $(LDFLAGS) $(CPPFLAGS) imgui/*.cpp imgui/backends/*.cpp
+	./rebuild.sh
 
-all: $(TARGET)
+all: $(NAME)
 
 # make shader targets
 %.spv: %
 	${GLSLC} $< -o $@
 
-test: $(TARGET)
-	./$(TARGET)
+test: $(NAME)
+	./$(NAME)
 
 clean:
-	rm -rf shaders/*.spv
+	rm -f shaders/*.spv
+	rm -f $(OBJ)
 
 fclean: clean
-	rm -f $(TARGET)
+	rm -rf unit_tests
+	rm -rf *.gcov
+	rm -f $(NAME)
 
-re: fclean $(TARGET)
+re: fclean all
 
-debug: $(vertObjFiles) $(fragObjFiles)
-	g++ $(CFLAGS) -o $(TARGET) src/*.cpp src/systems/*.cpp $(LDFLAGS) imgui/*.cpp imgui/backends/*.cpp -ggdb3
+debug: $(OBJ) $(vertObjFiles) $(fragObjFiles)
+	g++ -o $(NAME) $(OBJ) $(CPPFLAGS) $(LDFLAGS) -ggdb3
 
-.PHONY: test clean fclean re debug
+unit_tests: re $(DIR_SRC) $(DIR_TESTS)
+	mkdir -p unit_tests
+	g++ -o unit_tests/unit_tests $(DIR_SRC) $(DIR_TESTS) $(LDFLAGS) $(CPPFLAGS) imgui/*.cpp imgui/backends/*.cpp -I/usr/include/gtest -lgtest -lgtest_main -pthread -ggdb3
+
+tests_run: unit_tests
+	./unit_tests/unit_tests
+
+.PHONY: test clean fclean re debug unit_tests tests_run

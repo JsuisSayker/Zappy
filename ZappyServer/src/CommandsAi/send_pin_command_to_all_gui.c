@@ -11,7 +11,7 @@ void send_pin_command_to_all_gui(zappy_server_t *zappy, client_t *client)
 {
     for (int i = 3; i < zappy->nb_connected_clients; i += 1) {
         if (zappy->clients[i].type == GUI) {
-            dprintf(i, "pin %d %d %d %d %d %d %d %d %d %d\n",
+            dprintf(i, "pin #%d %d %d %d %d %d %d %d %d %d\n",
                 client->client_number, client->pos.x, client->pos.y,
                 client->inventory.food, client->inventory.linemate,
                 client->inventory.deraumere, client->inventory.sibur,

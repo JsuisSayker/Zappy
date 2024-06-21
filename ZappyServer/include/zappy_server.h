@@ -25,13 +25,13 @@
     #include <unistd.h>
     #include "macro_server.h"
     #include "server_struct.h"
+    #include "log.h"
 
 typedef struct zappy_server_s {
     fd_t fd;
     int my_socket;
     int actual_sockfd;
     int index_eggs;
-    int index_clients;
     int nb_connected_clients;
     bool server_start_game;
     bool server_running;
@@ -112,7 +112,6 @@ message_t *add_node_in_list(message_t *list, char *cmd, ai_position_t pos);
 int init_server(zappy_server_t *zappy, args_config_t *args);
 int close_server(zappy_server_t *zappy);
 int fd_is_set(zappy_server_t *zappy);
-void init_buffer_struct(buffer_t *buffer, int *my_socket);
 int scan_fd(zappy_server_t *zappy);
 void handle_client(zappy_server_t *zappy);
 int setup_server(int port, int max_clients);
@@ -207,6 +206,7 @@ void send_plv_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_enw_command_to_all_gui(zappy_server_t *zappy, egg_t *egg);
 void send_pbc_command_to_all_gui(zappy_server_t *zappy, client_t *client,
     char *message);
+void send_seg_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 
 // GUI COMMANDS FUNCTIONS
 int handle_gui_command(zappy_server_t *zappy, char *command);
@@ -223,7 +223,12 @@ void gui_command_sst(zappy_server_t *zappy, char *command);
 void send_sgt_command_to_all_gui(zappy_server_t *zappy);
 void send_sbp_command_to_all_gui(zappy_server_t *zappy);
 
-// ERROR FUNCTIONS
-void error_command_argument(char *command, int nb_argument, int nb_expected);
+// PATCH
+typedef struct path_type_s {
+    char *command;
+    int (*func)(zappy_server_t *zappy, char *command);
+} path_type_t;
+int type_gui(zappy_server_t *zappy, char *cmd);
+int type_ai(zappy_server_t *zappy, char *cmd);
 
 #endif /* !ZAPPY_SERVER_H_ */

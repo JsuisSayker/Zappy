@@ -48,7 +48,6 @@ static void create_teams(zappy_server_t *zappy)
 static void init_value(zappy_server_t *zappy)
 {
     zappy->index_eggs = 0;
-    zappy->index_clients = 0;
     zappy->server_running = true;
     zappy->server_start_game = true;
     zappy->time_refill_map = time(NULL);

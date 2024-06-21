@@ -78,6 +78,7 @@ void display_inventory(inventory_t *inventory)
 
 int ai_command_take_object(zappy_server_t *zappy, client_t *client, char *cmd)
 {
+    printf("    TAKE OBJ\n");
     if (client == NULL || zappy == NULL || cmd == NULL || cmd[4] != ' ')
         return ERROR;
     if (cast_action(zappy, client, 7, cmd) == ERROR)
@@ -89,7 +90,6 @@ int ai_command_take_object(zappy_server_t *zappy, client_t *client, char *cmd)
         return ERROR;
     if (selector_object(zappy, client, cmd) == ERROR)
         return ERROR;
-    display_inventory(&client->inventory);
     send_pin_command_to_all_gui(zappy, client);
     return OK;
 }
