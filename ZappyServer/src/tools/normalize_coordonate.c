@@ -15,7 +15,7 @@ void normalize_coordinate(int *x, int *y, zappy_server_t *zappy)
         }
     if (*y < 0){
         printf("y0 = %d\n", *y);
-        *y = ((zappy->args->height - 1) + *x);
+        *y = ((zappy->args->height - 1) + *y);
     }
     if (*x > zappy->args->width - 1){
         printf("x = %d\n", *x);
