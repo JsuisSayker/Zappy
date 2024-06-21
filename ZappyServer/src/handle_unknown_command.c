@@ -103,8 +103,7 @@ static int ai_client(zappy_server_t *zappy, char *command)
     team_t *tmp_team = NULL;
     int team_find = 0;
 
-    TAILQ_FOREACH(tmp_team, &zappy->all_teams, next)
-    {
+    TAILQ_FOREACH(tmp_team, &zappy->all_teams, next) {
         team_find = ai_client_find_team(zappy, tmp_team, command);
         if (team_find == 1)
             return OK;
