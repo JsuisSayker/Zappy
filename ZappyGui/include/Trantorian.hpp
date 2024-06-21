@@ -37,8 +37,6 @@ class Trantorian {
     ZappyGameObject::id_t pointLightObject;
     trantInventory inventory;
     std::string team;
-    glm::vec3 position;
-    glm::vec3 newPosition;
     bool incatationInProgess = false;
     int playerNumber;
     int level;

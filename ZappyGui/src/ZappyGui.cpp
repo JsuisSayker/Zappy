@@ -278,7 +278,6 @@ ZappyGui::ZappyGui()
         std::bind(&ZappyGui::welcome, this, std::placeholders::_1);
     timerManager_.startTimer("portalAnimation");
     timerManager_.startTimer("resourcesAnimation");
-    timerManager_.startTimer("trantoriansPosition");
     resources_.emplace("food", 0);
     resources_.emplace("linemate", 0);
     resources_.emplace("deraumere", 0);
@@ -1111,12 +1110,9 @@ void ZappyGui::ppo(std::vector<std::string> actualCommand)
         std::cerr << "ppo: invalid arguments" << std::endl;
         return;
     }
-    for (Trantorian &Trantorian : trantorians_) {
-        if (Trantorian.playerNumber == playerNumber) {
-            Trantorian.newPosition = {static_cast<float>(x), 0.f,
-                static_cast<float>(y)};
-        }
-    }
+    updateTrantorianPosition(playerNumber, {static_cast<float>(x), -.25f,
+                                               static_cast<float>(y)},
+        orientation);
 }
 
 /**
@@ -1564,8 +1560,6 @@ void ZappyGui::addTrantorian(const std::string &teamName,
 
     Trantorian newTrantorian(
         ObjectId, pointLight->getId(), teamName, playerNumber);
-    newTrantorian.position = position;
-    newTrantorian.newPosition = position;
 
     this->trantorians_.emplace_back(newTrantorian);
 }
@@ -1889,10 +1883,6 @@ void ZappyGui::updateGame()
         updateResourcesAnimation();
         timerManager_.resetTimer("resourcesAnimation");
     }
-    if (timerManager_.getElapsedTime("trantoriansPosition") > 7.f / (20 * _timeUnit)) {
-        updateTrantoriansPosition();
-        timerManager_.resetTimer("trantoriansPosition");
-    }
     for (Trantorian &Trantorian : trantorians_) {
         if (Trantorian.incatationInProgess) {
             for (auto &object : gameObjects) {
@@ -2000,19 +1990,6 @@ void ZappyGui::updatePortalFrame()
                 "/ZappyGui/textures/portal/frame" +
                 std::to_string(indexPortalFrame) + ".png",
             portalFrame);
-    }
-}
-
-void ZappyGui::updateTrantoriansPosition()
-{
-    for (Trantorian &Trantorian : trantorians_) {
-        if (Trantorian.position != Trantorian.newPosition) {
-            glm::vec3 direction = Trantorian.newPosition - Trantorian.position;
-            glm::vec3 normalizedDirection = glm::normalize(direction);
-            Trantorian.position += normalizedDirection * 0.05f;
-            gameObjects[Trantorian.trantorianObject].transform.translation =
-                Trantorian.position;
-        }
     }
 }
 
