@@ -57,6 +57,7 @@ COMMAND_AI		=	handle_ai_command.c				\
 					ai_command_set.c				\
 					ai_command_incantation.c		\
 					ai_command_breadcast.c			\
+					ai_command_eject.c				\
 					ai_receive_breadcast.c			\
 					send_ppo_command_to_all_gui.c	\
 					send_pin_command_to_all_gui.c	\
