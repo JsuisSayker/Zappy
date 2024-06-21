@@ -33,6 +33,17 @@ VkDeviceSize ZappyBuffer::getAlignment(
     return instanceSize;
 }
 
+/**
+ * @brief Constructs a new ZappyBuffer object.
+ *
+ * @param device The device to use
+ * @param instanceSize The size of an instance
+ * @param instanceCount The number of instances
+ * @param usageFlags The buffer usage flags
+ * @param memoryPropertyFlags The memory property flags
+ * @param minOffsetAlignment The minimum required alignment, in bytes, for the
+ * offset member (eg minUniformBufferOffsetAlignment)
+ */
 ZappyBuffer::ZappyBuffer(ZappyDevice &device, VkDeviceSize instanceSize,
     uint32_t instanceCount, VkBufferUsageFlags usageFlags,
     VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize minOffsetAlignment)

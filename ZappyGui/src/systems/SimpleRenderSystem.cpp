@@ -20,13 +20,29 @@
 #include <filesystem>
 #include <stdexcept>
 
+/**
+ * @file SimpleRenderSystem.cpp
+ * @brief Implementation of the SimpleRenderSystem class.
+ */
+
 namespace zappy {
 
+/**
+ * @struct SimplePushConstantData
+ * @brief Structure representing the push constant data used in the SimpleRenderSystem.
+ */
 struct SimplePushConstantData {
-    glm::mat4 modelMatrix{1.f};
-    glm::mat4 normalMatrix{1.f};
+    glm::mat4 modelMatrix{1.f}; /**< Model matrix */
+    glm::mat4 normalMatrix{1.f}; /**< Normal matrix */
 };
 
+/**
+ * @brief Constructs a SimpleRenderSystem object.
+ * @param device The ZappyDevice object.
+ * @param renderPass The Vulkan render pass.
+ * @param globalSetLayout The descriptor set layout.
+ * @param executablePath The path to the executable.
+ */
 SimpleRenderSystem::SimpleRenderSystem(ZappyDevice &device,
     VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout,
     std::string executablePath)
@@ -36,11 +52,18 @@ SimpleRenderSystem::SimpleRenderSystem(ZappyDevice &device,
     createPipeline(renderPass);
 }
 
+/**
+ * @brief Destroys the SimpleRenderSystem object.
+ */
 SimpleRenderSystem::~SimpleRenderSystem()
 {
     vkDestroyPipelineLayout(lveDevice.device(), pipelineLayout, nullptr);
 }
 
+/**
+ * @brief Creates the pipeline layout.
+ * @param globalSetLayout The descriptor set layout.
+ */
 void SimpleRenderSystem::createPipelineLayout(
     VkDescriptorSetLayout globalSetLayout)
 {
@@ -65,6 +88,10 @@ void SimpleRenderSystem::createPipelineLayout(
     }
 }
 
+/**
+ * @brief Creates the pipeline.
+ * @param renderPass The Vulkan render pass.
+ */
 void SimpleRenderSystem::createPipeline(VkRenderPass renderPass)
 {
     assert(pipelineLayout != nullptr &&
@@ -80,6 +107,10 @@ void SimpleRenderSystem::createPipeline(VkRenderPass renderPass)
         pipelineConfig);
 }
 
+/**
+ * @brief Renders the game objects.
+ * @param frameInfo The frame information.
+ */
 void SimpleRenderSystem::renderGameObjects(FrameInfo &frameInfo)
 {
     lvePipeline->bind(frameInfo.commandBuffer);

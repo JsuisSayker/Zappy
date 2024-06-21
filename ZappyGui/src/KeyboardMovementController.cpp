@@ -12,6 +12,13 @@
 
 namespace zappy {
 
+/**
+ * Moves the game object in the XZ plane based on keyboard input.
+ *
+ * @param window The GLFW window.
+ * @param dt The time delta between frames.
+ * @param gameObject The game object to move.
+ */
 void KeyboardMovementController::moveInPlaneXZ(
     GLFWwindow *window, float dt, ZappyGameObject &gameObject)
 {
