@@ -18,7 +18,6 @@ SRC			=	Window.cpp \
 				Egg.cpp \
 				GameObject.cpp \
 				KeyboardMovementController.cpp \
-				Main.cpp \
 				Map.cpp \
 				Model.cpp \
 				Pipeline.cpp \
@@ -28,13 +27,23 @@ SRC			=	Window.cpp \
 				Trantorian.cpp \
 				ZappyGui.cpp \
 
+TEST			=	test_client.cpp
+
+MAIN		=	Main.cpp
+
+DIR_MAIN		=	$(addprefix src/, $(MAIN))
+
+DIR_TESTS	=	$(addprefix tests/, $(TEST))
+
 DIR_SRC		=	$(addprefix src/, $(SRC))
 
 OBJ_SRC		=	$(DIR_SRC:.cpp=.o)
 
-OBJ			=	$(OBJ_SRC)
+OBJ_MAIN	=	$(DIR_MAIN:.cpp=.o)
 
-CPPFLAGS = -I./include -I./include/systems -I$(TINYOBJ_PATH) -I$(STBIMAGE_PATH) -I./imgui/
+OBJ			=	$(OBJ_SRC) $(OBJ_MAIN)
+
+CPPFLAGS = -I./include -I./include/systems -I$(TINYOBJ_PATH) -I$(STBIMAGE_PATH) -I./imgui/ -I./imgui/backends
 LDFLAGS = `pkg-config --static --libs glfw3` -lvulkan
 
 # create list of all spv files and set as dependency
@@ -59,9 +68,12 @@ test: $(NAME)
 	./$(NAME)
 
 clean:
-	rm -rf shaders/*.spv $(OBJ)
+	rm -f shaders/*.spv
+	rm -f $(OBJ)
 
 fclean: clean
+	rm -rf unit_tests
+	rm -rf *.gcov
 	rm -f $(NAME)
 
 re: fclean all
@@ -69,4 +81,11 @@ re: fclean all
 debug: $(OBJ) $(vertObjFiles) $(fragObjFiles)
 	g++ -o $(NAME) $(OBJ) $(CPPFLAGS) $(LDFLAGS) -ggdb3
 
-.PHONY: test clean fclean re debug
+unit_tests: re $(DIR_SRC) $(DIR_TESTS)
+	mkdir -p unit_tests
+	g++ -o unit_tests/unit_tests $(DIR_SRC) $(DIR_TESTS) $(LDFLAGS) $(CPPFLAGS) imgui/*.cpp imgui/backends/*.cpp -I/usr/include/gtest -lgtest -lgtest_main -pthread -ggdb3
+
+tests_run: unit_tests
+	./unit_tests/unit_tests
+
+.PHONY: test clean fclean re debug unit_tests tests_run

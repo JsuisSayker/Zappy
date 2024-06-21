@@ -32,7 +32,6 @@ typedef struct zappy_server_s {
     int my_socket;
     int actual_sockfd;
     int index_eggs;
-    int index_clients;
     int nb_connected_clients;
     bool server_start_game;
     bool server_running;
@@ -229,5 +228,7 @@ typedef struct path_type_s {
     char *command;
     int (*func)(zappy_server_t *zappy, char *command);
 } path_type_t;
+int type_gui(zappy_server_t *zappy, char *cmd);
+int type_ai(zappy_server_t *zappy, char *cmd);
 
 #endif /* !ZAPPY_SERVER_H_ */

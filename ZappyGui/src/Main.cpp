@@ -16,7 +16,8 @@
 int main(int argc, char **argv)
 {
     if (argc != 5) {
-        std::cerr << "Usage: " << argv[0] << " <path_to_model>" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " -p <port> -h <hostname>"
+                  << std::endl;
         return EXIT_FAILURE;
     }
     zappy::ZappyGui app{};

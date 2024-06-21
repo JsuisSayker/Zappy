@@ -20,10 +20,8 @@ static int init_value(client_t *ia, team_t *tmp_team, egg_t *new_egg,
     ia->pos.x = new_egg->x;
     ia->pos.y = new_egg->y;
     ia->team_name = strdup(tmp_team->name);
-    ia->client_number = zappy->index_clients;
+    ia->client_number = new_egg->client_number;
     tmp_team->nb_drones += 1;
-    zappy->index_clients += 1;
-    new_egg->client_number = ia->client_number;
     ia->type = IA;
     ia->level = 1;
     ia->command.execution = NULL;
@@ -65,10 +63,7 @@ int ai_initialisation(zappy_server_t *zappy, client_t *ia,
 
     if (zappy == NULL || ia == NULL || tmp_team == NULL)
         return ERROR;
-    new_egg = TAILQ_FIRST(&tmp_team->eggs_head);
-    for (int i = 0; i < tmp_team->nb_drones; i += 1) {
-        new_egg = TAILQ_NEXT(new_egg, next);
-    }
+    new_egg = TAILQ_LAST(&tmp_team->eggs_head, egghead);
     if (init_value(ia, tmp_team, new_egg, zappy) == ERROR)
         return ERROR;
     if (init_inventaire(ia) != OK)

@@ -43,5 +43,6 @@ unit_tests:
 
 tests_run:
 	make tests_run -C ZappyServer
+	make tests_run -C ZappyGui
 
 .PHONY: all clean fclean re tests_run
