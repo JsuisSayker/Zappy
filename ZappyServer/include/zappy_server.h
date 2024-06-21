@@ -200,7 +200,8 @@ void send_pgt_command_to_all_gui(zappy_server_t *zappy, client_t *client,
 void send_pfk_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_pdr_command_to_all_gui(zappy_server_t *zappy, client_t *client,
     int nb_resource);
-void send_pie_command_to_all_gui(zappy_server_t *zappy, client_t *client);
+void send_pie_command_to_all_gui(zappy_server_t *zappy, client_t *client,
+    int result);
 void send_pic_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_plv_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_enw_command_to_all_gui(zappy_server_t *zappy, egg_t *egg);
