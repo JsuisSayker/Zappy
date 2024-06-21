@@ -187,6 +187,7 @@ int ai_command_look(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_connect_nbr(zappy_server_t *zappy, client_t *client,
     char *cmd);
 int ai_command_incantation(zappy_server_t *zappy, client_t *client, char *cmd);
+int ai_command_eject(zappy_server_t *zappy, client_t *client, char *cmd);
 bool is_alive(zappy_server_t *zappy, client_t *client);
 
 int read_message_receive(zappy_server_t *zappy, client_t *client,
