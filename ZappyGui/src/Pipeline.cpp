@@ -21,6 +21,15 @@
 
 namespace zappy {
 
+
+/**
+ * @brief Constructs a ZappyPipeline object.
+ * 
+ * @param device The ZappyDevice object.
+ * @param vertFilepath The filepath of the vertex shader.
+ * @param fragFilepath The filepath of the fragment shader.
+ * @param configInfo The configuration information for the pipeline.
+ */
 ZappyPipeline::ZappyPipeline(ZappyDevice &device,
     const std::string &vertFilepath, const std::string &fragFilepath,
     const PipelineConfigInfo &configInfo)
@@ -29,6 +38,10 @@ ZappyPipeline::ZappyPipeline(ZappyDevice &device,
     createGraphicsPipeline(vertFilepath, fragFilepath, configInfo);
 }
 
+/**
+ * @brief Destroys the ZappyPipeline object.
+ * 
+ */
 ZappyPipeline::~ZappyPipeline()
 {
     vkDestroyShaderModule(lveDevice.device(), vertShaderModule, nullptr);
@@ -36,6 +49,12 @@ ZappyPipeline::~ZappyPipeline()
     vkDestroyPipeline(lveDevice.device(), graphicsPipeline, nullptr);
 }
 
+/**
+ * @brief Reads a file and returns the contents as a vector of characters.
+ * 
+ * @param filepath The filepath of the file to read.
+ * @return std::vector<char> The contents of the file as a vector of characters.
+ */
 std::vector<char> ZappyPipeline::readFile(const std::string &filepath)
 {
     std::string enginePath = ENGINE_DIR + filepath;
@@ -55,6 +74,16 @@ std::vector<char> ZappyPipeline::readFile(const std::string &filepath)
     return buffer;
 }
 
+
+/**
+ * Creates a graphics pipeline using the provided vertex and fragment shader files.
+ *
+ * @param vertFilepath The filepath of the vertex shader file.
+ * @param fragFilepath The filepath of the fragment shader file.
+ * @param configInfo   The configuration information for the graphics pipeline.
+ *
+ * @throws zappy::GraphicsPipelineCreationFailedException if the graphics pipeline creation fails.
+ */
 void ZappyPipeline::createGraphicsPipeline(const std::string &vertFilepath,
     const std::string &fragFilepath, const PipelineConfigInfo &configInfo)
 {
@@ -133,6 +162,14 @@ void ZappyPipeline::createGraphicsPipeline(const std::string &vertFilepath,
   }
 }
 
+/**
+ * Creates a shader module from the provided code.
+ *
+ * @param code The code of the shader.
+ * @param shaderModule Pointer to the shader module to be created.
+ *
+ * @throws zappy::ShaderModuleCreationFailedException if the shader module creation fails.
+ */
 void ZappyPipeline::createShaderModule(
     const std::vector<char> &code, VkShaderModule *shaderModule)
 {
@@ -146,12 +183,22 @@ void ZappyPipeline::createShaderModule(
   }
 }
 
+/**
+ * Binds the pipeline to the provided command buffer.
+ *
+ * @param commandBuffer The command buffer to bind the pipeline to.
+ */
 void ZappyPipeline::bind(VkCommandBuffer commandBuffer)
 {
     vkCmdBindPipeline(
         commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 }
 
+/**
+ * Sets the default configuration information for the pipeline.
+ *
+ * @param configInfo The configuration information to set.
+ */
 void ZappyPipeline::defaultPipelineConfigInfo(PipelineConfigInfo &configInfo)
 {
     configInfo.inputAssemblyInfo.sType =
@@ -243,6 +290,11 @@ void ZappyPipeline::defaultPipelineConfigInfo(PipelineConfigInfo &configInfo)
         ZappyModel::Vertex::getAttributeDescriptions();
 }
 
+/**
+ * Enables alpha blending for the provided configuration information.
+ *
+ * @param configInfo The configuration information to enable alpha blending for.
+ */
 void ZappyPipeline::enableAlphaBlending(PipelineConfigInfo &configInfo)
 {
     configInfo.colorBlendAttachment.blendEnable = VK_TRUE;

@@ -21,14 +21,27 @@
 #include <map>
 #include <stdexcept>
 
+/**
+ * @file PointLightSystem.cpp
+ * @brief Implementation of the PointLightSystem class.
+ */
+
 namespace zappy {
 
+/**
+ * @struct PointLightPushConstants
+ * @brief Structure representing the push constants for the point light.
+ */
 struct PointLightPushConstants {
-    glm::vec4 position{};
-    glm::vec4 color{};
-    float radius;
+    glm::vec4 position{}; /**< The position of the point light. */
+    glm::vec4 color{}; /**< The color of the point light. */
+    float radius; /**< The radius of the point light. */
 };
 
+/**
+ * @class PointLightSystem
+ * @brief Class responsible for managing point lights in the scene.
+ */
 PointLightSystem::PointLightSystem(ZappyDevice &device,
     VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout,
     std::string executablePath)
@@ -38,11 +51,18 @@ PointLightSystem::PointLightSystem(ZappyDevice &device,
     createPipeline(renderPass);
 }
 
+/**
+ * @brief Destructor for the PointLightSystem class.
+ */
 PointLightSystem::~PointLightSystem()
 {
     vkDestroyPipelineLayout(lveDevice.device(), pipelineLayout, nullptr);
 }
 
+/**
+ * @brief Creates the pipeline layout for the point light system.
+ * @param globalSetLayout The descriptor set layout for the global uniform buffer object.
+ */
 void PointLightSystem::createPipelineLayout(
     VkDescriptorSetLayout globalSetLayout)
 {
@@ -54,18 +74,22 @@ void PointLightSystem::createPipelineLayout(
 
     std::vector<VkDescriptorSetLayout> descriptorSetLayouts{globalSetLayout};
 
-  VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-  pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-  pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
-  pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
-  pipelineLayoutInfo.pushConstantRangeCount = 1;
-  pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
-  if (vkCreatePipelineLayout(lveDevice.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) !=
-      VK_SUCCESS) {
-    throw zappy::PipelineLayoutCreationFailedException();
-  }
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
+    pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
+    pipelineLayoutInfo.pushConstantRangeCount = 1;
+    pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
+    if (vkCreatePipelineLayout(lveDevice.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) !=
+        VK_SUCCESS) {
+        throw zappy::PipelineLayoutCreationFailedException();
+    }
 }
 
+/**
+ * @brief Creates the pipeline for the point light system.
+ * @param renderPass The render pass to use for the pipeline.
+ */
 void PointLightSystem::createPipeline(VkRenderPass renderPass)
 {
     assert(pipelineLayout != nullptr &&
@@ -84,6 +108,11 @@ void PointLightSystem::createPipeline(VkRenderPass renderPass)
         pipelineConfig);
 }
 
+/**
+ * @brief Updates the point lights in the scene.
+ * @param frameInfo The frame information.
+ * @param ubo The global uniform buffer object.
+ */
 void PointLightSystem::update(FrameInfo &frameInfo, GlobalUbo &ubo)
 {
     int lightIndex = 0;
@@ -94,7 +123,6 @@ void PointLightSystem::update(FrameInfo &frameInfo, GlobalUbo &ubo)
 
         assert(lightIndex < MAX_LIGHTS &&
             "Point lights exceed maximum specified");
-
 
         // copy light to ubo
         ubo.pointLights[lightIndex].position =
@@ -107,6 +135,10 @@ void PointLightSystem::update(FrameInfo &frameInfo, GlobalUbo &ubo)
     ubo.numLights = lightIndex;
 }
 
+/**
+ * @brief Renders the point lights in the scene.
+ * @param frameInfo The frame information.
+ */
 void PointLightSystem::render(FrameInfo &frameInfo)
 {
     // sort lights

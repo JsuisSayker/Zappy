@@ -16,6 +16,13 @@
 #include "ErrorHandling.hpp"
 
 namespace zappy {
+
+/**
+ * @brief Constructs a Texture object.
+ * 
+ * @param device The ZappyDevice object used for creating the texture.
+ * @param filepath The filepath of the image used for the texture.
+ */
 Texture::Texture(ZappyDevice &device, const std::string &filepath)
     : lveDevice{device}
 {
@@ -103,6 +110,13 @@ Texture::Texture(ZappyDevice &device, const std::string &filepath)
     stbi_image_free(data);
 }
 
+
+/**
+ * @brief Destructor for the Texture class.
+ * 
+ * This destructor is responsible for destroying the Vulkan resources associated with the texture,
+ * including the image, image memory, image view, and sampler.
+ */
 Texture::~Texture()
 {
     vkDestroyImage(lveDevice.device(), image, nullptr);
@@ -111,6 +125,12 @@ Texture::~Texture()
     vkDestroySampler(lveDevice.device(), sampler, nullptr);
 }
 
+/**
+ * @brief Transitions the image layout.
+ * 
+ * @param oldLayout The old layout of the image.
+ * @param newLayout The new layout of the image.
+ */
 void Texture::transitionImageLayout(
     VkImageLayout oldLayout, VkImageLayout newLayout)
 {
@@ -157,6 +177,10 @@ void Texture::transitionImageLayout(
     lveDevice.endSingleTimeCommands(commandBuffer);
 }
 
+/**
+ * @brief Generates mipmaps for the texture.
+ * 
+ */
 void Texture::generateMipmaps()
 {
     VkFormatProperties formatProperties;

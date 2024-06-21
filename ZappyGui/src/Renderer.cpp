@@ -15,6 +15,13 @@
 
 namespace zappy {
 
+
+/**
+ * @brief Constructs a ZappyRenderer object.
+ * 
+ * @param window The ZappyWindow object used for rendering.
+ * @param device The ZappyDevice object used for rendering.
+ */
 ZappyRenderer::ZappyRenderer(ZappyWindow &window, ZappyDevice &device)
     : lveWindow{window}, lveDevice{device}
 {
@@ -22,8 +29,16 @@ ZappyRenderer::ZappyRenderer(ZappyWindow &window, ZappyDevice &device)
     createCommandBuffers();
 }
 
+/**
+ * @brief Destroys the ZappyRenderer object.
+ * 
+ */
 ZappyRenderer::~ZappyRenderer() { freeCommandBuffers(); }
 
+/**
+ * @brief Recreates the swap chain.
+ * 
+ */
 void ZappyRenderer::recreateSwapChain()
 {
     auto extent = lveWindow.getExtent();
@@ -46,6 +61,10 @@ void ZappyRenderer::recreateSwapChain()
     }
 }
 
+/**
+ * @brief Creates the command buffers.
+ * 
+ */
 void ZappyRenderer::createCommandBuffers()
 {
     commandBuffers.resize(ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -63,6 +82,10 @@ void ZappyRenderer::createCommandBuffers()
     }
 }
 
+/**
+ * @brief Frees the command buffers.
+ * 
+ */
 void ZappyRenderer::freeCommandBuffers()
 {
     vkFreeCommandBuffers(lveDevice.device(), lveDevice.getCommandPool(),
@@ -70,6 +93,11 @@ void ZappyRenderer::freeCommandBuffers()
     commandBuffers.clear();
 }
 
+/**
+ * @brief Gets the current command buffer.
+ * 
+ * @return VkCommandBuffer The current command buffer.
+ */
 VkCommandBuffer ZappyRenderer::beginFrame()
 {
     assert(
@@ -98,6 +126,10 @@ VkCommandBuffer ZappyRenderer::beginFrame()
     return commandBuffer;
 }
 
+/**
+ * @brief Ends the frame.
+ * 
+ */
 void ZappyRenderer::endFrame()
 {
     assert(isFrameStarted &&
@@ -122,6 +154,11 @@ void ZappyRenderer::endFrame()
         (currentFrameIndex + 1) % ZappySwapChain::MAX_FRAMES_IN_FLIGHT;
 }
 
+/**
+ * @brief Begins the swap chain render pass.
+ * 
+ * @param commandBuffer The command buffer.
+ */
 void ZappyRenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer)
 {
     assert(isFrameStarted &&
@@ -161,6 +198,14 @@ void ZappyRenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer)
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 }
 
+
+/**
+ * Ends the current swap chain render pass on the specified command buffer.
+ * 
+ * @param commandBuffer The command buffer to end the render pass on.
+ * @throws std::runtime_error if the frame is not in progress or if the command buffer
+ *         is from a different frame.
+ */
 void ZappyRenderer::endSwapChainRenderPass(VkCommandBuffer commandBuffer)
 {
     assert(isFrameStarted &&
