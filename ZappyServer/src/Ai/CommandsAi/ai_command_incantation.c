@@ -69,7 +69,7 @@ static bool check_player(int nb_players, int level)
     return nb_players >= req[level - 1];
 }
 
-static bool check_incantation(zappy_server_t *zappy, client_t *client)
+bool incantation_condition(zappy_server_t *zappy, client_t *client)
 {
     int nb_players = 0;
     inventory_t *map;
@@ -133,21 +133,9 @@ static int complet_incantation(zappy_server_t *zappy, client_t *client,
 
 int ai_command_incantation(zappy_server_t *zappy, client_t *client, char *cmd)
 {
+    printf("Incantation\n--\n");
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
-    if (check_incantation(zappy, client) == false){
-        dprintf(zappy->actual_sockfd, "ko\n");
-        free_string(&client->command.execution);
-        return OK;
-    }
-    if (cast_action(zappy, client, 300, cmd) == ERROR)
-        return ERROR;
-    if (check_action(zappy, client) == false)
-        return OK;
-    if (check_incantation(zappy, client) == false){
-        dprintf(zappy->actual_sockfd, "ko\n");
-        return OK;
-    }
     if (complet_incantation(zappy, client, client->level) == ERROR)
         return ERROR;
     return OK;

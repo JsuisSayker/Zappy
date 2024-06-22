@@ -24,7 +24,6 @@ static int init_value(
     tmp_team->nb_drones += 1;
     ia->type = AI;
     ia->level = 1;
-    ia->command.execution = NULL;
     return OK;
 }
 
@@ -39,20 +38,6 @@ static int init_inventories(client_t *ia)
     ia->inventory.mendiane = 0;
     ia->inventory.phiras = 0;
     ia->inventory.thystame = 0;
-    return OK;
-}
-
-static int init_queue(client_t *client)
-{
-    if (client == NULL)
-        return ERROR;
-    client->command.queue = calloc(sizeof(char *), 11);
-    if (client->command.queue == NULL)
-        return ERROR;
-    client->command.queue[10] = NULL;
-    for (int i = 0; i < 10; i += 1) {
-        client->command.queue[i] = NULL;
-    }
     return OK;
 }
 
@@ -117,10 +102,6 @@ int ai_initialisation(zappy_server_t *zappy, client_t *ia, team_t *tmp_team)
     TAILQ_REMOVE(&tmp_team->eggs_head, new_egg, next);
     free(new_egg);
     if (init_inventories(ia) != OK)
-        return ERROR;
-    if (init_queue(ia) != OK)
-        return ERROR;
-    if (ia->command.queue == NULL)
         return ERROR;
     ia->pos.direction = rand() % 4;
     return OK;

@@ -48,11 +48,9 @@ int fd_is_set(zappy_server_t *zappy)
             return ERROR;
         return OK;
     }
-    if (zappy->server_start_game && client->type == AI) {
-        if ((client->command.execution != NULL ||
-        (client->command.queue != NULL && client->command.queue[0] != NULL))
-        && (ai_function(zappy, client, NULL) != OK))
-            return KO;
+    if (client->type == AI) {
+        if (ai_function(zappy, client, NULL) == ERROR)
+            return ERROR;
     }
     refill_map(zappy);
     check_win_condition(zappy);
