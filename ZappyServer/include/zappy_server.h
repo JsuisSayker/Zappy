@@ -25,7 +25,6 @@
     #include <unistd.h>
     #include "macro_server.h"
     #include "server_struct.h"
-    #include "log.h"
 
 typedef struct zappy_server_s {
     fd_t fd;

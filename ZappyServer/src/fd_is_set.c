@@ -56,7 +56,7 @@ static void refill_map(zappy_server_t *zappy)
 
     gettimeofday(&tv, NULL);
     elapsed = (tv.tv_sec + tv.tv_usec / 1000000.0) - zappy->time_refill_map;
-    if (cast_time > elapsed) {
+    if (cast_time < elapsed) {
         resourse_list = generate_ressourse_list(zappy->args->width,
             zappy->args->height);
         add_resource(resourse_list->tqh_first->str,
@@ -78,13 +78,11 @@ int fd_is_set(zappy_server_t *zappy)
             return ERROR;
         return OK;
     }
-    if (zappy->server_start_game) {
+    if (zappy->server_start_game && client->type == AI) {
         if ((client->command.execution != NULL ||
         (client->command.queue != NULL && client->command.queue[0] != NULL))
         && (ai_function(zappy, client, NULL) != OK))
             return KO;
-        if (client->type == IA)
-            is_alive(zappy, client);
         refill_map(zappy);
     }
     return OK;

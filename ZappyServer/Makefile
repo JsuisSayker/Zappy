@@ -23,11 +23,8 @@ SRC			=	zappy_server.c						\
 				handle_unknown_command.c			\
 				ia_direction_function.c				\
 				generate_egg_by_team.c				\
-				type_ai.c							\
-				type_gui.c							\
-				lib/log.c							\
 				${DIR_TOOLS}						\
-				${DIR_COMMAND_IA}					\
+				${DIR_COMMAND_AI}					\
 				${DIR_COMMAND_GUI}					\
 				${DIR_COMMAND_SERVER}				\
 
@@ -106,7 +103,7 @@ COMMAND_SERVER	=	handle_server_command.c			\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 
-DIR_COMMAND_IA	=	$(addprefix CommandsAi/, $(COMMAND_AI))
+DIR_COMMAND_AI	=	$(addprefix CommandsAi/, $(COMMAND_AI))
 
 DIR_COMMAND_GUI	=	$(addprefix CommandsGui/, $(COMMAND_GUI))
 
