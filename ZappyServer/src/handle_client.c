@@ -54,7 +54,7 @@ static int handle_command(zappy_server_t *zappy, char *command)
     switch (zappy->clients[zappy->actual_sockfd].type) {
     case UNKNOWN:
         return handle_unknown_command(zappy, command);
-    case IA:
+    case AI:
         return ai_function(zappy, &zappy->clients[zappy->actual_sockfd],
             command);
     case GUI:

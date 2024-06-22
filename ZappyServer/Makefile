@@ -26,7 +26,7 @@ SRC			=	zappy_server.c						\
 				type_ai.c							\
 				type_gui.c							\
 				${DIR_TOOLS}						\
-				${DIR_COMMAND_IA}					\
+				${DIR_COMMAND_AI}					\
 				${DIR_COMMAND_GUI}					\
 				${DIR_COMMAND_SERVER}				\
 
@@ -105,7 +105,7 @@ COMMAND_SERVER	=	handle_server_command.c			\
 
 DIR_SRC		=	$(addprefix src/, $(SRC))
 
-DIR_COMMAND_IA	=	$(addprefix CommandsAi/, $(COMMAND_AI))
+DIR_COMMAND_AI	=	$(addprefix CommandsAi/, $(COMMAND_AI))
 
 DIR_COMMAND_GUI	=	$(addprefix CommandsGui/, $(COMMAND_GUI))
 

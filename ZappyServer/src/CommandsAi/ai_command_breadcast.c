@@ -19,7 +19,7 @@ static int spreads_breadcast(zappy_server_t *zappy, client_t *client,
         return ERROR;
     for (int i = 0; i < zappy->nb_connected_clients; i ++){
         if (client->client_number != zappy->clients[i].client_number
-            && zappy->clients[i].type == IA){
+            && zappy->clients[i].type == AI){
                 read_message_receive(zappy,
                     &zappy->clients[i], new_message, i);
         }

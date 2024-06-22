@@ -14,7 +14,7 @@ int type_ai(zappy_server_t *zappy, char *cmd)
     if (zappy == NULL || cmd == NULL)
         return ERROR;
     client = &zappy->clients[zappy->actual_sockfd];
-    client->type = IA;
+    client->type = AI;
     printf("Je suis dans type_ai %d\n", client->type);
     ai_function(zappy, client, cmd);
     return OK;

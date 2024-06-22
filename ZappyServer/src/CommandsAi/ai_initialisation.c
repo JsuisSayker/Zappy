@@ -22,7 +22,7 @@ static int init_value(
     ia->team_name = strdup(tmp_team->name);
     ia->client_number = new_egg->client_number;
     tmp_team->nb_drones += 1;
-    ia->type = IA;
+    ia->type = AI;
     ia->level = 1;
     ia->command.execution = NULL;
     return OK;

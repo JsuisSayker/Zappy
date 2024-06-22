@@ -25,7 +25,7 @@
     #include "macro_server.h"
 
 typedef enum client_type_s {
-    IA,
+    AI,
     GUI,
     UNKNOWN,
 }client_type_t;

@@ -32,7 +32,7 @@ bool is_alive(zappy_server_t *zappy, client_t *client)
     gettimeofday(&tv, NULL);
     current_time = tv.tv_sec + tv.tv_usec / 1000000.0;
     if (current_time - client->health.last_meal > client->health.time_to_eat) {
-        if (client->type == IA && can_i_eat(zappy, client) == false) {
+        if (client->type == AI && can_i_eat(zappy, client) == false) {
             dprintf(zappy->actual_sockfd, "dead\n");
             send_pdi_command_to_all_gui(zappy, client);
             FD_CLR(zappy->actual_sockfd, &zappy->fd.save_input);
