@@ -18,7 +18,9 @@ int take_object(zappy_server_t *zappy, int *tile_object, int *client_object,
     send_pin_command_to_all_gui(zappy, &zappy->clients[zappy->actual_sockfd]);
     send_pgt_command_to_all_gui(zappy, &zappy->clients[zappy->actual_sockfd],
         object_nb);
+    zappy->all_resources[object_nb] -= (*tile_object);
     (*tile_object) = 0;
+
     dprintf(zappy->actual_sockfd, "ok\n");
     return OK;
 }
