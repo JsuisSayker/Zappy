@@ -97,7 +97,7 @@ static void add_resource_4(zappy_server_t *zappy, bool *is_refill)
         zappy->map_tile[rand() % zappy->args->height]
             [rand() % zappy->args->width].inventory.phiras += 1;
         zappy->all_resources[6] += 1;
-        is_refill = true;
+        (*is_refill) = true;
     }
 }
 
@@ -106,7 +106,6 @@ static void refill_map(zappy_server_t *zappy)
     struct timeval tv;
     double cast_time = 20 / (double)zappy->args->freq;
     double elapsed = 0;
-    int resource_to_add = 0;
     bool is_refill = false;
 
     gettimeofday(&tv, NULL);

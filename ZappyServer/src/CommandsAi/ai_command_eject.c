@@ -40,6 +40,7 @@ static int destroy_egg(zappy_server_t *zappy, client_t *client)
     TAILQ_FOREACH(tmp, &zappy->all_teams, next) {
         TAILQ_FOREACH(egg, &tmp->eggs_head, next) {
             if (egg->x == client->pos.x && egg->y == client->pos.y) {
+                send_die_command_to_all_gui(zappy, egg->egg_number);
                 TAILQ_REMOVE(&tmp->eggs_head, egg, next);
                 free(egg);
             }
@@ -64,6 +65,7 @@ static int eject_player(zappy_server_t *zappy, client_t *client,
         }
     }
     destroy_egg(zappy, client);
+    send_pex_command_to_all_gui(zappy, client->client_number);
     dprintf(zappy->actual_sockfd, "ok\n");
     return OK;
 }
