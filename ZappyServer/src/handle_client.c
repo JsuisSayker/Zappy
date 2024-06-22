@@ -89,10 +89,10 @@ void handle_client(zappy_server_t *zappy)
     lines = splitter(buffer, END_LINE);
     if (lines == NULL)
         return;
-    log_trace("RECEIVED: %s--\n", buffer);
+    printf("RECEIVED: %s--\n", buffer);
     for (j = 0; lines[j] != NULL; j += 1) {
         handle_command(zappy, lines[j]);
     }
-    log_trace("END handle_command\n");
+    printf("END handle_command\n");
     free_array(lines);
 }

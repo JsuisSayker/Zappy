@@ -25,7 +25,6 @@ SRC			=	zappy_server.c						\
 				generate_egg_by_team.c				\
 				type_ai.c							\
 				type_gui.c							\
-				lib/log.c							\
 				${DIR_TOOLS}						\
 				${DIR_COMMAND_IA}					\
 				${DIR_COMMAND_GUI}					\

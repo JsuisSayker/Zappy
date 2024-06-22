@@ -28,7 +28,8 @@ static ai_position_t direction(client_t *client)
     return vector;
 }
 
-static int destroy_egg(zappy_server_t *zappy, client_t *client) {
+static int destroy_egg(zappy_server_t *zappy, client_t *client)
+{
     team_t *tmp = NULL;
     egg_t *egg = NULL;
 
