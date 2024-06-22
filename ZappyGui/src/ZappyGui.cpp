@@ -1584,7 +1584,6 @@ void ZappyGui::removeTrantorian(int playerNumber)
         if (trantorian.playerNumber == playerNumber) {
             removeGameObject(trantorian.pointLightObject);
             removeGameObject(trantorian.trantorianObject);
-            // remove trantirian of trantrians_
             trantorians_.erase(
                 std::find(trantorians_.begin(), trantorians_.end(), trantorian));
             return;

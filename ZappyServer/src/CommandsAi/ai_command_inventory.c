@@ -19,7 +19,6 @@ void send_inventory(inventory_t *inventory, int socket)
 
 int ai_command_inventory(zappy_server_t *zappy, client_t *client, char *cmd)
 {
-    printf("    INVENTORY\n");
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
     if (cast_action(zappy, client, 1, cmd) == ERROR)

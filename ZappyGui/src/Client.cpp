@@ -133,15 +133,17 @@ void zappy::Client::receiveFromServer()
                     int phiras;
                     int thystame;
                     try {
-                        x = std::stoi(command[1]);
-                        y = std::stoi(command[2]);
-                        food = std::stoi(command[3]);
-                        linemate = std::stoi(command[4]);
-                        deraumere = std::stoi(command[5]);
-                        sibur = std::stoi(command[6]);
-                        mendiane = std::stoi(command[7]);
-                        phiras = std::stoi(command[8]);
-                        thystame = std::stoi(command[9]);
+                        if (skiped == false) {
+                            x = std::stoi(command[1]);
+                            y = std::stoi(command[2]);
+                            food = std::stoi(command[3]);
+                            linemate = std::stoi(command[4]);
+                            deraumere = std::stoi(command[5]);
+                            sibur = std::stoi(command[6]);
+                            mendiane = std::stoi(command[7]);
+                            phiras = std::stoi(command[8]);
+                            thystame = std::stoi(command[9]);
+                        }
                     } catch (std::exception &e) {
                         skiped = true;
                         continue;
