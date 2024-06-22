@@ -36,7 +36,6 @@ int ai_command_breadcast(zappy_server_t *zappy, client_t *client,
 {
     char *message = NULL;
 
-    printf("    BREADCAST\n");
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
     if (cast_action(zappy, client, 7, cmd) == ERROR)
