@@ -24,6 +24,7 @@ SRC			=	zappy_server.c						\
 				ia_direction_function.c				\
 				generate_egg_by_team.c				\
 				send_mct_command_to_all_gui.c		\
+				refill_map.c						\
 				${DIR_TOOLS}						\
 				${DIR_COMMAND_AI}					\
 				${DIR_COMMAND_GUI}					\
