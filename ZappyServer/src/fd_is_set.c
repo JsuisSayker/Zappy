@@ -10,7 +10,6 @@
 static int check_connection(zappy_server_t *zappy)
 {
     int client_fd = 0;
-    client_t *client = &zappy->clients[zappy->actual_sockfd];
 
     if (zappy->actual_sockfd == zappy->my_socket) {
         client_fd = accept_new_connection(zappy->my_socket,
