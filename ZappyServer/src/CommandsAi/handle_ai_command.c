@@ -29,7 +29,6 @@ static int handle_ai_command_sub(zappy_server_t *zappy, client_t *client,
 {
     if (zappy == NULL || client == NULL)
         return ERROR;
-    printf("--\n");
     for (int i = 0; COMMAND_FUNCS[i].func != NULL; i += 1) {
         if (strncmp(cmd, COMMAND_FUNCS[i].command,
             strlen(COMMAND_FUNCS[i].command)) == 0) {

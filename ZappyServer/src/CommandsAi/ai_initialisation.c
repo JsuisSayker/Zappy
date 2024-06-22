@@ -56,7 +56,7 @@ static int init_queue(client_t *client)
     return OK;
 }
 
-bool is_egg_not_use(client_t *client, egg_t *tmp_egg, egg_t **tmp_egg_save)
+bool is_egg_not_use_3(client_t *client, egg_t *tmp_egg, egg_t **tmp_egg_save)
 {
     if (client->client_number == tmp_egg->client_number) {
         return false;
@@ -67,16 +67,23 @@ bool is_egg_not_use(client_t *client, egg_t *tmp_egg, egg_t **tmp_egg_save)
     return true;
 }
 
-egg_t *tkt(zappy_server_t *zappy, egg_t *tmp_egg)
+bool is_egg_not_use_2(client_t *client, egg_t *tmp_egg, egg_t **tmp_egg_save)
+{
+    if (client->type != GUI) {
+        if (is_egg_not_use_3(client, tmp_egg, tmp_egg_save) == false)
+            return false;
+    }
+    return true;
+}
+
+egg_t *egg_to_not_use(zappy_server_t *zappy, egg_t *tmp_egg)
 {
     egg_t *tmp_egg_save = NULL;
 
     for (int i = 4; i < FD_SETSIZE; i += 1) {
-        if (zappy->clients[i].type != GUI) {
-            if (is_egg_not_use(&zappy->clients[i], tmp_egg, &tmp_egg_save)
-                == false)
-                return NULL;
-        }
+        if (is_egg_not_use_2(&zappy->clients[i], tmp_egg, &tmp_egg_save)
+            == false)
+            return NULL;
     }
     return tmp_egg_save;
 }
@@ -84,14 +91,14 @@ egg_t *tkt(zappy_server_t *zappy, egg_t *tmp_egg)
 egg_t *free_slot_egg(zappy_server_t *zappy, team_t *tmp_team)
 {
     egg_t *tmp_egg = NULL;
-    egg_t *tmp_egg_aziueg = NULL;
+    egg_t *tmp_egg_save = NULL;
 
     if (tmp_team == NULL)
         return NULL;
     TAILQ_FOREACH(tmp_egg, &tmp_team->eggs_head, next) {
-        tmp_egg_aziueg = tkt(zappy, tmp_egg);
-        if (tmp_egg_aziueg != NULL)
-            return tmp_egg_aziueg;
+        tmp_egg_save = egg_to_not_use(zappy, tmp_egg);
+        if (tmp_egg_save != NULL)
+            return tmp_egg_save;
     }
     return NULL;
 }

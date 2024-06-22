@@ -7,10 +7,11 @@
 
 #include <zappy_server.h>
 
-void send_seg_command_to_all_gui(zappy_server_t *zappy, char *team_name)
+void send_die_command_to_all_gui(zappy_server_t *zappy, int egg_number)
 {
     for (int i = 3; i < zappy->nb_connected_clients; i += 1) {
-        if (zappy->clients[i].type == GUI)
-            dprintf(i, "seg %s\n", team_name);
+        if (zappy->clients[i].type == GUI) {
+            dprintf(i, "die #%d\n", egg_number);
+        }
     }
 }

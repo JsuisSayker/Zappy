@@ -25,7 +25,7 @@ case $OS in
         ;;
     fedora)
         echo "Installing Vulkan components, GLFW, GLM, glslc, and dependencies on Fedora..."
-        sudo dnf install -y vulkan-tools vulkan-loader-devel mesa-vulkan-devel vulkan-validation-layers-devel glfw-devel glm-devel libXi-devel libXxf86vm-devel glslc
+        sudo dnf install -y glslc glfw-devel vulkan-devel glm-devel gtest-devel
         ;;
     arch)
         echo "Installing Vulkan components, GLFW, GLM, glslc, and dependencies on Arch Linux..."
@@ -38,3 +38,17 @@ case $OS in
         exit 1
         ;;
 esac
+
+if [ ! -d "ZappyGui/vulkan-sdk" ]; then
+    cd ZappyGui || exit 1
+    ./install_vulkan_sdk.sh
+else
+    echo "Vulkan SDK is already installed."
+fi
+
+echo "------------------------------------------------------------"
+echo "Now you can run the following commands to build the project:"
+echo 'export VULKAN_SDK="${PWD}/ZappyGui/vulkan-sdk/sdk/x86_64"'
+echo 'export PATH="$VULKAN_SDK/bin:$PATH"'
+echo 'export LD_LIBRARY_PATH="$VULKAN_SDK/lib:$LD_LIBRARY_PATH"'
+echo 'export VK_LAYER_PATH="$VULKAN_SDK/share/vulkan/explicit_layer.d"'

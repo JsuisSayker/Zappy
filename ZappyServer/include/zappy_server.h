@@ -127,6 +127,7 @@ time_t get_actual_time(void);
 int count_str_char(char *str, char c);
 void generate_egg_by_team(zappy_server_t *zappy,
     team_t *new_team, int x, int y);
+void refill_map(zappy_server_t *zappy);
 
 // COMMANDS
 typedef struct command_s {
@@ -208,7 +209,9 @@ void send_plv_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_enw_command_to_all_gui(zappy_server_t *zappy, egg_t *egg);
 void send_pbc_command_to_all_gui(zappy_server_t *zappy, client_t *client,
     char *message);
-void send_seg_command_to_all_gui(zappy_server_t *zappy, client_t *client);
+void send_seg_command_to_all_gui(zappy_server_t *zappy, char *team_name);
+void send_die_command_to_all_gui(zappy_server_t *zappy, int egg_number);
+void send_pex_command_to_all_gui(zappy_server_t *zappy, int player_number);
 
 // GUI COMMANDS FUNCTIONS
 int handle_gui_command(zappy_server_t *zappy, char *command);

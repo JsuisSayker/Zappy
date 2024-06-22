@@ -41,8 +41,9 @@ class Trantorian {
     ZappyGameObject::id_t pointLightObject;
     trantInventory inventory;
     std::string team;
+    std::string orientation;
     bool incatationInProgess = false;
     int playerNumber;
-    int level;
+    int level = 1;
 };
 } // namespace zappy

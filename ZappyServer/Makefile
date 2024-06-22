@@ -24,6 +24,7 @@ SRC			=	zappy_server.c						\
 				ia_direction_function.c				\
 				generate_egg_by_team.c				\
 				send_mct_command_to_all_gui.c		\
+				refill_map.c						\
 				${DIR_TOOLS}						\
 				${DIR_COMMAND_AI}					\
 				${DIR_COMMAND_GUI}					\
@@ -68,6 +69,8 @@ COMMAND_AI		=	handle_ai_command.c				\
 					send_plv_command_to_all_gui.c	\
 					send_pbc_command_to_all_gui.c	\
 					send_seg_command_to_all_gui.c	\
+					send_die_command_to_all_gui.c	\
+					send_pex_command_to_all_gui.c	\
 
 COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_msz.c				\

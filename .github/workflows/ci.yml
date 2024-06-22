@@ -44,8 +44,8 @@ jobs:
         uses: actions/checkout@master
         with:
           repository: ""
-      - name : Install dependencies
-        run: sudo dnf install glslc glfw-devel vulkan-devel glm-devel -y
+      - name: Install dependencies
+        run: sudo dnf install glslc glfw-devel vulkan-devel glm-devel gtest-devel -y
       - name: Compile repository
         run: make
       - name: Clean repository

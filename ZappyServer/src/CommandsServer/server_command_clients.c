@@ -18,8 +18,10 @@ static void display_client_info(client_t client)
         printf("GUI\n");
 }
 
-void server_command_clients(zappy_server_t *zappy, UNUSED char *command)
+void server_command_clients(zappy_server_t *zappy, char *command)
 {
+    if (zappy == NULL || command == NULL || command[0] != '\0')
+        return;
     printf("================USER================\n");
     for (int i = 3; i < zappy->nb_connected_clients; i += 1){
         if (zappy->clients[i].type != UNKNOWN)

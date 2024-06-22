@@ -136,6 +136,7 @@ struct egghead {
 typedef struct team_s {
     char *name;
     char team_uuid[MAX_UUID_LENGTH];
+    int nb_clients_lvl_8;
     int nb_drones;
     int nb_matures_eggs;
     struct egghead eggs_head;
