@@ -62,6 +62,7 @@ static int eject_player(zappy_server_t *zappy, client_t *client,
             zappy->clients[i].pos.x += vector.x;
             zappy->clients[i].pos.y += vector.y;
             dprintf(i, "eject: 1\n");
+            send_ppo_command_to_all_gui(zappy, &zappy->clients[i]);
         }
     }
     destroy_egg(zappy, client);
