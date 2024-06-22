@@ -7,13 +7,13 @@
 
 #include <zappy_server.h>
 
-static int get_players(zappy_server_t *zappy, int x, int y)
+static int get_players(zappy_server_t *zappy, int x, int y, int lvl)
 {
     int nb_players = 0;
 
     for (int i = 3; i < zappy->nb_connected_clients; i ++) {
         if (zappy->clients[i].type == AI && zappy->clients[i].pos.x == x
-        && zappy->clients[i].pos.y == y)
+        && zappy->clients[i].pos.y == y && zappy->clients[i].level == lvl)
             nb_players += 1;
     }
     return nb_players;
@@ -77,7 +77,8 @@ static bool check_incantation(zappy_server_t *zappy, client_t *client)
     if (client == NULL || zappy == NULL)
         return false;
     map = &zappy->map_tile[client->pos.y][client->pos.x].inventory;
-    nb_players = get_players(zappy, client->pos.x, client->pos.y);
+    nb_players = get_players(zappy, client->pos.x, client->pos.y,
+        client->level);
     if (check_resources(map, client->level)
         && check_player(nb_players, client->level)) {
         if (client->incantation == false) {
