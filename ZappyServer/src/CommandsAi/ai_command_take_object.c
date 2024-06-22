@@ -20,7 +20,6 @@ int take_object(zappy_server_t *zappy, int *tile_object, int *client_object,
         object_nb);
     zappy->all_resources[object_nb] -= (*tile_object);
     (*tile_object) = 0;
-
     dprintf(zappy->actual_sockfd, "ok\n");
     return OK;
 }
