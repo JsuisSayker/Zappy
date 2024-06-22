@@ -55,7 +55,7 @@ fragObjFiles = $(patsubst %.frag, %.frag.spv, $(fragSources))
 NAME = ../zappy_gui
 
 $(NAME):	$(OBJ) $(vertObjFiles) $(fragObjFiles)
-	g++ -o $(NAME) $(OBJ) $(LDFLAGS) $(CPPFLAGS) imgui/*.cpp imgui/backends/*.cpp
+	g++ -o $(NAME) $(OBJ) $(LDFLAGS) $(CPPFLAGS) imgui/*.cpp imgui/backends/*.cpp -ggdb3
 	./rebuild.sh
 
 all: $(NAME)
@@ -79,7 +79,7 @@ fclean: clean
 re: fclean all
 
 debug: $(OBJ) $(vertObjFiles) $(fragObjFiles)
-	g++ -o $(NAME) $(OBJ) $(CPPFLAGS) $(LDFLAGS) -ggdb3
+	g++ -o $(NAME) $(DIR_SRC) $(DIR_MAIN) $(CPPFLAGS) $(LDFLAGS) imgui/*.cpp imgui/backends/*.cpp -ggdb3
 
 unit_tests: re $(DIR_SRC) $(DIR_TESTS)
 	mkdir -p unit_tests
