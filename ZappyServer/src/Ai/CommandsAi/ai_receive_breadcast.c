@@ -12,8 +12,8 @@ static ai_position_t shortest_vector(ai_position_t p1, ai_position_t p2,
 {
     ai_position_t vector;
 
-    vector.x = p2.x - p1.x;
-    vector.y = p2.y - p1.y;
+    vector.x = p1.x - p2.x;
+    vector.y = p1.y - p2.y;
     if (vector.x > map_size_x / 2) {
         vector.x -= map_size_x;
     } else if (vector.x < -map_size_x / 2) {
@@ -175,6 +175,7 @@ static int message_receive(client_t *client, zappy_server_t *zappy,
 int read_message_receive(zappy_server_t *zappy, client_t *client,
     message_t *message, int actual_sockfd)
 {
+    printf("Receive message\n--\n");
     if (client == NULL || zappy == NULL || message == NULL)
         return ERROR;
     if (message_receive(client, zappy, message, actual_sockfd) == ERROR)

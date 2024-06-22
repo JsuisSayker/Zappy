@@ -24,6 +24,9 @@
     #include <unistd.h>
     #include "macro_server.h"
 
+typedef struct zappy_server_s zappy_server_t;
+typedef struct client_s client_t;
+
 typedef enum client_type_s {
     AI,
     GUI,
@@ -80,14 +83,14 @@ typedef struct ai_position_s {
     ai_direction_t direction;
 } ai_position_t;
 
-typedef struct ai_command_data_s {
-    char *execution;
-    char **queue;
-    float cast_time;
-    bool is_contracted;
-    double time;
-    bool incantation;
-} ai_command_data_t;
+typedef struct ai_command_s {
+    char *command;
+    int (*func)(zappy_server_t *zappy, client_t *client, char *command);
+    bool (*condition)(zappy_server_t *zappy, client_t *client);
+    double cast_time;
+    double start_time;
+    bool is_started;
+} ai_command_t;
 
 typedef struct ai_health_s {
     double last_meal;
@@ -107,7 +110,7 @@ typedef struct client_s {
     char *team_name;
     struct sockaddr_in other_socket_addr;
     ai_health_t health;
-    ai_command_data_t command;
+    ai_command_t commands[QUEUE_SIZE];
     ai_position_t pos;
     inventory_t inventory;
     message_t *message_receive;
@@ -154,4 +157,21 @@ typedef struct look_struct_s {
     char *message;
 } look_struct_t;
 
-#endif /* !AI_SERVER_STRUCT_H_ */
+typedef struct zappy_server_s {
+    fd_t fd;
+    int my_socket;
+    int actual_sockfd;
+    int index_eggs;
+    int nb_connected_clients;
+    int all_resources[7];
+    bool server_start_game;
+    bool server_running;
+    double time_refill_map;
+    struct sockaddr_in server_addr;
+    struct teamhead all_teams;
+    struct client_s clients[FD_SETSIZE];
+    map_tile_t **map_tile;
+    args_config_t *args;
+} zappy_server_t;
+
+#endif /* AI_SERVER_STRUCT_H_ */

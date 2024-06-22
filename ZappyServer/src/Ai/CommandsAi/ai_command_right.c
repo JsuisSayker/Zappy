@@ -31,12 +31,9 @@ static void check_direction(zappy_server_t *zappy, client_t *client)
 
 int ai_command_right(zappy_server_t *zappy, client_t *client, char *cmd)
 {
+    printf("Right\n--\n");
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
-    if (cast_action(zappy, client, 7, cmd) == ERROR)
-        return ERROR;
-    if (check_action(zappy, client) == false)
-        return OK;
     check_direction(zappy, client);
     return OK;
 }

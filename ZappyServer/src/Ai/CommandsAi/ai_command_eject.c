@@ -75,12 +75,9 @@ int ai_command_eject(zappy_server_t *zappy, client_t *client, char *cmd)
 {
     ai_position_t vector;
 
+    printf("Eject\n--\n");
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
-    if (cast_action(zappy, client, 7, cmd) == ERROR)
-        return ERROR;
-    if (check_action(zappy, client) == false)
-        return OK;
     vector = direction(client);
     if (eject_player(zappy, client, vector) == ERROR){
         dprintf(zappy->actual_sockfd, "ko\n");
