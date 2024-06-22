@@ -12,7 +12,7 @@ static int get_players(zappy_server_t *zappy, int x, int y)
     int nb_players = 0;
 
     for (int i = 3; i < zappy->nb_connected_clients; i ++) {
-        if (zappy->clients[i].type == IA && zappy->clients[i].pos.x == x
+        if (zappy->clients[i].type == AI && zappy->clients[i].pos.x == x
         && zappy->clients[i].pos.y == y)
             nb_players += 1;
     }
@@ -108,7 +108,7 @@ static int complet_incantation(zappy_server_t *zappy, client_t *client,
     if (remove_ressource(tile_inventory, lvl) == ERROR)
         return ERROR;
     for (int i = 3; i < zappy->nb_connected_clients; i++) {
-        if (zappy->clients[i].type == IA && zappy->clients[i].pos.x ==
+        if (zappy->clients[i].type == AI && zappy->clients[i].pos.x ==
         client->pos.x && zappy->clients[i].pos.y == client->pos.y
         && zappy->clients[i].level == lvl) {
             check_win_condition(zappy, &zappy->clients[i]);
