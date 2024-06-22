@@ -98,6 +98,7 @@ int ai_initialisation(zappy_server_t *zappy, client_t *ia, team_t *tmp_team)
     new_egg = free_slot_egg(zappy, tmp_team);
     if (new_egg == NULL)
         return ERROR;
+    TAILQ_REMOVE(&tmp_team->eggs_head, new_egg, next);
     if (init_value(ia, tmp_team, new_egg, zappy) == ERROR)
         return ERROR;
     if (init_inventories(ia) != OK)
