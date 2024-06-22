@@ -299,8 +299,8 @@ ZappyGui::ZappyGui()
 void ZappyGui::processCommand()
 {
     std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
-    auto commandTime = std::chrono::high_resolution_clock::now();
-    auto endTime = commandTime + std::chrono::milliseconds(16);
+    std::chrono::_V2::system_clock::time_point commandTime = std::chrono::high_resolution_clock::now();
+    std::chrono::_V2::system_clock::time_point endTime = commandTime + std::chrono::milliseconds(16);
 
     while (!this->getClient().get()->getQueue().empty() &&
         commandTime < endTime) {
@@ -312,6 +312,11 @@ void ZappyGui::processCommand()
             try {
                 this->getPointerToFunction()[command[0]](command);
             } catch (const std::exception &e) {
+                // print command
+                for (auto &elem : command) {
+                    std::cerr << elem << " ";
+                }
+                std::cerr << std::endl;
                 std::cerr << "Exception: " << e.what() << std::endl;
             }
         } else {
@@ -378,7 +383,7 @@ void ZappyGui::run()
     std::vector<VkDescriptorSet> globalDescriptorSets(
         ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
     for (int i = 0; i < globalDescriptorSets.size(); i++) {
-        auto bufferInfo = uboBuffers[i]->descriptorInfo();
+        VkDescriptorBufferInfo bufferInfo = uboBuffers[i]->descriptorInfo();
         ZappyDescriptorWriter(*globalSetLayout, *globalPool)
             .writeBuffer(0, &bufferInfo)
             .writeImage(1, &imageInfo)
@@ -397,7 +402,7 @@ void ZappyGui::run()
 
     std::thread reader(&Client::receiveFromServer, this->client.get());
 
-    auto currentTime = std::chrono::high_resolution_clock::now();
+    std::chrono::_V2::system_clock::time_point currentTime = std::chrono::high_resolution_clock::now();
     int socket_fd = this->getClient().get()->getSocketFd();
     this->initHud();
 
@@ -408,7 +413,7 @@ void ZappyGui::run()
 
         processCommand();
 
-        auto newTime = std::chrono::high_resolution_clock::now();
+        std::chrono::_V2::system_clock::time_point newTime = std::chrono::high_resolution_clock::now();
         float frameTime =
             std::chrono::duration<float, std::chrono::seconds::period>(
                 newTime - currentTime)
@@ -424,7 +429,7 @@ void ZappyGui::run()
         camera.setPerspectiveProjection(
             glm::radians(50.f), aspect, 0.1f, 100.f);
 
-        if (auto commandBuffer = zappyRenderer.beginFrame()) {
+        if (VkCommandBuffer commandBuffer = zappyRenderer.beginFrame()) {
             int frameIndex = zappyRenderer.getFrameIndex();
             FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera,
                 globalDescriptorSets[frameIndex], textureObjects, gameObjects};
@@ -544,7 +549,7 @@ ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
         std::vector<VkDescriptorSet> descriptorSets(
             ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
         for (int i = 0; i < uboBuffers.size(); i++) {
-            auto bufferInfo = uboBuffers[i]->descriptorInfo();
+            VkDescriptorBufferInfo bufferInfo = uboBuffers[i]->descriptorInfo();
             ZappyDescriptorWriter(*globalSetLayout, *globalPool)
                 .writeBuffer(0, &bufferInfo)
                 .writeImage(1, &object.imageInfo)
@@ -1066,9 +1071,6 @@ void ZappyGui::pnw(std::vector<std::string> actualCommand)
         std::cerr << "pnw: invalid arguments" << std::endl;
         return;
     }
-    std::cout << "Adding player " << playerNumber << " to team " << teamName
-              << " at position (" << x << ", " << y << ") with orientation "
-              << orientation << " and level " << level << std::endl;
     this->addTrantorian(teamName,
         {static_cast<float>(x), -.25f, static_cast<float>(y)}, playerNumber,
         orientation);
@@ -1169,7 +1171,46 @@ void ZappyGui::plv(std::vector<std::string> actualCommand)
 
 void ZappyGui::pin(std::vector<std::string> actualCommand)
 {
-    // std::cout << "pin" << std::endl;
+    if (actualCommand.size() != 11) {
+        std::cerr << "pin: invalid number of arguments" << std::endl;
+        return;
+    }
+    int playerNumber;
+    int x;
+    int y;
+    int food;
+    int linemate;
+    int deraumere;
+    int sibur;
+    int mendiane;
+    int phiras;
+    int thystame;
+    try {
+        if (actualCommand[1][0] != '#') {
+            std::cerr << "pin: invalid player number" << std::endl;
+            return;
+        }
+        actualCommand[1].erase(actualCommand[1].begin());
+        playerNumber = std::stoi(actualCommand[1]);
+        x = std::stoi(actualCommand[2]);
+        y = std::stoi(actualCommand[3]);
+        food = std::stoi(actualCommand[4]);
+        linemate = std::stoi(actualCommand[5]);
+        deraumere = std::stoi(actualCommand[6]);
+        sibur = std::stoi(actualCommand[7]);
+        mendiane = std::stoi(actualCommand[8]);
+        phiras = std::stoi(actualCommand[9]);
+        thystame = std::stoi(actualCommand[10]);
+    } catch (const std::exception &e) {
+        std::cerr << "pin: invalid arguments" << std::endl;
+        return;
+    }
+    for (Trantorian &Trantorian : trantorians_) {
+        if (Trantorian.playerNumber == playerNumber) {
+            Trantorian.inventory = {food, linemate, deraumere, sibur, mendiane,
+                phiras, thystame};
+        }
+    }
 }
 
 /**
@@ -1250,6 +1291,7 @@ void ZappyGui::pbc(std::vector<std::string> actualCommand)
  */
 void ZappyGui::pic(std::vector<std::string> actualCommand)
 {
+    std::cout << "pic" << std::endl;
     if (actualCommand.size() < 4) {
         std::cerr << "pic: invalid number of arguments" << std::endl;
         return;
@@ -1412,6 +1454,10 @@ void ZappyGui::enw(std::vector<std::string> actualCommand)
     int x;
     int y;
     try {
+        if (actualCommand[1][0] != '#' && actualCommand[2][0] != '#') {
+            std::cerr << "enw: invalid arguments" << std::endl;
+            return;
+        }
         actualCommand[1].erase(actualCommand[1].begin());
         actualCommand[2].erase(actualCommand[2].begin());
         eggNumber = std::stoi(actualCommand[1]);
@@ -1456,18 +1502,9 @@ void ZappyGui::ebo(std::vector<std::string> actualCommand)
         return;
     }
     for (Egg &egg : eggs_) {
-        std::cout << "loop" << std::endl;
         if (egg.eggNumber == eggNumber) {
-            std::cout << "found" << "id:" << eggNumber << std::endl;
-            for (Trantorian &trantorian : trantorians_) {
-                if (trantorian.playerNumber == egg.playerNumber) {
-                    this->addTrantorian(trantorian.team, egg.position,
-                        trantorians_.size() + 1, 0);
-                    break;
-                }
-            }
             removeGameObject(egg.eggObjectId);
-            eggs_.erase(std::remove(eggs_.begin(), eggs_.end(), egg), eggs_.end());
+            eggs_.erase(std::find(eggs_.begin(), eggs_.end(), egg));
             return;
         }
     }
@@ -1490,6 +1527,7 @@ void ZappyGui::ebo(std::vector<std::string> actualCommand)
  */
 void ZappyGui::edi(std::vector<std::string> actualCommand)
 {
+    std::cout << "death of an egg" << std::endl;
     if (actualCommand.size() != 2) {
         std::cerr << "edi: invalid number of arguments" << std::endl;
         return;
@@ -1564,6 +1602,7 @@ void ZappyGui::addTrantorian(const std::string &teamName,
 
     Trantorian newTrantorian(
         ObjectId, pointLight->getId(), teamName, playerNumber);
+    newTrantorian.orientation = orientation;
 
     this->trantorians_.emplace_back(newTrantorian);
 }
@@ -1642,7 +1681,7 @@ void ZappyGui::updateTrantorianPosition(
 void ZappyGui::eggLayingPose(int playerNumber)
 {
     // change trantorians pose to show it is laying an egg
-    std::cout << "Egg laying pose" << std::endl;
+    // std::cout << "Egg laying pose" << std::endl;
 }
 
 /**
