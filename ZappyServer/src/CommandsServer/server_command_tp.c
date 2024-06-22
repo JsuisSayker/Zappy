@@ -35,8 +35,8 @@ void server_command_tp(zappy_server_t *zappy, char *command)
     if (client_number > 0 && x >= 0 && x < zappy->args->width && y >= 0 &&
         y < zappy->args->height) {
         tp_client(zappy, client_number, x, y);
-        log_trace("tp done\n");
+        printf("tp done\n");
     } else {
-        log_trace("tp failed\n");
+        printf("tp failed\n");
     }
 }

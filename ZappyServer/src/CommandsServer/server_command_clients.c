@@ -12,8 +12,8 @@ static void display_client_info(client_t client)
     printf("127.0.0.1:%d\n",
         ntohs(client.other_socket_addr.sin_port));
     printf("Type = ");
-    if (client.type == IA)
-        printf("IA\n");
+    if (client.type == AI)
+        printf("AI\n");
     if (client.type == GUI)
         printf("GUI\n");
 }

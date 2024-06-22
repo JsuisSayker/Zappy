@@ -28,7 +28,8 @@ static ai_position_t direction(client_t *client)
     return vector;
 }
 
-static int destroy_egg(zappy_server_t *zappy, client_t *client) {
+static int destroy_egg(zappy_server_t *zappy, client_t *client)
+{
     team_t *tmp = NULL;
     egg_t *egg = NULL;
 
@@ -53,7 +54,7 @@ static int eject_player(zappy_server_t *zappy, client_t *client,
     if (zappy == NULL || client == NULL)
         return ERROR;
     for (int i = 0; i < zappy->args->clientsNb; i++) {
-        if (zappy->clients[i].type != IA &&
+        if (zappy->clients[i].type != AI &&
             client->client_number != zappy->clients[i].client_number &&
             client->pos.x == zappy->clients[i].pos.x && client->pos.y ==
             zappy->clients[i].pos.y) {

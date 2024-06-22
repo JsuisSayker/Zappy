@@ -13,7 +13,7 @@ void send_pic_command_to_all_gui(zappy_server_t *zappy, client_t *client)
     char tmb_buffer[1000] = {0};
 
     for (int i = 3; i < zappy->nb_connected_clients; i += 1) {
-        if (zappy->clients[i].type == IA){
+        if (zappy->clients[i].type == AI){
             sprintf(tmb_buffer, " #%d", client->client_number);
             realloc_and_strcat(&buffer, tmb_buffer);
             memset(tmb_buffer, 0, 1000);

@@ -50,9 +50,7 @@ static int check_direction(zappy_server_t *zappy, client_t *client)
         send_ppo_command_to_all_gui(zappy, client);
         return OK;
     }
-    if (check_direction_sub(zappy, client) == ERROR)
-        return ERROR;
-    return OK;
+    return check_direction_sub(zappy, client);
 }
 
 int ai_command_forward(zappy_server_t *zappy, client_t *client, char *cmd)
@@ -65,6 +63,6 @@ int ai_command_forward(zappy_server_t *zappy, client_t *client, char *cmd)
         return OK;
     if (check_direction(zappy, client) == ERROR)
         return ERROR;
-    log_trace("client, x y %d %d\n", client->pos.x, client->pos.y);
+    printf("client, x y %d %d\n", client->pos.x, client->pos.y);
     return OK;
 }

@@ -22,7 +22,7 @@ static int init_value(
     ia->team_name = strdup(tmp_team->name);
     ia->client_number = new_egg->client_number;
     tmp_team->nb_drones += 1;
-    ia->type = IA;
+    ia->type = AI;
     ia->level = 1;
     ia->command.execution = NULL;
     return OK;
@@ -94,12 +94,13 @@ int ai_initialisation(zappy_server_t *zappy, client_t *ia, team_t *tmp_team)
 
     if (zappy == NULL || ia == NULL || tmp_team == NULL)
         return ERROR;
-
     new_egg = free_slot_egg(zappy, tmp_team);
     if (new_egg == NULL)
         return ERROR;
     if (init_value(ia, tmp_team, new_egg, zappy) == ERROR)
         return ERROR;
+    TAILQ_REMOVE(&tmp_team->eggs_head, new_egg, next);
+    free(new_egg);
     if (init_inventories(ia) != OK)
         return ERROR;
     if (init_queue(ia) != OK)
