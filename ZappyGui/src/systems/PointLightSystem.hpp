@@ -34,9 +34,9 @@ class PointLightSystem {
     void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
     void createPipeline(VkRenderPass renderPass);
 
-    ZappyDevice &lveDevice;
+    ZappyDevice &zappyDevice;
 
-    std::unique_ptr<ZappyPipeline> lvePipeline;
+    std::unique_ptr<ZappyPipeline> zappyPipeline;
     VkPipelineLayout pipelineLayout;
     std::string executablePath;
 };

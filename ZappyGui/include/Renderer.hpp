@@ -27,9 +27,9 @@ class ZappyRenderer {
 
     VkRenderPass getSwapChainRenderPass() const
     {
-        return lveSwapChain->getRenderPass();
+        return zappySwapChain->getRenderPass();
     }
-    float getAspectRatio() const { return lveSwapChain->extentAspectRatio(); }
+    float getAspectRatio() const { return zappySwapChain->extentAspectRatio(); }
     bool isFrameInProgress() const { return isFrameStarted; }
 
     VkCommandBuffer getCurrentCommandBuffer() const
@@ -51,16 +51,16 @@ class ZappyRenderer {
     void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
     void endSwapChainRenderPass(VkCommandBuffer commandBuffer);
 
-    std::unique_ptr<ZappySwapChain> &getSwapChain() { return lveSwapChain; }
+    std::unique_ptr<ZappySwapChain> &getSwapChain() { return zappySwapChain; }
 
   private:
     void createCommandBuffers();
     void freeCommandBuffers();
     void recreateSwapChain();
 
-    ZappyWindow &lveWindow;
-    ZappyDevice &lveDevice;
-    std::unique_ptr<ZappySwapChain> lveSwapChain;
+    ZappyWindow &zappyWindow;
+    ZappyDevice &zappyDevice;
+    std::unique_ptr<ZappySwapChain> zappySwapChain;
     std::vector<VkCommandBuffer> commandBuffers;
 
     uint32_t currentImageIndex;

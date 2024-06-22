@@ -15,37 +15,56 @@
 
 namespace zappy {
 
+
+/**
+ * @brief Constructs a ZappyRenderer object.
+ * 
+ * @param window The ZappyWindow object used for rendering.
+ * @param device The ZappyDevice object used for rendering.
+ */
 ZappyRenderer::ZappyRenderer(ZappyWindow &window, ZappyDevice &device)
-    : lveWindow{window}, lveDevice{device}
+    : zappyWindow{window}, zappyDevice{device}
 {
     recreateSwapChain();
     createCommandBuffers();
 }
 
+/**
+ * @brief Destroys the ZappyRenderer object.
+ * 
+ */
 ZappyRenderer::~ZappyRenderer() { freeCommandBuffers(); }
 
+/**
+ * @brief Recreates the swap chain.
+ * 
+ */
 void ZappyRenderer::recreateSwapChain()
 {
-    auto extent = lveWindow.getExtent();
+    auto extent = zappyWindow.getExtent();
     while (extent.width == 0 || extent.height == 0) {
-        extent = lveWindow.getExtent();
+        extent = zappyWindow.getExtent();
         glfwWaitEvents();
     }
-    vkDeviceWaitIdle(lveDevice.device());
+    vkDeviceWaitIdle(zappyDevice.device());
 
-    if (lveSwapChain == nullptr) {
-        lveSwapChain = std::make_unique<ZappySwapChain>(lveDevice, extent);
+    if (zappySwapChain == nullptr) {
+        zappySwapChain = std::make_unique<ZappySwapChain>(zappyDevice, extent);
     } else {
-        std::shared_ptr<ZappySwapChain> oldSwapChain = std::move(lveSwapChain);
-        lveSwapChain =
-            std::make_unique<ZappySwapChain>(lveDevice, extent, oldSwapChain);
+        std::shared_ptr<ZappySwapChain> oldSwapChain = std::move(zappySwapChain);
+        zappySwapChain =
+            std::make_unique<ZappySwapChain>(zappyDevice, extent, oldSwapChain);
 
-        if (!oldSwapChain->compareSwapFormats(*lveSwapChain.get())) {
+        if (!oldSwapChain->compareSwapFormats(*zappySwapChain.get())) {
             throw zappy::SwapChainFormatChangedException();
         }
     }
 }
 
+/**
+ * @brief Creates the command buffers.
+ * 
+ */
 void ZappyRenderer::createCommandBuffers()
 {
     commandBuffers.resize(ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -53,29 +72,38 @@ void ZappyRenderer::createCommandBuffers()
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = lveDevice.getCommandPool();
+    allocInfo.commandPool = zappyDevice.getCommandPool();
     allocInfo.commandBufferCount =
         static_cast<uint32_t>(commandBuffers.size());
 
-    if (vkAllocateCommandBuffers(lveDevice.device(), &allocInfo,
+    if (vkAllocateCommandBuffers(zappyDevice.device(), &allocInfo,
             commandBuffers.data()) != VK_SUCCESS) {
         throw zappy::MemoryAllocationFailedException();
     }
 }
 
+/**
+ * @brief Frees the command buffers.
+ * 
+ */
 void ZappyRenderer::freeCommandBuffers()
 {
-    vkFreeCommandBuffers(lveDevice.device(), lveDevice.getCommandPool(),
+    vkFreeCommandBuffers(zappyDevice.device(), zappyDevice.getCommandPool(),
         static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
     commandBuffers.clear();
 }
 
+/**
+ * @brief Gets the current command buffer.
+ * 
+ * @return VkCommandBuffer The current command buffer.
+ */
 VkCommandBuffer ZappyRenderer::beginFrame()
 {
     assert(
         !isFrameStarted && "Can't call beginFrame while already in progress");
 
-    auto result = lveSwapChain->acquireNextImage(&currentImageIndex);
+    auto result = zappySwapChain->acquireNextImage(&currentImageIndex);
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
         recreateSwapChain();
         return nullptr;
@@ -98,6 +126,10 @@ VkCommandBuffer ZappyRenderer::beginFrame()
     return commandBuffer;
 }
 
+/**
+ * @brief Ends the frame.
+ * 
+ */
 void ZappyRenderer::endFrame()
 {
     assert(isFrameStarted &&
@@ -108,10 +140,10 @@ void ZappyRenderer::endFrame()
     }
 
     auto result =
-        lveSwapChain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+        zappySwapChain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
-        lveWindow.wasWindowResized()) {
-        lveWindow.resetWindowResizedFlag();
+        zappyWindow.wasWindowResized()) {
+        zappyWindow.resetWindowResizedFlag();
         recreateSwapChain();
     } else if (result != VK_SUCCESS) {
         throw zappy::SwapChainImagePresentationFailedException();
@@ -122,6 +154,11 @@ void ZappyRenderer::endFrame()
         (currentFrameIndex + 1) % ZappySwapChain::MAX_FRAMES_IN_FLIGHT;
 }
 
+/**
+ * @brief Begins the swap chain render pass.
+ * 
+ * @param commandBuffer The command buffer.
+ */
 void ZappyRenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer)
 {
     assert(isFrameStarted &&
@@ -131,12 +168,12 @@ void ZappyRenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer)
 
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = lveSwapChain->getRenderPass();
+    renderPassInfo.renderPass = zappySwapChain->getRenderPass();
     renderPassInfo.framebuffer =
-        lveSwapChain->getFrameBuffer(currentImageIndex);
+        zappySwapChain->getFrameBuffer(currentImageIndex);
 
     renderPassInfo.renderArea.offset = {0, 0};
-    renderPassInfo.renderArea.extent = lveSwapChain->getSwapChainExtent();
+    renderPassInfo.renderArea.extent = zappySwapChain->getSwapChainExtent();
 
     std::array<VkClearValue, 2> clearValues{};
     clearValues[0].color = {0.01f, 0.01f, 0.01f, 1.0f};
@@ -151,16 +188,24 @@ void ZappyRenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer)
     viewport.x = 0.0f;
     viewport.y = 0.0f;
     viewport.width =
-        static_cast<float>(lveSwapChain->getSwapChainExtent().width);
+        static_cast<float>(zappySwapChain->getSwapChainExtent().width);
     viewport.height =
-        static_cast<float>(lveSwapChain->getSwapChainExtent().height);
+        static_cast<float>(zappySwapChain->getSwapChainExtent().height);
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
-    VkRect2D scissor{{0, 0}, lveSwapChain->getSwapChainExtent()};
+    VkRect2D scissor{{0, 0}, zappySwapChain->getSwapChainExtent()};
     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 }
 
+
+/**
+ * Ends the current swap chain render pass on the specified command buffer.
+ * 
+ * @param commandBuffer The command buffer to end the render pass on.
+ * @throws std::runtime_error if the frame is not in progress or if the command buffer
+ *         is from a different frame.
+ */
 void ZappyRenderer::endSwapChainRenderPass(VkCommandBuffer commandBuffer)
 {
     assert(isFrameStarted &&

@@ -128,7 +128,7 @@ int ai_command_incantation(zappy_server_t *zappy, client_t *client, char *cmd)
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
     if (check_incantation(zappy, client) == false){
-        dprintf(zappy->actual_sockfd, "ko bit\n");
+        dprintf(zappy->actual_sockfd, "ko\n");
         free_string(&client->command.execution);
         return OK;
     }

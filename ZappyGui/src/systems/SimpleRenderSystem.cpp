@@ -20,27 +20,50 @@
 #include <filesystem>
 #include <stdexcept>
 
+/**
+ * @file SimpleRenderSystem.cpp
+ * @brief Implementation of the SimpleRenderSystem class.
+ */
+
 namespace zappy {
 
+/**
+ * @struct SimplePushConstantData
+ * @brief Structure representing the push constant data used in the SimpleRenderSystem.
+ */
 struct SimplePushConstantData {
-    glm::mat4 modelMatrix{1.f};
-    glm::mat4 normalMatrix{1.f};
+    glm::mat4 modelMatrix{1.f}; /**< Model matrix */
+    glm::mat4 normalMatrix{1.f}; /**< Normal matrix */
 };
 
+/**
+ * @brief Constructs a SimpleRenderSystem object.
+ * @param device The ZappyDevice object.
+ * @param renderPass The Vulkan render pass.
+ * @param globalSetLayout The descriptor set layout.
+ * @param executablePath The path to the executable.
+ */
 SimpleRenderSystem::SimpleRenderSystem(ZappyDevice &device,
     VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout,
     std::string executablePath)
-    : lveDevice{device}, executablePath{executablePath}
+    : zappyDevice{device}, executablePath{executablePath}
 {
     createPipelineLayout(globalSetLayout);
     createPipeline(renderPass);
 }
 
+/**
+ * @brief Destroys the SimpleRenderSystem object.
+ */
 SimpleRenderSystem::~SimpleRenderSystem()
 {
-    vkDestroyPipelineLayout(lveDevice.device(), pipelineLayout, nullptr);
+    vkDestroyPipelineLayout(zappyDevice.device(), pipelineLayout, nullptr);
 }
 
+/**
+ * @brief Creates the pipeline layout.
+ * @param globalSetLayout The descriptor set layout.
+ */
 void SimpleRenderSystem::createPipelineLayout(
     VkDescriptorSetLayout globalSetLayout)
 {
@@ -59,12 +82,16 @@ void SimpleRenderSystem::createPipelineLayout(
     pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
-    if (vkCreatePipelineLayout(lveDevice.device(), &pipelineLayoutInfo,
+    if (vkCreatePipelineLayout(zappyDevice.device(), &pipelineLayoutInfo,
             nullptr, &pipelineLayout) != VK_SUCCESS) {
         throw zappy::PipelineLayoutCreationFailedException();
     }
 }
 
+/**
+ * @brief Creates the pipeline.
+ * @param renderPass The Vulkan render pass.
+ */
 void SimpleRenderSystem::createPipeline(VkRenderPass renderPass)
 {
     assert(pipelineLayout != nullptr &&
@@ -74,15 +101,19 @@ void SimpleRenderSystem::createPipeline(VkRenderPass renderPass)
     ZappyPipeline::defaultPipelineConfigInfo(pipelineConfig);
     pipelineConfig.renderPass = renderPass;
     pipelineConfig.pipelineLayout = pipelineLayout;
-    lvePipeline = std::make_unique<ZappyPipeline>(lveDevice,
+    zappyPipeline = std::make_unique<ZappyPipeline>(zappyDevice,
         executablePath + "/ZappyGui/shaders/SimpleShader.vert.spv",
         executablePath + "/ZappyGui/shaders/SimpleShader.frag.spv",
         pipelineConfig);
 }
 
+/**
+ * @brief Renders the game objects.
+ * @param frameInfo The frame information.
+ */
 void SimpleRenderSystem::renderGameObjects(FrameInfo &frameInfo)
 {
-    lvePipeline->bind(frameInfo.commandBuffer);
+    zappyPipeline->bind(frameInfo.commandBuffer);
 
     int frameIndex = frameInfo.frameIndex;
     for (auto &kv : frameInfo.gameObjects) {

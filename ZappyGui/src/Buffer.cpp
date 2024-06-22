@@ -33,10 +33,21 @@ VkDeviceSize ZappyBuffer::getAlignment(
     return instanceSize;
 }
 
+/**
+ * @brief Constructs a new ZappyBuffer object.
+ *
+ * @param device The device to use
+ * @param instanceSize The size of an instance
+ * @param instanceCount The number of instances
+ * @param usageFlags The buffer usage flags
+ * @param memoryPropertyFlags The memory property flags
+ * @param minOffsetAlignment The minimum required alignment, in bytes, for the
+ * offset member (eg minUniformBufferOffsetAlignment)
+ */
 ZappyBuffer::ZappyBuffer(ZappyDevice &device, VkDeviceSize instanceSize,
     uint32_t instanceCount, VkBufferUsageFlags usageFlags,
     VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize minOffsetAlignment)
-    : lveDevice{device}, instanceSize{instanceSize},
+    : zappyDevice{device}, instanceSize{instanceSize},
       instanceCount{instanceCount}, usageFlags{usageFlags},
       memoryPropertyFlags{memoryPropertyFlags}
 {
@@ -49,8 +60,8 @@ ZappyBuffer::ZappyBuffer(ZappyDevice &device, VkDeviceSize instanceSize,
 ZappyBuffer::~ZappyBuffer()
 {
     unmap();
-    vkDestroyBuffer(lveDevice.device(), buffer, nullptr);
-    vkFreeMemory(lveDevice.device(), memory, nullptr);
+    vkDestroyBuffer(zappyDevice.device(), buffer, nullptr);
+    vkFreeMemory(zappyDevice.device(), memory, nullptr);
 }
 
 /**
@@ -66,7 +77,7 @@ ZappyBuffer::~ZappyBuffer()
 VkResult ZappyBuffer::map(VkDeviceSize size, VkDeviceSize offset)
 {
     assert(buffer && memory && "Called map on buffer before create");
-    return vkMapMemory(lveDevice.device(), memory, offset, size, 0, &mapped);
+    return vkMapMemory(zappyDevice.device(), memory, offset, size, 0, &mapped);
 }
 
 /**
@@ -77,7 +88,7 @@ VkResult ZappyBuffer::map(VkDeviceSize size, VkDeviceSize offset)
 void ZappyBuffer::unmap()
 {
     if (mapped) {
-        vkUnmapMemory(lveDevice.device(), memory);
+        vkUnmapMemory(zappyDevice.device(), memory);
         mapped = nullptr;
     }
 }
@@ -124,7 +135,7 @@ VkResult ZappyBuffer::flush(VkDeviceSize size, VkDeviceSize offset)
     mappedRange.memory = memory;
     mappedRange.offset = offset;
     mappedRange.size = size;
-    return vkFlushMappedMemoryRanges(lveDevice.device(), 1, &mappedRange);
+    return vkFlushMappedMemoryRanges(zappyDevice.device(), 1, &mappedRange);
 }
 
 /**
@@ -145,7 +156,7 @@ VkResult ZappyBuffer::invalidate(VkDeviceSize size, VkDeviceSize offset)
     mappedRange.memory = memory;
     mappedRange.offset = offset;
     mappedRange.size = size;
-    return vkInvalidateMappedMemoryRanges(lveDevice.device(), 1, &mappedRange);
+    return vkInvalidateMappedMemoryRanges(zappyDevice.device(), 1, &mappedRange);
 }
 
 /**

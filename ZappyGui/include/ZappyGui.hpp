@@ -115,9 +115,9 @@ class ZappyGui {
         const glm::vec3 &rotation, const glm::vec3 &scale, bool hasTexture);
     void removeGameObject(ZappyGameObject::id_t gameObjectId);
 
-    ZappyWindow lveWindow{WIDTH, HEIGHT, "ZappyGui"};
-    ZappyDevice lveDevice{lveWindow};
-    ZappyRenderer lveRenderer{lveWindow, lveDevice};
+    ZappyWindow zappyWindow{WIDTH, HEIGHT, "ZappyGui"};
+    ZappyDevice zappyDevice{zappyWindow};
+    ZappyRenderer zappyRenderer{zappyWindow, zappyDevice};
 
     // note: order of declarations matters
     std::unique_ptr<ZappyDescriptorPool> globalPool{};

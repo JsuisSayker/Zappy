@@ -38,13 +38,35 @@ struct hash<zappy::ZappyModel::Vertex> {
 
 namespace zappy {
 
-ZappyModel::ZappyModel(ZappyDevice &device, const ZappyModel::Builder &builder) : lveDevice{device} {
+
+/**
+ * @brief Constructs a new ZappyModel object.
+ *
+ * This constructor initializes a new instance of the ZappyModel class.
+ *
+ * @param device The ZappyDevice object associated with the model.
+ * @param builder The Builder object containing the vertex and index data for the model.
+ */
+ZappyModel::ZappyModel(ZappyDevice &device, const ZappyModel::Builder &builder) : zappyDevice{device} {
   createVertexBuffers(builder.vertices);
   createIndexBuffers(builder.indices);
 }
 
+/**
+ * @brief Destroys the ZappyModel object.
+ *
+ */
 ZappyModel::~ZappyModel() {}
 
+/**
+ * @brief Creates a new ZappyModel object from a file.
+ *
+ * This function creates a new ZappyModel object from a file.
+ *
+ * @param device The ZappyDevice object associated with the model.
+ * @param filepath The path to the file containing the model data.
+ * @return std::unique_ptr<ZappyModel> A unique pointer to the newly created ZappyModel object.
+ */
 std::unique_ptr<ZappyModel> ZappyModel::createModelFromFile(
     ZappyDevice &device, const std::string &filepath) {
   Builder builder{};
@@ -52,6 +74,13 @@ std::unique_ptr<ZappyModel> ZappyModel::createModelFromFile(
   return std::make_unique<ZappyModel>(device, builder);
 }
 
+/**
+ * @brief Creates the vertex buffers.
+ *
+ * This function creates the vertex buffers for the model.
+ *
+ * @param vertices The vertices of the model.
+ */
 void ZappyModel::createVertexBuffers(const std::vector<Vertex> &vertices) {
   vertexCount = static_cast<uint32_t>(vertices.size());
   assert(vertexCount >= 3 && "Vertex count must be at least 3");
@@ -59,7 +88,7 @@ void ZappyModel::createVertexBuffers(const std::vector<Vertex> &vertices) {
   uint32_t vertexSize = sizeof(vertices[0]);
 
   ZappyBuffer stagingBuffer{
-      lveDevice,
+      zappyDevice,
       vertexSize,
       vertexCount,
       VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -70,15 +99,22 @@ void ZappyModel::createVertexBuffers(const std::vector<Vertex> &vertices) {
   stagingBuffer.writeToBuffer((void *)vertices.data());
 
   vertexBuffer = std::make_unique<ZappyBuffer>(
-      lveDevice,
+      zappyDevice,
       vertexSize,
       vertexCount,
       VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-  lveDevice.copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
+  zappyDevice.copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
 }
 
+/**
+ * @brief Creates the index buffers.
+ *
+ * This function creates the index buffers for the model.
+ *
+ * @param indices The indices of the model.
+ */
 void ZappyModel::createIndexBuffers(const std::vector<uint32_t> &indices) {
   indexCount = static_cast<uint32_t>(indices.size());
   hasIndexBuffer = indexCount > 0;
@@ -91,7 +127,7 @@ void ZappyModel::createIndexBuffers(const std::vector<uint32_t> &indices) {
   uint32_t indexSize = sizeof(indices[0]);
 
   ZappyBuffer stagingBuffer{
-      lveDevice,
+      zappyDevice,
       indexSize,
       indexCount,
       VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -102,15 +138,22 @@ void ZappyModel::createIndexBuffers(const std::vector<uint32_t> &indices) {
   stagingBuffer.writeToBuffer((void *)indices.data());
 
   indexBuffer = std::make_unique<ZappyBuffer>(
-      lveDevice,
+      zappyDevice,
       indexSize,
       indexCount,
       VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-  lveDevice.copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
+  zappyDevice.copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
 }
 
+/**
+ * @brief Draws the model.
+ *
+ * This function draws the model.
+ *
+ * @param commandBuffer The command buffer.
+ */
 void ZappyModel::draw(VkCommandBuffer commandBuffer) {
   if (hasIndexBuffer) {
     vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
@@ -119,6 +162,13 @@ void ZappyModel::draw(VkCommandBuffer commandBuffer) {
   }
 }
 
+/**
+ * @brief Binds the model.
+ *
+ * This function binds the model.
+ *
+ * @param commandBuffer The command buffer.
+ */
 void ZappyModel::bind(VkCommandBuffer commandBuffer) {
   VkBuffer buffers[] = {vertexBuffer->getBuffer()};
   VkDeviceSize offsets[] = {0};
@@ -129,6 +179,12 @@ void ZappyModel::bind(VkCommandBuffer commandBuffer) {
   }
 }
 
+
+/**
+ * Returns the binding descriptions for the vertex input of the ZappyModel::Vertex class.
+ * 
+ * @return A vector of VkVertexInputBindingDescription objects representing the binding descriptions.
+ */
 std::vector<VkVertexInputBindingDescription> ZappyModel::Vertex::getBindingDescriptions() {
   std::vector<VkVertexInputBindingDescription> bindingDescriptions(1);
   bindingDescriptions[0].binding = 0;
@@ -137,6 +193,12 @@ std::vector<VkVertexInputBindingDescription> ZappyModel::Vertex::getBindingDescr
   return bindingDescriptions;
 }
 
+
+/**
+ * Returns the attribute descriptions for the vertex.
+ *
+ * @return A vector of VkVertexInputAttributeDescription objects representing the attribute descriptions.
+ */
 std::vector<VkVertexInputAttributeDescription> ZappyModel::Vertex::getAttributeDescriptions() {
   std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
 
@@ -148,6 +210,13 @@ std::vector<VkVertexInputAttributeDescription> ZappyModel::Vertex::getAttributeD
   return attributeDescriptions;
 }
 
+
+/**
+ * Loads a 3D model from the specified file path.
+ *
+ * @param filepath The path to the model file.
+ * @throws zappy::LoadObjFailedException if the model file fails to load.
+ */
 void ZappyModel::Builder::loadModel(const std::string &filepath) {
   tinyobj::attrib_t attrib;
   std::vector<tinyobj::shape_t> shapes;

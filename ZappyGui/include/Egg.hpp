@@ -24,6 +24,10 @@ namespace zappy {
             Egg(ZappyGameObject::id_t eggObjectId, int eggNumber, int playerNumber, const glm::vec3 &position);
             ~Egg() = default;
 
+            bool operator==(const Egg &egg) const {
+                return (this->eggObjectId == egg.eggObjectId);
+            }
+
         public:
             int eggNumber;
             int playerNumber;
