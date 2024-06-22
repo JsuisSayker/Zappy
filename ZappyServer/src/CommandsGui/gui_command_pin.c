@@ -9,7 +9,7 @@
 
 static void display_player_inventory(client_t *player, int socket)
 {
-    dprintf(socket, "pin %d %d %d %d %d %d %d %d %d %d\n",
+    dprintf(socket, "pin #%d %d %d %d %d %d %d %d %d %d\n",
         player->client_number, player->pos.x, player->pos.y,
         player->inventory.food, player->inventory.linemate,
         player->inventory.deraumere, player->inventory.sibur,

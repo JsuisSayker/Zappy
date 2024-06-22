@@ -12,8 +12,8 @@ all:
 
 debug:
 	make debug -C ZappyServer
-	# make debug -C ZappyAI
-	# make debug -C ZappyGui
+	make debug -C ZappyAI
+	make debug -C ZappyGui
 
 clean:
 	make clean -C ZappyServer

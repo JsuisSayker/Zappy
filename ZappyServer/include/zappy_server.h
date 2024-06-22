@@ -40,7 +40,6 @@ typedef struct zappy_server_s {
     struct teamhead all_teams;
     struct client_s clients[FD_SETSIZE];
     map_tile_t **map_tile;
-    map_tile_t **map_tile_save;
     args_config_t *args;
 } zappy_server_t;
 

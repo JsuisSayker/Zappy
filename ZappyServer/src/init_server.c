@@ -45,15 +45,8 @@ static void create_teams(zappy_server_t *zappy)
     }
 }
 
-static void init_value(zappy_server_t *zappy)
+static void set_all_resources(zappy_server_t *zappy)
 {
-    zappy->index_eggs = 0;
-    zappy->server_running = true;
-    zappy->server_start_game = true;
-    zappy->time_refill_map = time(NULL);
-    zappy->nb_connected_clients = 5;
-    init_list(zappy);
-    create_teams(zappy);
     zappy->all_resources[0] = FOOD_DENSITY * zappy->args->width *
         zappy->args->height / 100;
     zappy->all_resources[1] = LINEMATE_DENSITY * zappy->args->width *
@@ -68,9 +61,20 @@ static void init_value(zappy_server_t *zappy)
         zappy->args->height / 100;
     zappy->all_resources[6] = THYSTAME_DENSITY * zappy->args->width *
         zappy->args->height / 100;
+}
+
+static void init_value(zappy_server_t *zappy)
+{
+    zappy->index_eggs = 0;
+    zappy->server_running = true;
+    zappy->server_start_game = true;
+    zappy->time_refill_map = time(NULL);
+    zappy->nb_connected_clients = 5;
+    init_list(zappy);
+    create_teams(zappy);
+    set_all_resources(zappy);
     zappy->map_tile = setup_map_tile(zappy->args->width,
         zappy->args->height);
-    // zappy->map_tile_save = copy_map_tile(zappy->map_tile);
     for (int i = 0; i < FD_SETSIZE; i += 1) {
         zappy->clients[i].type = UNKNOWN;
         zappy->clients[i].client_number = -1;
