@@ -45,7 +45,7 @@ jobs:
         with:
           repository: ""
       - name : Install dependencies
-        run: sudo dnf install glslc glfw-devel vulkan-devel glm-devel gtest -y
+        run: sudo dnf install glslc glfw-devel vulkan-devel glm-devel gtest-devel -y
       - name: Compile repository
         run: make
       - name: Clean repository
