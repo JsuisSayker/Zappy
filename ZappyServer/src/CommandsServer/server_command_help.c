@@ -7,8 +7,10 @@
 
 #include <zappy_server.h>
 
-void server_command_help(UNUSED zappy_server_t *zappy, UNUSED char *command)
+void server_command_help(zappy_server_t *zappy, char *command)
 {
+    if (zappy == NULL || command == NULL || command[0] != '\0')
+        return;
     printf("Implemented commands :\n/clients\n"
     "/quit\n/send_ai_s \"informations\"\n/send_guis \"informations\"\n"
     "/map\n/clear\n/pause\n/start\n/help\n"

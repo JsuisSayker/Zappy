@@ -7,7 +7,7 @@
 
 #include <zappy_server.h>
 
-void server_command_quit(zappy_server_t *zappy, UNUSED char *command)
+void server_command_quit(zappy_server_t *zappy, char *command)
 {
     if (zappy == NULL || command == NULL || command[0] != '\0')
         return;
