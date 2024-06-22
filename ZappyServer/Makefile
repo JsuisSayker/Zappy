@@ -68,6 +68,8 @@ COMMAND_AI		=	handle_ai_command.c				\
 					send_plv_command_to_all_gui.c	\
 					send_pbc_command_to_all_gui.c	\
 					send_seg_command_to_all_gui.c	\
+					send_die_command_to_all_gui.c	\
+					send_pex_command_to_all_gui.c	\
 
 COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_msz.c				\
