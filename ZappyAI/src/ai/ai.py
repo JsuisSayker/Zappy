@@ -78,7 +78,8 @@ class AI():
             # elif (self.actualActivity == Activity.FILLING or self.actualActivity == Activity.LOOKING or self.actualActivity == Activity.CHECK_INCANTATION or self.actualActivity == Activity.EXECUTE_COMMAND)and self.inventory["food"] > 40:
             #     self.actualActivity = Activity.PREPA_FOR_INCANTATION
             #     self.commandList = []
-            if self.nbReadyPlayers >= 1 and int(parsedReceivedMessage.split("|")[0]) > 0:
+            if self.nbReadyPlayers >= 1 and int(
+                    parsedReceivedMessage.split("|")[0]) > 0:
                 self.incantation = False
                 self.actualActivity = Activity.EXECUTE_COMMAND
                 self.nbReadyPlayers = 1
@@ -227,7 +228,8 @@ class AI():
         tmpData = data.split(" ")
         if "total" in self.sharedInventory:
             tmpInventory = self.sharedInventory["total"]
-        print(f"SHARED INVENTORY IN THE START OF THE INCANTATION: {tmpInventory}")
+        print(
+            f"SHARED INVENTORY IN THE START OF THE INCANTATION: {tmpInventory}")
         print(f"TMPDATA IN THE START OF THE INCANTATION: {tmpData}")
         print(f"ACTUAL INVENTORY: {self.inventory}")
         requiredRessources = (LEVELS[self.level]).copy()
@@ -274,7 +276,7 @@ class AI():
         #                 self.commandList.append("Look\n")
         #                 self.inventory[ressource] -= 1
         #                 return
-                        # requiredRessources[ressource] -= 1
+        # requiredRessources[ressource] -= 1
         for ressource in requiredRessources:
             for elem in ressourcesData:
                 if ressource == elem:
@@ -375,13 +377,15 @@ class AI():
                 finalResult.append("Take " + objectToSearch + "\n")
             if (int(objectPosition[0]) < (self.minWidthValue - 1)):
                 finalResult.append("Left\n")
-                for i in range((self.minWidthValue - 1) - int(objectPosition[0])):
+                for i in range((self.minWidthValue - 1) -
+                               int(objectPosition[0])):
                     finalResult.append("Forward\n")
                 finalResult.append("Take " + objectToSearch + "\n")
                 finalResult.append("Inventory\n")
             if (int(objectPosition[0]) > (self.minWidthValue - 1)):
                 finalResult.append("Right\n")
-                for i in range(int(objectPosition[0]) - (self.minWidthValue - 1)):
+                for i in range(
+                        int(objectPosition[0]) - (self.minWidthValue - 1)):
                     finalResult.append("Forward\n")
                 finalResult.append("Take " + objectToSearch + "\n")
                 finalResult.append("Inventory\n")
