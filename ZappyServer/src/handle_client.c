@@ -7,44 +7,6 @@
 
 #include "zappy_server.h"
 
-static const struct path_type_s COMMAND_FUNCS[] = {
-    {"Forward", &type_ai},
-    {"Right", &type_ai},
-    {"Left", &type_ai},
-    {"Take", &type_ai},
-    {"Set", &type_ai},
-    {"Fork", &type_ai},
-    {"Inventory", &type_ai},
-    {"Look", &type_ai},
-    {"Connect_nbr", &type_ai},
-    {"Incantation", &type_ai},
-    {"Broadcast", &type_ai},
-    {"msz", &type_gui},
-    {"bct", &type_gui},
-    {"mct", &type_gui},
-    {"tna", &type_gui},
-    {"ppo", &type_gui},
-    {"plv", &type_gui},
-    {"pin", &type_gui},
-    {"sgt", &type_gui},
-    {"sst", &type_gui},
-    {"NULL", NULL}
-};
-
-static int path_type(zappy_server_t *zappy, char *cmd)
-{
-    if (zappy == NULL || cmd == NULL)
-        return ERROR;
-    for (int i = 0; COMMAND_FUNCS[i].func != NULL; i += 1) {
-        if (strncmp(cmd, COMMAND_FUNCS[i].command,
-            strlen(COMMAND_FUNCS[i].command)) == 0) {
-            COMMAND_FUNCS[i].func(zappy, cmd);
-            return OK;
-        }
-    }
-    return OK;
-}
-
 static int handle_command(zappy_server_t *zappy, char *command)
 {
     if (zappy == NULL || command == NULL)
@@ -59,8 +21,6 @@ static int handle_command(zappy_server_t *zappy, char *command)
             command);
     case GUI:
         return handle_gui_command(zappy, command);
-    default:
-        return path_type(zappy, command);
     }
     return ERROR;
 }

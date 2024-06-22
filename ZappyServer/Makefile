@@ -23,8 +23,6 @@ SRC			=	zappy_server.c						\
 				handle_unknown_command.c			\
 				ia_direction_function.c				\
 				generate_egg_by_team.c				\
-				type_ai.c							\
-				type_gui.c							\
 				${DIR_TOOLS}						\
 				${DIR_COMMAND_IA}					\
 				${DIR_COMMAND_GUI}					\
