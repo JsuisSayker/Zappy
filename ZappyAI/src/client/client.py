@@ -88,8 +88,8 @@ class Client():
             # self.data_height = height
             self.ai.heightValue = height
             self.ai.widthValue = width
-            # self.ai.minWidthValue = self.ai.widthValue // 2
-            # self.ai.minHeightValue = self.ai.heightValue // 2
+            self.ai.minWidthValue = self.ai.widthValue // 2
+            self.ai.minHeightValue = self.ai.heightValue * 2
             self.ai.dataToSend = ""
             self.actualStep = 3
             self.logged = True
@@ -127,7 +127,7 @@ class Client():
                 for _, mask in event:
                     if mask & selectors.EVENT_READ:
                         try:
-                            data = self.socket.recv(1024).decode("utf-8")
+                            data = self.socket.recv(10000).decode("utf-8")
                         except ConnectionResetError:
                             print("Connection reset by peer")
                             self.closeConnection()
@@ -167,6 +167,9 @@ class Client():
                                 try:
                                     self.ai.parse_inventory(element)
                                 except IndexError:
+                                    print("IndexError", element)
+                                    pass
+                                except ValueError:
                                     print("ValueError", element)
                                     pass
                             elif "Elevation underway" in element:
@@ -174,6 +177,7 @@ class Client():
                             elif "Current level" in element:
                                 self.ai.level = int(''.join(filter(
                                     str.isdigit, element)))
+                                print(f"LEVEL: {self.ai.level}")
                                 if self.ai.level == 8:
                                     print("VICTORY")
                                     exit(0)
@@ -209,8 +213,8 @@ class Client():
                                     self.teamName + '\n'
                             ) and self.logged is False:
                                 self.actualStep = 1
-                            self.socket.send(self.ai.dataToSend.encode())
                             print(f"DATA SENT: {self.ai.dataToSend}")
+                            self.socket.send(self.ai.dataToSend.encode())
                             self.ai.run = False
 
         except KeyboardInterrupt:
