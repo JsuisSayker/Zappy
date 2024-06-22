@@ -10,9 +10,11 @@ all:
 	make all -C ZappyAI
 	make all -C ZappyGui
 
+documentation:
+	make documentation -C ZappyGui
+
 debug:
 	make debug -C ZappyServer
-	make debug -C ZappyAI
 	make debug -C ZappyGui
 
 clean:
@@ -45,4 +47,4 @@ tests_run:
 	make tests_run -C ZappyServer
 	make tests_run -C ZappyGui
 
-.PHONY: all clean fclean re tests_run
+.PHONY: all clean fclean re tests_run documentation
