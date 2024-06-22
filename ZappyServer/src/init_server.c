@@ -54,6 +54,20 @@ static void init_value(zappy_server_t *zappy)
     zappy->nb_connected_clients = 5;
     init_list(zappy);
     create_teams(zappy);
+    zappy->all_resources[0] = FOOD_DENSITY * zappy->args->width *
+        zappy->args->height / 100;
+    zappy->all_resources[1] = LINEMATE_DENSITY * zappy->args->width *
+        zappy->args->height / 100;
+    zappy->all_resources[2] = DERAUMERE_DENSITY * zappy->args->width *
+        zappy->args->height / 100;
+    zappy->all_resources[3] = SIBUR_DENSITY * zappy->args->width *
+        zappy->args->height / 100;
+    zappy->all_resources[4] = MENDIANE_DENSITY * zappy->args->width *
+        zappy->args->height / 100;
+    zappy->all_resources[5] = PHIRAS_DENSITY * zappy->args->width *
+        zappy->args->height / 100;
+    zappy->all_resources[6] = THYSTAME_DENSITY * zappy->args->width *
+        zappy->args->height / 100;
     zappy->map_tile = setup_map_tile(zappy->args->width,
         zappy->args->height);
     // zappy->map_tile_save = copy_map_tile(zappy->map_tile);

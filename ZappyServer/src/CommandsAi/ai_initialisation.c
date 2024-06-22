@@ -56,18 +56,26 @@ static int init_queue(client_t *client)
     return OK;
 }
 
+bool is_egg_not_use(client_t *client, egg_t *tmp_egg, egg_t **tmp_egg_save)
+{
+    if (client->client_number == tmp_egg->client_number) {
+        return false;
+    } else {
+        if (!(*tmp_egg_save))
+            (*tmp_egg_save) = tmp_egg;
+    }
+    return true;
+}
+
 egg_t *tkt(zappy_server_t *zappy, egg_t *tmp_egg)
 {
     egg_t *tmp_egg_save = NULL;
 
     for (int i = 4; i < FD_SETSIZE; i += 1) {
         if (zappy->clients[i].type != GUI) {
-            if (zappy->clients[i].client_number == tmp_egg->client_number) {
+            if (is_egg_not_use(&zappy->clients[i], tmp_egg, &tmp_egg_save)
+                == false)
                 return NULL;
-            } else {
-                if (!tmp_egg_save)
-                    tmp_egg_save = tmp_egg;
-            }
         }
     }
     return tmp_egg_save;
