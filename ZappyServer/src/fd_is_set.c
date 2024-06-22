@@ -10,7 +10,6 @@
 static int check_connection(zappy_server_t *zappy)
 {
     int client_fd = 0;
-    client_t *client = &zappy->clients[zappy->actual_sockfd];
 
     if (zappy->actual_sockfd == zappy->my_socket) {
         client_fd = accept_new_connection(zappy->my_socket,
@@ -85,6 +84,7 @@ static void refill_map(zappy_server_t *zappy)
                 [rand() % zappy->args->width].inventory.phiras += 1;
             zappy->all_resources[6] += 1;
         }
+        send_mct_command_to_all_gui(zappy);
         zappy->time_refill_map = time(NULL);
     }
 }

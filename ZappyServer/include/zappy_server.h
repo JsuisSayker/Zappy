@@ -136,6 +136,7 @@ typedef struct command_s {
 } command_t;
 
 int handle_unknown_command(zappy_server_t *zappy, char *command);
+void send_mct_command_to_all_gui(zappy_server_t *zappy);
 
 // SERVER COMMANDS FUNCTIONS
 int handle_server_command(zappy_server_t *zappy, char *command);
@@ -230,7 +231,5 @@ typedef struct path_type_s {
     char *command;
     int (*func)(zappy_server_t *zappy, char *command);
 } path_type_t;
-int type_gui(zappy_server_t *zappy, char *cmd);
-int type_ai(zappy_server_t *zappy, char *cmd);
 
 #endif /* !ZAPPY_SERVER_H_ */
