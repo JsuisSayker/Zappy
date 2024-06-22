@@ -83,7 +83,7 @@ int fd_is_set(zappy_server_t *zappy)
         (client->command.queue != NULL && client->command.queue[0] != NULL))
         && (ai_function(zappy, client, NULL) != OK))
             return KO;
-        refill_map(zappy);
     }
+    refill_map(zappy);
     return OK;
 }
