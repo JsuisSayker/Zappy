@@ -7,8 +7,10 @@
 
 #include <zappy_server.h>
 
-void server_command_quit(UNUSED zappy_server_t *zappy, UNUSED char *command)
+void server_command_quit(zappy_server_t *zappy, UNUSED char *command)
 {
+    if (zappy == NULL || command == NULL || command[0] != '\0')
+        return;
     close(zappy->actual_sockfd);
     FD_CLR(zappy->actual_sockfd, &zappy->fd.save_input);
     zappy->server_running = false;

@@ -90,8 +90,8 @@ static int ai_client_find_team(
         if (ai_initialisation(zappy, tmp_client, tmp_team) == ERROR)
             return ERROR;
         dprintf(zappy->actual_sockfd, "%d\n", tmp_team->nb_matures_eggs);
-        dprintf(zappy->actual_sockfd, "%d %d\n", tmp_client->pos.x,
-            tmp_client->pos.y);
+        dprintf(zappy->actual_sockfd, "%d %d\n", zappy->args->width,
+            zappy->args->height);
         send_info_ai_to_gui(zappy, tmp_client);
         return 1;
     }

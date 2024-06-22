@@ -94,8 +94,8 @@ static bool check_incantation(zappy_server_t *zappy, client_t *client)
 static void add_level(zappy_server_t *zappy, client_t *client)
 {
     team_t *team = NULL;
-    client->level += 1;
 
+    client->level += 1;
     if (client->level == 8){
         TAILQ_FOREACH(team, &zappy->all_teams, next) {
             if (strcmp(team->name, client->team_name) == 0) {
