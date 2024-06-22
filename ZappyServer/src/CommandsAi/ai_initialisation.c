@@ -7,8 +7,8 @@
 
 #include <zappy_server.h>
 
-static int init_value(client_t *ia, team_t *tmp_team, egg_t *new_egg,
-    zappy_server_t *zappy)
+static int init_value(
+    client_t *ia, team_t *tmp_team, egg_t *new_egg, zappy_server_t *zappy)
 {
     struct timeval tv;
 
@@ -28,11 +28,11 @@ static int init_value(client_t *ia, team_t *tmp_team, egg_t *new_egg,
     return OK;
 }
 
-static int init_inventaire(client_t *ia)
+static int init_inventories(client_t *ia)
 {
     if (ia == NULL)
         return ERROR;
-    ia->inventory.food = 10;
+    ia->inventory.food = 0;
     ia->inventory.linemate = 0;
     ia->inventory.deraumere = 0;
     ia->inventory.sibur = 0;
@@ -56,17 +56,51 @@ static int init_queue(client_t *client)
     return OK;
 }
 
-int ai_initialisation(zappy_server_t *zappy, client_t *ia,
-    team_t *tmp_team)
+egg_t *tkt(zappy_server_t *zappy, egg_t *tmp_egg)
+{
+    egg_t *tmp_egg_save = NULL;
+
+    for (int i = 4; i < FD_SETSIZE; i += 1) {
+        if (zappy->clients[i].type != GUI) {
+            if (zappy->clients[i].client_number == tmp_egg->client_number) {
+                return NULL;
+            } else {
+                if (!tmp_egg_save)
+                    tmp_egg_save = tmp_egg;
+            }
+        }
+    }
+    return tmp_egg_save;
+}
+
+egg_t *free_slot_egg(zappy_server_t *zappy, team_t *tmp_team)
+{
+    egg_t *tmp_egg = NULL;
+    egg_t *tmp_egg_aziueg = NULL;
+
+    if (tmp_team == NULL)
+        return NULL;
+    TAILQ_FOREACH(tmp_egg, &tmp_team->eggs_head, next) {
+        tmp_egg_aziueg = tkt(zappy, tmp_egg);
+        if (tmp_egg_aziueg != NULL)
+            return tmp_egg_aziueg;
+    }
+    return NULL;
+}
+
+int ai_initialisation(zappy_server_t *zappy, client_t *ia, team_t *tmp_team)
 {
     egg_t *new_egg = NULL;
 
     if (zappy == NULL || ia == NULL || tmp_team == NULL)
         return ERROR;
-    new_egg = TAILQ_LAST(&tmp_team->eggs_head, egghead);
+
+    new_egg = free_slot_egg(zappy, tmp_team);
+    if (new_egg == NULL)
+        return ERROR;
     if (init_value(ia, tmp_team, new_egg, zappy) == ERROR)
         return ERROR;
-    if (init_inventaire(ia) != OK)
+    if (init_inventories(ia) != OK)
         return ERROR;
     if (init_queue(ia) != OK)
         return ERROR;

@@ -50,17 +50,17 @@ void ZappyGui::initHud()
     ImGuiIO &io = ImGui::GetIO();
     (void)io;
 
-    ImGui_ImplGlfw_InitForVulkan(this->lveWindow.getGLFWwindow(), true);
+    ImGui_ImplGlfw_InitForVulkan(this->zappyWindow.getGLFWwindow(), true);
 
     // Initialize ImGui for Vulkan
     ImGui_ImplVulkan_InitInfo init_info = {};
-    init_info.Instance = this->lveDevice.getInstance();
-    init_info.PhysicalDevice = this->lveDevice.getPhysicalDevice();
-    init_info.Device = this->lveDevice.device();
+    init_info.Instance = this->zappyDevice.getInstance();
+    init_info.PhysicalDevice = this->zappyDevice.getPhysicalDevice();
+    init_info.Device = this->zappyDevice.device();
     init_info.QueueFamily =
-        this->lveDevice.findQueueFamilies(this->lveDevice.getPhysicalDevice())
+        this->zappyDevice.findQueueFamilies(this->zappyDevice.getPhysicalDevice())
             .graphicsFamily;
-    init_info.Queue = this->lveDevice.graphicsQueue();
+    init_info.Queue = this->zappyDevice.graphicsQueue();
     init_info.PipelineCache = VK_NULL_HANDLE;
     init_info.DescriptorPool = this->globalPool.get()->descriptorPool;
     init_info.Subpass = 0;
@@ -69,14 +69,14 @@ void ZappyGui::initHud()
     init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
     init_info.Allocator = nullptr;
     init_info.CheckVkResultFn = nullptr;
-    init_info.RenderPass = this->lveRenderer.getSwapChainRenderPass();
+    init_info.RenderPass = this->zappyRenderer.getSwapChainRenderPass();
 
     ImGui_ImplVulkan_Init(&init_info);
 
     // Upload Fonts
-    VkCommandBuffer command_buffer = this->lveDevice.beginSingleTimeCommands();
+    VkCommandBuffer command_buffer = this->zappyDevice.beginSingleTimeCommands();
     ImGui_ImplVulkan_CreateFontsTexture();
-    this->lveDevice.endSingleTimeCommands(command_buffer);
+    this->zappyDevice.endSingleTimeCommands(command_buffer);
 }
 
 /**
@@ -148,7 +148,7 @@ void ZappyGui::drawHud()
 
     // Display trantorians for the selected team
     if (!current_team.empty()) {
-        for (auto &trantorian : this->trantorians_) {
+        for (Trantorian &trantorian : this->trantorians_) {
             ImGui::Button(std::to_string(trantorian.playerNumber).c_str());
             if (ImGui::IsItemClicked(0)) {
                 this->showChildWindow = !this->showChildWindow;
@@ -165,7 +165,7 @@ void ZappyGui::drawHud()
         ImGui::Begin(
             std::to_string(this->selectedPlayerNbr).c_str(), nullptr, 0);
         // Display trantorian informations
-        for (auto &trantorian : this->trantorians_) {
+        for (Trantorian &trantorian : this->trantorians_) {
             if (trantorian.playerNumber == this->selectedPlayerNbr) {
                 if (trantorian.playerNumber == this->selectedPlayerNbr) {
                     if (ImGui::BeginTabBar("Player Info")) {
@@ -222,7 +222,7 @@ void ZappyGui::drawHud()
 ZappyGui::ZappyGui()
 {
     executablePath = getExecutablePath();
-    globalPool = ZappyDescriptorPool::Builder(lveDevice)
+    globalPool = ZappyDescriptorPool::Builder(zappyDevice)
                      .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
                      .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
                          ZappySwapChain::MAX_FRAMES_IN_FLIGHT)
@@ -345,14 +345,14 @@ void ZappyGui::run()
 
     uboBuffers.resize(ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
     for (int i = 0; i < uboBuffers.size(); i++) {
-        uboBuffers[i] = std::make_unique<ZappyBuffer>(lveDevice,
+        uboBuffers[i] = std::make_unique<ZappyBuffer>(zappyDevice,
             sizeof(GlobalUbo), 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
         uboBuffers[i]->map();
     }
 
     texture = std::make_unique<Texture>(
-        lveDevice, executablePath + "/ZappyGui/textures/meme.png");
+        zappyDevice, executablePath + "/ZappyGui/textures/meme.png");
 
     VkDescriptorImageInfo imageInfo = {};
     imageInfo.sampler = texture->getSampler();
@@ -360,14 +360,14 @@ void ZappyGui::run()
     imageInfo.imageLayout = texture->getImageLayout();
 
     globalSetLayout =
-        ZappyDescriptorSetLayout::Builder(lveDevice)
+        ZappyDescriptorSetLayout::Builder(zappyDevice)
             .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
                 VK_SHADER_STAGE_ALL_GRAPHICS)
             .addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                 VK_SHADER_STAGE_FRAGMENT_BIT)
             .build();
 
-    globalPool = ZappyDescriptorPool::Builder(lveDevice)
+    globalPool = ZappyDescriptorPool::Builder(zappyDevice)
                      .setMaxSets(ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 500)
                      .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
                          ZappySwapChain::MAX_FRAMES_IN_FLIGHT * 500)
@@ -385,11 +385,11 @@ void ZappyGui::run()
             .build(globalDescriptorSets[i]);
     }
 
-    SimpleRenderSystem simpleRenderSystem{lveDevice,
-        lveRenderer.getSwapChainRenderPass(),
+    SimpleRenderSystem simpleRenderSystem{zappyDevice,
+        zappyRenderer.getSwapChainRenderPass(),
         globalSetLayout->getDescriptorSetLayout(), executablePath};
-    PointLightSystem pointLightSystem{lveDevice,
-        lveRenderer.getSwapChainRenderPass(),
+    PointLightSystem pointLightSystem{zappyDevice,
+        zappyRenderer.getSwapChainRenderPass(),
         globalSetLayout->getDescriptorSetLayout(), executablePath};
 
     viewerObject = ZappyGameObject::createGameObject();
@@ -401,7 +401,7 @@ void ZappyGui::run()
     int socket_fd = this->getClient().get()->getSocketFd();
     this->initHud();
 
-    while (!lveWindow.shouldClose()) {
+    while (!zappyWindow.shouldClose()) {
         glfwPollEvents();
 
         updateGame();
@@ -416,16 +416,16 @@ void ZappyGui::run()
         currentTime = newTime;
 
         cameraController.moveInPlaneXZ(
-            lveWindow.getGLFWwindow(), frameTime, viewerObject);
+            zappyWindow.getGLFWwindow(), frameTime, viewerObject);
         camera.setViewYXZ(viewerObject.transform.translation,
             viewerObject.transform.rotation);
 
-        float aspect = lveRenderer.getAspectRatio();
+        float aspect = zappyRenderer.getAspectRatio();
         camera.setPerspectiveProjection(
             glm::radians(50.f), aspect, 0.1f, 100.f);
 
-        if (auto commandBuffer = lveRenderer.beginFrame()) {
-            int frameIndex = lveRenderer.getFrameIndex();
+        if (auto commandBuffer = zappyRenderer.beginFrame()) {
+            int frameIndex = zappyRenderer.getFrameIndex();
             FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera,
                 globalDescriptorSets[frameIndex], textureObjects, gameObjects};
 
@@ -439,7 +439,7 @@ void ZappyGui::run()
             uboBuffers[frameIndex]->flush();
 
             // render
-            lveRenderer.beginSwapChainRenderPass(commandBuffer);
+            zappyRenderer.beginSwapChainRenderPass(commandBuffer);
 
             // order here matters
             simpleRenderSystem.renderGameObjects(frameInfo);
@@ -449,13 +449,13 @@ void ZappyGui::run()
             ImGui_ImplVulkan_RenderDrawData(
                 ImGui::GetDrawData(), commandBuffer);
 
-            lveRenderer.endSwapChainRenderPass(commandBuffer);
-            lveRenderer.endFrame();
+            zappyRenderer.endSwapChainRenderPass(commandBuffer);
+            zappyRenderer.endFrame();
         }
     }
 
     // Cleanup
-    vkDeviceWaitIdle(lveDevice.device());
+    vkDeviceWaitIdle(zappyDevice.device());
     ImGui_ImplVulkan_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
@@ -465,7 +465,7 @@ void ZappyGui::run()
     this->getClient().get()->running = false;
     reader.join();
 
-    vkDeviceWaitIdle(lveDevice.device());
+    vkDeviceWaitIdle(zappyDevice.device());
 }
 
 /**
@@ -514,7 +514,7 @@ ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
     }
     if (object.model == nullptr) {
         std::shared_ptr<ZappyModel> modelObject =
-            ZappyModel::createModelFromFile(lveDevice, modelPath);
+            ZappyModel::createModelFromFile(zappyDevice, modelPath);
         object.model = modelObject;
     }
     object.transform.translation = position;
@@ -536,7 +536,7 @@ ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
         }
 
         std::shared_ptr<Texture> texture =
-            std::make_shared<Texture>(lveDevice, texturePath);
+            std::make_shared<Texture>(zappyDevice, texturePath);
         object.imageInfo.sampler = texture->getSampler();
         object.imageInfo.imageView = texture->getImageView();
         object.imageInfo.imageLayout = texture->getImageLayout();
@@ -1063,9 +1063,12 @@ void ZappyGui::pnw(std::vector<std::string> actualCommand)
         level = std::stoi(actualCommand[5]);
         teamName = actualCommand[6];
     } catch (const std::exception &e) {
+        std::cerr << "pnw: invalid arguments" << std::endl;
         return;
     }
-
+    std::cout << "Adding player " << playerNumber << " to team " << teamName
+              << " at position (" << x << ", " << y << ") with orientation "
+              << orientation << " and level " << level << std::endl;
     this->addTrantorian(teamName,
         {static_cast<float>(x), -.25f, static_cast<float>(y)}, playerNumber,
         orientation);
@@ -1095,16 +1098,22 @@ void ZappyGui::ppo(std::vector<std::string> actualCommand)
     int y;
     std::string orientation;
     try {
+        if (actualCommand[1][0] != '#') {
+            std::cerr << "ppo: invalid player number" << std::endl;
+            std::cout << actualCommand[1] << std::endl;
+            return;
+        }
         actualCommand[1].erase(actualCommand[1].begin());
         playerNumber = std::stoi(actualCommand[1]);
         x = std::stoi(actualCommand[2]);
         y = std::stoi(actualCommand[3]);
         orientation = actualCommand[4];
     } catch (const std::exception &e) {
+        std::cerr << "ppo: invalid arguments" << std::endl;
         return;
     }
-    this->updateTrantorianPosition(playerNumber,
-        {static_cast<float>(x), 0.f, static_cast<float>(y)}, orientation);
+    updateTrantorianPosition(playerNumber,
+        {static_cast<float>(x), -.25f, static_cast<float>(y)}, orientation);
 }
 
 /**
@@ -1133,22 +1142,27 @@ void ZappyGui::plv(std::vector<std::string> actualCommand)
     int playerNumber;
     int level;
     try {
+        if (actualCommand[1][0] != '#') {
+            std::cerr << "plv: invalid player number" << std::endl;
+            return;
+        }
         actualCommand[1].erase(actualCommand[1].begin());
         playerNumber = std::stoi(actualCommand[1]);
         level = std::stoi(actualCommand[2]);
     } catch (const std::exception &e) {
+        std::cerr << "plv: invalid arguments" << std::endl;
         return;
     }
     for (Trantorian &Trantorian : trantorians_) {
         if (Trantorian.playerNumber == playerNumber) {
             Trantorian.level = level;
-            for (auto &object : gameObjects) {
-                if (object.first == Trantorian.trantorianObject)
-                    object.second.transform.scale = {0.25f + 0.1f * level,
-                        0.25f + 0.1f * level, 0.25f + 0.1f * level};
-                object.second.transform.translation.y =
-                    -0.25f - (0.1f * level);
-            }
+            gameObjects[Trantorian.trantorianObject].transform.scale = {
+                0.25f + 0.1f * level, 0.25f + 0.1f * level,
+                0.25f + 0.1f * level};
+            gameObjects[Trantorian.trantorianObject].transform.translation.y =
+                -0.25f - (0.1f * level);
+            gameObjects[Trantorian.pointLightObject].transform.translation.y =
+                -1.f - (0.1f * level);
         }
     }
 }
@@ -1170,8 +1184,13 @@ void ZappyGui::sgt(std::vector<std::string> actualCommand)
         std::cerr << "sgt: invalid number of arguments" << std::endl;
         return;
     }
-
-    int timeUnit = std::stoi(actualCommand[1]);
+    int timeUnit;
+    try {
+        timeUnit = std::stoi(actualCommand[1]);
+    } catch (const std::exception &e) {
+        std::cerr << "sgt: invalid arguments" << std::endl;
+        return;
+    }
 
     this->_timeUnit = timeUnit;
 }
@@ -1199,9 +1218,20 @@ void ZappyGui::pbc(std::vector<std::string> actualCommand)
         std::cerr << "pbc: invalid number of arguments" << std::endl;
         return;
     }
-    actualCommand[1].erase(actualCommand[1].begin());
-    int playerNumber = std::stoi(actualCommand[1]);
-    std::string message = actualCommand[2];
+    int playerNumber;
+    std::string message;
+    try {
+        if (actualCommand[1][0] != '#') {
+            std::cerr << "pbc: invalid player number" << std::endl;
+            return;
+        }
+        actualCommand[1].erase(actualCommand[1].begin());
+        playerNumber = std::stoi(actualCommand[1]);
+        message = actualCommand[2];
+    } catch (const std::exception &e) {
+        std::cerr << "pbc: invalid arguments" << std::endl;
+        return;
+    }
 
     for (Trantorian &Trantorian : trantorians_) {
         if (Trantorian.playerNumber == playerNumber) {
@@ -1231,10 +1261,13 @@ void ZappyGui::pic(std::vector<std::string> actualCommand)
         x = std::stoi(actualCommand[1]);
         y = std::stoi(actualCommand[2]);
         for (int i = 3; i < actualCommand.size(); i++) {
+            if (actualCommand[i][0] != '#')
+                return;
             actualCommand[i].erase(actualCommand[i].begin());
             playerNumbers.push_back(std::stoi(actualCommand[i]));
         }
     } catch (const std::exception &e) {
+        std::cerr << "pic: invalid arguments" << std::endl;
         return;
     }
     for (Trantorian &Trantorian : trantorians_) {
@@ -1266,6 +1299,7 @@ void ZappyGui::pie(std::vector<std::string> actualCommand)
         y = std::stoi(actualCommand[2]);
         result = std::stoi(actualCommand[3]);
     } catch (const std::exception &e) {
+        std::cerr << "pie: invalid arguments" << std::endl;
         return;
     }
     for (auto &object : gameObjects) {
@@ -1300,8 +1334,18 @@ void ZappyGui::pfk(std::vector<std::string> actualCommand)
         std::cerr << "pfk: invalid number of arguments" << std::endl;
         return;
     }
-    actualCommand[1].erase(actualCommand[1].begin());
-    int playerNumber = std::stoi(actualCommand[1]);
+    int playerNumber;
+    try {
+        if (actualCommand[1][0] != '#') {
+            std::cerr << "pfk: invalid arguments" << std::endl;
+            return;
+        }
+        actualCommand[1].erase(actualCommand[1].begin());
+        playerNumber = std::stoi(actualCommand[1]);
+    } catch (const std::exception &e) {
+        std::cerr << "pfk: invalid arguments" << std::endl;
+        return;
+    }
 
     this->eggLayingPose(playerNumber);
 }
@@ -1331,8 +1375,18 @@ void ZappyGui::pdi(std::vector<std::string> actualCommand)
         std::cerr << "pdi: invalid number of arguments" << std::endl;
         return;
     }
-    actualCommand[1].erase(actualCommand[1].begin());
-    int playerNumber = std::stoi(actualCommand[1]);
+    int playerNumber;
+    try {
+        if (actualCommand[1][0] != '#') {
+            std::cerr << "pdi: invalid arguments" << std::endl;
+            return;
+        }
+        actualCommand[1].erase(actualCommand[1].begin());
+        playerNumber = std::stoi(actualCommand[1]);
+    } catch (const std::exception &e) {
+        std::cerr << "pdi: invalid arguments" << std::endl;
+        return;
+    }
 
     this->removeTrantorian(playerNumber);
 }
@@ -1353,12 +1407,21 @@ void ZappyGui::enw(std::vector<std::string> actualCommand)
         std::cerr << "enw: invalid number of arguments" << std::endl;
         return;
     }
-    actualCommand[1].erase(actualCommand[1].begin());
-    actualCommand[2].erase(actualCommand[2].begin());
-    int eggNumber = std::stoi(actualCommand[1]);
-    int playerNumber = std::stoi(actualCommand[2]);
-    int x = std::stoi(actualCommand[2]);
-    int y = std::stoi(actualCommand[3]);
+    int eggNumber;
+    int playerNumber;
+    int x;
+    int y;
+    try {
+        actualCommand[1].erase(actualCommand[1].begin());
+        actualCommand[2].erase(actualCommand[2].begin());
+        eggNumber = std::stoi(actualCommand[1]);
+        playerNumber = std::stoi(actualCommand[2]);
+        x = std::stoi(actualCommand[3]);
+        y = std::stoi(actualCommand[4]);
+    } catch (const std::exception &e) {
+        std::cerr << "enw: invalid arguments" << std::endl;
+        return;
+    }
 
     this->addEgg(eggNumber, playerNumber,
         {static_cast<float>(x), -0.15f, static_cast<float>(y)});
@@ -1380,19 +1443,31 @@ void ZappyGui::ebo(std::vector<std::string> actualCommand)
         std::cerr << "ebo: invalid number of arguments" << std::endl;
         return;
     }
-    actualCommand[1].erase(actualCommand[1].begin());
-    int eggNumber = std::stoi(actualCommand[1]);
-    for (auto i = eggs_.begin(); i != eggs_.end(); i++) {
-        if (i->eggNumber == eggNumber) {
-            for (auto j = trantorians_.begin(); j != trantorians_.end(); j++) {
-                if (j->playerNumber == i->playerNumber) {
-                    this->addTrantorian(
-                        j->team, i->position, trantorians_.size() + 1, 0);
+    int eggNumber;
+    try {
+        if (actualCommand[1][0] != '#') {
+            std::cerr << "ebo: invalid arguments" << std::endl;
+            return;
+        }
+        actualCommand[1].erase(actualCommand[1].begin());
+        eggNumber = std::stoi(actualCommand[1]);
+    } catch (const std::exception &e) {
+        std::cerr << "ebo: invalid arguments" << std::endl;
+        return;
+    }
+    for (Egg &egg : eggs_) {
+        std::cout << "loop" << std::endl;
+        if (egg.eggNumber == eggNumber) {
+            std::cout << "found" << "id:" << eggNumber << std::endl;
+            for (Trantorian &trantorian : trantorians_) {
+                if (trantorian.playerNumber == egg.playerNumber) {
+                    this->addTrantorian(trantorian.team, egg.position,
+                        trantorians_.size() + 1, 0);
                     break;
                 }
             }
-            removeGameObject(i->eggObjectId);
-            eggs_.erase(i);
+            removeGameObject(egg.eggObjectId);
+            eggs_.erase(std::remove(eggs_.begin(), eggs_.end(), egg), eggs_.end());
             return;
         }
     }
@@ -1419,12 +1494,22 @@ void ZappyGui::edi(std::vector<std::string> actualCommand)
         std::cerr << "edi: invalid number of arguments" << std::endl;
         return;
     }
-    actualCommand[1].erase(actualCommand[1].begin());
-    int eggNumber = std::stoi(actualCommand[1]);
-    for (auto i = eggs_.begin(); i != eggs_.end(); i++) {
-        if (i->eggNumber == eggNumber) {
-            removeGameObject(i->eggObjectId);
-            eggs_.erase(i);
+    int eggNumber;
+    try {
+        if (actualCommand[1][0] != '#') {
+            std::cerr << "edi: invalid arguments" << std::endl;
+            return;
+        }
+        actualCommand[1].erase(actualCommand[1].begin());
+        eggNumber = std::stoi(actualCommand[1]);
+    } catch (const std::exception &e) {
+        std::cerr << "edi: invalid arguments" << std::endl;
+        return;
+    }
+    for (Egg &egg : eggs_) {
+        if (egg.eggNumber == eggNumber) {
+            removeGameObject(egg.eggObjectId);
+            eggs_.erase(std::find(eggs_.begin(), eggs_.end(), egg));
             return;
         }
     }
@@ -1495,11 +1580,13 @@ void ZappyGui::addTrantorian(const std::string &teamName,
  */
 void ZappyGui::removeTrantorian(int playerNumber)
 {
-    for (auto i = trantorians_.begin(); i != trantorians_.end(); i++) {
-        if (i->playerNumber == playerNumber) {
-            removeGameObject(i->pointLightObject);
-            removeGameObject(i->trantorianObject);
-            trantorians_.erase(i);
+    for (Trantorian &trantorian : trantorians_) {
+        if (trantorian.playerNumber == playerNumber) {
+            removeGameObject(trantorian.pointLightObject);
+            removeGameObject(trantorian.trantorianObject);
+            // remove trantirian of trantrians_
+            trantorians_.erase(
+                std::find(trantorians_.begin(), trantorians_.end(), trantorian));
             return;
         }
     }
@@ -1523,25 +1610,27 @@ void ZappyGui::updateTrantorianPosition(
 {
     for (Trantorian &trantorian : trantorians_) {
         if (trantorian.playerNumber == playerNumber) {
-            for (auto &object : gameObjects) {
-                if (object.first == trantorian.pointLightObject) {
-                    object.second.transform.translation = position;
-                    object.second.transform.translation.y -= 1.0f;
-                }
-                if (object.first == trantorian.trantorianObject) {
-                    object.second.transform.translation = position;
-                    object.second.transform.translation.y =
-                        object.second.transform.scale.y * -1;
-                    if (orientation == "N")
-                        object.second.transform.rotation = {0.f, 0.f, 0.f};
-                    else if (orientation == "E")
-                        object.second.transform.rotation = {0.f, 1.55f, 0.f};
-                    else if (orientation == "S")
-                        object.second.transform.rotation = {0.f, 3.14f, 0.f};
-                    else if (orientation == "W")
-                        object.second.transform.rotation = {0.f, -1.57f, 0.f};
-                }
-            }
+            gameObjects[trantorian.pointLightObject].transform.translation =
+                position;
+            gameObjects[trantorian.pointLightObject].transform.translation.y -=
+                1.0f;
+            gameObjects[trantorian.trantorianObject].transform.translation =
+                position;
+            gameObjects[trantorian.trantorianObject].transform.translation.y =
+                gameObjects[trantorian.trantorianObject].transform.scale.y *
+                -1;
+            if (orientation == "N")
+                gameObjects[trantorian.trantorianObject].transform.rotation = {
+                    0.f, 0.f, 0.f};
+            else if (orientation == "E")
+                gameObjects[trantorian.trantorianObject].transform.rotation = {
+                    0.f, 1.55f, 0.f};
+            else if (orientation == "S")
+                gameObjects[trantorian.trantorianObject].transform.rotation = {
+                    0.f, 3.14f, 0.f};
+            else if (orientation == "W")
+                gameObjects[trantorian.trantorianObject].transform.rotation = {
+                    0.f, -1.57f, 0.f};
         }
     }
 }
@@ -1589,9 +1678,9 @@ float ZappyGui::degreeToRadiant(float degree) { return degree * M_PI / 180; }
  * @brief Creates the map for the ZappyGui.
  *
  * This function creates the map for the ZappyGui by generating game objects
- * based on the given width and height. It creates grass blocks, obsidian blocks,
- * and portal frames. It also creates sky squares for the top, sides, and bottom
- * of the map.
+ * based on the given width and height. It creates grass blocks, obsidian
+ * blocks, and portal frames. It also creates sky squares for the top, sides,
+ * and bottom of the map.
  *
  * @param width The width of the map.
  * @param height The height of the map.
@@ -1724,7 +1813,7 @@ void ZappyGui::createMap(int width, int height)
  */
 void ZappyGui::removeGameObject(ZappyGameObject::id_t gameObjectId)
 {
-    vkDeviceWaitIdle(lveDevice.device());
+    vkDeviceWaitIdle(zappyDevice.device());
     gameObjects.erase(gameObjectId);
 }
 
@@ -1764,7 +1853,7 @@ void ZappyGui::updateGameObjectsTexture(
     }
 
     std::shared_ptr<Texture> texture =
-        std::make_shared<Texture>(lveDevice, texturePath);
+        std::make_shared<Texture>(zappyDevice, texturePath);
     gameObjects[gameObjectId].imageInfo.sampler = texture->getSampler();
     gameObjects[gameObjectId].imageInfo.imageView = texture->getImageView();
     gameObjects[gameObjectId].imageInfo.imageLayout =
@@ -1773,7 +1862,7 @@ void ZappyGui::updateGameObjectsTexture(
     std::vector<VkDescriptorSet> descriptorSets(
         ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
     for (int i = 0; i < uboBuffers.size(); i++) {
-        auto bufferInfo = uboBuffers[i]->descriptorInfo();
+        VkDescriptorBufferInfo bufferInfo = uboBuffers[i]->descriptorInfo();
         ZappyDescriptorWriter(*globalSetLayout, *globalPool)
             .writeBuffer(0, &bufferInfo)
             .writeImage(1, &gameObjects[gameObjectId].imageInfo)
@@ -1787,9 +1876,10 @@ void ZappyGui::updateGameObjectsTexture(
 /**
  * @brief Updates the game state.
  *
- * This function is responsible for updating the game state by performing various tasks such as
- * updating portal animation, resources animation, and rotating Trantorian objects during incantation.
- * It uses the timer manager to control the timing of these updates.
+ * This function is responsible for updating the game state by performing
+ * various tasks such as updating portal animation, resources animation, and
+ * rotating Trantorian objects during incantation. It uses the timer manager to
+ * control the timing of these updates.
  */
 void ZappyGui::updateGame()
 {
@@ -1800,32 +1890,31 @@ void ZappyGui::updateGame()
     if (timerManager_.getElapsedTime("resourcesAnimation") > 0.05f) {
         updateResourcesAnimation();
         timerManager_.resetTimer("resourcesAnimation");
-    }
-    for (Trantorian &Trantorian : trantorians_) {
-        if (Trantorian.incatationInProgess) {
-            for (auto &object : gameObjects) {
-                if (object.first == Trantorian.trantorianObject) {
-                    object.second.transform.rotation.y += 0.01f;
-                }
-            }
+        for (Trantorian &Trantorian : trantorians_) {
+            if (Trantorian.incatationInProgess)
+                gameObjects[Trantorian.trantorianObject]
+                    .transform.rotation.y += 0.01f;
         }
     }
 }
 
 /**
  * @brief Updates the animation of the resources in the game.
- * 
- * This function is responsible for updating the rotation and translation of the resources
- * in the game. It iterates through each type of resource (linemate, deraumere, sibur, mendiane,
- * phiras, thystame, and food) and applies the corresponding animation based on the value of
- * `indexRessourcesAnimation`. The rotation is incremented by 0.02f, and the translation is
- * adjusted by +/- 0.01f depending on the value of `indexRessourcesAnimation`.
- * 
- * If the list of food resources is empty, the function returns early. Otherwise, it checks the
- * translation of the first food resource and updates `indexRessourcesAnimation` accordingly.
- * 
- * @note This function assumes the existence of a `gameObjects` container and a `resources_` map
- *       that stores the resource IDs.
+ *
+ * This function is responsible for updating the rotation and translation of
+ * the resources in the game. It iterates through each type of resource
+ * (linemate, deraumere, sibur, mendiane, phiras, thystame, and food) and
+ * applies the corresponding animation based on the value of
+ * `indexRessourcesAnimation`. The rotation is incremented by 0.02f, and the
+ * translation is adjusted by +/- 0.01f depending on the value of
+ * `indexRessourcesAnimation`.
+ *
+ * If the list of food resources is empty, the function returns early.
+ * Otherwise, it checks the translation of the first food resource and updates
+ * `indexRessourcesAnimation` accordingly.
+ *
+ * @note This function assumes the existence of a `gameObjects` container and a
+ * `resources_` map that stores the resource IDs.
  */
 void ZappyGui::updateResourcesAnimation()
 {
@@ -1888,10 +1977,10 @@ void ZappyGui::updateResourcesAnimation()
 
 /**
  * @brief Updates the texture of the portal frames in the ZappyGui.
- * 
- * This function increments the index of the portal frame and updates the texture
- * of all portal frames in the ZappyGui using the new index.
- * 
+ *
+ * This function increments the index of the portal frame and updates the
+ * texture of all portal frames in the ZappyGui using the new index.
+ *
  * @note The index of the portal frame is reset to 1 when it reaches 32.
  */
 void ZappyGui::updatePortalFrame()

@@ -20,18 +20,18 @@ class ZappyDescriptorSetLayout {
   public:
     class Builder {
       public:
-        Builder(ZappyDevice &lveDevice) : lveDevice{lveDevice} {}
+        Builder(ZappyDevice &zappyDevice) : zappyDevice{zappyDevice} {}
 
         Builder &addBinding(uint32_t binding, VkDescriptorType descriptorType,
             VkShaderStageFlags stageFlags, uint32_t count = 1);
         std::unique_ptr<ZappyDescriptorSetLayout> build() const;
 
       private:
-        ZappyDevice &lveDevice;
+        ZappyDevice &zappyDevice;
         std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
     };
 
-    ZappyDescriptorSetLayout(ZappyDevice &lveDevice,
+    ZappyDescriptorSetLayout(ZappyDevice &zappyDevice,
         std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings);
     ~ZappyDescriptorSetLayout();
     ZappyDescriptorSetLayout(const ZappyDescriptorSetLayout &) = delete;
@@ -44,7 +44,7 @@ class ZappyDescriptorSetLayout {
     }
 
   private:
-    ZappyDevice &lveDevice;
+    ZappyDevice &zappyDevice;
     VkDescriptorSetLayout descriptorSetLayout;
     std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings;
 
@@ -55,7 +55,7 @@ class ZappyDescriptorPool {
   public:
     class Builder {
       public:
-        Builder(ZappyDevice &lveDevice) : lveDevice{lveDevice} {}
+        Builder(ZappyDevice &zappyDevice) : zappyDevice{zappyDevice} {}
 
         Builder &addPoolSize(VkDescriptorType descriptorType, uint32_t count);
         Builder &setPoolFlags(VkDescriptorPoolCreateFlags flags);
@@ -63,13 +63,13 @@ class ZappyDescriptorPool {
         std::unique_ptr<ZappyDescriptorPool> build() const;
 
       private:
-        ZappyDevice &lveDevice;
+        ZappyDevice &zappyDevice;
         std::vector<VkDescriptorPoolSize> poolSizes{};
         uint32_t maxSets = 1000;
         VkDescriptorPoolCreateFlags poolFlags = 0;
     };
 
-    ZappyDescriptorPool(ZappyDevice &lveDevice, uint32_t maxSets,
+    ZappyDescriptorPool(ZappyDevice &zappyDevice, uint32_t maxSets,
         VkDescriptorPoolCreateFlags poolFlags,
         const std::vector<VkDescriptorPoolSize> &poolSizes);
     ~ZappyDescriptorPool();
@@ -85,7 +85,7 @@ class ZappyDescriptorPool {
 
     VkDescriptorPool descriptorPool;
   private:
-    ZappyDevice &lveDevice;
+    ZappyDevice &zappyDevice;
 
     friend class ZappyDescriptorWriter;
 };

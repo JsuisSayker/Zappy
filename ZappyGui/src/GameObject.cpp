@@ -9,6 +9,13 @@
 
 namespace zappy {
 
+
+/**
+ * Calculates and returns the transformation matrix for the TransformComponent.
+ * The transformation matrix is a 4x4 matrix that represents the translation, rotation, and scale of the object.
+ *
+ * @return The transformation matrix as a glm::mat4.
+ */
 glm::mat4 TransformComponent::mat4()
 {
     const float c3 = glm::cos(rotation.z);
@@ -38,6 +45,13 @@ glm::mat4 TransformComponent::mat4()
         {translation.x, translation.y, translation.z, 1.0f}};
 }
 
+
+/**
+ * Calculates the normal matrix for the current transformation.
+ * The normal matrix is used to transform normal vectors from object space to eye space.
+ *
+ * @return The normal matrix.
+ */
 glm::mat3 TransformComponent::normalMatrix()
 {
     const float c3 = glm::cos(rotation.z);
@@ -67,6 +81,15 @@ glm::mat3 TransformComponent::normalMatrix()
     };
 }
 
+
+/**
+ * Creates a point light game object with the specified intensity, radius, and color.
+ *
+ * @param intensity The intensity of the point light.
+ * @param radius The radius of the point light.
+ * @param color The color of the point light.
+ * @return The created ZappyGameObject with the specified properties.
+ */
 ZappyGameObject ZappyGameObject::makePointLight(
     float intensity, float radius, glm::vec3 color)
 {

@@ -13,6 +13,17 @@
 
 namespace zappy {
 
+
+/**
+ * Sets the orthographic projection matrix for the camera.
+ *
+ * @param left The left coordinate of the frustum.
+ * @param right The right coordinate of the frustum.
+ * @param top The top coordinate of the frustum.
+ * @param bottom The bottom coordinate of the frustum.
+ * @param near The near clipping plane distance.
+ * @param far The far clipping plane distance.
+ */
 void ZappyCamera::setOrthographicProjection(
     float left, float right, float top, float bottom, float near, float far)
 {
@@ -25,6 +36,15 @@ void ZappyCamera::setOrthographicProjection(
     projectionMatrix[3][2] = -near / (far - near);
 }
 
+
+/**
+ * Sets the perspective projection matrix for the camera.
+ *
+ * @param fovy The vertical field of view angle in radians.
+ * @param aspect The aspect ratio of the viewport (width / height).
+ * @param near The distance to the near clipping plane.
+ * @param far The distance to the far clipping plane.
+ */
 void ZappyCamera::setPerspectiveProjection(
     float fovy, float aspect, float near, float far)
 {
@@ -38,6 +58,14 @@ void ZappyCamera::setPerspectiveProjection(
     projectionMatrix[3][2] = -(far * near) / (far - near);
 }
 
+
+/**
+ * Sets the view direction of the camera.
+ *
+ * @param position The position of the camera.
+ * @param direction The direction the camera is looking at.
+ * @param up The up vector of the camera.
+ */
 void ZappyCamera::setViewDirection(
     glm::vec3 position, glm::vec3 direction, glm::vec3 up)
 {
@@ -74,12 +102,27 @@ void ZappyCamera::setViewDirection(
     inverseViewMatrix[3][2] = position.z;
 }
 
+
+/**
+ * Sets the view target of the camera.
+ *
+ * @param position The position of the camera.
+ * @param target The target point that the camera is looking at.
+ * @param up The up vector of the camera.
+ */
 void ZappyCamera::setViewTarget(
     glm::vec3 position, glm::vec3 target, glm::vec3 up)
 {
     setViewDirection(position, target - position, up);
 }
 
+
+/**
+ * Sets the view matrix of the camera based on the given position and rotation.
+ *
+ * @param position The position of the camera.
+ * @param rotation The rotation of the camera.
+ */
 void ZappyCamera::setViewYXZ(glm::vec3 position, glm::vec3 rotation)
 {
     const float c3 = glm::cos(rotation.z);

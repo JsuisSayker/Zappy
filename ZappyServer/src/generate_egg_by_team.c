@@ -20,4 +20,5 @@ void generate_egg_by_team(zappy_server_t *zappy, team_t *new_team, int x,
     new_egg->y = y;
     TAILQ_INSERT_TAIL(&(new_team->eggs_head), new_egg, next);
     zappy->index_eggs += 1;
+    new_team->nb_matures_eggs += 1;
 }

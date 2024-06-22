@@ -187,6 +187,7 @@ int ai_command_look(zappy_server_t *zappy, client_t *client, char *cmd);
 int ai_command_connect_nbr(zappy_server_t *zappy, client_t *client,
     char *cmd);
 int ai_command_incantation(zappy_server_t *zappy, client_t *client, char *cmd);
+int ai_command_eject(zappy_server_t *zappy, client_t *client, char *cmd);
 bool is_alive(zappy_server_t *zappy, client_t *client);
 
 int read_message_receive(zappy_server_t *zappy, client_t *client,
@@ -200,7 +201,8 @@ void send_pgt_command_to_all_gui(zappy_server_t *zappy, client_t *client,
 void send_pfk_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_pdr_command_to_all_gui(zappy_server_t *zappy, client_t *client,
     int nb_resource);
-void send_pie_command_to_all_gui(zappy_server_t *zappy, client_t *client);
+void send_pie_command_to_all_gui(zappy_server_t *zappy, client_t *client,
+    int result);
 void send_pic_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_plv_command_to_all_gui(zappy_server_t *zappy, client_t *client);
 void send_enw_command_to_all_gui(zappy_server_t *zappy, egg_t *egg);

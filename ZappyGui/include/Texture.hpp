@@ -33,7 +33,7 @@ class Texture {
 
     int width, height, mipLevels;
 
-    ZappyDevice &lveDevice;
+    ZappyDevice &zappyDevice;
     VkImage image;
     VkDeviceMemory imageMemory;
     VkImageView imageView;

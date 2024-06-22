@@ -19,12 +19,26 @@
 
 namespace zappy {
 
+
+/**
+ * @brief Constructs a new ZappySwapChain object.
+ *
+ * @param deviceRef The reference to the ZappyDevice object.
+ * @param extent The extent of the swap chain.
+ */
 ZappySwapChain::ZappySwapChain(ZappyDevice &deviceRef, VkExtent2D extent)
     : device{deviceRef}, windowExtent{extent}
 {
     init();
 }
 
+/**
+ * @brief Constructs a new ZappySwapChain object.
+ *
+ * @param deviceRef The reference to the ZappyDevice object.
+ * @param extent The extent of the swap chain.
+ * @param previous The previous swap chain.
+ */
 ZappySwapChain::ZappySwapChain(ZappyDevice &deviceRef, VkExtent2D extent,
     std::shared_ptr<ZappySwapChain> previous)
     : device{deviceRef}, windowExtent{extent}, oldSwapChain{previous}
@@ -33,6 +47,10 @@ ZappySwapChain::ZappySwapChain(ZappyDevice &deviceRef, VkExtent2D extent,
     oldSwapChain = nullptr;
 }
 
+/**
+ * @brief Initializes the swap chain.
+ *
+ */
 void ZappySwapChain::init()
 {
     createSwapChain();
@@ -43,6 +61,10 @@ void ZappySwapChain::init()
     createSyncObjects();
 }
 
+/**
+ * @brief Destroys the ZappySwapChain object.
+ *
+ */
 ZappySwapChain::~ZappySwapChain()
 {
     for (auto imageView : swapChainImageViews) {
@@ -77,6 +99,16 @@ ZappySwapChain::~ZappySwapChain()
     }
 }
 
+
+/**
+ * Acquires the next image from the swap chain.
+ *
+ * This function waits for the in-flight fence to be signaled before acquiring the next image.
+ * It then calls vkAcquireNextImageKHR to retrieve the index of the acquired image.
+ *
+ * @param imageIndex Pointer to store the index of the acquired image.
+ * @return VkResult indicating the success or failure of the operation.
+ */
 VkResult ZappySwapChain::acquireNextImage(uint32_t *imageIndex)
 {
     vkWaitForFences(device.device(), 1, &inFlightFences[currentFrame], VK_TRUE,
@@ -91,6 +123,15 @@ VkResult ZappySwapChain::acquireNextImage(uint32_t *imageIndex)
     return result;
 }
 
+
+/**
+ * Submits the specified command buffers for execution in the graphics queue.
+ *
+ * @param buffers The array of command buffers to submit.
+ * @param imageIndex A pointer to the index of the image to which the command buffers will be submitted.
+ * @return The result of the queue presentation operation.
+ * @throws zappy::DrawCommandBufferSubmitFailedException if the command buffer submission fails.
+ */
 VkResult ZappySwapChain::submitCommandBuffers(
     const VkCommandBuffer *buffers, uint32_t *imageIndex)
 {
@@ -142,6 +183,19 @@ VkResult ZappySwapChain::submitCommandBuffers(
     return result;
 }
 
+
+/**
+ * \brief Creates the swap chain for the ZappySwapChain object.
+ *
+ * This function creates the swap chain for the ZappySwapChain object using the Vulkan API.
+ * It retrieves the necessary information about the swap chain support, surface format, present mode,
+ * and extent. It then sets up the swap chain creation parameters and calls the Vulkan API function
+ * vkCreateSwapchainKHR to create the swap chain. After creating the swap chain, it queries the number
+ * of images in the swap chain and resizes the container accordingly. Finally, it retrieves the handles
+ * of the swap chain images and stores them in the swapChainImages vector.
+ *
+ * \throws zappy::SwapChainCreationFailedException if the swap chain creation fails.
+ */
 void ZappySwapChain::createSwapChain()
 {
     SwapChainSupportDetails swapChainSupport = device.getSwapChainSupport();
@@ -210,6 +264,14 @@ void ZappySwapChain::createSwapChain()
     swapChainExtent = extent;
 }
 
+
+/**
+ * @brief Creates image views for each swap chain image.
+ * 
+ * This function creates image views for each swap chain image in the swap chain. 
+ * The image views are used to specify how the images should be accessed and interpreted 
+ * during rendering operations.
+ */
 void ZappySwapChain::createImageViews()
 {
     swapChainImageViews.resize(swapChainImages.size());
@@ -232,6 +294,13 @@ void ZappySwapChain::createImageViews()
   }
 }
 
+/**
+ * @brief Creates the render pass for the swap chain.
+ * 
+ * This function creates the render pass for the swap chain. The render pass is used to specify the 
+ * attachments used during rendering operations. It defines how the attachments are used during the 
+ * rendering process, including the layout transitions between subpasses.
+ */
 void ZappySwapChain::createRenderPass()
 {
     VkAttachmentDescription depthAttachment{};
@@ -297,6 +366,13 @@ void ZappySwapChain::createRenderPass()
   }
 }
 
+/**
+ * @brief Creates the framebuffers for the swap chain.
+ * 
+ * This function creates the framebuffers for the swap chain. The framebuffers are used to store the 
+ * attachments used during rendering operations. They are used to specify the attachments used during 
+ * the rendering process, including the layout transitions between subpasses.
+ */
 void ZappySwapChain::createFramebuffers()
 {
     swapChainFramebuffers.resize(imageCount());
@@ -325,6 +401,13 @@ void ZappySwapChain::createFramebuffers()
   }
 }
 
+/**
+ * @brief Creates the depth resources for the swap chain.
+ * 
+ * This function creates the depth resources for the swap chain. The depth resources are used to store 
+ * the depth information for the swap chain images. They are used to specify the depth information used 
+ * during rendering operations.
+ */
 void ZappySwapChain::createDepthResources()
 {
     VkFormat depthFormat = findDepthFormat();
@@ -373,6 +456,13 @@ void ZappySwapChain::createDepthResources()
   }
 }
 
+/**
+ * @brief Creates the synchronization objects for the swap chain.
+ * 
+ * This function creates the synchronization objects for the swap chain. The synchronization objects 
+ * are used to synchronize the rendering operations between the CPU and the GPU. They are used to 
+ * specify the synchronization operations used during rendering operations.
+ */
 void ZappySwapChain::createSyncObjects()
 {
     imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -398,6 +488,15 @@ void ZappySwapChain::createSyncObjects()
   }
 }
 
+/**
+ * @brief Chooses the swap surface format.
+ * 
+ * This function chooses the swap surface format for the swap chain. The swap surface format is used to 
+ * specify the format of the images in the swap chain.
+ * 
+ * @param availableFormats The available surface formats.
+ * @return The chosen surface format.
+ */
 VkSurfaceFormatKHR ZappySwapChain::chooseSwapSurfaceFormat(
     const std::vector<VkSurfaceFormatKHR> &availableFormats)
 {
@@ -411,6 +510,17 @@ VkSurfaceFormatKHR ZappySwapChain::chooseSwapSurfaceFormat(
     return availableFormats[0];
 }
 
+
+/**
+ * Chooses the presentation mode for the swap chain.
+ *
+ * This function iterates through the available presentation modes and selects the
+ * VK_PRESENT_MODE_MAILBOX_KHR mode if it is available. Otherwise, it selects the
+ * VK_PRESENT_MODE_FIFO_KHR mode.
+ *
+ * @param availablePresentModes The list of available presentation modes.
+ * @return The chosen presentation mode.
+ */
 VkPresentModeKHR ZappySwapChain::chooseSwapPresentMode(
     const std::vector<VkPresentModeKHR> &availablePresentModes) {
   for (const auto &availablePresentMode : availablePresentModes) {
@@ -423,6 +533,16 @@ VkPresentModeKHR ZappySwapChain::chooseSwapPresentMode(
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 
+/**
+ * Chooses the swap extent for the swap chain.
+ *
+ * This function chooses the swap extent for the swap chain based on the capabilities
+ * of the surface. If the current extent is not equal to the maximum value of uint32_t,
+ * it returns the current extent. Otherwise, it returns the actual extent.
+ *
+ * @param capabilities The capabilities of the surface.
+ * @return The chosen swap extent.
+ */
 VkExtent2D ZappySwapChain::chooseSwapExtent(
     const VkSurfaceCapabilitiesKHR &capabilities)
 {
@@ -440,6 +560,15 @@ VkExtent2D ZappySwapChain::chooseSwapExtent(
     }
 }
 
+
+/**
+ * @brief Finds the supported depth format for the swap chain.
+ * 
+ * This function searches for a suitable depth format for the swap chain's depth stencil attachment.
+ * It checks for the availability of several depth formats and returns the first one that is supported.
+ * 
+ * @return The supported depth format for the swap chain.
+ */
 VkFormat ZappySwapChain::findDepthFormat()
 {
     return device.findSupportedFormat(

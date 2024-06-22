@@ -89,7 +89,7 @@ static int ai_client_find_team(
         tmp_client = &zappy->clients[zappy->actual_sockfd];
         if (ai_initialisation(zappy, tmp_client, tmp_team) == ERROR)
             return ERROR;
-        dprintf(zappy->actual_sockfd, "%d\n", tmp_client->client_number);
+        dprintf(zappy->actual_sockfd, "%d\n", tmp_team->nb_matures_eggs);
         dprintf(zappy->actual_sockfd, "%d %d\n", tmp_client->pos.x,
             tmp_client->pos.y);
         send_info_ai_to_gui(zappy, tmp_client);
@@ -103,8 +103,7 @@ static int ai_client(zappy_server_t *zappy, char *command)
     team_t *tmp_team = NULL;
     int team_find = 0;
 
-    TAILQ_FOREACH(tmp_team, &zappy->all_teams, next)
-    {
+    TAILQ_FOREACH(tmp_team, &zappy->all_teams, next) {
         team_find = ai_client_find_team(zappy, tmp_team, command);
         if (team_find == 1)
             return OK;

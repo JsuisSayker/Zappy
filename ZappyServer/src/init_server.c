@@ -28,7 +28,7 @@ static void create_teams(zappy_server_t *zappy)
     char_tab_t *team_name = NULL;
 
     team_name = TAILQ_FIRST(&(zappy->args->names));
-    while (team_name != NULL){
+    while (team_name != NULL) {
         new_team = calloc(sizeof(team_t), 1);
         generate_random_uuid(new_team->team_uuid);
         new_team->name = calloc(sizeof(char), strlen(team_name->str) + 1);
@@ -38,8 +38,8 @@ static void create_teams(zappy_server_t *zappy)
         new_team->nb_drones = 0;
         new_team->nb_matures_eggs = zappy->args->clientsNb;
         TAILQ_INIT(&(new_team->eggs_head));
-        generate_egg_by_team(zappy, new_team, rand() % zappy->args->width - 1,
-            rand() % zappy->args->height - 1);
+        generate_egg_by_team(zappy, new_team, rand() % (zappy->args->width - 1),
+            rand() % (zappy->args->height - 1));
         TAILQ_INSERT_TAIL(&(zappy->all_teams), new_team, next);
         team_name = TAILQ_NEXT(team_name, next);
     }
@@ -56,8 +56,8 @@ static void init_value(zappy_server_t *zappy)
     create_teams(zappy);
     zappy->map_tile = setup_map_tile(zappy->args->width,
         zappy->args->height);
-    zappy->map_tile_save = copy_map_tile(zappy->map_tile);
-    for (int i = 0; i < zappy->nb_connected_clients; i += 1) {
+    // zappy->map_tile_save = copy_map_tile(zappy->map_tile);
+    for (int i = 0; i < FD_SETSIZE; i += 1) {
         zappy->clients[i].type = UNKNOWN;
         zappy->clients[i].client_number = -1;
         zappy->clients[i].team_name = NULL;

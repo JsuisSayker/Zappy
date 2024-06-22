@@ -92,6 +92,12 @@ std::vector<std::string> splitMessages(std::string message, char splitChar)
     return messages;
 }
 
+/**
+ * @brief Receives messages from the server.
+ *
+ * This function receives messages from the server and stores them in the
+ * buffer. It then splits the messages and pushes them to the queue.
+ */
 void zappy::Client::receiveFromServer()
 {
     bool skiped = false;

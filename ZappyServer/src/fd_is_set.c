@@ -56,7 +56,7 @@ static void refill_map(zappy_server_t *zappy)
 
     gettimeofday(&tv, NULL);
     elapsed = (tv.tv_sec + tv.tv_usec / 1000000.0) - zappy->time_refill_map;
-    if (cast_time < elapsed) {
+    if (cast_time > elapsed) {
         resourse_list = generate_ressourse_list(zappy->args->width,
             zappy->args->height);
         add_resource(resourse_list->tqh_first->str,
