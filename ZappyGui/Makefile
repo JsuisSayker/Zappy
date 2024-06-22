@@ -43,7 +43,7 @@ OBJ_MAIN	=	$(DIR_MAIN:.cpp=.o)
 
 OBJ			=	$(OBJ_SRC) $(OBJ_MAIN)
 
-CPPFLAGS = -I./include -I./include/systems -I$(TINYOBJ_PATH) -I$(STBIMAGE_PATH) -I./imgui/ -I./imgui/backends
+CPPFLAGS = -I./include -I./include/systems -I$(TINYOBJ_PATH) -I$(STBIMAGE_PATH) -I./imgui/ -I./imgui/backends -ggdb3
 LDFLAGS = `pkg-config --static --libs glfw3` -lvulkan
 
 # create list of all spv files and set as dependency
@@ -56,9 +56,11 @@ NAME = ../zappy_gui
 
 $(NAME):	$(OBJ) $(vertObjFiles) $(fragObjFiles)
 	g++ -o $(NAME) $(OBJ) $(LDFLAGS) $(CPPFLAGS) imgui/*.cpp imgui/backends/*.cpp -ggdb3
-	./rebuild.sh
 
 all: $(NAME)
+
+documentation:
+	./rebuild.sh
 
 # make shader targets
 %.spv: %
@@ -88,4 +90,4 @@ unit_tests: re $(DIR_SRC) $(DIR_TESTS)
 tests_run: unit_tests
 	./unit_tests/unit_tests
 
-.PHONY: test clean fclean re debug unit_tests tests_run
+.PHONY: test clean fclean re debug unit_tests tests_run documentation

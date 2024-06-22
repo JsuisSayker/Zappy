@@ -18,7 +18,7 @@ namespace zappy {
  * @param playerNumber The player number.
  */
 Trantorian::Trantorian(ZappyGameObject::id_t trantObjectId, ZappyGameObject::id_t pointLightObjectId, const std::string &team, int playerNumber)
-    : trantorianObject(trantObjectId), pointLightObject(pointLightObjectId), team(team), playerNumber(playerNumber), level(0)
+    : trantorianObject(trantObjectId), pointLightObject(pointLightObjectId), team(team), playerNumber(playerNumber), level(1)
 {
     this->inventory = {0, 0, 0, 0, 0, 0, 0};
 }
