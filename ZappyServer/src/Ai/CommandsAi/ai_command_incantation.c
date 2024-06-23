@@ -69,7 +69,7 @@ static bool check_player(int nb_players, int level)
     return nb_players >= req[level - 1];
 }
 
-static bool check_incantation(zappy_server_t *zappy, client_t *client)
+bool incantation_condition(zappy_server_t *zappy, client_t *client)
 {
     int nb_players = 0;
     inventory_t *map;
@@ -91,11 +91,19 @@ static bool check_incantation(zappy_server_t *zappy, client_t *client)
     return false;
 }
 
-static void check_win_condition(zappy_server_t *zappy, client_t *client)
+static void add_level(zappy_server_t *zappy, client_t *client)
 {
+    team_t *team = NULL;
+
     client->level += 1;
-    if (client->level == 8)
-        send_seg_command_to_all_gui(zappy, client);
+    if (client->level == 8){
+        TAILQ_FOREACH(team, &zappy->all_teams, next) {
+            if (strcmp(team->name, client->team_name) == 0) {
+                team->nb_clients_lvl_8 += 1;
+                break;
+            }
+        }
+    }
 }
 
 static int complet_incantation(zappy_server_t *zappy, client_t *client,
@@ -112,7 +120,7 @@ static int complet_incantation(zappy_server_t *zappy, client_t *client,
         if (zappy->clients[i].type == AI && zappy->clients[i].pos.x ==
         client->pos.x && zappy->clients[i].pos.y == client->pos.y
         && zappy->clients[i].level == lvl) {
-            check_win_condition(zappy, &zappy->clients[i]);
+            add_level(zappy, &zappy->clients[i]);
             zappy->clients[i].incantation = false;
             send_pie_command_to_all_gui(zappy, &zappy->clients[i], 1);
             send_plv_command_to_all_gui(zappy, &zappy->clients[i]);
@@ -125,21 +133,9 @@ static int complet_incantation(zappy_server_t *zappy, client_t *client,
 
 int ai_command_incantation(zappy_server_t *zappy, client_t *client, char *cmd)
 {
+    printf("Incantation\n--\n");
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
-    if (check_incantation(zappy, client) == false){
-        dprintf(zappy->actual_sockfd, "ko\n");
-        free_string(&client->command.execution);
-        return OK;
-    }
-    if (cast_action(zappy, client, 300, cmd) == ERROR)
-        return ERROR;
-    if (check_action(zappy, client) == false)
-        return OK;
-    if (check_incantation(zappy, client) == false){
-        dprintf(zappy->actual_sockfd, "ko\n");
-        return OK;
-    }
     if (complet_incantation(zappy, client, client->level) == ERROR)
         return ERROR;
     return OK;

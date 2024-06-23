@@ -36,6 +36,7 @@ static void create_teams(zappy_server_t *zappy)
             return;
         strcpy(new_team->name, team_name->str);
         new_team->nb_drones = 0;
+        new_team->nb_clients_lvl_8 = 0;
         new_team->nb_matures_eggs = zappy->args->clientsNb;
         TAILQ_INIT(&(new_team->eggs_head));
         generate_egg_by_team(zappy, new_team, rand() %

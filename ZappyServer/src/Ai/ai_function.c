@@ -51,5 +51,7 @@ int ai_function(zappy_server_t *zappy, client_t *client, char *cmd)
         return OK;
     if (handle_ai_command(zappy, client, cmd) == ERROR)
         return ERROR;
+    if (exec_command(zappy, client) == ERROR)
+        return ERROR;
     return OK;
 }

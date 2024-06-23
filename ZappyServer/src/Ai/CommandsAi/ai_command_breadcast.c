@@ -36,12 +36,9 @@ int ai_command_breadcast(zappy_server_t *zappy, client_t *client,
 {
     char *message = NULL;
 
+    printf("Breadcast\n--\n");
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
-    if (cast_action(zappy, client, 7, cmd) == ERROR)
-        return ERROR;
-    if (check_action(zappy, client) == false)
-        return OK;
     message = cmd[9] == ' ' ? &cmd[10] : &cmd[9];
     if (spreads_breadcast(zappy, client, message) == ERROR) {
         dprintf(zappy->actual_sockfd, "ko\n");

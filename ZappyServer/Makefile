@@ -24,10 +24,11 @@ SRC			=	zappy_server.c						\
 				ia_direction_function.c				\
 				generate_egg_by_team.c				\
 				send_mct_command_to_all_gui.c		\
+				refill_map.c						\
 				${DIR_TOOLS}						\
-				${DIR_COMMAND_AI}					\
 				${DIR_COMMAND_GUI}					\
 				${DIR_COMMAND_SERVER}				\
+				${DIR_AI}							\
 
 TOOLS		=	splitter.c							\
 				free_array.c						\
@@ -40,11 +41,15 @@ TOOLS		=	splitter.c							\
 				free_string.c						\
 				realloc_and_strcat.c				\
 
-COMMAND_AI		=	handle_ai_command.c				\
-					ai_function.c					\
-					ai_initialisation.c				\
-					ai_action.c						\
-					ai_command_forward.c			\
+AI			=	ai_function.c						\
+				ai_initialisation.c					\
+				ai_queue.c							\
+				ai_handle_command.c					\
+				ai_execution_command.c				\
+				${DIR_COMMAND_AI}
+
+
+COMMAND_AI		=	ai_command_forward.c			\
 					ai_command_left.c				\
 					ai_command_right.c				\
 					ai_command_take_object.c		\
@@ -107,6 +112,8 @@ COMMAND_SERVER	=	handle_server_command.c			\
 DIR_SRC		=	$(addprefix src/, $(SRC))
 
 DIR_COMMAND_AI	=	$(addprefix CommandsAi/, $(COMMAND_AI))
+
+DIR_AI =	$(addprefix Ai/, $(AI))
 
 DIR_COMMAND_GUI	=	$(addprefix CommandsGui/, $(COMMAND_GUI))
 
