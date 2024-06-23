@@ -129,7 +129,7 @@ class Client():
                                 print(f"look: {self.ai.look}")
                             elif "Take" in self.ai.dataToSend and "food"\
                                     not in self.ai.dataToSend and "ok"\
-                                    in element:
+                                    in element and "message" not in element:
                                 self.ai.updateSharedInventory()
                                 self.ai.newRessource = True
                             elif "Inventory" in self.ai.dataToSend and\
