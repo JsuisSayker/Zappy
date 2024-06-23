@@ -310,13 +310,14 @@ void ZappyGui::processCommand()
         if (this->getPointerToFunction().find(command[0]) !=
             this->getPointerToFunction().end()) {
             try {
-                this->getPointerToFunction()[command[0]](command);
-            } catch (const std::exception &e) {
-                // print command
+                std::cout << "Command: ";
                 for (auto &elem : command) {
-                    std::cerr << elem << " ";
+                    std::cout << elem << " ";
                 }
-                std::cerr << std::endl;
+                std::cout << std::endl;
+                this->getPointerToFunction()[command[0]](command);
+                std::cout << "Command executed" << std::endl;
+            } catch (const std::exception &e) {
                 std::cerr << "Exception: " << e.what() << std::endl;
             }
         } else {
@@ -468,9 +469,8 @@ void ZappyGui::run()
     close(socket_fd);
 
     this->getClient().get()->running = false;
-    reader.join();
-
-    vkDeviceWaitIdle(zappyDevice.device());
+    if (reader.joinable())
+        reader.join();
 }
 
 /**
@@ -1291,18 +1291,19 @@ void ZappyGui::pbc(std::vector<std::string> actualCommand)
  */
 void ZappyGui::pic(std::vector<std::string> actualCommand)
 {
-    std::cout << "pic" << std::endl;
-    if (actualCommand.size() < 4) {
+    if (actualCommand.size() < 5) {
         std::cerr << "pic: invalid number of arguments" << std::endl;
         return;
     }
     int x;
     int y;
+    int playerOrIncantationLvl;
     std::vector<int> playerNumbers;
     try {
         x = std::stoi(actualCommand[1]);
         y = std::stoi(actualCommand[2]);
-        for (int i = 3; i < actualCommand.size(); i++) {
+        playerOrIncantationLvl = std::stoi(actualCommand[3]);
+        for (int i = 4; i < actualCommand.size(); i++) {
             if (actualCommand[i][0] != '#')
                 return;
             actualCommand[i].erase(actualCommand[i].begin());
