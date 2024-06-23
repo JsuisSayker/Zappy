@@ -64,10 +64,30 @@ Teams need to devise strategies to optimize resource collection and hinder other
 ```
    ./zappy_server -p [PORT] -x [WIDTH] -y [HEIGHT] -n [TEAMS] -c [NB_CLIENTS] -f [FREQUENCES]
 
-       -p:           Connection port to server.
-       -x & h:       Dimention of the 
+      -p:           Connection port to the server.
+      -x & h:       Dimensions of the game map.
+      -n:           Names of all the teams.
+      -c:           Maximum number of players per team.
+      -f:           Execution frequency of the server.
 ```
 
+### AIs Launch:
+```
+   ./zappy_ai -p [PORT] -n [TEAM NAME] -h [SERVER HOSTNAME] -i [ID]
+
+      -p:           Connection port to the server.
+      -n:           Team name of this AI.
+      -h:           IP address for server connection.
+      -i:           Client ID. (optional)
+```
+
+### GUI Launch:
+```
+   ./zappy_gui -p [PORT] -h [SERVER HOSTNAME]
+
+      -p:           Connection port to the server.
+      -h:           IP address for server connection.
+```
 
 ## Trailer
 
