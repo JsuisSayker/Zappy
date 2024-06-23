@@ -1297,6 +1297,11 @@ void ZappyGui::pbc(std::vector<std::string> actualCommand)
  */
 void ZappyGui::pic(std::vector<std::string> actualCommand)
 {
+    // print command
+    for (const auto &arg : actualCommand) {
+        std::cout << arg << " ";
+    }
+    std::cout << std::endl;
     if (actualCommand.size() < 5) {
         std::cerr << "pic: invalid number of arguments" << std::endl;
         return;
@@ -1320,7 +1325,7 @@ void ZappyGui::pic(std::vector<std::string> actualCommand)
         return;
     }
     for (Trantorian &Trantorian : trantorians_) {
-        if (Trantorian.playerNumber = playerNumbers[0])
+        if (Trantorian.playerNumber == playerNumbers[0])
             Trantorian.incatationInProgess = true;
     }
 }

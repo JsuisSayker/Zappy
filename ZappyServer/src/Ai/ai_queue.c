@@ -19,6 +19,15 @@ static void destroy_node(client_t *client, int index)
     client->commands[index].is_started = false;
 }
 
+void destroy_queue(client_t *client)
+{
+    if (client == NULL)
+        return;
+    for (int i = 0; i < QUEUE_SIZE; i++) {
+        destroy_node(client, i);
+    }
+}
+
 int unqueue_command(client_t *client)
 {
     if (client == NULL)

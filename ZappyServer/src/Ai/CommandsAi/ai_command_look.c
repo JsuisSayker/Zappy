@@ -92,6 +92,7 @@ static void look_on_x(zappy_server_t *zappy,
             &zappy->map_tile[y][x].inventory);
         realloc_and_strcat(&look->message, inventory_str);
         look->message[strlen(look->message) - 1] = ',';
+        free(inventory_str);
     }
 }
 
@@ -114,6 +115,7 @@ static void look_on_y(zappy_server_t *zappy, look_struct_t *look, int lvl)
             &zappy->map_tile[y][x].inventory);
         realloc_and_strcat(&look->message, inventory_str);
         look->message[strlen(look->message) - 1] = ',';
+        free(inventory_str);
     }
 }
 
