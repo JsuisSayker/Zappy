@@ -12,7 +12,6 @@ int ai_command_connect_nbr(zappy_server_t *zappy, client_t *client,
 {
     team_t *team = NULL;
 
-    printf("Connect_nbr\n--\n");
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
     TAILQ_FOREACH(team, &zappy->all_teams, next) {

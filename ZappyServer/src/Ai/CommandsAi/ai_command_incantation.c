@@ -133,7 +133,6 @@ static int complet_incantation(zappy_server_t *zappy, client_t *client,
 
 int ai_command_incantation(zappy_server_t *zappy, client_t *client, char *cmd)
 {
-    printf("Incantation\n--\n");
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
     if (complet_incantation(zappy, client, client->level) == ERROR)
