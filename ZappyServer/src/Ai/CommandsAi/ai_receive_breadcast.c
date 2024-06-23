@@ -7,151 +7,154 @@
 
 #include "zappy_server.h"
 
-static ai_position_t shortest_vector(ai_position_t p1, ai_position_t p2,
-    int map_size_x, int map_size_y)
+
+static int calculate_displacement(int pos1, int pos2, int max)
+{
+    int direct = pos2 - pos1;
+    int wrap_around = (direct > 0) ? direct - max : direct + max;
+
+    return (abs(direct) < abs(wrap_around)) ? direct : wrap_around;
+}
+
+static ai_position_t shortest_vector(ai_position_t sender,
+    ai_position_t recever, int map_size_x, int map_size_y)
 {
     ai_position_t vector;
 
-    vector.x = p1.x - p2.x;
-    vector.y = p1.y - p2.y;
-    if (vector.x > map_size_x / 2) {
-        vector.x -= map_size_x;
-    } else if (vector.x < -map_size_x / 2) {
-        vector.x += map_size_x;
+    if (sender.x == recever.x && sender.y == recever.y) {
+        vector.x = 0;
+        vector.y = 0;
+        return vector;
     }
-    if (vector.y > map_size_y / 2) {
-        vector.y -= map_size_y;
-    } else if (vector.y < -map_size_y / 2) {
-        vector.y += map_size_y;
-    }
+    vector.x = calculate_displacement(sender.x, recever.x, map_size_x);
+    vector.y = calculate_displacement(sender.y, recever.y, map_size_y);
     return vector;
 }
 
-static ai_position_t relative_case(ai_position_t p2, ai_position_t vector,
-    int map_size_x, int map_size_y)
+static int position_east(ai_position_t block)
 {
-    ai_position_t relative = p2;
-
-    if (vector.x != 0) {
-        relative.x -= (vector.x > 0) ? 1 : -1;
-        if (relative.x < 0)
-            relative.x += map_size_x;
-        if (relative.x >= map_size_x)
-            relative.x -= map_size_x;
-    }
-    if (vector.y != 0) {
-        relative.y -= (vector.y > 0) ? 1 : -1;
-        if (relative.y < 0)
-            relative.y += map_size_y;
-        if (relative.y >= map_size_y)
-            relative.y -= map_size_y;
-    }
-    return relative;
-}
-
-static int position_east(ai_position_t vector)
-{
-    if (vector.x == 1 && vector.y == 0)
+    if (block.x == 1 && block.y == 0)
         return 1;
-    if (vector.x == 1 && vector.y == 1)
+    if (block.x == 1 && block.y == 1)
         return 2;
-    if (vector.x == 0 && vector.y == 1)
+    if (block.x == 0 && block.y == 1)
         return 3;
-    if (vector.x == -1 && vector.y == 1)
+    if (block.x == -1 && block.y == 1)
         return 4;
-    if (vector.x == -1 && vector.y == 0)
+    if (block.x == -1 && block.y == 0)
         return 5;
-    if (vector.x == -1 && vector.y == -1)
+    if (block.x == -1 && block.y == -1)
         return 6;
-    if (vector.x == 0 && vector.y == -1)
+    if (block.x == 0 && block.y == -1)
         return 7;
-    if (vector.x == 1 && vector.y == -1)
+    if (block.x == 1 && block.y == -1)
         return 8;
     return 0;
 }
 
-static int position_north(ai_position_t vector)
+static int position_north(ai_position_t block)
 {
-    if (vector.x == 0 && vector.y == 1)
+    if (block.x == 0 && block.y == 1)
         return 1;
-    if (vector.x == -1 && vector.y == 1)
+    if (block.x == -1 && block.y == 1)
         return 2;
-    if (vector.x == -1 && vector.y == 0)
+    if (block.x == -1 && block.y == 0)
         return 3;
-    if (vector.x == -1 && vector.y == -1)
+    if (block.x == -1 && block.y == -1)
         return 4;
-    if (vector.x == 0 && vector.y == -1)
+    if (block.x == 0 && block.y == -1)
         return 5;
-    if (vector.x == 1 && vector.y == -1)
+    if (block.x == 1 && block.y == -1)
         return 6;
-    if (vector.x == 1 && vector.y == 0)
+    if (block.x == 1 && block.y == 0)
         return 7;
-    if (vector.x == 1 && vector.y == 1)
+    if (block.x == 1 && block.y == 1)
         return 8;
     return 0;
 }
 
-static int position_south(ai_position_t vector)
+static int position_south(ai_position_t block)
 {
-    if (vector.x == 0 && vector.y == -1)
+    if (block.x == 0 && block.y == -1)
         return 1;
-    if (vector.x == 1 && vector.y == -1)
+    if (block.x == 1 && block.y == -1)
         return 2;
-    if (vector.x == 1 && vector.y == 0)
+    if (block.x == 1 && block.y == 0)
         return 3;
-    if (vector.x == 1 && vector.y == 1)
+    if (block.x == 1 && block.y == 1)
         return 4;
-    if (vector.x == 0 && vector.y == 1)
+    if (block.x == 0 && block.y == 1)
         return 5;
-    if (vector.x == -1 && vector.y == 1)
+    if (block.x == -1 && block.y == 1)
         return 6;
-    if (vector.x == -1 && vector.y == 0)
+    if (block.x == -1 && block.y == 0)
         return 7;
-    if (vector.x == -1 && vector.y == -1)
+    if (block.x == -1 && block.y == -1)
         return 8;
     return 0;
 }
 
-static int position_west(ai_position_t vector)
+static int position_west(ai_position_t block)
 {
-    if (vector.x == -1 && vector.y == 0)
+    if (block.x == -1 && block.y == 0)
         return 1;
-    if (vector.x == -1 && vector.y == -1)
+    if (block.x == -1 && block.y == -1)
         return 2;
-    if (vector.x == 0 && vector.y == -1)
+    if (block.x == 0 && block.y == -1)
         return 3;
-    if (vector.x == 1 && vector.y == -1)
+    if (block.x == 1 && block.y == -1)
         return 4;
-    if (vector.x == 1 && vector.y == 0)
+    if (block.x == 1 && block.y == 0)
         return 5;
-    if (vector.x == 1 && vector.y == 1)
+    if (block.x == 1 && block.y == 1)
         return 6;
-    if (vector.x == 0 && vector.y == 1)
+    if (block.x == 0 && block.y == 1)
         return 7;
-    if (vector.x == -1 && vector.y == 1)
+    if (block.x == -1 && block.y == 1)
         return 8;
     return 0;
 }
 
-static int position_got(ai_position_t relactive, ai_position_t ai_pos,
-    ai_direction_t direction)
+static int position_got(ai_position_t relative, ai_position_t recever)
 {
-    ai_position_t vector;
+    ai_position_t block;
 
-    vector.x = relactive.x - ai_pos.x;
-    vector.y = relactive.y - ai_pos.y;
-    switch (direction) {
+    block.x = relative.x - recever.x;
+    block.y = relative.y - recever.y;
+    switch (recever.direction) {
         case EAST:
-            return position_east(vector);
+            return position_east(block);
         case NORTH:
-            return position_north(vector);
+            return position_north(block);
         case SOUTH:
-            return position_south(vector);
+            return position_south(block);
         case WEST:
-            return position_west(vector);
+            return position_west(block);
         default:
             return 0;
     }
+}
+
+ai_position_t message_path(ai_position_t recever, ai_position_t vector,
+    int max_x, int max_y)
+{
+    ai_position_t path = {recever.x, recever.y, 0};
+
+    if (vector.x > 0)
+        (path.x)++;
+    if (vector.x < 0) {
+        (path.x)--;
+        if (path.x < 0)
+            path.x = max_x - 1;
+    }
+    if (vector.y > 0)
+        (path.y)++;
+    if (vector.y < 0) {
+        (path.y)--;
+        if (path.y < 0)
+            path.y = max_y - 1;
+    }
+    return path;
 }
 
 static int message_receive(client_t *client, zappy_server_t *zappy,
@@ -165,9 +168,9 @@ static int message_receive(client_t *client, zappy_server_t *zappy,
         return ERROR;
     vector = shortest_vector(message->pos, client->pos, zappy->args->width,
             zappy->args->height);
-    relative = relative_case(client->pos, vector, zappy->args->width,
+    relative = message_path(client->pos, vector, zappy->args->width,
             zappy->args->height);
-    i = position_got(relative, message->pos, client->pos.direction);
+    i = position_got(relative, client->pos);
     dprintf(actual_sockfd, "message %d, %s\n", i, message->message);
     return OK;
 }
