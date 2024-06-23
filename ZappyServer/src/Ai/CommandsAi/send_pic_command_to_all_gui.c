@@ -21,7 +21,7 @@ void send_pic_command_to_all_gui(zappy_server_t *zappy, client_t *client)
     }
     for (int i = 3; i < zappy->nb_connected_clients; i += 1) {
         if (zappy->clients[i].type == GUI) {
-            dprintf(i, "pic %d %d %d %s\n", client->pos.x, client->pos.y,
+            dprintf(i, "pic %d %d %d%s\n", client->pos.x, client->pos.y,
             client->level, buffer);
         }
     }
