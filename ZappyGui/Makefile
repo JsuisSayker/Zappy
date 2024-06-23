@@ -28,7 +28,7 @@ SRC			=	Window.cpp \
 				ZappyGui.cpp \
 
 TEST			=	test_client.cpp	\
-					test_hud.cpp	\
+					# test_hud.cpp	\
 
 MAIN		=	Main.cpp
 
