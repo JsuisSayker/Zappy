@@ -29,10 +29,6 @@ int ai_command_fork(zappy_server_t *zappy, client_t *client, char *cmd)
 {
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
-    if (cast_action(zappy, client, 42, cmd) == ERROR)
-        return ERROR;
-    if (check_action(zappy, client) == false)
-        return OK;
     if (do_fork(zappy, client) == OK)
         return OK;
     return KO;

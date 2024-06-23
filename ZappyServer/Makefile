@@ -26,9 +26,9 @@ SRC			=	zappy_server.c						\
 				send_mct_command_to_all_gui.c		\
 				refill_map.c						\
 				${DIR_TOOLS}						\
-				${DIR_COMMAND_AI}					\
 				${DIR_COMMAND_GUI}					\
 				${DIR_COMMAND_SERVER}				\
+				${DIR_AI}							\
 
 TOOLS		=	splitter.c							\
 				free_array.c						\
@@ -40,12 +40,17 @@ TOOLS		=	splitter.c							\
 				normalize_coordonate.c				\
 				free_string.c						\
 				realloc_and_strcat.c				\
+				nb_resource_tile.c					\
 
-COMMAND_AI		=	handle_ai_command.c				\
-					ai_function.c					\
-					ai_initialisation.c				\
-					ai_action.c						\
-					ai_command_forward.c			\
+AI			=	ai_function.c						\
+				ai_initialisation.c					\
+				ai_queue.c							\
+				ai_handle_command.c					\
+				ai_execution_command.c				\
+				${DIR_COMMAND_AI}
+
+
+COMMAND_AI		=	ai_command_forward.c			\
 					ai_command_left.c				\
 					ai_command_right.c				\
 					ai_command_take_object.c		\
@@ -83,6 +88,7 @@ COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_suc.c				\
 					gui_command_sgt.c				\
 					gui_command_sst.c				\
+					gui_command_gui_disconnected.c	\
 					send_sgt_command_to_all_gui.c	\
 					send_sbp_command_to_all_gui.c	\
 					send_enw_command_to_all_gui.c	\
@@ -108,6 +114,8 @@ COMMAND_SERVER	=	handle_server_command.c			\
 DIR_SRC		=	$(addprefix src/, $(SRC))
 
 DIR_COMMAND_AI	=	$(addprefix CommandsAi/, $(COMMAND_AI))
+
+DIR_AI =	$(addprefix Ai/, $(AI))
 
 DIR_COMMAND_GUI	=	$(addprefix CommandsGui/, $(COMMAND_GUI))
 

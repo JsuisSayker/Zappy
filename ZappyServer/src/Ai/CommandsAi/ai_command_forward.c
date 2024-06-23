@@ -57,10 +57,6 @@ int ai_command_forward(zappy_server_t *zappy, client_t *client, char *cmd)
 {
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
-    if (cast_action(zappy, client, 7, cmd) == ERROR)
-        return ERROR;
-    if (check_action(zappy, client) == false)
-        return OK;
     if (check_direction(zappy, client) == ERROR)
         return ERROR;
     return OK;

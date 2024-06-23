@@ -26,23 +26,6 @@
     #include "macro_server.h"
     #include "server_struct.h"
 
-typedef struct zappy_server_s {
-    fd_t fd;
-    int my_socket;
-    int actual_sockfd;
-    int index_eggs;
-    int nb_connected_clients;
-    int all_resources[7];
-    bool server_start_game;
-    bool server_running;
-    double time_refill_map;
-    struct sockaddr_in server_addr;
-    struct teamhead all_teams;
-    struct client_s clients[FD_SETSIZE];
-    map_tile_t **map_tile;
-    args_config_t *args;
-} zappy_server_t;
-
 char *direction_string(ai_direction_t orientation);
 
 // char_tab functions
@@ -99,6 +82,7 @@ void set_inventory_resource_quantite(inventory_t *tile_inventory,
 void normalize_coordinate(int *x, int *y, zappy_server_t *zappy);
 void free_string(char **str);
 void realloc_and_strcat(char **message, char *str);
+int nb_resource_tile(inventory_t *inventory);
 
 // node
 void free_node(message_t *node);
@@ -159,20 +143,25 @@ void server_command_pause(zappy_server_t *zappy, char *command);
 
 // AI FUNCTIONS
 
-typedef struct command_ai_s {
+typedef struct list_command_ai_s {
     char *command;
+    double cast_time;
     int (*func)(zappy_server_t *zappy, client_t *client, char *command);
-} command_ai_t;
+    bool (*condition)(zappy_server_t *zappy, client_t *client);
+} list_command_ai_t;
 
 int ai_function(zappy_server_t *zappy, client_t *client, char *cmd);
-int queue_to_exec(client_t *client);
-int add_in_queue(client_t *client, char *cmd);
+int exec_command(zappy_server_t *zappy, client_t *client);
+void add_in_queue(client_t *client, char *command, list_command_ai_t info_cmd,
+    double freq);
+int unqueue_command(client_t *client);
 int handle_ai_command(zappy_server_t *zappy, client_t *client, char *command);
-int cast_action(zappy_server_t *zappy, client_t *client, int freq, char *cmd);
-bool check_action(zappy_server_t *zappy, client_t *client);
 int ai_initialisation(zappy_server_t *zappy, client_t *ia,
     team_t *tmp_team);
 void send_gui_map_content(map_tile_t **map, int x, int y, int socket);
+
+//AI CONDITION COMMAND
+bool incantation_condition(zappy_server_t *zappy, client_t *client);
 
 // AI COMMANDS FUNCTIONS
 int ai_command_breadcast(zappy_server_t *zappy, client_t *client,
@@ -215,7 +204,7 @@ void send_pex_command_to_all_gui(zappy_server_t *zappy, int player_number);
 
 // GUI COMMANDS FUNCTIONS
 int handle_gui_command(zappy_server_t *zappy, char *command);
-void gui_command_msz(zappy_server_t *zappy, UNUSED char *command);
+void gui_command_msz(zappy_server_t *zappy, char *command);
 void gui_command_bct(zappy_server_t *zappy, char *command);
 void gui_command_mct(zappy_server_t *zappy, char *command);
 void gui_command_tna(zappy_server_t *zappy, char *command);
@@ -225,13 +214,8 @@ void gui_command_pin(zappy_server_t *zappy, char *command);
 void gui_command_suc(zappy_server_t *zappy, char *command);
 void gui_command_sgt(zappy_server_t *zappy, char *command);
 void gui_command_sst(zappy_server_t *zappy, char *command);
+void gui_command_gui_disconnected(zappy_server_t *zappy, char *command);
 void send_sgt_command_to_all_gui(zappy_server_t *zappy);
 void send_sbp_command_to_all_gui(zappy_server_t *zappy);
 
-// PATCH
-typedef struct path_type_s {
-    char *command;
-    int (*func)(zappy_server_t *zappy, char *command);
-} path_type_t;
-
-#endif /* !ZAPPY_SERVER_H_ */
+#endif /* ZAPPY_SERVER_H_ */

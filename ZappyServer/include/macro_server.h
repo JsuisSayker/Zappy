@@ -17,6 +17,7 @@
     #define THYSTAME_DENSITY 5
     #define MAX_CLIENTS 10
     #define CLEAR_SCREEN "\e[1;1H\e[2J"
+    #define QUEUE_SIZE 10
 
 
 #endif /* !MACRO_SERVER_H_ */

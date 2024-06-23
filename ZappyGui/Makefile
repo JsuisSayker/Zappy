@@ -27,7 +27,8 @@ SRC			=	Window.cpp \
 				Trantorian.cpp \
 				ZappyGui.cpp \
 
-TEST			=	test_client.cpp
+TEST			=	test_client.cpp	\
+					# test_hud.cpp	\
 
 MAIN		=	Main.cpp
 
@@ -81,7 +82,7 @@ fclean: clean
 re: fclean all
 
 debug: $(OBJ) $(vertObjFiles) $(fragObjFiles)
-	g++ -o $(NAME) $(DIR_SRC) $(DIR_MAIN) $(CPPFLAGS) $(LDFLAGS) imgui/*.cpp imgui/backends/*.cpp -ggdb3
+	g++ -o $(NAME) $(DIR_SRC) $(DIR_MAIN) $(CPPFLAGS) $(LDFLAGS) imgui/*.cpp imgui/backends/*.cpp
 
 unit_tests: re $(DIR_SRC) $(DIR_TESTS)
 	mkdir -p unit_tests

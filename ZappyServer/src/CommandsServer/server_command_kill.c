@@ -20,6 +20,7 @@ void server_command_kill(zappy_server_t *zappy, char *command)
         if (zappy->clients[i].client_number == atoi(command)) {
             dprintf(i, "dead\n");
             send_pdi_command_to_all_gui(zappy, &zappy->clients[i]);
+            close(i);
             FD_CLR(i, &zappy->fd.save_input);
             zappy->clients[i].type = UNKNOWN;
             return;

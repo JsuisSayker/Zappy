@@ -35,6 +35,7 @@ bool is_alive(zappy_server_t *zappy, client_t *client)
         if (client->type == AI && can_i_eat(zappy, client) == false) {
             dprintf(zappy->actual_sockfd, "dead\n");
             send_pdi_command_to_all_gui(zappy, client);
+            close(zappy->actual_sockfd);
             FD_CLR(zappy->actual_sockfd, &zappy->fd.save_input);
             client->type = UNKNOWN;
             return false;
@@ -50,6 +51,8 @@ int ai_function(zappy_server_t *zappy, client_t *client, char *cmd)
     if (is_alive(zappy, client) == false)
         return OK;
     if (handle_ai_command(zappy, client, cmd) == ERROR)
+        return ERROR;
+    if (exec_command(zappy, client) == ERROR)
         return ERROR;
     return OK;
 }
