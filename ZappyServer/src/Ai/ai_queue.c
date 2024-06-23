@@ -7,44 +7,6 @@
 
 #include <zappy_server.h>
 
-// int cast_action(zappy_server_t *zappy, client_t *client, int cast_time,
-//     char *cmd)
-// {
-//     struct timeval start;
-
-//     if (client == NULL || zappy == NULL || cmd == NULL)
-//         return ERROR;
-//     if (client->command.is_contracted == false) {
-//         client->command.is_contracted = true;
-//         client->command.cast_time = (double)cast_time
-//             / (double)zappy->args->freq;
-//         client->command.execution = strdup(cmd);
-//         gettimeofday(&start, NULL);
-//         client->command.time = start.tv_sec + start.tv_usec / 1000000.0;
-//     }
-//     return OK;
-// }
-
-// bool check_action(zappy_server_t *zappy, client_t *client)
-// {
-//     struct timeval end;
-//     double elapsed;
-
-//     if (client == NULL || zappy == NULL)
-//         return false;
-//     gettimeofday(&end, NULL);
-//     elapsed = (end.tv_sec + end.tv_usec / 1000000.0) - client->command.time;
-//     if (client->command.is_contracted == true &&
-//     client->command.cast_time < elapsed) {
-//         client->command.is_contracted = false;
-//         client->command.cast_time = 0;
-//         client->command.time = 0.0;
-//         free_string(&client->command.execution);
-//         return true;
-//     }
-//     return false;
-// }
-
 static void destroy_node(client_t *client, int index)
 {
     if (client == NULL)
