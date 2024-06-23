@@ -6,7 +6,6 @@
 */
 
 #include <zappy_server.h>
-    // {"/expulse", &expulse},
 
 const list_command_ai_t COMMAND_FUNCS[] = {
     {"Forward", 7.0, &ai_command_forward, NULL},

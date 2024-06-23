@@ -30,7 +30,7 @@ Teams need to devise strategies to optimize resource collection and hinder other
   - [**MENDY Tom**](https://github.com/Tom-Mendy)
   - [**MENDIA Marc**](https://github.com/Dvaking)
 - **Technology:**
-&emsp;&emsp;&emsp;[![C](https://img.shields.io/badge/C-logo?style=for-the-badge&logo=C&logoColor=white&color=%23A8B9CC)](https://fr.wikipedia.org/wiki/C_(langage))
+&emsp;&emsp;&emsp;[![C](https://img.shields.io/badge/C-logo?style=for-the-badge&logo=C&logoColor=white&color=%23A8B9CC)](https://en.wikipedia.org/wiki/C_(programming_language))
 - **Features:**
   - **Manages communication** between GUI and AIs
   - **Manages resources** and field state
@@ -54,11 +54,11 @@ Teams need to devise strategies to optimize resource collection and hinder other
   - [**GAUFFRE Arthur**](https://github.com/arthurgauffre)
   - [**GIRAUD Romain**](https://github.com/OxiiLB)
 - **Technology:**
-&emsp;&emsp;&emsp;[![C++](https://img.shields.io/badge/C%2B%2B-logo?style=for-the-badge&logo=C%2B%2B&logoColor=white&color=%2300599C)](https://fr.wikipedia.org/wiki/C%2B%2B) [![Vulkan](https://img.shields.io/badge/vulkan-logo?style=for-the-badge&logo=Vulkan&logoColor=white&color=%23AC162C)](https://www.vulkan.org/learn)
+&emsp;&emsp;&emsp;[![C++](https://img.shields.io/badge/C%2B%2B-logo?style=for-the-badge&logo=C%2B%2B&logoColor=white&color=%2300599C)](https://en.wikipedia.org/wiki/C%2B%2B) [![Vulkan](https://img.shields.io/badge/vulkan-logo?style=for-the-badge&logo=Vulkan&logoColor=white&color=%23AC162C)](https://www.vulkan.org/learn)
 - **Features:**
-  - Real-time visualization of the field and AI actions
-  - User interface to monitor team progress
-  - Debug and performance monitoring tools
+  - **Real-time visualization** of the field and AI actions
+  - User **interface** to **monitor team progress**
+  - **Debug and performance monitoring** tools
 
 ## Installation
 
@@ -84,33 +84,31 @@ make
 
 **After installation**, here's how to launch the project
 
-### Launch Server
-
 ```sh
-./zappy_server -p port -x width -y height -n name1 name2 ... -c clientsNb -f freq
-        port            is the port number
-        width           is the width of the world
-        height          is the height of the world
-        nameX           is the name of the team X
-        clientsNb       is the number of authorized clients per team
-        freq            is the reciprocal of time unit for execution of actions
+./zappy_server -p [PORT] -x [WIDTH] -y [HEIGHT] -n [TEAMS] -c [NB_CLIENTS] -f [FREQ]
+      -p:           Connection port to the server.
+      -x & h:       Dimensions of the game map.
+      -n:           Names of all the teams.
+      -c:           Maximum number of players per team.
+      -f:           Execution frequency of the server.
 ```
 
-### Launch GUI
+### AIs Launch
 
 ```sh
-./zappy_gui -p port -h hostname
-        port            is the port number
-        hostname        is the server address (localhost = 127.0.0.1)
+./zappy_ai -p [PORT] -n [TEAM NAME] -h [SERVER HOSTNAME] -i [ID]
+      -p:           Connection port to the server.
+      -n:           Team name of this AI.
+      -h:           IP address for server connection.
+      -i:           Client ID. (optional)
 ```
 
-### Launch AI
+### GUI Launch
 
 ```sh
-./zappy_ai -p port -n name -h machine
-        port            is the port number
-        name            is the name of the team
-        hostname        is the server address (localhost = 127.0.0.1)
+./zappy_gui -p [PORT] -h [SERVER HOSTNAME]
+      -p:           Connection port to the server.
+      -h:           IP address for server connection.
 ```
 
 ## Trailer
