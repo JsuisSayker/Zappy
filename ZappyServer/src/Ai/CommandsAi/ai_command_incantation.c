@@ -88,6 +88,7 @@ bool incantation_condition(zappy_server_t *zappy, client_t *client)
         }
         return true;
     }
+    send_pie_command_to_all_gui(zappy, client, 0);
     return false;
 }
 
@@ -137,6 +138,7 @@ int ai_command_incantation(zappy_server_t *zappy, client_t *client, char *cmd)
         return ERROR;
     if (complet_incantation(zappy, client, client->level) == ERROR){
         dprintf(zappy->actual_sockfd, "ko\n");
+        send_pie_command_to_all_gui(zappy, client, 1);
         client->incantation = false;
     }
     return OK;
