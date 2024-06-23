@@ -1297,6 +1297,11 @@ void ZappyGui::pbc(std::vector<std::string> actualCommand)
  */
 void ZappyGui::pic(std::vector<std::string> actualCommand)
 {
+    // print command
+    for (const auto &arg : actualCommand) {
+        std::cout << arg << " ";
+    }
+    std::cout << std::endl;
     if (actualCommand.size() < 5) {
         std::cerr << "pic: invalid number of arguments" << std::endl;
         return;
