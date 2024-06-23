@@ -43,7 +43,7 @@ Teams need to devise strategies to optimize resource collection and hinder other
   - [**TROUVE Killian**](https://github.com/JsuisSayker)
 - **Technology:**
 
-&emsp;&emsp;&emsp;[![Python](https://img.shields.io/badge/python-logo?style=for-the-badge&logo=Python&logoColor=white&color=%233776AB)](https://docs.python.org/3/) [![Numpy](https://img.shields.io/badge/numyp-logo?style=for-the-badge&logo=Numpy&color=%23013243)](https://numpy.org/doc/stable/)
+&emsp;&emsp;&emsp;[![Python](https://img.shields.io/badge/python-logo?style=for-the-badge&logo=Python&logoColor=white&color=%233776AB)](https://docs.python.org/3/)&ensp;[![Numpy](https://img.shields.io/badge/numyp-logo?style=for-the-badge&logo=Numpy&color=%23013243)](https://numpy.org/doc/stable/)
 - **Features:**
   - **Resource gathering** strategy
   - **Autonomous decision-making** to reach the maximum level
@@ -57,7 +57,7 @@ Teams need to devise strategies to optimize resource collection and hinder other
   - [**GIRAUD Romain**](https://github.com/OxiiLB)
 - **Technology:**
 
-&emsp;&emsp;&emsp;[![C++](https://img.shields.io/badge/C%2B%2B-logo?style=for-the-badge&logo=C%2B%2B&logoColor=white&color=%2300599C)](https://en.wikipedia.org/wiki/C%2B%2B) [![Vulkan](https://img.shields.io/badge/vulkan-logo?style=for-the-badge&logo=Vulkan&logoColor=white&color=%23AC162C)](https://www.vulkan.org/learn)
+&emsp;&emsp;&emsp;[![C++](https://img.shields.io/badge/C%2B%2B-logo?style=for-the-badge&logo=C%2B%2B&logoColor=white&color=%2300599C)](https://en.wikipedia.org/wiki/C%2B%2B)&ensp;[![Vulkan](https://img.shields.io/badge/vulkan-logo?style=for-the-badge&logo=Vulkan&logoColor=white&color=%23AC162C)](https://www.vulkan.org/learn)
 - **Features:**
   - **Real-time visualization** of the field and AI actions
   - User **interface** to **monitor team progress**
