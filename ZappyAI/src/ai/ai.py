@@ -55,8 +55,8 @@ class AI():
                 print(f"While parsing inventory: |{elem}|")
                 print(f"Inventory: |{self.inventory}|")
                 print(f"elem.split()[0]: |{elem.split()[0]}|")
-                print(f"inventory object to change: |{
-                      self.inventory[elem.split()[0]]}|")
+                print(f"inventory object to change: | {
+                      self.inventory[elem.split()[0]]} |")
                 self.inventory[elem.split()[0]] = int(elem.split()[1])
         for resources in LEVELS[self.level]:
             print(f"GOUGOU: {resources}")
