@@ -82,6 +82,7 @@ void set_inventory_resource_quantite(inventory_t *tile_inventory,
 void normalize_coordinate(int *x, int *y, zappy_server_t *zappy);
 void free_string(char **str);
 void realloc_and_strcat(char **message, char *str);
+int nb_resource_tile(inventory_t *inventory);
 
 // node
 void free_node(message_t *node);
