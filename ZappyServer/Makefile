@@ -87,6 +87,7 @@ COMMAND_GUI		=	handle_gui_command.c			\
 					gui_command_suc.c				\
 					gui_command_sgt.c				\
 					gui_command_sst.c				\
+					gui_command_gui_disconnected.c	\
 					send_sgt_command_to_all_gui.c	\
 					send_sbp_command_to_all_gui.c	\
 					send_enw_command_to_all_gui.c	\
