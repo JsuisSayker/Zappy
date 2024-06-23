@@ -154,6 +154,7 @@ int exec_command(zappy_server_t *zappy, client_t *client);
 void add_in_queue(client_t *client, char *command, list_command_ai_t info_cmd,
     double freq);
 int unqueue_command(client_t *client);
+void destroy_queue(client_t *client);
 int handle_ai_command(zappy_server_t *zappy, client_t *client, char *command);
 int ai_initialisation(zappy_server_t *zappy, client_t *ia,
     team_t *tmp_team);
