@@ -203,7 +203,7 @@ void send_pex_command_to_all_gui(zappy_server_t *zappy, int player_number);
 
 // GUI COMMANDS FUNCTIONS
 int handle_gui_command(zappy_server_t *zappy, char *command);
-void gui_command_msz(zappy_server_t *zappy, UNUSED char *command);
+void gui_command_msz(zappy_server_t *zappy, char *command);
 void gui_command_bct(zappy_server_t *zappy, char *command);
 void gui_command_mct(zappy_server_t *zappy, char *command);
 void gui_command_tna(zappy_server_t *zappy, char *command);

@@ -9,8 +9,6 @@
 
 void gui_command_gui_disconnected(zappy_server_t *zappy, char *command)
 {
-    team_t *tmp_team = NULL;
-
     if (command[0] != '\0')
         return send_sbp_command_to_all_gui(zappy);
     FD_CLR(zappy->actual_sockfd, &zappy->fd.save_input);
