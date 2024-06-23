@@ -29,6 +29,7 @@ static bool check_condition(zappy_server_t *zappy, client_t *client)
         client->commands[0].condition(zappy, client) == false){
             dprintf(zappy->actual_sockfd, "ko\n");
             unqueue_command(client);
+            client->incantation = false;
             return false;
         }
     return true;

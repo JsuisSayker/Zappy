@@ -124,8 +124,8 @@ static int complet_incantation(zappy_server_t *zappy, client_t *client,
             zappy->clients[i].incantation = false;
             send_pie_command_to_all_gui(zappy, &zappy->clients[i], 1);
             send_plv_command_to_all_gui(zappy, &zappy->clients[i]);
-            dprintf(zappy->actual_sockfd, "Current level: %d\n",
-                zappy->clients[i].level);
+            dprintf(i, "Current level: %d\n", zappy->clients[i].level);
+            client->incantation = false;
         }
     }
     return OK;
@@ -135,7 +135,9 @@ int ai_command_incantation(zappy_server_t *zappy, client_t *client, char *cmd)
 {
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
-    if (complet_incantation(zappy, client, client->level) == ERROR)
+    if (complet_incantation(zappy, client, client->level) == ERROR){
         dprintf(zappy->actual_sockfd, "ko\n");
+        client->incantation = false;
+    }
     return OK;
 }
