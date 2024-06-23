@@ -23,7 +23,6 @@ def entrypoint() -> int:
         clientId = args.order[3][1][0]
     else:
         clientId = "1"
-    print("Client ID: " + clientId)
     client = Client(port, name, machine, clientId)
     client.connectWithServer()
     client.launch_client()

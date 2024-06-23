@@ -99,15 +99,10 @@ class Client():
                             print("Connection reset by peer")
                             self.closeConnection()
                             exit(0)
-                        print(f"DATA: {data}")
-                        print(f"self.ai.dataToSend: {self.ai.dataToSend}")
-
                         if not data:
                             continue
                         tmpReceivedData = data.split("\n")
-                        print(f"tmpReceivedData: {tmpReceivedData[:-1]}")
                         for element in tmpReceivedData[:-1]:
-                            print(f"element: {element}")
                             if "WELCOME" in element and self.logged is False:
                                 self.ai.dataToSend = self.teamName + "\n"
                             elif "message" in element:
@@ -121,12 +116,10 @@ class Client():
                                 self.saveStartingInformation(element,
                                                              self.actualStep)
                             elif "dead" in element:
-                                print("I'm dead")
                                 exit(0)
                             elif self.ai.dataToSend == "Look\n" and "message"\
                                     not in element:
                                 self.ai.look = element
-                                print(f"look: {self.ai.look}")
                             elif "Take" in self.ai.dataToSend and "food"\
                                     not in self.ai.dataToSend and "ok"\
                                     in element and "message" not in element:
@@ -137,23 +130,16 @@ class Client():
                                 try:
                                     self.ai.parsingAiInventory(element)
                                 except IndexError:
-                                    print("IndexError", element)
                                     pass
                                 except ValueError:
-                                    print("ValueError", element)
                                     pass
                             elif "Elevation underway" in element:
                                 self.ai.actualActivity = Activity.CLEARING_DATA
                             elif "Current level" in element:
                                 self.ai.level = int(''.join(filter(
                                     str.isdigit, element)))
-                                print(f"LEVEL: {self.ai.level}")
                                 if self.ai.level == 8:
-                                    print("VICTORY")
                                     exit(0)
-                                print(
-                                    f"Current element in current elem: {
-                                        element}")
                                 self.ai.newRessource = False
                                 self.ai.searchingRessource = ""
                                 self.ai.incantation = False
@@ -166,7 +152,6 @@ class Client():
                             elif self.ai.dataToSend == "Fork\n" and "message"\
                                     not in element:
                                 self.forkingProcess()
-                                print("forking")
                                 self.ai.canFork = False
                             self.ai.run = True
 
@@ -178,7 +163,6 @@ class Client():
                                     self.teamName + '\n'
                             ) and self.logged is False:
                                 self.actualStep = 1
-                            print(f"DATA SENT: {self.ai.dataToSend}")
                             self.socket.send(self.ai.dataToSend.encode())
                             self.ai.run = False
 

@@ -47,17 +47,10 @@ class AI():
         for i in range(len(tmpData)):
             if tmpData[i][0] == " ":
                 tmpData[i] = tmpData[i][1:]
-        print(f"DATA IN PARSE INVENTORY: {tmpData}")
         for elem in tmpData:
             if elem:
-                print(f"While parsing inventory: |{elem}|")
-                print(f"Inventory: |{self.inventory}|")
-                print(f"elem.split()[0]: |{elem.split()[0]}|")
-                print(f"inventory object to change: | {
-                      self.inventory[elem.split()[0]]} |")
                 self.inventory[elem.split()[0]] = int(elem.split()[1])
         for resources in LEVELS[self.level]:
-            print(f"GOUGOU: {resources}")
             if self.inventory[resources] < LEVELS[self.level][resources]:
                 readyToIncantate = False
         if readyToIncantate is True:
@@ -65,15 +58,10 @@ class AI():
 
     def parseReceivedMessageFromBroadcast(self, messageReceived: str) -> None:
         signalDirection = int(messageReceived[8])
-        print(f"signalDirection: {signalDirection}")
-        print(f"messageReceived before: {messageReceived}")
         parsedReceivedMessage = xorStrings(self.teamName,
                                            bytes.fromhex(messageReceived[11:]
                                                          ).decode("utf-8"))
-        print(f"parsedReceivedMessage value: {parsedReceivedMessage}")
         if "inventory" in parsedReceivedMessage:
-            print("parsing inventory")
-            print(f"yay of inventory: {parsedReceivedMessage[9:]}")
             self.parsingOfSharedInventory(parsedReceivedMessage[9:])
         if "incantation" in parsedReceivedMessage:
             if self.clearBroadcast is True:
@@ -87,10 +75,8 @@ class AI():
             elif self.incantation is True:
                 self.goToBroadcastSignal(signalDirection)
         if "on my way" in parsedReceivedMessage:
-            print("ON MY WAY")
             return
         if "ready" in parsedReceivedMessage:
-            print("ready")
             self.nbReadyPlayers += 1
 
     def checkIncanationActivity(self) -> None:
@@ -104,16 +90,11 @@ class AI():
                                    json.dumps(
                                        self.inventory)))),
                     "utf-8").hex()
-                print("SENDING INVENTORY AND OTHER THINGS")
-                print(f"messageToSend: {messageToSend}")
                 self.dataToSend = "Broadcast " + messageToSend + "\n"
-                # self.newRessource = False
             else:
                 messageToSend = bytes(xorStrings(self.teamName, (str(
                     self.clientId) + "|incantation|" + str(
                         self.level))), "utf-8").hex()
-                print("SENDING INCANTATION AND OTHER THINGS")
-                print(f"messageToSend: {messageToSend}")
                 self.dataToSend = "Broadcast " + messageToSend + "\n"
                 self.newRessource = False
                 self.incantation = True
@@ -200,20 +181,14 @@ class AI():
 
     def isIncantationPossible(self) -> bool:
         requiredRessources = LEVELS[self.level]
-        print(f"REQUIRED RESSOURCES TO LEVEL UP : {requiredRessources}")
         tmpInventory: dict = {}
         if self.level < 3:
             tmpInventory = self.inventory
         elif "commonResources" in self.sharedInventory:
             tmpInventory = self.sharedInventory["commonResources"]
-        print(f"SHARED INVENTORY: {tmpInventory}")
-        print(f"SEARCHED RESOURCE: {self.searchingRessource}")
         if self.searchingRessource in tmpInventory:
             tmpInventory[self.searchingRessource] += 1
         for ressource in requiredRessources:
-            print(f"RESSOURCE: {ressource}")
-            print(f"REQUIRED RESSOURCES: {requiredRessources[ressource]}")
-            print(f"BIG INVENTORY: {tmpInventory[ressource]}")
             if tmpInventory[ressource] < requiredRessources[ressource]:
                 return False
         return True
@@ -225,23 +200,18 @@ class AI():
             case 0:
                 messageToSend = bytes(xorStrings(
                     self.teamName, ("ready")), "utf-8").hex()
-                print("SENDING READY")
                 self.dataToSend = "Broadcast " + messageToSend + "\n"
                 self.playerIsReady = True
                 self.commandList = []
             case 1 | 2 | 8:
-                print("I'M GOING FORWARD IN THE GO TO BROADCAST SIGNAL")
                 self.commandList.insert(0, "Forward\n")
             case 5 | 6 | 7:
-                print("I'M GOING RIGHT IN THE GO TO BROADCAST SIGNAL")
                 self.commandList.insert(0, "Right\n")
             case _:
-                print("I'M GOING LEFT IN THE GO TO BROADCAST SIGNAL")
                 self.commandList.insert(0, "Left\n")
 
     def startingIncantation(self) -> None:
         data = self.look.split(",")[0]
-        print(f"DATA IN STARTING INCANTATION: {data}")
         while True:
             if len(data) == 0 or data[0].isalpha():
                 break
@@ -252,11 +222,6 @@ class AI():
             tmpInventory = self.inventory
         elif "commonResources" in self.sharedInventory:
             tmpInventory = self.sharedInventory["commonResources"]
-        print(
-            f"SHARED INVENTORY IN THE START OF THE INCANTATION: {
-                tmpInventory}")
-        print(f"TMPDATA IN THE START OF THE INCANTATION: {tmpData}")
-        print(f"ACTUAL INVENTORY: {self.inventory}")
         requiredRessources = (LEVELS[self.level]).copy()
         for ressource in requiredRessources:
             for elem in tmpData:
@@ -276,8 +241,6 @@ class AI():
             ressourcesData = ressourcesData[1:]
         ressourcesData = ressourcesData.split(" ")
         requiredRessources = LEVELS[self.level].copy()
-        print(
-            f"REQUIRED RESSOURCES IN THE DROP FUNCTION: {requiredRessources}")
         for ressource in requiredRessources:
             for elem in ressourcesData:
                 if ressource == elem:
@@ -285,8 +248,6 @@ class AI():
         for ressource in requiredRessources:
             if requiredRessources[ressource] < 1:
                 continue
-            print(f"requiredRessources[{ressource}]: {requiredRessources[
-                ressource]}")
             if self.inventory[ressource] != 0 and\
                     ressource in self.inventory:
                 self.commandList.append("Set " + ressource + "\n")
@@ -302,7 +263,6 @@ class AI():
 
     def populatingActivity(self) -> None:
         if self.availableSlots > 0 and int(self.clientId) < 6:
-            print("Fork")
             self.dataToSend = "Fork\n"
             self.canFork = False
         else:
@@ -315,52 +275,74 @@ class AI():
 
     def fillMapWithObjects(self, fakeMap: list, dataList: list) -> list:
         nb = 1
-        v = (self.minWidthValue - 1)
-        h = 0
+        minValue = (self.minWidthValue - 1)
+        maxHeight = 0
         indexOfElemInLisr = 0
 
         line = int(math.sqrt(len(dataList)))
         for _ in range(line):
-            tv = v - h
+            diffMinMax = minValue - maxHeight
             for _ in range(nb):
-                fakeMap[tv][h].append(dataList[indexOfElemInLisr])
-                tv += 1
+                fakeMap[diffMinMax][maxHeight].append(dataList[
+                    indexOfElemInLisr])
+                diffMinMax += 1
                 indexOfElemInLisr += 1
             nb = (nb + 2)
-            h += 1
+            maxHeight += 1
         return fakeMap
 
     def findObjectOnMap(self, fakeMap: list, object: str) -> list[int] | None:
-        v = (self.minWidthValue - 1)
-        h = 0
-        while h < lookingSizeOfMap(fakeMap[v]):
-            if fakeMap[v][h] != [] and object in fakeMap[v][h][0]:
-                return [v, h]
-            for offset in range(1, h + 1):
-                if fakeMap[v - offset][h] != [] and object in fakeMap[
-                        v - offset][h][0]:
-                    return [v - offset, h]
-                if fakeMap[v + offset][h] != [] and object in fakeMap[
-                        v + offset][h][0]:
-                    return [v + offset, h]
-            h += 1
+        minValue = (self.minWidthValue - 1)
+        maxHeight = 0
+        while maxHeight < lookingSizeOfMap(fakeMap[minValue]):
+            if fakeMap[minValue][maxHeight] != [] and object in fakeMap[
+                    minValue][maxHeight][0]:
+                return [minValue, maxHeight]
+            for offset in range(1, maxHeight + 1):
+                if fakeMap[minValue - offset][maxHeight] != [] and object in\
+                        fakeMap[minValue - offset][maxHeight][0]:
+                    return [minValue - offset, maxHeight]
+                if fakeMap[minValue + offset][maxHeight] != [] and object in\
+                        fakeMap[minValue + offset][maxHeight][0]:
+                    return [minValue + offset, maxHeight]
+            maxHeight += 1
         return None
 
     def fillingInventory(self, data: str, objectToSearch: str) -> list | list[
             str]:
+        """
+        The `fillingInventory` function takes in a string of data and an object
+        to search for, generates a map, finds the object on the map, and
+        returns a list of actions to take based on the object's position.
+
+        @param data The `fillingInventory` function seems to be a method that
+        processes some data to generate a list of actions based on a search
+        for a specific object within a map. It's part of a
+        larger program or system that involves navigating and interacting with
+        objects in a virtual environment.
+
+        @param objectToSearch The `objectToSearch` parameter in the
+        `fillingInventory` method is the object that you are searching for in
+        the inventory. This method takes a string `data` which contains a list
+        of objects and their positions, and `objectToSearch` which is the
+        object you want to find in
+
+        @return The `fillingInventory` method returns a list of instructions
+        for navigating a map and interacting with objects based on the input
+        data and the object to search for. The returned list may contain a
+        sequence of "Forward", "Right", and "Left" movements, as well as
+        instructions to "Take" the specified object and display the
+        "Inventory".
+        """
         tmpList = []
         finalResult = []
-        print(f"data: {data}")
         tmpData = data.split(",")
         for i in range(len(tmpData)):
             tmpList.append(' '.join(re.split(r'\W+', tmpData[i])[1:]))
-        print(f"tmpList: {tmpList}")
         generatedMap = self.generateEmptyMap()
         self.fillMapWithObjects(generatedMap, tmpList)
         objectPosition = self.findObjectOnMap(generatedMap,
                                               objectToSearch)
-        print(f"coordinates: {objectPosition}")
-        print(f"objectToSearch: {objectToSearch}")
         if objectPosition is None:
             for i in range(3):
                 finalResult.append(random.choice(["Forward\n", "Right\n",
@@ -396,6 +378,17 @@ class AI():
         return finalResult
 
     def fillingActivity(self, data: str) -> None:
+        """
+        The `fillingActivity` function checks the inventory for food and fills
+        it if below 50, otherwise it searches for a resource and fills the
+        inventory with it.
+
+        @param data The `data` parameter in the `fillingActivity` method seems
+        to be a string that is being passed as an argument to the method.
+        This string likely contains information or instructions related to the
+        activity being performed. The method uses this data to determine how
+        to fill the inventory based on certain conditions.
+        """
         if "food" in self.inventory and self.inventory["food"] < 50:
             self.commandList = self.fillingInventory(data, "food")
         else:
@@ -405,19 +398,28 @@ class AI():
         self.actualActivity = Activity.EXECUTE_COMMAND
 
     def lookingActivity(self) -> None:
+        """
+        The function `lookingActivity` sets attributes related to broadcasting
+        and data transmission for a specific activity.
+        """
         self.clearBroadcast = False
         self.dataToSend = "Look\n"
         self.actualActivity = Activity.FILLING
 
     def searchingActivity(self) -> str:
+        """
+        This function searches for a resource needed for a specific level
+        activity and returns a random resource if not all required resources
+        are available in the inventory.
+
+        @return The `searchingActivity` method returns either "food" if all
+        required resources are available in the inventory, or a randomly
+        chosen resource from the list of resources that are needed for the
+        activity.
+        """
         tmpList = []
         requiredRessources = LEVELS[self.level]
         for ressource in requiredRessources:
-            print(f"RESSOURCE SEARCHING METHOD: {ressource}")
-            print(
-                f"REQUIREDRESOURCE VALUE SEARCHING METHOD: {
-                    requiredRessources[ressource]}")
-            print(f"SELF INVENTORY IN SEARCHING METHOD: {self.inventory}")
             if requiredRessources[ressource] > self.inventory[ressource] or (
                     ressource not in self.inventory):
                 tmpList.append(ressource)
@@ -426,12 +428,19 @@ class AI():
         return random.choice(tmpList)
 
     def finishingIncantation(self) -> None:
+        """
+        The function `finishingIncantation` sets the `dataToSend` attribute to
+        "Inventory\n" and the `actualActivity` attribute to
+        `Activity.WRITING_LAST_MESSAGE`.
+        """
         self.dataToSend = "Inventory\n"
-        print("I'm finishing the incantation")
         self.actualActivity = Activity.WRITING_LAST_MESSAGE
 
     def writeLastMessage(self) -> None:
-        print("I'm writing the last message")
+        """
+        The function `writeLastMessage` prepares a message to be broadcasted
+        with encoded data based on the team's information.
+        """
         messageToSend = bytes(xorStrings(self.teamName, (
             "inventory" + str(self.clientId) + "|" + str(
                 self.level) + "|" + str(
@@ -441,6 +450,10 @@ class AI():
         self.actualActivity = Activity.EXECUTE_COMMAND
 
     def algorithm(self) -> None:
+        """
+        This Python function defines a series of activities based on the
+        current state of the program.
+        """
         self.nbPlayers = int(self.clientId)
         match self.actualActivity:
             case Activity.STARTING:
