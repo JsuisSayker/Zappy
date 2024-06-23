@@ -101,11 +101,11 @@ std::vector<std::string> splitMessages(std::string message, char splitChar)
 void zappy::Client::receiveFromServer()
 {
     bool skiped = false;
-    char buffer[BUFSIZ];
+    char buffer[BUFSIZ * 10];
     ssize_t bytesRead;
 
     while (this->running) {
-        bytesRead = read(this->_socketFd, buffer, BUFSIZ);
+        bytesRead = read(this->_socketFd, buffer, BUFSIZ * 10);
         if (bytesRead == -1) {
             perror("read");
             return;
