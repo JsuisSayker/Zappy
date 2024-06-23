@@ -320,13 +320,7 @@ void ZappyGui::processCommand()
         if (this->getPointerToFunction().find(command[0]) !=
             this->getPointerToFunction().end()) {
             try {
-                std::cout << "Command: ";
-                for (auto &elem : command) {
-                    std::cout << elem << " ";
-                }
-                std::cout << std::endl;
                 this->getPointerToFunction()[command[0]](command);
-                std::cout << "Command executed" << std::endl;
             } catch (const std::exception &e) {
                 std::cerr << "Exception: " << e.what() << std::endl;
             }
@@ -1115,7 +1109,6 @@ void ZappyGui::ppo(std::vector<std::string> actualCommand)
     try {
         if (actualCommand[1][0] != '#') {
             std::cerr << "ppo: invalid player number" << std::endl;
-            std::cout << actualCommand[1] << std::endl;
             return;
         }
         actualCommand[1].erase(actualCommand[1].begin());
@@ -1541,7 +1534,6 @@ void ZappyGui::ebo(std::vector<std::string> actualCommand)
  */
 void ZappyGui::edi(std::vector<std::string> actualCommand)
 {
-    std::cout << "death of an egg" << std::endl;
     if (actualCommand.size() != 2) {
         std::cerr << "edi: invalid number of arguments" << std::endl;
         return;
