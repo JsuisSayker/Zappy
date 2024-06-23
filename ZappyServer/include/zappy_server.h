@@ -213,6 +213,7 @@ void gui_command_pin(zappy_server_t *zappy, char *command);
 void gui_command_suc(zappy_server_t *zappy, char *command);
 void gui_command_sgt(zappy_server_t *zappy, char *command);
 void gui_command_sst(zappy_server_t *zappy, char *command);
+void gui_command_gui_disconnected(zappy_server_t *zappy, char *command);
 void send_sgt_command_to_all_gui(zappy_server_t *zappy);
 void send_sbp_command_to_all_gui(zappy_server_t *zappy);
 
