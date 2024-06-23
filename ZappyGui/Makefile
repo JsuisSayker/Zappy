@@ -44,7 +44,7 @@ OBJ_MAIN	=	$(DIR_MAIN:.cpp=.o)
 
 OBJ			=	$(OBJ_SRC) $(OBJ_MAIN)
 
-CPPFLAGS = -I./include -I./include/systems -I$(TINYOBJ_PATH) -I$(STBIMAGE_PATH) -I./imgui/ -I./imgui/backends -ggdb3
+CPPFLAGS = -I./include -I./include/systems -I$(TINYOBJ_PATH) -I$(STBIMAGE_PATH) -I./imgui/ -I./imgui/backends
 LDFLAGS = `pkg-config --static --libs glfw3` -lvulkan
 
 # create list of all spv files and set as dependency
