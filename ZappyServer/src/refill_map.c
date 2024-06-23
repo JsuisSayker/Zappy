@@ -29,7 +29,7 @@ static void add_resource_1(zappy_server_t *zappy, bool *is_refill)
         zappy->args->height / 100) - zappy->all_resources[0];
 
     for (int i = 0; i < resource_to_add; i += 1) {
-        while (nb_resource_tile(&zappy->map_tile[y][x].inventory) > 2){
+        while (nb_resource_tile(&zappy->map_tile[y][x].inventory) >= 2){
             x = rand() % zappy->args->height;
             y = rand() % zappy->args->width;
         }
@@ -40,7 +40,7 @@ static void add_resource_1(zappy_server_t *zappy, bool *is_refill)
     resource_to_add = (LINEMATE_DENSITY * zappy->args->width *
             zappy->args->height / 100) - zappy->all_resources[1];
     for (int i = 0; i < resource_to_add; i += 1) {
-        while (nb_resource_tile(&zappy->map_tile[y][x].inventory) > 2){
+        while (nb_resource_tile(&zappy->map_tile[y][x].inventory) >= 2){
             x = rand() % zappy->args->height;
             y = rand() % zappy->args->width;
         }
@@ -58,7 +58,7 @@ static void add_resource_2(zappy_server_t *zappy, bool *is_refill)
             zappy->args->height / 100) - zappy->all_resources[2];
 
     for (int i = 0; i < resource_to_add; i += 1) {
-        while (nb_resource_tile(&zappy->map_tile[y][x].inventory) > 2){
+        while (nb_resource_tile(&zappy->map_tile[y][x].inventory) >= 2){
             x = rand() % zappy->args->height;
             y = rand() % zappy->args->width;
         }
@@ -69,7 +69,7 @@ static void add_resource_2(zappy_server_t *zappy, bool *is_refill)
     resource_to_add = (SIBUR_DENSITY * zappy->args->width *
         zappy->args->height / 100) - zappy->all_resources[3];
     for (int i = 0; i < resource_to_add; i += 1) {
-        while (nb_resource_tile(&zappy->map_tile[y][x].inventory) > 2){
+        while (nb_resource_tile(&zappy->map_tile[y][x].inventory) >= 2){
             x = rand() % zappy->args->height;
             y = rand() % zappy->args->width;
         }
@@ -87,7 +87,7 @@ static void add_resource_3(zappy_server_t *zappy, bool *is_refill)
         zappy->args->height / 100) - zappy->all_resources[4];
 
     for (int i = 0; i < resource_to_add; i += 1) {
-        while (nb_resource_tile(&zappy->map_tile[y][x].inventory) > 2){
+        while (nb_resource_tile(&zappy->map_tile[y][x].inventory) >= 2){
             x = rand() % zappy->args->height;
             y = rand() % zappy->args->width;
         }
@@ -98,7 +98,7 @@ static void add_resource_3(zappy_server_t *zappy, bool *is_refill)
     resource_to_add = (PHIRAS_DENSITY * zappy->args->width *
         zappy->args->height / 100) - zappy->all_resources[5];
     for (int i = 0; i < resource_to_add; i += 1) {
-        while (nb_resource_tile(&zappy->map_tile[y][x].inventory) > 2){
+        while (nb_resource_tile(&zappy->map_tile[y][x].inventory) >= 2){
             x = rand() % zappy->args->height;
             y = rand() % zappy->args->width;
         }
@@ -116,7 +116,7 @@ static void add_resource_4(zappy_server_t *zappy, bool *is_refill)
             zappy->args->height / 100) - zappy->all_resources[6];
 
     for (int i = 0; i < resource_to_add; i += 1) {
-        while (nb_resource_tile(&zappy->map_tile[y][x].inventory) > 2){
+        while (nb_resource_tile(&zappy->map_tile[y][x].inventory) >= 2){
             x = rand() % zappy->args->height;
             y = rand() % zappy->args->width;
         }
