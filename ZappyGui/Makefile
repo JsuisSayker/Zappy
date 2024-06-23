@@ -27,7 +27,8 @@ SRC			=	Window.cpp \
 				Trantorian.cpp \
 				ZappyGui.cpp \
 
-TEST			=	test_client.cpp
+TEST			=	test_client.cpp	\
+					test_hud.cpp	\
 
 MAIN		=	Main.cpp
 
