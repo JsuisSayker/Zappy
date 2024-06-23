@@ -58,7 +58,8 @@ void ZappyGui::initHud()
     init_info.PhysicalDevice = this->zappyDevice.getPhysicalDevice();
     init_info.Device = this->zappyDevice.device();
     init_info.QueueFamily =
-        this->zappyDevice.findQueueFamilies(this->zappyDevice.getPhysicalDevice())
+        this->zappyDevice
+            .findQueueFamilies(this->zappyDevice.getPhysicalDevice())
             .graphicsFamily;
     init_info.Queue = this->zappyDevice.graphicsQueue();
     init_info.PipelineCache = VK_NULL_HANDLE;
@@ -74,7 +75,8 @@ void ZappyGui::initHud()
     ImGui_ImplVulkan_Init(&init_info);
 
     // Upload Fonts
-    VkCommandBuffer command_buffer = this->zappyDevice.beginSingleTimeCommands();
+    VkCommandBuffer command_buffer =
+        this->zappyDevice.beginSingleTimeCommands();
     ImGui_ImplVulkan_CreateFontsTexture();
     this->zappyDevice.endSingleTimeCommands(command_buffer);
 }
@@ -135,12 +137,18 @@ void ZappyGui::drawHud()
     if (!current_team.empty()) {
         ImGui::Separator();
 
-        glm::vec3 glmColor1 = this->teamsColors_[current_team] / 255.0f;
+        glm::vec3 glmColor1 = this->teamsColors_[current_team];
+        if (glmColor1.x > 1 || glmColor1.y > 1 || glmColor1.z > 1) {
+            glmColor1 /= 255.0f;
+        }
         float *color = glm::value_ptr(glmColor1);
 
         if (ImGui::ColorEdit3("Color", color)) {
             glmColor1 = glm::vec3(color[0], color[1], color[2]);
-            this->teamsColors_[current_team] = glmColor1 * 255.0f;
+            this->teamsColors_[current_team] = glmColor1;
+            for (auto &trantorian : this->trantorians_) {
+                gameObjects[trantorian.pointLightObject].color = glmColor1;
+            }
         }
     }
 
@@ -299,8 +307,10 @@ ZappyGui::ZappyGui()
 void ZappyGui::processCommand()
 {
     std::unique_lock<std::mutex> lock(this->getClient().get()->_mutex);
-    std::chrono::_V2::system_clock::time_point commandTime = std::chrono::high_resolution_clock::now();
-    std::chrono::_V2::system_clock::time_point endTime = commandTime + std::chrono::milliseconds(16);
+    std::chrono::_V2::system_clock::time_point commandTime =
+        std::chrono::high_resolution_clock::now();
+    std::chrono::_V2::system_clock::time_point endTime =
+        commandTime + std::chrono::milliseconds(16);
 
     while (!this->getClient().get()->getQueue().empty() &&
         commandTime < endTime) {
@@ -402,7 +412,8 @@ void ZappyGui::run()
 
     std::thread reader(&Client::receiveFromServer, this->client.get());
 
-    std::chrono::_V2::system_clock::time_point currentTime = std::chrono::high_resolution_clock::now();
+    std::chrono::_V2::system_clock::time_point currentTime =
+        std::chrono::high_resolution_clock::now();
     int socket_fd = this->getClient().get()->getSocketFd();
     this->initHud();
 
@@ -413,7 +424,8 @@ void ZappyGui::run()
 
         processCommand();
 
-        std::chrono::_V2::system_clock::time_point newTime = std::chrono::high_resolution_clock::now();
+        std::chrono::_V2::system_clock::time_point newTime =
+            std::chrono::high_resolution_clock::now();
         float frameTime =
             std::chrono::duration<float, std::chrono::seconds::period>(
                 newTime - currentTime)
@@ -549,7 +561,8 @@ ZappyGameObject::id_t ZappyGui::createGameObject(const std::string &modelPath,
         std::vector<VkDescriptorSet> descriptorSets(
             ZappySwapChain::MAX_FRAMES_IN_FLIGHT);
         for (int i = 0; i < uboBuffers.size(); i++) {
-            VkDescriptorBufferInfo bufferInfo = uboBuffers[i]->descriptorInfo();
+            VkDescriptorBufferInfo bufferInfo =
+                uboBuffers[i]->descriptorInfo();
             ZappyDescriptorWriter(*globalSetLayout, *globalPool)
                 .writeBuffer(0, &bufferInfo)
                 .writeImage(1, &object.imageInfo)
@@ -1207,8 +1220,8 @@ void ZappyGui::pin(std::vector<std::string> actualCommand)
     }
     for (Trantorian &Trantorian : trantorians_) {
         if (Trantorian.playerNumber == playerNumber) {
-            Trantorian.inventory = {food, linemate, deraumere, sibur, mendiane,
-                phiras, thystame};
+            Trantorian.inventory = {
+                food, linemate, deraumere, sibur, mendiane, phiras, thystame};
         }
     }
 }
@@ -1293,7 +1306,6 @@ void ZappyGui::pic(std::vector<std::string> actualCommand)
 {
     std::cout << "pic" << std::endl;
     if (actualCommand.size() < 4) {
-        std::cerr << "pic: invalid number of arguments" << std::endl;
         return;
     }
     int x;
@@ -1623,8 +1635,8 @@ void ZappyGui::removeTrantorian(int playerNumber)
         if (trantorian.playerNumber == playerNumber) {
             removeGameObject(trantorian.pointLightObject);
             removeGameObject(trantorian.trantorianObject);
-            trantorians_.erase(
-                std::find(trantorians_.begin(), trantorians_.end(), trantorian));
+            trantorians_.erase(std::find(
+                trantorians_.begin(), trantorians_.end(), trantorian));
             return;
         }
     }
