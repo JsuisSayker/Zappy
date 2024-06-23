@@ -62,7 +62,7 @@ Teams need to devise strategies to optimize resource collection and hinder other
 ### Server Launch:
 
 ```
-   ./zappy_server -p [PORT] -x [WIDTH] -y [HEIGHT] -n [TEAMS] -c [NB_CLIENTS] -f [FREQUENCES]
+   ./zappy_server -p [PORT] -x [WIDTH] -y [HEIGHT] -n [TEAMS] -c [NB_CLIENTS] -f [FREQ]
 
       -p:           Connection port to the server.
       -x & h:       Dimensions of the game map.
