@@ -1320,7 +1320,7 @@ void ZappyGui::pic(std::vector<std::string> actualCommand)
         return;
     }
     for (Trantorian &Trantorian : trantorians_) {
-        if (Trantorian.playerNumber = playerNumbers[0])
+        if (Trantorian.playerNumber == playerNumbers[0])
             Trantorian.incatationInProgess = true;
     }
 }
