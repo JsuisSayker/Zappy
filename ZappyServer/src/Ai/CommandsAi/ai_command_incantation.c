@@ -51,7 +51,7 @@ static int remove_ressource(inventory_t *tile_inventory, int lvl)
         {0, 2, 2, 2, 2, 2, 1}
     };
 
-    if (tile_inventory == NULL)
+    if (check_resources(tile_inventory, lvl) == false)
         return ERROR;
     tile_inventory->linemate -= req[lvl - 1].linemate;
     tile_inventory->deraumere -= req[lvl - 1].deraumere;
@@ -116,7 +116,7 @@ static int complet_incantation(zappy_server_t *zappy, client_t *client,
     tile_inventory = &zappy->map_tile[client->pos.x][client->pos.y].inventory;
     if (remove_ressource(tile_inventory, lvl) == ERROR)
         return ERROR;
-    for (int i = 3; i < zappy->nb_connected_clients; i++) {
+    for (int i = 0; i < zappy->nb_connected_clients; i++) {
         if (zappy->clients[i].type == AI && zappy->clients[i].pos.x ==
         client->pos.x && zappy->clients[i].pos.y == client->pos.y
         && zappy->clients[i].level == lvl) {
@@ -137,6 +137,6 @@ int ai_command_incantation(zappy_server_t *zappy, client_t *client, char *cmd)
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
     if (complet_incantation(zappy, client, client->level) == ERROR)
-        return ERROR;
+        dprintf(zappy->actual_sockfd, "ko\n");
     return OK;
 }
