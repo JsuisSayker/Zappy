@@ -68,8 +68,8 @@ class AI():
         print(f"signalDirection: {signalDirection}")
         print(f"messageReceived before: {messageReceived}")
         parsedReceivedMessage = xorStrings(self.teamName,
-                                          bytes.fromhex(messageReceived[11:]
-                                                        ).decode("utf-8"))
+                                           bytes.fromhex(messageReceived[11:]
+                                                         ).decode("utf-8"))
         print(f"parsedReceivedMessage value: {parsedReceivedMessage}")
         if "inventory" in parsedReceivedMessage:
             print("parsing inventory")
@@ -98,11 +98,11 @@ class AI():
             if not self.isIncantationPossible():
                 messageToSend = bytes(
                     xorStrings(self.teamName,
-                              ("inventory" + str(
-                                  self.clientId) + "|" + str(
-                                  self.level) + "|" + str(
-                                  json.dumps(
-                                                self.inventory)))),
+                               ("inventory" + str(
+                                   self.clientId) + "|" + str(
+                                   self.level) + "|" + str(
+                                   json.dumps(
+                                       self.inventory)))),
                     "utf-8").hex()
                 print("SENDING INVENTORY AND OTHER THINGS")
                 print(f"messageToSend: {messageToSend}")
