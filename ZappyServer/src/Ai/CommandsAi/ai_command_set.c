@@ -103,7 +103,6 @@ static int set_command(zappy_server_t *zappy, client_t *client, char *cmd)
 
 int ai_command_set(zappy_server_t *zappy, client_t *client, char *cmd)
 {
-    printf("Set\n--\n");
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
     if (set_command(zappy, client, cmd) == ERROR)

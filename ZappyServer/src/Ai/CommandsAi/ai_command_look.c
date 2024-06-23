@@ -161,7 +161,6 @@ static void send_look_command(zappy_server_t *zappy, client_t *client)
 
 int ai_command_look(zappy_server_t *zappy, client_t *client, char *cmd)
 {
-    printf("Look\n--\n");
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
     send_look_command(zappy, client);

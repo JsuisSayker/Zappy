@@ -67,7 +67,6 @@ static int selector_object(zappy_server_t *zappy, client_t *client, char *cmd)
 
 int ai_command_take_object(zappy_server_t *zappy, client_t *client, char *cmd)
 {
-    printf("Take object\n--\n");
     if (client == NULL || zappy == NULL || cmd == NULL || cmd[4] != ' ')
         return ERROR;
     cmd = &cmd[5];
