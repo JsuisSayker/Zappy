@@ -88,6 +88,7 @@ bool incantation_condition(zappy_server_t *zappy, client_t *client)
         }
         return true;
     }
+    send_pie_command_to_all_gui(zappy, client, 0);
     return false;
 }
 
