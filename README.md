@@ -51,9 +51,9 @@ Teams need to devise strategies to optimize resource collection and hinder other
 &emsp;&emsp;&emsp;[![C++](https://img.shields.io/badge/C%2B%2B-logo?style=for-the-badge&logo=C%2B%2B&logoColor=white&color=%2300599C)](https://fr.wikipedia.org/wiki/C%2B%2B)
 &ensp;[![Vulkan](https://img.shields.io/badge/vulkan-logo?style=for-the-badge&logo=Vulkan&logoColor=white&color=%23AC162C)](https://www.vulkan.org/learn)
 - **Features:**
-  - Real-time visualization of the field and AI actions
-  - User interface to monitor team progress
-  - Debug and performance monitoring tools
+  - **Real-time visualization** of the field and AI actions
+  - User **interface** to **monitor team progress**
+  - **Debug and performance monitoring** tools
 
 ## Installation
 
