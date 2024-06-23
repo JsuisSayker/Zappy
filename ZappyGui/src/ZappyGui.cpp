@@ -322,11 +322,6 @@ void ZappyGui::processCommand()
             try {
                 this->getPointerToFunction()[command[0]](command);
             } catch (const std::exception &e) {
-                // print command
-                for (auto &elem : command) {
-                    std::cerr << elem << " ";
-                }
-                std::cerr << std::endl;
                 std::cerr << "Exception: " << e.what() << std::endl;
             }
         } else {
@@ -480,9 +475,8 @@ void ZappyGui::run()
     close(socket_fd);
 
     this->getClient().get()->running = false;
-    reader.join();
-
-    vkDeviceWaitIdle(zappyDevice.device());
+    if (reader.joinable())
+        reader.join();
 }
 
 /**
@@ -1115,7 +1109,6 @@ void ZappyGui::ppo(std::vector<std::string> actualCommand)
     try {
         if (actualCommand[1][0] != '#') {
             std::cerr << "ppo: invalid player number" << std::endl;
-            std::cout << actualCommand[1] << std::endl;
             return;
         }
         actualCommand[1].erase(actualCommand[1].begin());
@@ -1304,17 +1297,19 @@ void ZappyGui::pbc(std::vector<std::string> actualCommand)
  */
 void ZappyGui::pic(std::vector<std::string> actualCommand)
 {
-    std::cout << "pic" << std::endl;
-    if (actualCommand.size() < 4) {
+    if (actualCommand.size() < 5) {
+        std::cerr << "pic: invalid number of arguments" << std::endl;
         return;
     }
     int x;
     int y;
+    int playerOrIncantationLvl;
     std::vector<int> playerNumbers;
     try {
         x = std::stoi(actualCommand[1]);
         y = std::stoi(actualCommand[2]);
-        for (int i = 3; i < actualCommand.size(); i++) {
+        playerOrIncantationLvl = std::stoi(actualCommand[3]);
+        for (int i = 4; i < actualCommand.size(); i++) {
             if (actualCommand[i][0] != '#')
                 return;
             actualCommand[i].erase(actualCommand[i].begin());
@@ -1539,7 +1534,6 @@ void ZappyGui::ebo(std::vector<std::string> actualCommand)
  */
 void ZappyGui::edi(std::vector<std::string> actualCommand)
 {
-    std::cout << "death of an egg" << std::endl;
     if (actualCommand.size() != 2) {
         std::cerr << "edi: invalid number of arguments" << std::endl;
         return;

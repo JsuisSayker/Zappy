@@ -75,7 +75,6 @@ int ai_command_eject(zappy_server_t *zappy, client_t *client, char *cmd)
 {
     ai_position_t vector;
 
-    printf("Eject\n--\n");
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
     vector = direction(client);

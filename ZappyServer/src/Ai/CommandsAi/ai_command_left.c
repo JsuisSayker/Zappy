@@ -31,7 +31,6 @@ static void check_direction(zappy_server_t *zappy, client_t *client)
 
 int ai_command_left(zappy_server_t *zappy, client_t *client, char *cmd)
 {
-    printf("Left\n--\n");
     if (client == NULL || zappy == NULL || cmd == NULL)
         return ERROR;
     check_direction(zappy, client);

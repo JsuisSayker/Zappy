@@ -15,7 +15,7 @@ class Client():
         self.port: int = int(port)
         self.teamName: str = teamName
         self.host = host
-        self.socket = None
+        self.socket = socket.socket()
         self.selector = selectors.DefaultSelector()
         self.logged: bool = False
         self.actualStep: int = 0
@@ -23,7 +23,7 @@ class Client():
         self.ai = AI(teamName)
         self.ai.clientId = clientId
 
-    def connectWithServer(self):
+    def connectWithServer(self) -> None:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setblocking(False)
         try:
@@ -47,7 +47,7 @@ class Client():
         except KeyboardInterrupt:
             print("Ctrl+C pressed, closing connection...")
             self.socket.close()
-            return 0
+            exit(0)
         except ConnectionRefusedError:
             self.socket.close()
             print("Connection refused")
@@ -56,57 +56,25 @@ class Client():
         possibleEvents = selectors.EVENT_READ | selectors.EVENT_WRITE
         self.selector.register(self.socket, possibleEvents)
 
-    def saveStartingInformation(self, data, nb):
-        # tmpList = []
-        # for i in range(len(data)):
-        #     data[i] = data[i].split(" ")
-        #     for j in range(len(data[i])):
-        #         tmpList.append(data[i][j])
-        # print(f"tmpList while saving: {tmpList}")
-        # if tmpList[0] == "ko":
-        #     exit(0)
-        # else:
-        #     self.ai.availableSlots = int(tmpList[0])
-        # print(f"availableSlots: {self.ai.availableSlots}")
-        # self.ai.widthValue = int(tmpList[1])
-        # self.ai.heightValue = int(tmpList[2])
-        # self.ai.dataToSend = ""
-        # self.actualStep = 3
-        # self.logged = True
-        # self.ai.run = True
+    def saveStartingInformation(self, data: str, nb: int) -> None:
         if nb == 1:
             self.ai.availableSlots = int(data)
             self.ai.dataToSend = ""
             self.actualStep = 2
         else:
             data = data.split()
-            # width = data[0:-3]
             width = int(data[0])
             height = int(data[1])
-            # height = data[3:]
-            # self.data_width = width
-            # self.data_height = height
             self.ai.heightValue = height
             self.ai.widthValue = width
-            # self.ai.minWidthValue = self.ai.widthValue // 2
-            # self.ai.minHeightValue = self.ai.heightValue // 2
+            self.ai.minWidthValue = self.ai.widthValue // 2
+            self.ai.minHeightValue = self.ai.heightValue * 2
             self.ai.dataToSend = ""
             self.actualStep = 3
             self.logged = True
             self.ai.run = True
 
-    def storePreviousData(self, data, filename="previous_data.txt"):
-        with open(filename, 'w') as file:
-            file.write(data)
-
-    def loadPreviousData(self, filename="previous_data.txt") -> str:
-        try:
-            with open(filename, 'r') as file:
-                return file.read()
-        except FileNotFoundError:
-            return ""
-
-    def forkingProcess(self):
+    def forkingProcess(self) -> None:
         newClientId = int(self.clientId) + 1
         subprocess.Popen(["python3",
                           "zappy_ai",
@@ -119,43 +87,44 @@ class Client():
                           "-i",
                           str(newClientId)])
 
-    def launch_client(self):
-        previousData = ""
+    def launch_client(self) -> None:
         try:
             while True:
                 event = self.selector.select(None)
                 for _, mask in event:
                     if mask & selectors.EVENT_READ:
                         try:
-                            data = self.socket.recv(1024).decode("utf-8")
+                            data = self.socket.recv(10000).decode("utf-8")
                         except ConnectionResetError:
                             print("Connection reset by peer")
                             self.closeConnection()
                             exit(0)
                         print(f"DATA: {data}")
-                        self.storePreviousData(self.ai.dataToSend)
-
-                        if previousData == "":
-                            previousData = ""
-                        print(f"MINE PREVIOUS DATA: {previousData}")
                         print(f"self.ai.dataToSend: {self.ai.dataToSend}")
 
                         if not data:
-                            print("closing the connection")
-                            self.closeConnection()
+                            continue
                         tmpReceivedData = data.split("\n")
                         print(f"tmpReceivedData: {tmpReceivedData[:-1]}")
                         for element in tmpReceivedData[:-1]:
                             print(f"element: {element}")
                             if "WELCOME" in element and self.logged is False:
                                 self.ai.dataToSend = self.teamName + "\n"
+                            elif "message" in element:
+                                if self.ai.clearRead is True:
+                                    self.ai.clearRead = False
+                                    continue
+                                self.ai.parseReceivedMessageFromBroadcast(
+                                    element)
+                                continue
                             elif self.actualStep < 3:
                                 self.saveStartingInformation(element,
                                                              self.actualStep)
                             elif "dead" in element:
                                 print("I'm dead")
                                 exit(0)
-                            elif self.ai.dataToSend == "Look\n":
+                            elif self.ai.dataToSend == "Look\n" and "message"\
+                                    not in element:
                                 self.ai.look = element
                                 print(f"look: {self.ai.look}")
                             elif "Take" in self.ai.dataToSend and "food"\
@@ -163,10 +132,14 @@ class Client():
                                     in element:
                                 self.ai.updateSharedInventory()
                                 self.ai.newRessource = True
-                            elif "Inventory" in previousData and "Inventory" in self.ai.dataToSend:
+                            elif "Inventory" in self.ai.dataToSend and\
+                                    "messasge" not in element:
                                 try:
-                                    self.ai.parse_inventory(element)
+                                    self.ai.parsingAiInventory(element)
                                 except IndexError:
+                                    print("IndexError", element)
+                                    pass
+                                except ValueError:
                                     print("ValueError", element)
                                     pass
                             elif "Elevation underway" in element:
@@ -174,43 +147,39 @@ class Client():
                             elif "Current level" in element:
                                 self.ai.level = int(''.join(filter(
                                     str.isdigit, element)))
+                                print(f"LEVEL: {self.ai.level}")
                                 if self.ai.level == 8:
                                     print("VICTORY")
                                     exit(0)
                                 print(
-                                    f"Current element in current elem: {element}")
+                                    f"Current element in current elem: {
+                                        element}")
                                 self.ai.newRessource = False
                                 self.ai.searchingRessource = ""
                                 self.ai.incantation = False
                                 self.ai.nbReadyPlayers = 1
+                                self.ai.clearRead = False
+                                self.ai.clearBroadcast = False
                                 self.ai.actualActivity = \
                                     Activity.FINISHING_INCANTATION
 
-                            elif "message" in element:
-                                self.ai.parse_broadcast(element)
-                                # continue
-                                # return
-                            elif self.ai.dataToSend == "Fork\n":
+                            elif self.ai.dataToSend == "Fork\n" and "message"\
+                                    not in element:
                                 self.forkingProcess()
                                 print("forking")
                                 self.ai.canFork = False
                             self.ai.run = True
 
                     if mask & selectors.EVENT_WRITE:
-                        previousData = self.loadPreviousData()
                         if self.logged and self.ai.run is True:
-                            # self.storePreviousData(self.ai.dataToSend)
-                            # print(f"DO BICH {self.ai.dataToSend}")
                             self.ai.algorithm()
-                            # print(f"DO BICH AFTER {self.ai.dataToSend}")
-                            # exit(0)
                         if self.ai.dataToSend and self.ai.run is True:
                             if self.ai.dataToSend == (
                                     self.teamName + '\n'
                             ) and self.logged is False:
                                 self.actualStep = 1
-                            self.socket.send(self.ai.dataToSend.encode())
                             print(f"DATA SENT: {self.ai.dataToSend}")
+                            self.socket.send(self.ai.dataToSend.encode())
                             self.ai.run = False
 
         except KeyboardInterrupt:
@@ -221,7 +190,7 @@ class Client():
             self.closeConnection()
             exit(0)
 
-    def closeConnection(self):
+    def closeConnection(self) -> None:
         fd = self.socket.fileno()
         if fd == -1:
             return

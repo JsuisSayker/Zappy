@@ -40,6 +40,7 @@ TOOLS		=	splitter.c							\
 				normalize_coordonate.c				\
 				free_string.c						\
 				realloc_and_strcat.c				\
+				nb_resource_tile.c					\
 
 AI			=	ai_function.c						\
 				ai_initialisation.c					\

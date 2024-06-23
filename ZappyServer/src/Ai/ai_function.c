@@ -36,6 +36,7 @@ bool is_alive(zappy_server_t *zappy, client_t *client)
             dprintf(zappy->actual_sockfd, "dead\n");
             send_pdi_command_to_all_gui(zappy, client);
             destroy_queue(client);
+            close(zappy->actual_sockfd);
             FD_CLR(zappy->actual_sockfd, &zappy->fd.save_input);
             client->type = UNKNOWN;
             return false;
