@@ -25,7 +25,7 @@ Teams need to devise strategies to optimize resource collection and hinder other
   - [**MENDY Tom**](https://github.com/Tom-Mendy)
   - [**MENDIA Marc**](https://github.com/Dvaking)
 - **Technology:**<br>
-&emsp;&emsp;&emsp;[![C](https://img.shields.io/badge/C-logo?style=for-the-badge&logo=C&logoColor=white&color=%23A8B9CC)](https://fr.wikipedia.org/wiki/C_(langage))<br>
+&emsp;&emsp;&emsp;[![C](https://img.shields.io/badge/C-logo?style=for-the-badge&logo=C&logoColor=white&color=%23A8B9CC)](https://en.wikipedia.org/wiki/C_(programming_language))<br>
 - **Features:**
   - **Manages communication** between GUI and AIs
   - **Manages resources** and field state
@@ -48,7 +48,7 @@ Teams need to devise strategies to optimize resource collection and hinder other
   - [**GAUFFRE Arthur**](https://github.com/arthurgauffre)
   - [**GIRAUD Romain**](https://github.com/OxiiLB)
 - **Technology:**<br>
-&emsp;&emsp;&emsp;[![C++](https://img.shields.io/badge/C%2B%2B-logo?style=for-the-badge&logo=C%2B%2B&logoColor=white&color=%2300599C)](https://fr.wikipedia.org/wiki/C%2B%2B)
+&emsp;&emsp;&emsp;[![C++](https://img.shields.io/badge/C%2B%2B-logo?style=for-the-badge&logo=C%2B%2B&logoColor=white&color=%2300599C)](https://en.wikipedia.org/wiki/C%2B%2B)
 &ensp;[![Vulkan](https://img.shields.io/badge/vulkan-logo?style=for-the-badge&logo=Vulkan&logoColor=white&color=%23AC162C)](https://www.vulkan.org/learn)
 - **Features:**
   - **Real-time visualization** of the field and AI actions
